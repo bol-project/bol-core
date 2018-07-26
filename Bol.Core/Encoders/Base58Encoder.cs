@@ -1,4 +1,5 @@
-﻿using Neo.Cryptography;
+﻿using Bol.Core.Abstractions;
+using Neo.Cryptography;
 
 namespace Bol.Core.Encoders
 {

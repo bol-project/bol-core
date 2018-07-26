@@ -1,4 +1,5 @@
-﻿using Bol.Core.Hashers;
+﻿using Bol.Core.Abstractions;
+using Bol.Core.Hashers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using System;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace Bol.Core.Services
 {
-    public class CodeNameService
+    public class CodeNameService : ICodeNameService
     {
         private readonly IStringSerializer<Person> _stringSerializer;
         private readonly IJsonSerializer<Person> _jsonSerializer;

@@ -1,15 +1,12 @@
-﻿using Bol.Core.Encoders;
+﻿using Bol.Core.Abstractions;
+using Bol.Core.Encoders;
 using System;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Bol.Core.Hashers
 {
-    public interface ISha256Hasher
-    {
-        string Hash(string input);
-        byte[] Hash(byte[] input);
-    }
+    public interface ISha256Hasher : IHasher { }
 
     public class Sha256Hasher : ISha256Hasher
     {

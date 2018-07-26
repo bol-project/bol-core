@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bol.Core.Abstractions;
+using System;
 
 namespace Bol.Core.Encoders
 {
