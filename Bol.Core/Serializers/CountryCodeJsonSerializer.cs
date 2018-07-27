@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace Bol.Core.Serializers
 {
-    public class CountryCodeJsonSerializer : IJsonSerializer<CountryCodes>
+    public class CountryCodeJsonSerializer : IJsonSerializer<Country[]>
     {
-        public string Serialize(CountryCodes entity)
+        public string Serialize(Country[] entity)
         {
             return JsonConvert.SerializeObject(entity);
         }

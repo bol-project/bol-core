@@ -1,13 +1,14 @@
 ﻿using Bol.Core.Model;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Bol.Core.Deserializers
 {
-    public class CountryCodeJsonDeserializer : IJsonDeserializer<CountryCodes>
+    public class CountryCodeJsonDeserializer : IJsonDeserializer<Country[]>
     {
-        public CountryCodes Deserialize(string json)
+        public Country[] Deserialize(string json)
         {
-            return JsonConvert.DeserializeObject<CountryCodes>(json);
+            return JsonConvert.DeserializeObject<Country[]>(json);
         }
     }
 }
