@@ -1,6 +1,5 @@
 ﻿using Bol.Core.Model;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Bol.Core.Deserializers
 {

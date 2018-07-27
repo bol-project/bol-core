@@ -1,8 +1,4 @@
-﻿
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Bol.Core.Model
+﻿namespace Bol.Core.Model
 {
     public class Country
     {
