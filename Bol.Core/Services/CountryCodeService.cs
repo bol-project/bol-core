@@ -1,68 +1,63 @@
 ﻿using Bol.Core.Model;
-using Bol.Core.Serializers;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace Bol.Core.Services
 {
     public class CountryCodeService
     {
-        private readonly IJsonSerializer<Country[]> _jsonSerializer;
-        private readonly IDictionary<string, string> _countryCodes;
+        private readonly IDictionary<string, Country> _countries;
 
-        public CountryCodeService(IJsonSerializer<Country[]> jsonSerializer)
+        public CountryCodeService(IOptions<List<Country>> countries)
         {
-            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
-            _countryCodes = InitCountryCodes();
+            var countryList = countries?.Value ?? throw new ArgumentNullException(nameof(countries));
+            _countries = countryList.ToDictionary(c => c.Alpha3, c => c);
         }
 
-        private IDictionary<string, string> InitCountryCodes()
+        public IEnumerable<string> Codes
         {
-            var keyValues = new Dictionary<string, string>();
-            try
+            get
             {
-
-                var section = File.ReadAllText(AppContext.BaseDirectory + ".content/country_code.json");
-                var countryCodesJson = _jsonSerializer.Deserialize(section);
-                countryCodesJson.ToList().ForEach(c => keyValues.Add(c.Name, c.Alpha3));
-            }catch(Exception e)
-            {
-                Debug.WriteLine(e.Message);
+                return _countries.Keys;
             }
-            return keyValues;
         }
 
-        public IDictionary<string,string> GetCountryCodes()
+        public IEnumerable<Country> Countries
         {
-            return this._countryCodes;
+            get
+            {
+                return _countries.Values;
+            }
         }
 
-        public string GetCode(string country)
+        public string GetCode(string name)
         {
-            if (!IsValidCountry(country)) return null;
-            GetCountryCodes().TryGetValue(country, out string code);
-            return code;
+            var country = _countries
+                .Values
+                .Where(c => c.Name == name)
+                .FirstOrDefault();
+
+            return country?.Alpha3;
         }
 
-        public string GetCountry(string code)
+        public Country GetCountry(string code)
         {
-            if (!IsValidCode(code)) return null;
-
-            string country = GetCountryCodes().FirstOrDefault(p => p.Value.Equals(code)).Key;
+            _countries.TryGetValue(code, out var country);
             return country;
         }
-        
+
         public bool IsValidCountry(string country)
         {
-            return this.GetCountryCodes().ContainsKey(country);
+            return _countries
+                .Values
+                .Any(c => c.Name == country);
         }
 
         public bool IsValidCode(string code)
         {
-            return this.GetCountryCodes().Values.Contains(code);
+            return _countries.ContainsKey(code);
         }
     }
 }
