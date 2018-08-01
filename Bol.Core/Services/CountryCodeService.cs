@@ -1,5 +1,5 @@
-﻿using Bol.Core.Deserializers;
-using Bol.Core.Model;
+﻿using Bol.Core.Model;
+using Bol.Core.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,12 +10,12 @@ namespace Bol.Core.Services
 {
     public class CountryCodeService
     {
-        private readonly IJsonDeserializer<Country[]> _jsonDeserializer;
+        private readonly IJsonSerializer<Country[]> _jsonSerializer;
         private readonly IDictionary<string, string> _countryCodes;
 
-        public CountryCodeService(IJsonDeserializer<Country[]> jsonDeserializer)
+        public CountryCodeService(IJsonSerializer<Country[]> jsonSerializer)
         {
-            _jsonDeserializer = jsonDeserializer ?? throw new ArgumentNullException(nameof(jsonDeserializer));
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _countryCodes = InitCountryCodes();
         }
 
@@ -26,7 +26,7 @@ namespace Bol.Core.Services
             {
 
                 var section = File.ReadAllText(AppContext.BaseDirectory + ".content/country_code.json");
-                var countryCodesJson = _jsonDeserializer.Deserialize(section);
+                var countryCodesJson = _jsonSerializer.Deserialize(section);
                 countryCodesJson.ToList().ForEach(c => keyValues.Add(c.Name, c.Alpha3));
             }catch(Exception e)
             {

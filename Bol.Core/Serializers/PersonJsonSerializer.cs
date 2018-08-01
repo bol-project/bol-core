@@ -9,5 +9,10 @@ namespace Bol.Core.Serializers
         {
             return JsonConvert.SerializeObject(entity);
         }
+
+        public Person Deserialize(string input)
+        {
+            return JsonConvert.DeserializeObject<Person>(input);
+        }
     }
 }
