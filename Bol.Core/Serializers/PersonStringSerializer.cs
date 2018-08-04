@@ -7,6 +7,11 @@ namespace Bol.Core.Serializers
     {
         public const char DIV = '<';
 
+        public Person Deserialize(string input)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string Serialize(Person person)
         {
             char gender = person.Gender.ToString().First();
