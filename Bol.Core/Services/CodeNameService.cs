@@ -20,7 +20,7 @@ namespace Bol.Core.Services
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         }
 
-        public string Generate(Person person, string combination)
+        public string Generate(Person person)
         {
             var personString = _stringSerializer.Serialize(person);
             var personJson = _jsonSerializer.Serialize(person);
@@ -30,7 +30,7 @@ namespace Bol.Core.Services
                 .ToArray();
             var shorthashString = new string(shortHash);
 
-            var codeName = $"{personString}{shorthashString}{combination}";
+            var codeName = $"{personString}{shorthashString}{person.Combination}";
 
             var checksum = _hasher.Hash(codeName)
                 .Take(4)

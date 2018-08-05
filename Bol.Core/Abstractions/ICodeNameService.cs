@@ -4,6 +4,6 @@ namespace Bol.Core.Abstractions
 {
     public interface ICodeNameService
     {
-        string Generate(Person person, string combination);
+        string Generate(Person person);
     }
 }
