@@ -5,7 +5,7 @@ namespace Bol.Core.Model
     public class Person
     {
         public string Nin { get; set; }
-        public string Country { get; set; }
+        public string CountryCode { get; set; }
         public string Surname { get; set; }
         public string Name { get; set; }
         public string MiddleName { get; set; }
