@@ -1,4 +1,5 @@
-﻿using Bol.Core.Model;
+﻿using Bol.Core.Abstractions;
+using Bol.Core.Model;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace Bol.Core.Services
 {
-    public class CountryCodeService
+    public class CountryCodeService : ICountryCodeService
     {
         private readonly IDictionary<string, Country> _countries;
 
