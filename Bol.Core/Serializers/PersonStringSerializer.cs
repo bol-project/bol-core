@@ -1,4 +1,5 @@
 ﻿using Bol.Core.Model;
+using System;
 using System.Linq;
 
 namespace Bol.Core.Serializers
@@ -7,9 +8,34 @@ namespace Bol.Core.Serializers
     {
         public const char DIV = '<';
 
+        private const string INVALID_CODENAME = "Invalid CodeName format. CodeName format should be: " + "P<GRC<PAPPAS<SPYROS<<93M<2BB6C323PP5D5D";
+
         public Person Deserialize(string input)
         {
-            throw new System.NotImplementedException();
+            var parts = input.Split(DIV);
+            if (parts.Length != 7) throw new ArgumentException(INVALID_CODENAME);
+            if (parts[5].Length != 3) throw new ArgumentException(INVALID_CODENAME);
+            if (parts[6].Length != 14) throw new ArgumentException(INVALID_CODENAME);
+
+            var birthDate = DateTime.ParseExact(parts[5].Substring(0, 2), "yy", null);
+
+            var genderInitial = parts[5].Substring(2, 1);
+            var gender = parseGender(genderInitial);
+
+            var nin = parts[6].Substring(0, 8);
+            var combination = parts[6].Substring(8, 2);
+
+            return new Person
+            {
+                CountryCode = parts[1],
+                Surname = parts[2],
+                Name = parts[3],
+                MiddleName = parts[4],
+                Birthdate = birthDate,
+                Gender = gender,
+                Nin = nin,
+                Combination = combination
+            };
         }
 
         public string Serialize(Person person)
@@ -18,7 +44,27 @@ namespace Bol.Core.Serializers
             string birthYear = person.Birthdate.Year.ToString();
             birthYear = birthYear.Substring(birthYear.Length - 2);
 
-            return $"P{DIV}{person.CountryCode}{DIV}{person.Surname}{DIV}{person.Name}{DIV}{person.MiddleName}{DIV}{birthYear}{gender}{DIV}";
+            return $"P{DIV}{person.CountryCode}{DIV}{person.Surname}{DIV}{person.Name}{DIV}{person.MiddleName}{DIV}{birthYear}{gender}{DIV}{person.Nin}{person.Combination}";
+        }
+
+        private Gender parseGender(string initial)
+        {
+            Gender gender;
+            switch (initial)
+            {
+                case "M":
+                    gender = Gender.Male;
+                    break;
+                case "F":
+                    gender = Gender.Female;
+                    break;
+                case "U":
+                    gender = Gender.Unspecified;
+                    break;
+                default:
+                    throw new ArgumentException("Gender must be either M, F or U");
+            }
+            return gender;
         }
     }
 }
