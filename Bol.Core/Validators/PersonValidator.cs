@@ -2,15 +2,18 @@
 using Bol.Core.Model;
 using FluentValidation;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Bol.Core.Validators
 {
     public class PersonValidator : AbstractValidator<Person>
     {
+        private const int NIN_DIGITS = 8;
+        private const int COMB_DIGITS = 2;
+
         private readonly ICountryCodeService _countryCodeService;
         private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
+        private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 
         public PersonValidator(ICountryCodeService countryCodeService)
         {
@@ -30,13 +33,17 @@ namespace Bol.Core.Validators
                 .When(p => !string.IsNullOrEmpty(p.MiddleName))
                 .WithMessage("Middle Name must consist of capital letters A-Z.");
 
-            RuleFor(p => p.Combination)
-                .MinimumLength(2)
-                .WithMessage("Combination cannot have less than 2 digits.");
+            RuleFor(p => p.Nin)
+                .Must(IsHexRepresentation)
+                .WithMessage("Nin must be a Base16 (Hex) representation of the SHA256 Hash of the person's National Identification Number.");
+
+            RuleFor(p => p.Nin)
+                .Length(NIN_DIGITS)
+                .WithMessage($"Nin must be exactly {NIN_DIGITS} digits.");
 
             RuleFor(p => p.Combination)
-                .MaximumLength(2)
-                .WithMessage("Combination cannot have more than 2 digits.");
+                .Length(COMB_DIGITS)
+                .WithMessage($"Combination must be exactly {COMB_DIGITS} digits.");
 
             RuleFor(p => p.CountryCode)
                 .Must(CountryCodeExists)
@@ -46,6 +53,11 @@ namespace Bol.Core.Validators
         private bool HasAllLettersCapital(string input)
         {
             return _capitalLetters.IsMatch(input);
+        }
+
+        private bool IsHexRepresentation(string input)
+        {
+            return _hexRepresentation.IsMatch(input);
         }
 
         private bool CountryCodeExists(string code)
