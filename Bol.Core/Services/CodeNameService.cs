@@ -22,22 +22,8 @@ namespace Bol.Core.Services
 
         public string Generate(Person person)
         {
-            var personString = _stringSerializer.Serialize(person);
-            var personJson = _jsonSerializer.Serialize(person);
-
-            var shortHash = _hasher.Hash(person.Nin)
-                .Take(8)
-                .ToArray();
-            var shorthashString = new string(shortHash);
-
-            var codeName = $"{personString}{shorthashString}{person.Combination}";
-
-            var checksum = _hasher.Hash(codeName)
-                .Take(4)
-                .ToArray();
-            var checksumString = new string(checksum);
-
-            codeName = $"{codeName}{checksumString}";
+            var codeName = _stringSerializer.Serialize(person);
+            codeName = _hasher.AddChecksum(codeName);
 
             return codeName;
         }
