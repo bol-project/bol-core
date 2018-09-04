@@ -19,35 +19,47 @@ namespace Bol.Core.Validators
         {
             _countryCodeService = countryCodeService ?? throw new ArgumentNullException(nameof(countryCodeService));
 
-            RuleFor(p => p).NotEmpty().WithMessage("Person object cannot be empty.");
-            RuleFor(p => p.Nin).NotEmpty().WithMessage("National Identification Number cannot be empty.");
-            RuleFor(p => p.Name).NotEmpty().WithMessage("Name cannot be empty.");
-            RuleFor(p => p.Surname).NotEmpty().WithMessage("Surname cannot be empty.");
-            RuleFor(p => p.Combination).NotEmpty().WithMessage("2 digit combination cannot be empty.");
-            RuleFor(p => p.CountryCode).NotEmpty().WithMessage("Country cannot be empty.");
+            CascadeMode = CascadeMode.StopOnFirstFailure;
 
-            RuleFor(p => p.Name).Must(HasAllLettersCapital).WithMessage("Name must consist of capital letters A-Z.");
-            RuleFor(p => p.Surname).Must(HasAllLettersCapital).WithMessage("Surname must consist of capital letters A-Z.");
-            RuleFor(p => p.MiddleName)
-                .Must(HasAllLettersCapital)
-                .When(p => !string.IsNullOrEmpty(p.MiddleName))
-                .WithMessage("Middle Name must consist of capital letters A-Z.");
+            RuleFor(p => p).NotEmpty().WithMessage("Person object cannot be empty.");
 
             RuleFor(p => p.Nin)
+                .NotEmpty()
+                .WithMessage("National Identification Number cannot be empty.")
+                .Length(NIN_DIGITS)
+                .WithMessage($"Nin must be exactly {NIN_DIGITS} digits.")
                 .Must(IsHexRepresentation)
                 .WithMessage("Nin must be a Base16 (Hex) representation of the SHA256 Hash of the person's National Identification Number.");
 
-            RuleFor(p => p.Nin)
-                .Length(NIN_DIGITS)
-                .WithMessage($"Nin must be exactly {NIN_DIGITS} digits.");
+            RuleFor(p => p.Name)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty()
+                .WithMessage("Name cannot be empty.")
+                .Must(HasAllLettersCapital)
+                .WithMessage("Name must consist of capital letters A-Z.");
+
+            RuleFor(p => p.Surname)
+                .NotEmpty()
+                .WithMessage("Surname cannot be empty.")
+                .Must(HasAllLettersCapital)
+                .WithMessage("Surname must consist of capital letters A-Z.");
 
             RuleFor(p => p.Combination)
+                .NotEmpty()
+                .WithMessage("2 digit combination cannot be empty.")
                 .Length(COMB_DIGITS)
                 .WithMessage($"Combination must be exactly {COMB_DIGITS} digits.");
 
             RuleFor(p => p.CountryCode)
+                .NotEmpty()
+                .WithMessage("Country cannot be empty.")
                 .Must(CountryCodeExists)
                 .WithMessage("Country Code is not valid.");
+
+            RuleFor(p => p.MiddleName)
+                .Must(HasAllLettersCapital)
+                .When(p => !string.IsNullOrEmpty(p.MiddleName))
+                .WithMessage("Middle Name must consist of capital letters A-Z.");            
         }
 
         private bool HasAllLettersCapital(string input)
