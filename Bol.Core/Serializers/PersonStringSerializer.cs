@@ -6,21 +6,27 @@ namespace Bol.Core.Serializers
 {
     public class PersonStringSerializer : IStringSerializer<Person>
     {
-        public const char DIV = '<';
-
-        private const string INVALID_CODENAME = "Invalid CodeName format. CodeName format should be: " + "P<GRC<PAPPAS<SPYROS<<93M<2BB6C323PP5D5D";
+        public const char DIV = Constants.CODENAME_DIVIDER;
+        public const string P = Constants.PERSONAL_CODENAME_INITIAL;
+        private const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPPAS<SPYROS<<93M<2BB6C323PP5D5D";
 
         public Person Deserialize(string input)
         {
-            var parts = input.Split(DIV);
-            if (parts.Length != 7) throw new ArgumentException(INVALID_CODENAME);
-            if (parts[5].Length != 3) throw new ArgumentException(INVALID_CODENAME);
-            if (parts[6].Length != 14) throw new ArgumentException(INVALID_CODENAME);
+            var parts = input?.Split(DIV);
+
+            if (parts == null ||
+                parts.Length != 7 ||
+                parts[0] != P ||
+                parts[5].Length != 3 ||
+                parts[6].Length != 14)
+            {
+                throw new ArgumentException(INVALID_CODENAME);
+            }
 
             var birthDate = DateTime.ParseExact(parts[5].Substring(0, 2), "yy", null);
 
             var genderInitial = parts[5].Substring(2, 1);
-            var gender = parseGender(genderInitial);
+            var gender = ParseGender(genderInitial);
 
             var nin = parts[6].Substring(0, 8);
             var combination = parts[6].Substring(8, 2);
@@ -44,10 +50,10 @@ namespace Bol.Core.Serializers
             string birthYear = person.Birthdate.Year.ToString();
             birthYear = birthYear.Substring(birthYear.Length - 2);
 
-            return $"P{DIV}{person.CountryCode}{DIV}{person.Surname}{DIV}{person.Name}{DIV}{person.MiddleName}{DIV}{birthYear}{gender}{DIV}{person.Nin}{person.Combination}";
+            return $"{P}{DIV}{person.CountryCode}{DIV}{person.Surname}{DIV}{person.Name}{DIV}{person.MiddleName}{DIV}{birthYear}{gender}{DIV}{person.Nin}{person.Combination}";
         }
 
-        private Gender parseGender(string initial)
+        private Gender ParseGender(string initial)
         {
             Gender gender;
             switch (initial)

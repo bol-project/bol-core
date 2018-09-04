@@ -17,31 +17,16 @@ namespace Bol.Core.Services
             _countries = countryList.ToDictionary(c => c.Alpha3, c => c);
         }
 
-        public IEnumerable<string> Codes
-        {
-            get
-            {
-                return _countries.Keys;
-            }
-        }
+        public IEnumerable<string> Codes => _countries.Keys;
 
-        public IEnumerable<Country> Countries
-        {
-            get
-            {
-                return _countries.Values;
-            }
-        }
+        public IEnumerable<Country> Countries => _countries.Values;
 
-        public string GetCode(string name)
-        {
-            var country = _countries
+        public string GetCode(string name) =>
+            _countries
                 .Values
                 .Where(c => c.Name == name)
-                .FirstOrDefault();
-
-            return country?.Alpha3;
-        }
+                .FirstOrDefault()?
+                .Alpha3;
 
         public Country GetCountry(string code)
         {
@@ -49,16 +34,12 @@ namespace Bol.Core.Services
             return country;
         }
 
-        public bool IsValidCountry(string country)
-        {
-            return _countries
+        public bool IsValidCountry(string country) =>
+            _countries
                 .Values
                 .Any(c => c.Name == country);
-        }
 
-        public bool IsValidCode(string code)
-        {
-            return _countries.ContainsKey(code);
-        }
+        public bool IsValidCode(string code) =>
+           _countries.ContainsKey(code);
     }
 }
