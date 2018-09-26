@@ -1,4 +1,5 @@
-﻿using Bol.Core.Model;
+﻿using Bol.Core.Abstractions;
+using Bol.Core.Model;
 using System;
 using System.Linq;
 

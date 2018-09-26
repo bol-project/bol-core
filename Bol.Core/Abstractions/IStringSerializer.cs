@@ -1,4 +1,4 @@
-﻿namespace Bol.Core.Serializers
+﻿namespace Bol.Core.Abstractions
 {
     public interface IStringSerializer<T>
     {

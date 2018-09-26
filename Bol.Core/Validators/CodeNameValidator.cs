@@ -1,6 +1,6 @@
-﻿using Bol.Core.Hashers;
+﻿using Bol.Core.Abstractions;
+using Bol.Core.Hashers;
 using Bol.Core.Model;
-using Bol.Core.Serializers;
 using FluentValidation;
 using FluentValidation.Results;
 using System;
