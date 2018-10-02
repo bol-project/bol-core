@@ -8,8 +8,8 @@ namespace Bol.Core.Validators
 {
     public class PersonValidator : AbstractValidator<Person>
     {
-        private const int NIN_DIGITS = 8;
-        private const int COMB_DIGITS = 2;
+        private const int NIN_DIGITS = 11;
+        private const int COMB_DIGITS = 1;
 
         private readonly ICountryCodeService _countryCodeService;
         private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
