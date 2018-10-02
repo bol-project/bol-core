@@ -48,13 +48,34 @@ namespace Bol.Core.Serializers
         public string Serialize(Person person)
         {
             char gender = person.Gender.ToString().First();
-            string birthYear = person.Birthdate.Year.ToString();
-            birthYear = birthYear.Substring(birthYear.Length - 2);
+            int birthYear = person.Birthdate.Year;
 
-            return $"{P}{DIV}{person.CountryCode}{DIV}{person.Surname}{DIV}{person.Name}{DIV}{person.MiddleName}{DIV}{birthYear}{gender}{DIV}{person.Nin}{person.Combination}";
+            var result = $"P" +
+                         $"{DIV}{person.CountryCode}" +
+                         $"{DIV}{person.Surname}" +
+                         $"{DIV}{person.Name.First()}";
+
+            if (person.MiddleName.Any())
+            {
+                result = result + $"{DIV}{person.MiddleName}";
+
+            }
+
+            if (person.ThirdName.Any())
+            {
+                result = result + $"{DIV}{person.ThirdName}";
+            }
+
+            result = result +
+                     $"{DIV}{DIV}{DIV}" +
+                     $"{birthYear}" +
+                     $"{gender}" +
+                     $"{person.Combination}{DIV}";
+
+            return result;
         }
 
-        private Gender ParseGender(string initial)
+        internal Gender ParseGender(string initial)
         {
             Gender gender;
             switch (initial)
