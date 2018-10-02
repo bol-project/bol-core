@@ -9,6 +9,7 @@ namespace Bol.Core.Model
         public string Surname { get; set; }
         public string Name { get; set; }
         public string MiddleName { get; set; }
+        public string ThirdName { get; set; }
         public Gender Gender { get; set; }
         public DateTime Birthdate { get; set; }
         public string Combination { get; set; }
