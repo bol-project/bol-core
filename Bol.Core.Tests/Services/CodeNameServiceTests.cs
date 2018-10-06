@@ -1,5 +1,6 @@
 ﻿using Bol.Core.Encoders;
 using Bol.Core.Hashers;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
@@ -22,7 +23,7 @@ namespace Bol.Core.Tests.Services
             var hasher = new Sha256Hasher(new Base16Encoder());
             var service = new CodeNameService(new PersonStringSerializer(), hasher);
             var countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
-            var personValidator = new PersonValidator(new CountryCodeService(Options.Create(countries)));
+            var personValidator = new PersonValidator(new CountryCodeService(Options.Create(countries)), new RegexHelper());
             var validatedService = new CodeNameServiceValidated(service, personValidator);
             var codeNameValidator = new CodeNameValidator(personValidator, new PersonStringSerializer(), hasher);
 

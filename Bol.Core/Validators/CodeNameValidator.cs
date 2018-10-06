@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bol.Core.Validators
 {
-    public class CodeNameValidator : IValidator<string>
+    public class CodeNameValidator : ICodeNameValidator
     {
         private readonly IValidator<Person> _personValidator;
         private readonly IStringSerializer<Person> _personSerializer;

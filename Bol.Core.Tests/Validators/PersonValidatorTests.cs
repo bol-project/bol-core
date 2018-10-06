@@ -1,10 +1,11 @@
 ﻿using Bol.Core.Abstractions;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Validators;
 using FluentValidation;
+using FluentValidation.TestHelper;
 using Moq;
 using Xunit;
-using FluentValidation.TestHelper;
 
 namespace Bol.Core.Tests.Validators
 {
@@ -16,7 +17,7 @@ namespace Bol.Core.Tests.Validators
         public PersonValidatorTests()
         {
             _ccService = new Mock<ICountryCodeService>();
-            _validator = new PersonValidator(_ccService.Object);
+            _validator = new PersonValidator(_ccService.Object, new RegexHelper());
         }
 
         [Theory]
