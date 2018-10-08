@@ -15,22 +15,28 @@ namespace Bol.Core.Serializers
         {
             var parts = input?.Split(DIV);
 
-            if (parts == null ||
-                parts.Length != 7 ||
+	        var genderInitial = parts[6].Substring(4, 1);
+
+			if (parts == null ||
+                parts.Length != 8 ||
                 parts[0] != P ||
-                parts[5].Length != 3 ||
-                parts[6].Length != 14)
+                parts[6].Length != 6 ||
+                parts[8].Length != 14
+			    || (
+                genderInitial != "M" &&
+				genderInitial != "F" && 
+				genderInitial != "U")
+			    )
             {
                 throw new ArgumentException(INVALID_CODENAME);
             }
 
-            var birthDate = DateTime.ParseExact(parts[5].Substring(0, 2), "yy", null);
+            var birthDate = DateTime.ParseExact(parts[6].Substring(0, 4), "yyyy", null);
 
-            var genderInitial = parts[5].Substring(2, 1);
             var gender = ParseGender(genderInitial);
+	        var combination = parts[6].Substring(5, 1);
 
-            var nin = parts[6].Substring(0, 8);
-            var combination = parts[6].Substring(8, 2);
+			var nin = parts[6].Substring(0, 8);
 
             return new Person
             {
@@ -38,6 +44,7 @@ namespace Bol.Core.Serializers
                 Surname = parts[2],
                 Name = parts[3],
                 MiddleName = parts[4],
+				ThirdName = parts[5],
                 Birthdate = birthDate,
                 Gender = gender,
                 Nin = nin,
