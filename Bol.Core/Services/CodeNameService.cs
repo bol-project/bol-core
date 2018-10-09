@@ -11,12 +11,12 @@ namespace Bol.Core.Services
 {
     public class CodeNameService : ICodeNameService
     {
-        private readonly IStringSerializer<Person> _stringSerializer;
+        private readonly IStringSerializer<NaturalPerson, CodenamePerson> _stringSerializer;
         private readonly ISha256Hasher _hasher;
         private readonly IBase58Encoder _base58Encoder;
 
         public CodeNameService(
-            IStringSerializer<Person> stringSerializer,
+            IStringSerializer<NaturalPerson, CodenamePerson> stringSerializer,
             ISha256Hasher hasher,
             IBase58Encoder base58Encoder)
         {
@@ -25,11 +25,11 @@ namespace Bol.Core.Services
             _base58Encoder = base58Encoder ?? throw new ArgumentException(nameof(base58Encoder));
         }
 
-        public string Generate(Person person)
+        public string Generate(NaturalPerson person)
         {
             var codeName = _stringSerializer.Serialize(person);
 
-            var nameToHash = person.Name;
+            var nameToHash = person.FirstName;
             var birthdayToHash = person.Birthdate.ToString(CultureInfo.InvariantCulture);
             var ninToHash = new string(person.Nin.Take(person.Nin.Length - 2).ToArray());
 
