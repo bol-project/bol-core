@@ -11,17 +11,20 @@ namespace Bol.Core.Validators
 {
     public class CodeNameValidator : IValidator<string>
     {
-        private readonly IValidator<Person> _personValidator;
-        private readonly IStringSerializer<Person> _personSerializer;
+        private readonly IValidator<CodenamePerson> _codenamePersonValidator;
+	    private readonly IValidator<BasePerson> _basePersonValidator;
+	    private readonly IStringSerializer<NaturalPerson, CodenamePerson> _personSerializer;
         private readonly ISha256Hasher _hasher;
 
         public CodeNameValidator(
-            IValidator<Person> personValidator,
-            IStringSerializer<Person> personSerializer,
+            IValidator<CodenamePerson> codenamePersonValidator,
+			IValidator<BasePerson> basePersonValidator,
+            IStringSerializer<NaturalPerson, CodenamePerson> personSerializer,
             ISha256Hasher hasher)
         {
-            _personValidator = personValidator ?? throw new ArgumentNullException(nameof(personValidator));
-            _personSerializer = personSerializer ?? throw new ArgumentNullException(nameof(personSerializer));
+            _codenamePersonValidator = codenamePersonValidator ?? throw new ArgumentNullException(nameof(codenamePersonValidator));
+	        _basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
+	        _personSerializer = personSerializer ?? throw new ArgumentNullException(nameof(personSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         }
 
@@ -43,12 +46,20 @@ namespace Bol.Core.Validators
 
         public ValidationResult Validate(string instance)
         {
-            var person = _personSerializer.Deserialize(instance);
-            var result = _personValidator.Validate(person);
-            if (!result.IsValid)
+            var codenamePerson = _personSerializer.Deserialize(instance);
+
+	        var baseValidation = _basePersonValidator.Validate(codenamePerson);
+            var finalValidation = _codenamePersonValidator.Validate(codenamePerson);
+
+            if (!baseValidation.IsValid)
             {
-                return result;
+                return baseValidation;
             }
+
+	        if (finalValidation.IsValid)
+	        {
+		        return finalValidation;
+	        }
 
             if (!_hasher.CheckChecksum(instance))
             {
