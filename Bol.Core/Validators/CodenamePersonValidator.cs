@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using Bol.Core.Abstractions;
-using Bol.Core.Model;
+﻿using Bol.Core.Model;
 using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace Bol.Core.Validators
 {
@@ -12,19 +8,15 @@ namespace Bol.Core.Validators
 	{
 		private const int SHORT_HASH_DIGITS = 11;
 		private const int CHECKSUM_DIGITS = 4;
-		private const int COMB_DIGITS = 1;
 
-		private readonly ICountryCodeService _countryCodeService;
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 		private readonly Regex _base58Representation = new Regex(@"/^[5KL][1 - 9A - HJ - NP - Za - km - z]{50, 51}+$");
 
-		public CodenamePersonValidator(ICountryCodeService countryCodeService)
+		public CodenamePersonValidator() // TODO: Add validation for BirthDate
 		{
-			_countryCodeService = countryCodeService ?? throw new ArgumentNullException(nameof(countryCodeService));
-
 			CascadeMode = CascadeMode.StopOnFirstFailure;
-
+		
 			RuleFor(p => p).NotEmpty().WithMessage("CodenamePerson object cannot be empty.");
 
 			RuleFor(p => p.ShortHash)
@@ -51,29 +43,6 @@ namespace Bol.Core.Validators
 				.WithMessage("First Name character must be exactly 1 digit.")
 				.Must(HasAllLettersCapital)
 				.WithMessage("FirstName must consist of capital letters A-Z.");
-
-			RuleFor(p => p.Surname)
-				.NotEmpty()
-				.WithMessage("Surname cannot be empty.")
-				.Must(HasAllLettersCapital)
-				.WithMessage("Surname must consist of capital letters A-Z.");
-
-			RuleFor(p => p.Combination)
-				.NotEmpty()
-				.WithMessage("1 digit combination cannot be empty.")
-				.Length(COMB_DIGITS)
-				.WithMessage($"Combination must be exactly {COMB_DIGITS} digits.");
-
-			RuleFor(p => p.CountryCode)
-				.NotEmpty()
-				.WithMessage("Country cannot be empty.")
-				.Must(CountryCodeExists)
-				.WithMessage("Country Code is not valid.");
-
-			RuleFor(p => p.MiddleName)
-				.Must(HasAllLettersCapital)
-				.When(p => !string.IsNullOrEmpty(p.MiddleName))
-				.WithMessage("Middle Name must consist of capital letters A-Z.");
 		}
 
 		private bool HasAllLettersCapital(string input)
@@ -89,11 +58,6 @@ namespace Bol.Core.Validators
 		private bool IsBase58Represantation(string input)
 		{
 			return _base58Representation.IsMatch(input);
-		}
-
-		private bool CountryCodeExists(string code)
-		{
-			return _countryCodeService.IsValidCode(code);
 		}
 	}
 }

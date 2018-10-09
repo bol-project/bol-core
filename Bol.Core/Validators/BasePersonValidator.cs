@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using Bol.Core.Abstractions;
+﻿using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using FluentValidation;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Bol.Core.Validators
 {
