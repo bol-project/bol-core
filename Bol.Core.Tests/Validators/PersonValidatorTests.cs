@@ -10,13 +10,13 @@ namespace Bol.Core.Tests.Validators
 {
     public class PersonValidatorTests
     {
-        private readonly IValidator<Person> _validator;
+        private readonly IValidator<NaturalPerson> _validator;
         private readonly Mock<ICountryCodeService> _ccService;
 
         public PersonValidatorTests()
         {
             _ccService = new Mock<ICountryCodeService>();
-            _validator = new PersonValidator(_ccService.Object);
+            _validator = new NaturalPersonValidator();
         }
 
         [Theory]
@@ -25,7 +25,7 @@ namespace Bol.Core.Tests.Validators
         [InlineData("ZZZ")]
         public void Validator_ShouldNotHaveError_WhenName_IsLatinUpercase(string name)
         {
-            _validator.ShouldNotHaveValidationErrorFor(p => p.Name, name);
+            _validator.ShouldNotHaveValidationErrorFor(p => p.FirstName, name);
         }
 
         [Theory]
@@ -33,7 +33,7 @@ namespace Bol.Core.Tests.Validators
         [InlineData("")]
         public void Validator_ShouldHaveError_WhenName_IsEmpty_OrHasNumbers_OrHasLowerCase(string name)
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Name, name);
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
 
         [Theory]
@@ -42,7 +42,7 @@ namespace Bol.Core.Tests.Validators
         [InlineData("abc123")]
         public void Validator_ShouldHaveError_WhenName_HasNumbers(string name)
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Name, name);
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
 
         [Theory]
@@ -50,7 +50,7 @@ namespace Bol.Core.Tests.Validators
         [InlineData("Abc")]
         public void Validator_ShouldHaveError_WhenName_HasLowerCase(string name)
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Name, name);
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
 
         [Theory]
@@ -61,7 +61,7 @@ namespace Bol.Core.Tests.Validators
         [InlineData("Δ")]
         public void Validator_ShouldHaveError_WhenName_HasSpecialCharacters(string name)
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Name, name);
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
     }
 }

@@ -25,16 +25,18 @@ namespace Bol.Core.Tests.Services
             var base58Encoder = new Base58Encoder();
             var service = new CodeNameService(new PersonStringSerializer(), hasher, base58Encoder);
             var countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
-            var personValidator = new PersonValidator(new CountryCodeService(Options.Create(countries)));
-            var validatedService = new CodeNameServiceValidated(service, personValidator);
-            var codeNameValidator = new CodeNameValidator(personValidator, new PersonStringSerializer(), hasher);
+			var basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
+            var naturalPersonValidator = new NaturalPersonValidator();
+			var codenamePersonValidator = new CodenamePersonValidator();
+            var validatedService = new CodeNameServiceValidated(service, naturalPersonValidator, basePersonValidator);
+            var codeNameValidator = new CodeNameValidator(codenamePersonValidator, basePersonValidator, new PersonStringSerializer(), hasher);
 
 
             var birthDate = new DateTime(1983, 05, 26);
 
-            var person = new Person
+            var person = new NaturalPerson
             {
-                Name = "SPYROS",
+                FirstName = "SPYROS",
                 Surname = "PAPPAS",
                 MiddleName = "MANU",
                 ThirdName = "CHAO",
@@ -47,7 +49,7 @@ namespace Bol.Core.Tests.Services
 
 
             var shortHashBytes = Encoding.UTF8.GetBytes(
-                person.Name +
+                person.FirstName +
                 person.Birthdate.ToString(CultureInfo.InvariantCulture) +
                 new string(person.Nin.Take(person.Nin.Length - 2).ToArray())
             );
