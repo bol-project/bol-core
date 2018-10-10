@@ -1,5 +1,6 @@
 ﻿using Bol.Core.Abstractions;
 using Bol.Core.Model;
+using Bol.Core.Services;
 using Bol.Core.Validators;
 using FluentValidation;
 using Moq;
@@ -10,13 +11,17 @@ namespace Bol.Core.Tests.Validators
 {
     public class PersonValidatorTests
     {
-        private readonly IValidator<NaturalPerson> _validator;
+        private readonly NaturalPersonValidator _validator;
+	    private readonly Mock<IValidator<BasePerson>> _basePersonValidator;
         private readonly Mock<ICountryCodeService> _ccService;
+	    private readonly BasePersonValidator _base; 
 
         public PersonValidatorTests()
         {
             _ccService = new Mock<ICountryCodeService>();
-            _validator = new NaturalPersonValidator();
+	        _basePersonValidator = new Mock<IValidator<BasePerson>>();
+			_base = new BasePersonValidator(_ccService.Object);
+			_validator = new NaturalPersonValidator(_basePersonValidator.Object);
         }
 
         [Theory]
@@ -63,5 +68,6 @@ namespace Bol.Core.Tests.Validators
         {
             _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
+
     }
 }

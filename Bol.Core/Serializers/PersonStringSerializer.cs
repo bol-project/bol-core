@@ -9,7 +9,7 @@ namespace Bol.Core.Serializers
     {
         public const char DIV = Constants.CODENAME_DIVIDER;
         public const string P = Constants.PERSONAL_CODENAME_INITIAL;
-        private const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPPAS<SPYROS<<93M<2BB6C323PP5D5D";
+        private const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPPAS<S<<1993MP<2BB6C323PP5D5D";
 
         public CodenamePerson Deserialize(string input)
         {
@@ -82,8 +82,7 @@ namespace Bol.Core.Serializers
             }
 
             result = result +
-                     $"{DIV}{DIV}{DIV}" +
-                     $"{birthYear}" +
+                     $"{DIV}{birthYear}" +
                      $"{gender}" +
                      $"{person.Combination}{DIV}";
 

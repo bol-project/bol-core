@@ -26,10 +26,10 @@ namespace Bol.Core.Tests.Services
             var service = new CodeNameService(new PersonStringSerializer(), hasher, base58Encoder);
             var countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
 			var basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
-            var naturalPersonValidator = new NaturalPersonValidator();
-			var codenamePersonValidator = new CodenamePersonValidator();
-            var validatedService = new CodeNameServiceValidated(service, naturalPersonValidator, basePersonValidator);
-            var codeNameValidator = new CodeNameValidator(codenamePersonValidator, basePersonValidator, new PersonStringSerializer(), hasher);
+            var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator);
+			var codenamePersonValidator = new CodenamePersonValidator(basePersonValidator);
+            var validatedService = new CodeNameServiceValidated(service, naturalPersonValidator);
+            var codeNameValidator = new CodeNameValidator(basePersonValidator, new PersonStringSerializer(), hasher);
 
 
             var birthDate = new DateTime(1983, 05, 26);
@@ -60,11 +60,11 @@ namespace Bol.Core.Tests.Services
             var codeName = validatedService.Generate(person);
             var checkSum = hasher.AddChecksum(codeName).Substring(codeName.Length - 4, 4);
 
-            Assert.Equal("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}", codeName);
+	        codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}");
+
+			Assert.Equal("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}", codeName);
 
             Assert.True(new Sha256Hasher(new Base16Encoder()).CheckChecksum("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}"));
-
-            codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}");
         }
     }
 }
