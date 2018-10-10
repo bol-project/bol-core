@@ -9,21 +9,18 @@ namespace Bol.Core.Services.Decorators
     {
         private readonly ICodeNameService _service;
         private readonly IValidator<NaturalPerson> _naturalPersonValidator;
-	    private readonly IValidator<BasePerson> _basePersonValidator;
 
 	    public CodeNameServiceValidated(
 		    ICodeNameService service, 
-		    IValidator<NaturalPerson> naturalPersonValidator,
-		    IValidator<BasePerson> basePersonValidator)
+		    IValidator<NaturalPerson> naturalPersonValidator)
+
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _naturalPersonValidator = naturalPersonValidator ?? throw new ArgumentNullException(nameof(naturalPersonValidator));
-	        _basePersonValidator = basePersonValidator;
         }
 
         public string Generate(NaturalPerson person)
         {
-			_basePersonValidator.ValidateAndThrow(person);
 	        _naturalPersonValidator.ValidateAndThrow(person);
             return _service.Generate(person);
         }

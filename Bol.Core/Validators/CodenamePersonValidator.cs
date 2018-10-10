@@ -1,4 +1,5 @@
-﻿using Bol.Core.Model;
+﻿using System;
+using Bol.Core.Model;
 using FluentValidation;
 using System.Text.RegularExpressions;
 
@@ -6,6 +7,7 @@ namespace Bol.Core.Validators
 {
 	public class CodenamePersonValidator : AbstractValidator<CodenamePerson>
 	{
+		private readonly BasePersonValidator _basePersonValidator;
 		private const int SHORT_HASH_DIGITS = 11;
 		private const int CHECKSUM_DIGITS = 4;
 
@@ -13,11 +15,15 @@ namespace Bol.Core.Validators
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 		private readonly Regex _base58Representation = new Regex(@"/^[5KL][1 - 9A - HJ - NP - Za - km - z]{50, 51}+$");
 
-		public CodenamePersonValidator() // TODO: Add validation for BirthDate
+		public CodenamePersonValidator(BasePersonValidator basePersonValidator) // TODO: Add validation for BirthDate
 		{
+			_basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
+
 			CascadeMode = CascadeMode.StopOnFirstFailure;
 		
 			RuleFor(p => p).NotEmpty().WithMessage("CodenamePerson object cannot be empty.");
+
+			Include(_basePersonValidator);
 
 			RuleFor(p => p.ShortHash)
 				.NotEmpty()

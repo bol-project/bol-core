@@ -22,7 +22,6 @@ namespace Bol.Core.Validators
 
 			RuleFor(p => p).NotEmpty().WithMessage("BasePerson object cannot be empty.");
 
-
 			RuleFor(p => p.MiddleName)
 				.Cascade(CascadeMode.StopOnFirstFailure)
 				.Must(HasAllLettersCapital)

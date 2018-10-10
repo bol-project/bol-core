@@ -1,4 +1,5 @@
-﻿using Bol.Core.Model;
+﻿using System;
+using Bol.Core.Model;
 using FluentValidation;
 using System.Text.RegularExpressions;
 
@@ -6,16 +7,21 @@ namespace Bol.Core.Validators
 {
 	public class NaturalPersonValidator : AbstractValidator<NaturalPerson>
     {
+	    private readonly IValidator<BasePerson> _basePersonValidator;
 	    private const int NIN_DIGITS = 11;
 
         private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
         private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 
-        public NaturalPersonValidator()
+        public NaturalPersonValidator(IValidator<BasePerson> basePersonValidator)
         {
+	        _basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
+
 	        CascadeMode = CascadeMode.StopOnFirstFailure;
 
-            RuleFor(p => p).NotEmpty().WithMessage("Person object cannot be empty.");
+			Include(_basePersonValidator);
+
+            RuleFor(p => p).NotEmpty().WithMessage("Natural Person object cannot be empty.");
 
             RuleFor(p => p.Nin)
                 .NotEmpty()

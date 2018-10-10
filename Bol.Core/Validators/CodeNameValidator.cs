@@ -12,18 +12,15 @@ namespace Bol.Core.Validators
     public class CodeNameValidator : IValidator<string>
     {
         private readonly IValidator<CodenamePerson> _codenamePersonValidator;
-	    private readonly IValidator<BasePerson> _basePersonValidator;
 	    private readonly IStringSerializer<NaturalPerson, CodenamePerson> _personSerializer;
         private readonly ISha256Hasher _hasher;
 
         public CodeNameValidator(
             IValidator<CodenamePerson> codenamePersonValidator,
-			IValidator<BasePerson> basePersonValidator,
             IStringSerializer<NaturalPerson, CodenamePerson> personSerializer,
             ISha256Hasher hasher)
         {
             _codenamePersonValidator = codenamePersonValidator ?? throw new ArgumentNullException(nameof(codenamePersonValidator));
-	        _basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
 	        _personSerializer = personSerializer ?? throw new ArgumentNullException(nameof(personSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         }
@@ -48,17 +45,11 @@ namespace Bol.Core.Validators
         {
             var codenamePerson = _personSerializer.Deserialize(instance);
 
-	        var baseValidation = _basePersonValidator.Validate(codenamePerson);
-            var finalValidation = _codenamePersonValidator.Validate(codenamePerson);
+            var validationResult = _codenamePersonValidator.Validate(codenamePerson);
 
-            if (!baseValidation.IsValid)
-            {
-                return baseValidation;
-            }
-
-	        if (finalValidation.IsValid)
+	        if (!validationResult.IsValid)
 	        {
-		        return finalValidation;
+		        return validationResult;
 	        }
 
             if (!_hasher.CheckChecksum(instance))
