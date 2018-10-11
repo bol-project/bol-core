@@ -70,15 +70,22 @@ namespace Bol.Core.Serializers
                          $"{DIV}{person.Surname}" +
                          $"{DIV}{person.FirstName.First()}";
 
-            if (person.MiddleName.Any())
+            if (person.MiddleName != null)
             {
                 result = result + $"{DIV}{person.MiddleName}";
-
+            }
+            else
+            {
+	            result = result + $"{DIV}";
             }
 
-            if (person.ThirdName.Any())
+            if (person.ThirdName != null)
             {
                 result = result + $"{DIV}{person.ThirdName}";
+            }
+            else
+            {
+	            result = result + $"{DIV}";
             }
 
             result = result +
