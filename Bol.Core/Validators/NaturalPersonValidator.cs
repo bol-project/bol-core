@@ -34,6 +34,7 @@ namespace Bol.Core.Validators
             RuleFor(p => p.FirstName)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
+	            .Length(1, 30)
                 .WithMessage("FirstName cannot be empty.")
                 .Must(HasAllLettersCapital)
                 .WithMessage("FirstName must consist of capital letters A-Z.");

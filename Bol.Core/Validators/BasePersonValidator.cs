@@ -42,7 +42,7 @@ namespace Bol.Core.Validators
 
 			RuleFor(p => p.Gender)
 				.Cascade(CascadeMode.StopOnFirstFailure)
-				.NotEmpty()
+				.IsInEnum()
 				.WithMessage("Gender cannot be empty.")
 				.Must(HasCorrectGender)
 				.WithMessage("Gender must consist of exactly one capital letter M, F or U.");
