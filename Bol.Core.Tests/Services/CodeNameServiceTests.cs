@@ -60,11 +60,11 @@ namespace Bol.Core.Tests.Services
             var codeName = validatedService.Generate(person);
             var checkSum = hasher.AddChecksum(codeName).Substring(codeName.Length - 4, 4);
 
-	        codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}");
+	        codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}");
 
 			Assert.Equal("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}", codeName);
 
-            Assert.True(new Sha256Hasher(new Base16Encoder()).CheckChecksum("P<GRC<PAPPAS<S<MANU<CHAO<<<1983MP<" + $"{shortHashString}" + $"{checkSum}"));
+            Assert.True(new Sha256Hasher(new Base16Encoder()).CheckChecksum("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}"));
         }
     }
 }
