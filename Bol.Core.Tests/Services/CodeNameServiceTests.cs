@@ -3,7 +3,6 @@ using Bol.Core.Hashers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
-using Bol.Core.Services.Decorators;
 using Bol.Core.Validators;
 using FluentValidation;
 using Microsoft.Extensions.Options;
@@ -23,18 +22,18 @@ namespace Bol.Core.Tests.Services
         {
             var hasher = new Sha256Hasher(new Base16Encoder());
             var base58Encoder = new Base58Encoder();
-            var service = new CodeNameService(new PersonStringSerializer(), hasher, base58Encoder);
             var countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
 			var basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
             var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator);
 			var codenamePersonValidator = new CodenamePersonValidator(basePersonValidator);
-            var validatedService = new CodeNameServiceValidated(service, naturalPersonValidator);
             var codeNameValidator = new CodeNameValidator(basePersonValidator, new PersonStringSerializer(), hasher);
+            var service = new CodeNameService(new PersonStringSerializer(), hasher, base58Encoder, naturalPersonValidator);
 
 
             var birthDate = new DateTime(1983, 05, 26);
 
             var person = new NaturalPerson
+
             {
                 FirstName = "SPYROS",
                 Surname = "PAPPAS",
@@ -57,7 +56,7 @@ namespace Bol.Core.Tests.Services
             var shortHash = hasher.Hash(shortHashBytes, 8);
             var shortHashString = base58Encoder.Encode(shortHash);
 
-            var codeName = validatedService.Generate(person);
+            var codeName = service.Generate(person);
             var checkSum = hasher.AddChecksum(codeName).Substring(codeName.Length - 4, 4);
 
 	        codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}");
