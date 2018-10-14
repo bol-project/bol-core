@@ -34,14 +34,17 @@ namespace Bol.Core.Validators
             RuleFor(p => p.FirstName)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
-	            .Length(1, 30)
                 .WithMessage("FirstName cannot be empty.")
+                .Length(2, 30)
+                .WithMessage("FirsName cannot be more that 30 characters")
                 .Must(HasAllLettersCapital)
                 .WithMessage("FirstName must consist of capital letters A-Z.");
 
-	        RuleFor(p => p.Birthdate)
-		        .NotEmpty()
-		        .WithMessage("Date of birth must be a valid date.");
+            RuleFor(p => p.Birthdate)
+                .NotEmpty()
+                .WithMessage("Date of birth must be a valid date.")
+                .ExclusiveBetween(DateTime.Now.AddYears(-130), DateTime.Now)
+                .WithMessage("Date of birth cannot be greater than current date and less than 130 years ago");
         }
 
         private bool HasAllLettersCapital(string input)

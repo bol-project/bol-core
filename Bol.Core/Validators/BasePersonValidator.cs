@@ -25,20 +25,28 @@ namespace Bol.Core.Validators
 			RuleFor(p => p.MiddleName)
 				.Cascade(CascadeMode.StopOnFirstFailure)
 				.Must(HasAllLettersCapital)
-				.When(p => !string.IsNullOrEmpty(p.MiddleName))
-				.WithMessage("Middle Name must consist of capital letters A-Z.");
+			    .When(p => !string.IsNullOrEmpty(p.MiddleName))
+                .WithMessage("Middle Name must consist of capital letters A-Z.")
+			    .Length(1, 20)
+			    .When(p => !string.IsNullOrEmpty(p.MiddleName))
+                .WithMessage("Middle Name cannot have more than 20 characters");
 
-			RuleFor(p => p.ThirdName)
+            RuleFor(p => p.ThirdName)
 				.Cascade(CascadeMode.StopOnFirstFailure)
 				.Must(HasAllLettersCapital)
 				.When(p => !string.IsNullOrEmpty(p.ThirdName))
-				.WithMessage("Third Name must consist of capital letters A-Z.");
+				.WithMessage("Third Name must consist of capital letters A-Z.")
+		        .Length(1, 20)
+                .When(p => !string.IsNullOrEmpty(p.ThirdName))
+                .WithMessage("Third Name cannot have more than 20 characters");
 
 			RuleFor(p => p.Surname)
 				.NotEmpty()
 				.WithMessage("Surname cannot be empty.")
 				.Must(HasAllLettersCapital)
-				.WithMessage("Surname must consist of capital letters A-Z.");
+				.WithMessage("Surname must consist of capital letters A-Z.")
+			    .Length(2, 20)
+			    .WithMessage("Surname cannot have more than 20 characters");
 
 			RuleFor(p => p.Gender)
 				.Cascade(CascadeMode.StopOnFirstFailure)

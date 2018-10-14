@@ -15,7 +15,7 @@ namespace Bol.Core.Validators
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 		private readonly Regex _base58Representation = new Regex(@"/^[5KL][1 - 9A - HJ - NP - Za - km - z]{50, 51}+$");
 
-		public CodenamePersonValidator(BasePersonValidator basePersonValidator) // TODO: Add validation for BirthDate
+		public CodenamePersonValidator(BasePersonValidator basePersonValidator)
 		{
 			_basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
 
@@ -30,7 +30,7 @@ namespace Bol.Core.Validators
 				.WithMessage("Short Hash cannot be empty.")
 				.Length(SHORT_HASH_DIGITS)
 				.WithMessage($"Short Hash must be exactly {SHORT_HASH_DIGITS} digits.")
-				.Must(IsBase58Represantation)
+				.Must(IsBase58Representation)
 				.WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
 
 			RuleFor(p => p.CheckSum)
@@ -49,6 +49,12 @@ namespace Bol.Core.Validators
 				.WithMessage("First Name character must be exactly 1 digit.")
 				.Must(HasAllLettersCapital)
 				.WithMessage("FirstName must consist of capital letters A-Z.");
+
+		    RuleFor(p => p.YearOfBirth)
+		        .NotEmpty()
+		        .WithMessage("Year of birth must be a valid year with format YYYY")
+		        .ExclusiveBetween(1900, DateTime.UtcNow.Year)
+		        .WithMessage("Year of birth cannot be less than 1900 and greater that the current year");
 		}
 
 		private bool HasAllLettersCapital(string input)
@@ -61,7 +67,7 @@ namespace Bol.Core.Validators
 			return _hexRepresentation.IsMatch(input);
 		}
 
-		private bool IsBase58Represantation(string input)
+		private bool IsBase58Representation(string input)
 		{
 			return _base58Representation.IsMatch(input);
 		}
