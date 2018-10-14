@@ -13,13 +13,11 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
         private readonly NaturalPersonValidator _validator;
 	    private readonly Mock<IValidator<BasePerson>> _basePersonValidator;
         private readonly Mock<ICountryCodeService> _ccService;
-	    private readonly BasePersonValidator _base; 
 
         public FirstNameTests()
         {
             _ccService = new Mock<ICountryCodeService>();
 	        _basePersonValidator = new Mock<IValidator<BasePerson>>();
-			_base = new BasePersonValidator(_ccService.Object);
 			_validator = new NaturalPersonValidator(_basePersonValidator.Object);
 	        _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
 		}
