@@ -14,19 +14,19 @@ namespace Bol.Core.Serializers
         public CodenamePerson Deserialize(string input)
         {
             var parts = input?.Split(DIV);
+            var birthDateParseResult = int.TryParse(parts[6].Substring(0, 4), out var birthDate);
 
-			if (parts == null ||
+            if (parts == null ||
                 parts.Length != 8 ||
                 parts[0] != P ||
                 parts[6].Length != 6 ||
-                parts[7].Length != 15)
+                parts[7].Length != 15 ||
+                !birthDateParseResult)
             {
                 throw new ArgumentException(INVALID_CODENAME);
             }
 
 	        var basePerson = DeserializeBasePerson(parts);
-
-            var birthDate = DateTime.ParseExact(parts[6].Substring(0, 4), "yyyy", null);
 
             return new CodenamePerson
             {
