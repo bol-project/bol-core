@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Bol.Core.Encoders;
+using FluentValidation;
 
 namespace Bol.Core.Services
 {
@@ -14,19 +15,24 @@ namespace Bol.Core.Services
         private readonly IStringSerializer<NaturalPerson, CodenamePerson> _stringSerializer;
         private readonly ISha256Hasher _hasher;
         private readonly IBase58Encoder _base58Encoder;
+        private readonly IValidator<NaturalPerson> _naturalPersonValidator;
 
         public CodeNameService(
             IStringSerializer<NaturalPerson, CodenamePerson> stringSerializer,
             ISha256Hasher hasher,
-            IBase58Encoder base58Encoder)
+            IBase58Encoder base58Encoder,
+            IValidator<NaturalPerson> naturalPersonValidator)
         {
             _stringSerializer = stringSerializer ?? throw new ArgumentNullException(nameof(stringSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
             _base58Encoder = base58Encoder ?? throw new ArgumentException(nameof(base58Encoder));
+            _naturalPersonValidator = naturalPersonValidator ?? throw new ArgumentException(nameof(naturalPersonValidator));
         }
 
         public string Generate(NaturalPerson person)
         {
+            _naturalPersonValidator.ValidateAndThrow(person);
+
             var codeName = _stringSerializer.Serialize(person);
 
             var nameToHash = person.FirstName;
