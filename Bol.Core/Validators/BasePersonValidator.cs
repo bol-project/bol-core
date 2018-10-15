@@ -12,7 +12,7 @@ namespace Bol.Core.Validators
 
 		private readonly ICountryCodeService _countryCodeService;
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
-		private readonly Regex _correctGender = new Regex(@"[MFU]+$");
+		private readonly Regex _correctGender = new Regex(@"^Male|Female|Unspecified$");
 
 		public BasePersonValidator(ICountryCodeService countryCodeService)
 		{
@@ -59,7 +59,9 @@ namespace Bol.Core.Validators
 				.NotEmpty()
 				.WithMessage("1 digit combination cannot be empty.")
 				.Length(COMB_DIGITS)
-				.WithMessage($"Combination must be exactly {COMB_DIGITS} digits.");
+				.WithMessage($"Combination must be exactly {COMB_DIGITS} digits.")
+			    .Must(HasAllLettersCapital)
+			    .WithMessage("Combination must be an English Capital letter");
 
 			RuleFor(p => p.CountryCode)
 				.NotEmpty()
@@ -75,7 +77,7 @@ namespace Bol.Core.Validators
 
 		private bool HasCorrectGender(Gender input)
 		{
-			var character = input.ToString().Substring(0, 1);
+			var character = input.ToString();
 			return _correctGender.IsMatch(character);
 		}
 
