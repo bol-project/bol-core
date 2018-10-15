@@ -7,15 +7,15 @@ namespace Bol.Core.Validators
 {
 	public class CodenamePersonValidator : AbstractValidator<CodenamePerson>
 	{
-		private readonly BasePersonValidator _basePersonValidator;
+		private readonly IValidator<BasePerson> _basePersonValidator;
 		private const int SHORT_HASH_DIGITS = 11;
 		private const int CHECKSUM_DIGITS = 4;
 
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
-		private readonly Regex _base58Representation = new Regex(@"/^[5KL][1 - 9A - HJ - NP - Za - km - z]{50, 51}+$");
+		private readonly Regex _base58Representation = new Regex(@"/[^0OIl+/][1 - 9A - HJ - NP - Za - km - z]+$");
 
-		public CodenamePersonValidator(BasePersonValidator basePersonValidator)
+		public CodenamePersonValidator(IValidator<BasePerson> basePersonValidator)
 		{
 			_basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
 
