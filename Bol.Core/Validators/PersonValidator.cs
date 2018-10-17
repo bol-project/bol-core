@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Bol.Core.Validators
 {
-    public class PersonValidator : AbstractValidator<Person>
+    public class PersonValidator : AbstractValidator<Person>, IPersonValidator
     {
         private const int NIN_DIGITS = 8;
         private const int COMB_DIGITS = 2;
