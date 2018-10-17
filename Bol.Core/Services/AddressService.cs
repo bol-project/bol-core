@@ -1,12 +1,12 @@
 ﻿using Bol.Core.Abstractions;
 using Bol.Core.Encoders;
 using Bol.Core.Hashers;
-using Neo.Core;
+using Bol.Core.Model;
 using Neo.SmartContract;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using ECPoint = Neo.Cryptography.ECC.ECPoint;
 using NeoCryptography = Neo.Cryptography.Helper;
 
@@ -15,6 +15,8 @@ namespace Bol.Core.Services
     public class AddressService : IAddressService
     {
         public const byte B_ADDRESS_START = 0x99;
+        public const byte C_ADDRESS_START = 0xAA;
+        public const string B_ADDRESS_END = "BBBB";
 
         private readonly ISha256Hasher _sha256Hasher;
         private readonly IBase58Encoder _base58Encoder;
@@ -25,43 +27,89 @@ namespace Bol.Core.Services
             _base58Encoder = base58Encoder ?? throw new ArgumentNullException(nameof(base58Encoder));
         }
 
-        public string GenerateAddressB(string codeName, ECPoint publicKey)
+        public async Task<BolAddress> GenerateAddressB(string codeName, ECPoint publicKey)
         {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                string address;
-                do
+            var parallelChunks = Environment.ProcessorCount;
+            var iterations = uint.MaxValue / (uint)parallelChunks;
+
+            var tasks = Enumerable.Range(0, parallelChunks)
+                .Select(chunk => Task.Run(() =>
                 {
-                    var nonce = new byte[32];
-                    rng.GetBytes(nonce);
+                    var counter = iterations * (uint)chunk;
+                    var end = chunk < parallelChunks - 1
+                        ? counter + iterations
+                        : uint.MaxValue;
 
-                    var publicKeySection = _sha256Hasher.Hash(
-                        Contract.CreateSignatureRedeemScript(publicKey)
-                        .ToScriptHash()
-                        .ToArray()
-                        .Concat(nonce)
-                        .ToArray());
+                    while (counter <= end)
+                    {
+                        var testNonce = BitConverter.GetBytes(counter);
+                        var address = GenerateAddressB(codeName, publicKey, testNonce);
+                        if (address.Address.EndsWith(B_ADDRESS_END))
+                        {
+                            return address;
+                        }
+                        counter++;
+                    }
 
-                    var codeNameSection = _sha256Hasher.Hash(Encoding.UTF8.GetBytes(codeName));
+                    Task.Delay(-1);
+                    throw new InvalidOperationException();
+                }));
 
-                    var headHash = codeNameSection.Take(7).ToArray();
+            var result = await Task.WhenAny(tasks);
+            return await result;
+        }
 
-                    var combinedSections = codeNameSection.Concat(publicKeySection).ToArray();
-                    var tailHash = NeoCryptography.RIPEMD160(_sha256Hasher.Hash(combinedSections));
+        public BolAddress GenerateAddressB(string codeName, ECPoint publicKey, byte[] nonce)
+        {
+            var compressedPublicKey = Contract.CreateSignatureRedeemScript(publicKey);
+            var address = GenerateAddress(B_ADDRESS_START, codeName, compressedPublicKey, nonce);
+            return new BolAddress
+            {
+                Address = address,
+                AddressType = AddressType.B,
+                Nonce = nonce,
+                PublicKey = compressedPublicKey,
+                CodeName = codeName
+            };
+        }
 
-                    var addressHash = new byte[1] { B_ADDRESS_START }
-                        .Concat(headHash)
-                        .Concat(tailHash)
-                        .ToArray();
+        public BolAddress GenerateAddressC(string codeName, ECPoint publicKey)
+        {
+            var compressedPublicKey = Contract.CreateSignatureRedeemScript(publicKey);
+            var emptyNonce = new byte[0];
+            var address = GenerateAddress(B_ADDRESS_START, codeName, compressedPublicKey, emptyNonce);
+            return new BolAddress
+            {
+                Address = address,
+                AddressType = AddressType.C,
+                Nonce = emptyNonce,
+                PublicKey = compressedPublicKey,
+                CodeName = codeName
+            };
+        }
 
-                    var addressHashChecked = _sha256Hasher.AddChecksum(addressHash, 2, 4);
+        protected string GenerateAddress(byte prefix, string codeName, byte[] publicKey, byte[] nonce)
+        {
+            var publicKeySection = _sha256Hasher.Hash(
+                publicKey
+                .Concat(nonce)
+                .ToArray());
 
-                    address = _base58Encoder.Encode(addressHashChecked);
-                }
-                while (address.Substring(41, 3) != "BBB");
+            var codeNameSection = _sha256Hasher.Hash(Encoding.UTF8.GetBytes(codeName));
 
-                return address;
-            }
+            var headHash = codeNameSection.Take(7).ToArray();
+
+            var combinedSections = codeNameSection.Concat(publicKeySection).ToArray();
+            var tailHash = NeoCryptography.RIPEMD160(_sha256Hasher.Hash(combinedSections));
+
+            var addressHash = new byte[1] { prefix }
+                .Concat(headHash)
+                .Concat(tailHash)
+                .ToArray();
+
+            var addressHashChecked = _sha256Hasher.AddChecksum(addressHash, 2, 4);
+
+            return _base58Encoder.Encode(addressHashChecked);
         }
     }
 }
