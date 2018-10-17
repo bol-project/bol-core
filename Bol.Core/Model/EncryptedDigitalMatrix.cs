@@ -17,6 +17,6 @@ namespace Bol.Core.Model
         public string BirthCountryCode { get; set; }
         public IEnumerable<string> CountryCodes { get; set; }
 
-        public IEnumerable<string> Hashes { get; set; }
+        public HashTable Hashes { get; set; }
     }
 }

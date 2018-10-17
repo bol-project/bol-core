@@ -11,7 +11,8 @@ namespace Bol.Core.Validators
             ICountryCodeService countryCodeService,
             INinService ninService,
             IRegexHelper regexHelper,
-            ICodeNameValidator codeNameValidator)
+            ICodeNameValidator codeNameValidator,
+            IHashTableValidator hashTableValidator)
         {
             RuleFor(edm => edm.FirstName)
                 .NotEmpty()
@@ -37,11 +38,8 @@ namespace Bol.Core.Validators
 
             RuleFor(edm => edm.Hashes)
                 .NotEmpty()
-                .WithMessage("Hashes cannot be empty.");
-
-            RuleForEach(edm => edm.Hashes)
-                .Must(regexHelper.IsHexRepresentation)
-                .WithMessage("Hashes must appear in the Hex representation of their SHA256 bytes.");
+                .WithMessage("Hashes cannot be empty.")
+                .SetValidator(hashTableValidator);
 
             RuleFor(edm => edm.Nin)
                 .NotEmpty()
