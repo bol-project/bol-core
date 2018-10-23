@@ -6,6 +6,7 @@ using Neo.SmartContract;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ECPoint = Neo.Cryptography.ECC.ECPoint;
 using NeoCryptography = Neo.Cryptography.Helper;
@@ -27,7 +28,7 @@ namespace Bol.Core.Services
             _base58Encoder = base58Encoder ?? throw new ArgumentNullException(nameof(base58Encoder));
         }
 
-        public async Task<BolAddress> GenerateAddressB(string codeName, ECPoint publicKey)
+        public async Task<BolAddress> GenerateAddressBAsync(string codeName, ECPoint publicKey, CancellationToken token = default)
         {
             var parallelChunks = Environment.ProcessorCount;
             var iterations = uint.MaxValue / (uint)parallelChunks;
@@ -51,9 +52,9 @@ namespace Bol.Core.Services
                         counter++;
                     }
 
-                    Task.Delay(-1);
+                    Task.Delay(-1, token);
                     throw new InvalidOperationException();
-                }));
+                }, token));
 
             var result = await Task.WhenAny(tasks);
             return await result;
