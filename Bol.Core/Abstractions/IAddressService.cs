@@ -17,7 +17,7 @@ namespace Bol.Core.Abstractions
         /// <param name="codeName"></param>
         /// <param name="publicKey"></param>
         /// <returns></returns>
-        Task<BolAddress> GenerateAddressB(string codeName, ECPoint publicKey, CancellationToken token = default);
+        Task<BolAddress> GenerateAddressBAsync(string codeName, ECPoint publicKey, CancellationToken token = default);
 
         /// <summary>
         /// Generates a BoL B Address with a predefined nonce, bypassing the proof of work.
