@@ -28,6 +28,7 @@ namespace Bol.Core.Hashers
             {
                 hash = Hash(hash);
             }
+
             return input
                 .Concat(hash.Take(Convert.ToInt32(bytes)))
                 .ToArray();
@@ -35,7 +36,8 @@ namespace Bol.Core.Hashers
 
         public string AddChecksum(string input, uint cycles = 1, uint characters = 4)
         {
-            if (!(characters % 2 == 0)) throw new ArgumentException("Number of Hex Characters in the Checksum must be an even number.");
+            if (characters % 2 != 0)
+                throw new ArgumentException("Number of Hex Characters in the Checksum must be an even number.");
 
             var inputBytes = Encoding.UTF8.GetBytes(input);
             var hash = AddChecksum(inputBytes, cycles, characters / 2);
@@ -56,7 +58,8 @@ namespace Bol.Core.Hashers
 
         public bool CheckChecksum(string input, uint cycles = 1, uint characters = 4)
         {
-            if (!(characters % 2 == 0)) throw new ArgumentException("Number of Hex Characters in the Checksum must be an even number.");
+            if (characters % 2 != 0)
+                throw new ArgumentException("Number of Hex Characters in the Checksum must be an even number.");
 
             var inputWithoutChecksum = new string(input
                 .SkipLastN(Convert.ToInt32(characters))
@@ -66,20 +69,30 @@ namespace Bol.Core.Hashers
             return hash.SequenceEqual(input);
         }
 
-        public string Hash(string input)
+        public string Hash(string input, int? bytes = default)
         {
             using (var algorithm = SHA256.Create())
             {
                 var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
-                return _encoder.Encode(hash);
+
+                if (!bytes.HasValue) return _encoder.Encode(hash);
+
+                var hashBytes = hash.Take(bytes.Value).ToArray();
+                return _encoder.Encode(hashBytes);
+
             }
         }
 
-        public byte[] Hash(byte[] input)
+        public byte[] Hash(byte[] input, int? bytes = default)
         {
             using (var algorithm = SHA256.Create())
             {
-                return algorithm.ComputeHash(input);
+                var hash = algorithm.ComputeHash(input);
+
+                if (!bytes.HasValue) return hash;
+
+                var hashBytes = hash.Take(bytes.Value).ToArray();
+                return hashBytes;
             }
         }
     }

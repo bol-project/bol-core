@@ -1,8 +1,8 @@
 ﻿namespace Bol.Core.Abstractions
 {
-    public interface IStringSerializer<T>
+    public interface IStringSerializer<T, X>
     {
         string Serialize(T entity);
-        T Deserialize(string input);
+        X Deserialize(string input);
     }
 }
