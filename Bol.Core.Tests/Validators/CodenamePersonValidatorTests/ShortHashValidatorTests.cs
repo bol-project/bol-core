@@ -20,13 +20,12 @@ namespace Bol.Core.Tests.Validators.CodenamePersonValidatorTests
             _basePersonValidator = new Mock<IValidator<BasePerson>>();
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator.Object);
             _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
-
         }
 
         [Theory]
         [InlineData("ABCadc12398")]
-        [InlineData("FGH2340sckA")]
-        [InlineData("12345678910")]
+        [InlineData("FGH2341sckA")]
+        [InlineData("12345678911")]
         public void Validator_ShouldNotHaveError_WhenShortHash_Is_11Digit_Base58Representation(string shortHash)
         {
             _codenamePersonValidator.ShouldNotHaveValidationErrorFor(p => p.ShortHash, shortHash);

@@ -13,7 +13,7 @@ namespace Bol.Core.Validators
 
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
-		private readonly Regex _base58Representation = new Regex(@"/[^0OIl+/][1 - 9A - HJ - NP - Za - km - z]+$");
+		private readonly Regex _base58Representation = new Regex(@"^[1-9A-HJ-NP-Za-km-z]+$");
 
 		public CodenamePersonValidator(IValidator<BasePerson> basePersonValidator)
 		{
