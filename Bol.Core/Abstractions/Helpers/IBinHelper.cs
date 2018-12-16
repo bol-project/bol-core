@@ -1,8 +1,8 @@
 ﻿using Bol.Core.Model;
 
-namespace Bol.Core.Abstractions
+namespace Bol.Core.Abstractions.Helpers
 {
-    public interface ICodeNameService
+    internal interface IBinHelper
     {
         string Generate(NaturalPerson person);
     }
