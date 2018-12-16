@@ -43,7 +43,7 @@ namespace Bol.Core.Validators
             RuleFor(p => p.Birthdate)
                 .NotEmpty()
                 .WithMessage("Date of birth must be a valid date.")
-                .ExclusiveBetween(DateTime.Now.AddYears(-130), DateTime.Now)
+                .InclusiveBetween(DateTime.UtcNow.AddYears(-130), DateTime.UtcNow)
                 .WithMessage("Date of birth cannot be greater than current date and less than 130 years ago");
         }
 

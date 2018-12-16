@@ -23,14 +23,6 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
             _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
         }
 
-
-
-        [Fact]
-        public void Validator_ShouldHaveError_WhenBirthDate_IsNull()
-        {
-            _validator.ShouldHaveValidationErrorFor(p => p.Birthdate, null);
-        }
-
         [Fact]
         public void Validator_ShouldHaveError_WhenBirthDate_HasDefaultValue()
         {
@@ -40,7 +32,7 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
         [Fact]
         public void Validator_ShouldHaveError_WhenBirthDate_IsOver_130YearsAgo()
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Birthdate, DateTime.UtcNow.AddYears(-130).AddMinutes(1));
+            _validator.ShouldHaveValidationErrorFor(p => p.Birthdate, DateTime.UtcNow.AddYears(-130).AddMinutes(-1));
         }
 
         [Fact]
@@ -53,12 +45,10 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
         public void Validator_ShouldNotHaveError_WhenBirthDate_IsBetween_130yearsAgo_andNow()
         {
             var date1 = DateTime.UtcNow.AddYears(-80);
-            var date2 = DateTime.UtcNow.AddMilliseconds(-10);
-            var date3 = DateTime.UtcNow;
+            var date2 = DateTime.UtcNow.AddSeconds(-1);
 
             _validator.ShouldNotHaveValidationErrorFor(p => p.Birthdate, date1);
             _validator.ShouldNotHaveValidationErrorFor(p => p.Birthdate, date2);
-            _validator.ShouldNotHaveValidationErrorFor(p => p.Birthdate, date3);
         }
     }
 }
