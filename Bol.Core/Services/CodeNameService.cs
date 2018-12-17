@@ -37,7 +37,7 @@ namespace Bol.Core.Services
 
             var nameToHash = person.FirstName;
             var birthdayToHash = person.Birthdate.ToString(CultureInfo.InvariantCulture);
-            var ninToHash = new string(person.Nin.Take(person.Nin.Length - 2).ToArray());
+            var ninToHash = person.Nin.Substring(0, person.Nin.Length - 2);
 
             var shortHashBytes = Encoding.UTF8.GetBytes(nameToHash + birthdayToHash + ninToHash);
 
