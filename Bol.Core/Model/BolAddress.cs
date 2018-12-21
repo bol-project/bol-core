@@ -5,8 +5,11 @@
         public AddressType AddressType { get; set; }
         public string Address { get; set; }
         public string CodeName { get; set; }
-        public byte[] PublicKey { get; set; }
-        public byte[] Nonce { get; set; }
+        public string CodeNameAddress { get; set; }
+        public string InternalAddress { get; set; }
+        public string CodeNamePublicKey { get; set; }
+        public string InternalPublicKey { get; set; }
+        public uint Nonce { get; set; }
     }
 
     public enum AddressType

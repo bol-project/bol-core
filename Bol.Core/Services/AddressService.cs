@@ -3,13 +3,12 @@ using Bol.Core.Encoders;
 using Bol.Core.Hashers;
 using Bol.Core.Model;
 using Neo.SmartContract;
+using Neo.Wallets;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ECPoint = Neo.Cryptography.ECC.ECPoint;
-using NeoCryptography = Neo.Cryptography.Helper;
 
 namespace Bol.Core.Services
 {
@@ -17,7 +16,7 @@ namespace Bol.Core.Services
     {
         public const byte B_ADDRESS_START = 0x99;
         public const byte C_ADDRESS_START = 0xAA;
-        public const string B_ADDRESS_END = "BBBB";
+        public const string B_ADDRESS_END = "BBB";
 
         private readonly ISha256Hasher _sha256Hasher;
         private readonly IBase58Encoder _base58Encoder;
@@ -28,7 +27,7 @@ namespace Bol.Core.Services
             _base58Encoder = base58Encoder ?? throw new ArgumentNullException(nameof(base58Encoder));
         }
 
-        public async Task<BolAddress> GenerateAddressBAsync(string codeName, ECPoint publicKey, CancellationToken token = default)
+        public async Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
         {
             var parallelChunks = Environment.ProcessorCount;
             var iterations = uint.MaxValue / (uint)parallelChunks;
@@ -44,7 +43,7 @@ namespace Bol.Core.Services
                     while (counter <= end)
                     {
                         var testNonce = BitConverter.GetBytes(counter);
-                        var address = GenerateAddressB(codeName, publicKey, testNonce);
+                        var address = GenerateAddressB(codeName, keyPair, testNonce);
                         if (address.Address.EndsWith(B_ADDRESS_END))
                         {
                             return address;
@@ -60,57 +59,56 @@ namespace Bol.Core.Services
             return await result;
         }
 
-        public BolAddress GenerateAddressB(string codeName, ECPoint publicKey, byte[] nonce)
+        public BolAddress GenerateAddressB(string codeName, KeyPair keyPair, byte[] nonce)
         {
-            var compressedPublicKey = Contract.CreateSignatureRedeemScript(publicKey);
-            var address = GenerateAddress(B_ADDRESS_START, codeName, compressedPublicKey, nonce);
+            var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
+            var codeNameKeyPair = new KeyPair(hashedCodeName);
+            var codeNameAddress = Contract.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+
+            var extendedPrivateKey = _sha256Hasher.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
+            var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
+            var internalAddress = Contract.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
+
+            var address = GenerateAddress(codeNameKeyPair, extendedPrivateKeyPair);
             return new BolAddress
             {
                 Address = address,
                 AddressType = AddressType.B,
-                Nonce = nonce,
-                PublicKey = compressedPublicKey,
-                CodeName = codeName
+                Nonce = BitConverter.ToUInt32(nonce, 0),
+                CodeName = codeName,
+                CodeNameAddress = codeNameAddress,
+                InternalAddress = internalAddress,
+                CodeNamePublicKey = codeNameKeyPair.PublicKey.ToString(),
+                InternalPublicKey = extendedPrivateKeyPair.PublicKey.ToString()
             };
         }
 
-        public BolAddress GenerateAddressC(string codeName, ECPoint publicKey)
+        public BolAddress GenerateAddressC(string codeName, KeyPair keyPair)
         {
-            var compressedPublicKey = Contract.CreateSignatureRedeemScript(publicKey);
-            var emptyNonce = new byte[0];
-            var address = GenerateAddress(B_ADDRESS_START, codeName, compressedPublicKey, emptyNonce);
+            var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
+            var codeNameKeyPair = new KeyPair(hashedCodeName);
+            var codeNameAddress = Contract.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+
+            var internalAddress = Contract.CreateSignatureContract(keyPair.PublicKey).Address;
+
+            var address = GenerateAddress(codeNameKeyPair, keyPair);
             return new BolAddress
             {
                 Address = address,
                 AddressType = AddressType.C,
-                Nonce = emptyNonce,
-                PublicKey = compressedPublicKey,
-                CodeName = codeName
+                Nonce = 0,
+                CodeName = codeName,
+                CodeNameAddress = codeNameAddress,
+                InternalAddress = internalAddress,
+                CodeNamePublicKey = codeNameKeyPair.PublicKey.ToString(),
+                InternalPublicKey = keyPair.PublicKey.ToString()
             };
         }
 
-        protected string GenerateAddress(byte prefix, string codeName, byte[] publicKey, byte[] nonce)
+        protected string GenerateAddress(KeyPair codeNameKeyPair, KeyPair secretKeyPair)
         {
-            var publicKeySection = _sha256Hasher.Hash(
-                publicKey
-                .Concat(nonce)
-                .ToArray());
-
-            var codeNameSection = _sha256Hasher.Hash(Encoding.UTF8.GetBytes(codeName));
-
-            var headHash = codeNameSection.Take(7).ToArray();
-
-            var combinedSections = codeNameSection.Concat(publicKeySection).ToArray();
-            var tailHash = NeoCryptography.RIPEMD160(_sha256Hasher.Hash(combinedSections));
-
-            var addressHash = new byte[1] { prefix }
-                .Concat(headHash)
-                .Concat(tailHash)
-                .ToArray();
-
-            var addressHashChecked = _sha256Hasher.AddChecksum(addressHash, 2, 4);
-
-            return _base58Encoder.Encode(addressHashChecked);
+            var addressContract = Contract.CreateMultiSigContract(2, codeNameKeyPair.PublicKey, secretKeyPair.PublicKey);
+            return addressContract.Address;
         }
     }
 }
