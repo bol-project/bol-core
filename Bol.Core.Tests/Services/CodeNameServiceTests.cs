@@ -1,5 +1,6 @@
 ﻿using Bol.Core.Encoders;
 using Bol.Core.Hashers;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
