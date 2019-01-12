@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+  node2:
+    image: bol-node
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Dockerfile
+      args:
+        - validator_wallet=val2.json
+    networks:
+        - bol-network
+
+  node3:
+    image: bol-node
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Dockerfile
+      args:
+        - validator_wallet=val3.json
+    networks:
+        - bol-network
+
+  node4:
+    image: bol-node
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Dockerfile
+      args:
+        - validator_wallet=val4.json
+    networks:
+        - bol-network
+        
+networks:
+  bol-network:
+     external: true
+  internal:
