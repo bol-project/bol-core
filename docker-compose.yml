@@ -29,7 +29,7 @@ services:
       args:
         validator_wallet : val2.json
     extra_hosts:
-      - "node1:192.168.1.78"        
+      - "node1:${MACHINE_IP}"        
     ports:
       - "11457:11456"   
     networks:
@@ -45,7 +45,7 @@ services:
       args:
         validator_wallet : val3.json
     extra_hosts:
-      - "node1:192.168.1.78"           
+      - "node1:${MACHINE_IP}"           
     ports:
       - "11458:11456"
     networks:
@@ -61,7 +61,7 @@ services:
       args:
         validator_wallet : val4.json
     extra_hosts:
-      - "node1:192.168.1.78"      
+      - "node1:${MACHINE_IP}"      
     ports:
       - "11459:11456"     
     networks:
@@ -69,4 +69,3 @@ services:
         
 networks:
   bol-network:
-     external: true
