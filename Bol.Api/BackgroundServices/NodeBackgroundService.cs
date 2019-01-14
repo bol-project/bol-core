@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Bol.Api.NeoPlugins;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neo.Shell;
 using System;
@@ -20,6 +21,9 @@ namespace Bol.Api.BackgroundServices
         {
             try
             {
+                //Base constructor of neo plugin automatically registers itself
+                new LogPlugin(_logger);
+
                 var mainService = new MainService();
                 return Task.Run(() => mainService.Run(new string[0]));
             }
