@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.0-sdk-stretch AS build
+FROM microsoft/dotnet:2.1-sdk AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -10,7 +10,7 @@ COPY neo/neo/*.csproj ./neo/neo/
 COPY neo-cli/neo-cli/*.csproj ./neo-cli/neo-cli/
 COPY neo-vm/src/neo-vm/*.csproj ./neo-vm/src/neo-vm/
 
-RUN dotnet restore Bol.sln /p:RestoreUseSkipNonexistentTargets="false"
+RUN dotnet restore
 
 # copy everything else and build app
 COPY . .
@@ -18,11 +18,11 @@ WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 
-FROM microsoft/dotnet:2.0.9-runtime-stretch AS runtime-base
+FROM microsoft/dotnet:2.1.3-aspnetcore-runtime AS runtime-base
 
 # Install dependencies:
 RUN apt-get update && apt-get install -y \
-    libleveldb-dev \		
+    libleveldb-dev \
     sqlite3 \
     libsqlite3-dev \
     libunwind8-dev \

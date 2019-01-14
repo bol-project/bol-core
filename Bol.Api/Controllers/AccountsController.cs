@@ -6,6 +6,7 @@ using System.Linq;
 namespace Bol.Api.Controllers
 {
     [Route("api/accounts")]
+    [ApiController]
     public class AccountsController : ControllerBase
     {
         [HttpGet]
