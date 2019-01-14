@@ -16,6 +16,7 @@ RUN dotnet restore Bol.sln /p:RestoreUseSkipNonexistentTargets="false"
 COPY . .
 WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
+COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 
 FROM microsoft/dotnet:2.0.9-runtime-stretch AS runtime-base
 
