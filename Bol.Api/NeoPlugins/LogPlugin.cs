@@ -13,7 +13,9 @@ namespace Bol.Api.NeoPlugins
             _logger = logger;
         }
 
-        public void Log(string source, Neo.Plugins.LogLevel level, string message)
+        public override void Configure() { }
+
+        public new void Log(string source, Neo.Plugins.LogLevel level, string message)
         {
             switch (level)
             {
