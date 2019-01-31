@@ -40,7 +40,7 @@ namespace Bol.Coin.Persistence
             var key = BolKey(address);
             var currentAmmountBytes = _storage.Get(key);
 
-            var currentAmount = _storage.Get(key).AsDouble();
+            var currentAmount = AsDouble(_storage.Get(key));
             var newAmount = currentAmount + amount;
             _storage.Put(key, newAmount);
         }
@@ -50,7 +50,7 @@ namespace Bol.Coin.Persistence
             if (amount < 0) throw new Exception("Cannot remove negative amount of Bols.");
 
             var key = BolKey(address);
-            var currentAmount = _storage.Get(key).AsDouble();
+            var currentAmount = AsDouble(_storage.Get(key));
 
             if (amount > currentAmount) throw new Exception("Cannot remove more Bols than the current amount.");
 
@@ -67,7 +67,7 @@ namespace Bol.Coin.Persistence
         public double GetBols(byte[] address)
         {
             var key = BolKey(address);
-            return _storage.Get(key).AsDouble();
+            return AsDouble(_storage.Get(key));
         }
 
         public void SetCodeName(byte[] address, byte[] codeName)
@@ -97,7 +97,7 @@ namespace Bol.Coin.Persistence
         public int GetCertifications(byte[] address)
         {
             var key = CertificationsKey(address);
-            return _storage.Get(key).AsInt();
+            return AsInt(_storage.Get(key));
         }
 
         public void AddCertification(byte[] address, byte[] certifier)
@@ -160,7 +160,7 @@ namespace Bol.Coin.Persistence
         public bool IsCertifier(byte[] address)
         {
             var key = IsCertifierKey(address);
-            var isCertifier = _storage.Get(key).AsBool();
+            var isCertifier = AsBool(_storage.Get(key));
             return isCertifier;
         }
 
@@ -199,7 +199,7 @@ namespace Bol.Coin.Persistence
         public uint GetRegistrationHeight(byte[] address)
         {
             var key = RegistrationHeightKey(address);
-            return _storage.Get(key).AsUInt();
+            return AsUInt(_storage.Get(key));
         }
 
         public void SetLastClaimHeight(byte[] address, uint height)
@@ -211,19 +211,19 @@ namespace Bol.Coin.Persistence
         public uint GetLastClaimHeight(byte[] address)
         {
             var key = LastClaimHeightKey(address);
-            return _storage.Get(key).AsUInt();
+            return AsUInt(_storage.Get(key));
         }
 
         public long GetTotalRegisteredPersons()
         {
             var key = TotalRegisteredPersonsKey();
-            return _storage.Get(key).AsLong();
+            return AsLong(_storage.Get(key));
         }
 
         public void AddRegisteredPerson()
         {
             var key = TotalRegisteredPersonsKey();
-            var currentTotal = _storage.Get(key).AsLong();
+            var currentTotal = AsLong(_storage.Get(key));
             _storage.Put(key, currentTotal + 1);
         }
 
@@ -236,7 +236,7 @@ namespace Bol.Coin.Persistence
         public void AddRegisteredCompany()
         {
             var key = TotalRegisteredCompaniesKey();
-            var currentTotal = _storage.Get(key).AsLong();
+            var currentTotal = AsLong(_storage.Get(key));
             _storage.Put(key, currentTotal + 1);
         }
 
@@ -247,7 +247,7 @@ namespace Bol.Coin.Persistence
             var key = BolKey();
             var currentAmmountBytes = _storage.Get(key);
 
-            var currentAmount = _storage.Get(key).AsDouble();
+            var currentAmount = AsDouble(_storage.Get(key));
             var newAmount = currentAmount + amount;
             _storage.Put(key, newAmount);
         }
@@ -257,7 +257,7 @@ namespace Bol.Coin.Persistence
             if (amount < 0) throw new Exception("Cannot remove negative amount of Bols.");
 
             var key = BolKey();
-            var currentAmount = _storage.Get(key).AsDouble();
+            var currentAmount = AsDouble(_storage.Get(key));
 
             if (amount > currentAmount) throw new Exception("Cannot remove more Bols than the current amount.");
 
@@ -274,7 +274,7 @@ namespace Bol.Coin.Persistence
         public double GetBols()
         {
             var key = BolKey();
-            return _storage.Get(key).AsDouble();
+            return AsDouble(_storage.Get(key));
         }
 
         internal byte[] BolKey(byte[] address)
@@ -340,6 +340,46 @@ namespace Bol.Coin.Persistence
         internal byte[] TotalCertifiersKey()
         {
             return new[] { TOTAL_CERTIFIERS };
+        }
+
+        internal double AsDouble(byte[] source)
+        {
+            if (source == null) return 0;
+            if (source.Length == 0) return 0;
+
+            return BitConverter.ToDouble(source, 0);
+        }
+
+        internal int AsInt(byte[] source)
+        {
+            if (source == null) return 0;
+            if (source.Length == 0) return 0;
+
+            return BitConverter.ToInt32(source, 0);
+        }
+
+        internal uint AsUInt(byte[] source)
+        {
+            if (source == null) return 0;
+            if (source.Length == 0) return 0;
+
+            return BitConverter.ToUInt32(source, 0);
+        }
+
+        internal long AsLong(byte[] source)
+        {
+            if (source == null) return 0;
+            if (source.Length == 0) return 0;
+
+            return BitConverter.ToInt64(source, 0);
+        }
+
+        internal bool AsBool(byte[] source)
+        {
+            if (source == null) return false;
+            if (source.Length == 0) return false;
+
+            return BitConverter.ToBoolean(source, 0);
         }
     }
 }

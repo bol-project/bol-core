@@ -89,7 +89,7 @@ namespace Bol.Coin.Services
             if (certifications == 0) throw new Exception("Cannot transfer Bols unless certified by valid certifier.");
 
             //TODO: Validation needs rework because one can make many small transfers
-            if (value > 10 && certifications < 3) throw new Exception("Cannot transfer more than 10 Bols unless certifiex by 3 valid certifiers.");
+            if (value > 10 && certifications < 3) throw new Exception("Cannot transfer more than 10 Bols unless certified by 3 valid certifiers.");
 
             _repository.RemoveBols(from, value);
             _repository.AddBols(to, value);

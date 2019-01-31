@@ -52,7 +52,6 @@
     <Compile Include="Services\BlockChainService.cs" />
     <Compile Include="Services\BolService.cs" />
     <Compile Include="Persistence\BolStorage.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Abstractions\IBolRepository.cs" />
     <Compile Include="Abstractions\IBolStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -84,9 +84,8 @@ namespace Neo.SmartContract
                 }
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //Console.WriteLine(e);
                 return false;
             }
         }
