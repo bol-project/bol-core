@@ -1,68 +1,45 @@
-﻿using Bol.Coin.Abstractions;
+﻿using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
-using System;
 using System.Numerics;
 
 namespace Bol.Coin.Persistence
 {
 
-    public class BolStorage : IBolStorage
+    public static class BolStorage
     {
-        private readonly StorageContext _context;
-
-        public BolStorage(StorageContext context)
+        public static Iterator<byte[], byte[]> Find(byte[] prefix)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            return Storage.Find(Storage.CurrentContext, prefix);
         }
 
-        public Iterator<byte[], byte[]> Find(byte[] prefix)
+        public static byte[] Get(byte[] key)
         {
-            return Storage.Find(_context, prefix);
+            return Storage.Get(Storage.CurrentContext, key);
         }
 
-        public byte[] Get(byte[] key)
+        public static BigInteger GetAsBigInteger(byte[] key)
         {
-            return Storage.Get(_context, key);
+            var value = Storage.Get(Storage.CurrentContext, key);
+
+            if (value == null) return 0;
+            if (value.Length == 0) return 0;
+
+            return value.AsBigInteger();
         }
 
-        public void Put(byte[] key, BigInteger value)
+        public static void Put(byte[] key, BigInteger value)
         {
-            Storage.Put(_context, key, value);
+            Storage.Put(Storage.CurrentContext, key, value);
         }
 
-        public void Put(byte[] key, byte[] value)
+        public static void Put(byte[] key, byte[] value)
         {
-            Storage.Put(_context, key, value);
+            Storage.Put(Storage.CurrentContext, key, value);
         }
 
-        public void Put(byte[] key, string value)
+        public static void Put(byte[] key, string value)
         {
-            Storage.Put(_context, key, value);
-        }
-
-        public void Put(byte[] key, double value)
-        {
-            Storage.Put(_context, key, BitConverter.GetBytes(value));
-        }
-
-        public void Put(byte[] key, int value)
-        {
-            Storage.Put(_context, key, BitConverter.GetBytes(value));
-        }
-
-        public void Put(byte[] key, uint value)
-        {
-            Storage.Put(_context, key, BitConverter.GetBytes(value));
-        }
-
-        public void Put(byte[] key, long value)
-        {
-            Storage.Put(_context, key, BitConverter.GetBytes(value));
-        }
-
-        public void Put(byte[] key, bool value)
-        {
-            Storage.Put(_context, key, BitConverter.GetBytes(value));
+            Storage.Put(Storage.CurrentContext, key, value);
         }
     }
 }

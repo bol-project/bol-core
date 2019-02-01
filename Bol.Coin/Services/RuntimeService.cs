@@ -3,9 +3,9 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Bol.Coin.Services
 {
-    public class RuntimeService : IRuntimeService
+    public class RuntimeService
     {
-        public bool ValidateCallerAddress(byte[] address)
+        public static bool ValidateCallerAddress(byte[] address)
         {
             return Runtime.CheckWitness(address);
         }

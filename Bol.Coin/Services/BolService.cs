@@ -1,36 +1,23 @@
-﻿using Bol.Coin.Abstractions;
-using Neo.SmartContract.Framework;
+﻿using Bol.Coin.Persistence;
 using System;
+using System.ComponentModel;
+using System.Numerics;
 
 namespace Bol.Coin.Services
 {
     public class BolService
     {
-        public string Name => "Bonus of Life";
-        public string Symbol => "BoL";
-        public byte[] Owner => "ATrzHaicmhRj15C3Vv6e6gLfLqhSD2PtTr".ToScriptHash();
-        public byte Decimals => 8;
+        public static string Name() => "Bonus of Life";
+        public static string Symbol() => "BoL";
+        public static readonly byte[] Owner = { 176, 251, 165, 73, 141, 130, 64, 204, 106, 36, 207, 216, 73, 52, 95, 101, 68, 226, 66, 208 };
+        public static byte Decimals => 8;
 
         private const ulong starting_amount = 7660500000; //Earth population
 
-        private readonly IBolRepository _repository;
-        private readonly IRuntimeService _runtimeService;
-        private readonly IBlockChainService _blockChainService;
-        private readonly Action<byte[], byte[], double> _transferred;
+        [DisplayName("transfer")]
+        public static event Action<byte[], byte[], BigInteger> Transferred;
 
-        public BolService(
-            IBolRepository repository,
-            IRuntimeService runtimeService,
-            IBlockChainService blockChainService,
-            Action<byte[], byte[], double> transferred)
-        {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-            _blockChainService = blockChainService ?? throw new ArgumentNullException(nameof(blockChainService));
-            _transferred = transferred ?? throw new ArgumentNullException(nameof(transferred));
-        }
-
-        public bool Register(byte[] address, byte[] codeName, byte[] edi)
+        public static bool Register(byte[] address, byte[] codeName, byte[] edi)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
@@ -41,38 +28,38 @@ namespace Bol.Coin.Services
 
             //TODO: Add Validations for CodeName
 
-            var currentHeight = _blockChainService.GetCurrentHeight();
+            var currentHeight = BlockChainService.GetCurrentHeight();
 
-            _repository.SetCodeName(address, codeName);
-            _repository.SetEdi(address, edi);
-            _repository.SetRegistrationHeight(address, currentHeight);
-            _repository.SetLastClaimHeight(address, currentHeight);
-            _repository.SetBols(address, 1); // Claims 1st Bol
-            _repository.RemoveBols(1); //Remove 1 from central wallet
-            _repository.AddRegisteredPerson();
+            BolRepository.SetCodeName(address, codeName);
+            BolRepository.SetEdi(address, edi);
+            BolRepository.SetRegistrationHeight(address, currentHeight);
+            BolRepository.SetLastClaimHeight(address, currentHeight);
+            BolRepository.SetBols(address, 1); // Claims 1st Bol
+            BolRepository.RemoveBols(1); //Remove 1 from central wallet
+            BolRepository.AddRegisteredPerson();
 
-            _transferred(Owner, address, 1);
+            Transferred(Owner, address, 1);
 
             return true;
         }
 
-        public bool Deploy()
+        public static bool Deploy()
         {
-            var totalSupply = _repository.GetBols();
+            var totalSupply = BolRepository.GetBols();
 
             if (totalSupply > 0) return false;
 
-            _repository.SetBols(starting_amount);
-            _transferred(null, Owner, starting_amount);
+            BolRepository.SetBols(starting_amount);
+            Transferred(null, Owner, starting_amount);
             return true;
         }
 
-        public double TotalSupply()
+        public static BigInteger TotalSupply()
         {
-            return _repository.GetBols();
+            return BolRepository.GetBols();
         }
 
-        public bool Transfer(byte[] from, byte[] to, double value)
+        public static bool Transfer(byte[] from, byte[] to, BigInteger value)
         {
             ThrowOnBadAddress(from);
             ThrowOnBadAddress(to);
@@ -80,108 +67,108 @@ namespace Bol.Coin.Services
 
             if (value <= 0) throw new ArgumentException("Cannot transfer negative value");
 
-            var fromBalance = _repository.GetBols(from);
+            var fromBalance = BolRepository.GetBols(from);
 
             if (fromBalance < value) throw new Exception("Cannot transfer more Bols that account balance");
 
-            var certifications = _repository.GetCertifications(from);
+            var certifications = BolRepository.GetCertifications(from);
 
             if (certifications == 0) throw new Exception("Cannot transfer Bols unless certified by valid certifier.");
 
             //TODO: Validation needs rework because one can make many small transfers
             if (value > 10 && certifications < 3) throw new Exception("Cannot transfer more than 10 Bols unless certified by 3 valid certifiers.");
 
-            _repository.RemoveBols(from, value);
-            _repository.AddBols(to, value);
+            BolRepository.RemoveBols(from, value);
+            BolRepository.AddBols(to, value);
 
-            _transferred(from, to, value);
+            Transferred(from, to, value);
             return true;
         }
 
-        public double GetBalance(byte[] address)
+        public static BigInteger GetBalance(byte[] address)
         {
             ThrowOnBadAddress(address);
 
-            return _repository.GetBols(address);
+            return BolRepository.GetBols(address);
         }
 
-        public void RegisterAsCertifier(byte[] address)
-        {
-            ThrowOnBadAddress(address);
-            ThrowIfNotAddressOwner(address);
-
-            if (_repository.IsCertifier(address)) throw new Exception("Already a certifier.");
-
-            _repository.RegisterAsCertifier(address);
-            _repository.BindCollateral(address);
-        }
-
-        public void UnregisterAsCertifier(byte[] address)
+        public static void RegisterAsCertifier(byte[] address)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
 
-            if (!_repository.IsCertifier(address)) throw new Exception("Not a certifier.");
+            if (BolRepository.IsCertifier(address)) throw new Exception("Already a certifier.");
 
-            _repository.UnregisterAsCertifier(address);
-            _repository.ReleaseCollateral(address);
+            BolRepository.RegisterAsCertifier(address);
+            BolRepository.BindCollateral(address);
         }
 
-        public void Certify(byte[] certifier, byte[] address)
+        public static void UnregisterAsCertifier(byte[] address)
+        {
+            ThrowOnBadAddress(address);
+            ThrowIfNotAddressOwner(address);
+
+            if (!BolRepository.IsCertifier(address)) throw new Exception("Not a certifier.");
+
+            BolRepository.UnregisterAsCertifier(address);
+            BolRepository.ReleaseCollateral(address);
+        }
+
+        public static void Certify(byte[] certifier, byte[] address)
         {
             ThrowOnBadAddress(certifier);
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(certifier);
 
-            if (!_repository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
+            if (!BolRepository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
 
-            _repository.AddCertification(address, certifier);
+            BolRepository.AddCertification(address, certifier);
         }
 
-        public void UnCertify(byte[] certifier, byte[] address)
+        public static void UnCertify(byte[] certifier, byte[] address)
         {
             ThrowOnBadAddress(certifier);
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(certifier);
 
-            if (!_repository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
+            if (!BolRepository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
 
-            _repository.RemoveCertification(address, certifier);
+            // BolRepository.RemoveCertification(address, certifier);
         }
 
-        public void Claim(byte[] address)
+        public static void Claim(byte[] address)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
 
-            var codeName = _repository.GetCodeName(address);
+            var codeName = BolRepository.GetCodeName(address);
 
             if (codeName.Length == 0) throw new ArgumentException("Not a registered address.");
 
-            var previousHeight = _repository.GetLastClaimHeight(address);
-            var currentHeight = _blockChainService.GetCurrentHeight();
+            var previousHeight = BolRepository.GetLastClaimHeight(address);
+            var currentHeight = BlockChainService.GetCurrentHeight();
 
             var diff = currentHeight - previousHeight;
 
             var bonus = diff * 100; //TODO: Fix the calculation according to the algorithm
 
-            _repository.AddBols(address, bonus);
-            _repository.RemoveBols(bonus);
+            BolRepository.AddBols(address, bonus);
+            BolRepository.RemoveBols(bonus);
 
-            _repository.SetLastClaimHeight(address, currentHeight);
+            BolRepository.SetLastClaimHeight(address, currentHeight);
 
-            _transferred(Owner, address, bonus);
+            Transferred(Owner, address, bonus);
         }
 
-        internal void ThrowOnBadAddress(byte[] address)
+        internal static void ThrowOnBadAddress(byte[] address)
         {
             if (address == null || address.Length == 0) throw new ArgumentNullException("Address cannot be empty");
             if (address.Length != 20) throw new ArgumentException("Address length must be 20 bytes");
         }
 
-        internal void ThrowIfNotAddressOwner(byte[] address)
+        internal static void ThrowIfNotAddressOwner(byte[] address)
         {
-            if (!_runtimeService.ValidateCallerAddress(address)) throw new ArgumentException("Only the Address owner can perform this action.");
+            if (!RuntimeService.ValidateCallerAddress(address)) throw new ArgumentException("Only the Address owner can perform this action.");
         }
     }
 }

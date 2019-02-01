@@ -3,9 +3,9 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Bol.Coin.Services
 {
-    public class BlockChainService : IBlockChainService
+    public class BlockChainService
     {
-        public uint GetCurrentHeight()
+        public static uint GetCurrentHeight()
         {
             return Blockchain.GetHeight();
         }
