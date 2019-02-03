@@ -1,4 +1,6 @@
 ﻿using Bol.Coin.Persistence;
+using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Services.Neo;
 using System;
 using System.ComponentModel;
 using System.Numerics;
@@ -10,9 +12,16 @@ namespace Bol.Coin.Services
         public static string Name() => "Bonus of Life";
         public static string Symbol() => "BoL";
         public static readonly byte[] Owner = { 176, 251, 165, 73, 141, 130, 64, 204, 106, 36, 207, 216, 73, 52, 95, 101, 68, 226, 66, 208 };
-        public static byte Decimals => 8;
+        public static byte Decimals() => 8;
 
-        private const ulong starting_amount = 7660500000; //Earth population
+        private const ulong Factor = 100000000;
+        private const ulong StartingAmount = 7660500000 * Factor; //Earth population
+
+        public const byte OK = 0x00;
+        public const byte BAD_REQUEST = 0x01;
+        public const byte FORBIDDEN = 0x02;
+        public const byte INTERNAL_ERROR = 0x03;
+
 
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
@@ -26,6 +35,8 @@ namespace Bol.Coin.Services
             if (edi == null || edi.Length == 0) throw new ArgumentNullException("Edi cannot be empty");
             if (edi.Length != 32) throw new ArgumentException("EDI length must be 32 bytes");
 
+            if (BolRepository.GetRegistrationHeight(address) != 0) throw new Exception("Address already registered");
+
             //TODO: Add Validations for CodeName
 
             var currentHeight = BlockChainService.GetCurrentHeight();
@@ -34,11 +45,11 @@ namespace Bol.Coin.Services
             BolRepository.SetEdi(address, edi);
             BolRepository.SetRegistrationHeight(address, currentHeight);
             BolRepository.SetLastClaimHeight(address, currentHeight);
-            BolRepository.SetBols(address, 1); // Claims 1st Bol
-            BolRepository.RemoveBols(1); //Remove 1 from central wallet
+            BolRepository.SetBols(address, 1 * Factor); // Claims 1st Bol
+            BolRepository.RemoveBols(1 * Factor); //Remove 1 from central wallet
             BolRepository.AddRegisteredPerson();
 
-            Transferred(Owner, address, 1);
+            Transferred(Owner, address, 1 * Factor);
 
             return true;
         }
@@ -49,8 +60,8 @@ namespace Bol.Coin.Services
 
             if (totalSupply > 0) return false;
 
-            BolRepository.SetBols(starting_amount);
-            Transferred(null, Owner, starting_amount);
+            BolRepository.SetBols(StartingAmount);
+            Transferred(null, Owner, StartingAmount);
             return true;
         }
 
@@ -69,11 +80,14 @@ namespace Bol.Coin.Services
 
             var fromBalance = BolRepository.GetBols(from);
 
+            Runtime.Log(value.AsByteArray().AsString());
+            Runtime.Log(fromBalance.AsByteArray().AsString());
+
             if (fromBalance < value) throw new Exception("Cannot transfer more Bols that account balance");
 
             var certifications = BolRepository.GetCertifications(from);
 
-            if (certifications == 0) throw new Exception("Cannot transfer Bols unless certified by valid certifier.");
+            //if (certifications == 0) throw new Exception("Cannot transfer Bols unless certified by valid certifier.");
 
             //TODO: Validation needs rework because one can make many small transfers
             if (value > 10 && certifications < 3) throw new Exception("Cannot transfer more than 10 Bols unless certified by 3 valid certifiers.");
@@ -92,7 +106,7 @@ namespace Bol.Coin.Services
             return BolRepository.GetBols(address);
         }
 
-        public static void RegisterAsCertifier(byte[] address)
+        public static bool RegisterAsCertifier(byte[] address)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
@@ -101,9 +115,11 @@ namespace Bol.Coin.Services
 
             BolRepository.RegisterAsCertifier(address);
             BolRepository.BindCollateral(address);
+
+            return true;
         }
 
-        public static void UnregisterAsCertifier(byte[] address)
+        public static bool UnregisterAsCertifier(byte[] address)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
@@ -112,9 +128,11 @@ namespace Bol.Coin.Services
 
             BolRepository.UnregisterAsCertifier(address);
             BolRepository.ReleaseCollateral(address);
+
+            return true;
         }
 
-        public static void Certify(byte[] certifier, byte[] address)
+        public static bool Certify(byte[] certifier, byte[] address)
         {
             ThrowOnBadAddress(certifier);
             ThrowOnBadAddress(address);
@@ -123,9 +141,11 @@ namespace Bol.Coin.Services
             if (!BolRepository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
 
             BolRepository.AddCertification(address, certifier);
+
+            return true;
         }
 
-        public static void UnCertify(byte[] certifier, byte[] address)
+        public static bool UnCertify(byte[] certifier, byte[] address)
         {
             ThrowOnBadAddress(certifier);
             ThrowOnBadAddress(address);
@@ -134,9 +154,10 @@ namespace Bol.Coin.Services
             if (!BolRepository.IsCertifier(certifier)) throw new Exception("Not a certifier.");
 
             // BolRepository.RemoveCertification(address, certifier);
+            return false;
         }
 
-        public static void Claim(byte[] address)
+        public static bool Claim(byte[] address)
         {
             ThrowOnBadAddress(address);
             ThrowIfNotAddressOwner(address);
@@ -158,6 +179,8 @@ namespace Bol.Coin.Services
             BolRepository.SetLastClaimHeight(address, currentHeight);
 
             Transferred(Owner, address, bonus);
+
+            return true;
         }
 
         internal static void ThrowOnBadAddress(byte[] address)

@@ -1,4 +1,5 @@
-﻿using Neo.SmartContract.Framework;
+﻿using Bol.Coin.Helpers;
+using Neo.SmartContract.Framework;
 using System;
 using System.Linq;
 using System.Numerics;
@@ -17,11 +18,11 @@ namespace Bol.Coin.Persistence
         public const byte COLLATERAL = 0x06;
 
         public const byte REGISTRATION_HEIGHT = 0x06;
-        public const byte LAST_CLAIM_HEIGHT = 0X07;
+        public const byte LAST_CLAIM_HEIGHT = 0x07;
 
-        public const byte TOTAL_REGISTERED_PERSONS = 0xA0;
-        public const byte TOTAL_REGISTERED_COMPANIES = 0xA1;
-        public const byte TOTAL_CERTIFIERS = 0xA2;
+        public const byte TOTAL_REGISTERED_PERSONS = 0x08;
+        public const byte TOTAL_REGISTERED_COMPANIES = 0x09;
+        public const byte TOTAL_CERTIFIERS = 0x0A;
 
         public static readonly int ADDRESS_LENGTH = 20;
         public static readonly BigInteger COLLATERAL_BOL = 1000;
@@ -106,7 +107,7 @@ namespace Bol.Coin.Persistence
                 var c = new byte[ADDRESS_LENGTH];
                 Buffer.BlockCopy(certifiers, i, c, 0, ADDRESS_LENGTH);
 
-                if (ArraysEqual(c, certifier))
+                if (ArraysHelper.ArraysEqual(c, certifier))
                 {
                     throw new Exception("Certifier already exists");
                 }
@@ -131,7 +132,7 @@ namespace Bol.Coin.Persistence
         //        var c = new byte[ADDRESS_LENGTH];
         //        Buffer.BlockCopy(certifiers, i, c, 0, ADDRESS_LENGTH);
 
-        //        if (ArraysEqual(c, certifier))
+        //        if (ArraysHelper.ArraysEqual(c, certifier))
         //        {
         //            foundIndex = i;
         //        }
@@ -142,13 +143,15 @@ namespace Bol.Coin.Persistence
         //        throw new Exception("Certifier does not exist");
         //    }
 
+        //    var newCertifiers = certifiers.Take(foundIndex);
+        //    newCertifiers = newCertifiers.
         //    var newCertifiers = new byte[certifiers.Length - ADDRESS_LENGTH];
 
         //    if (foundIndex != 0)
         //    {
         //        Buffer.BlockCopy(certifiers, 0, newCertifiers, 0, foundIndex);
         //    }
-        //    Buffer.BlockCopy(certifiers, foundIndex +ADDRESS_LENGTH, newCertifiers, foundIndex, certifiers.Length - foundIndex - ADDRESS_LENGTH);
+        //    Buffer.BlockCopy(certifiers, foundIndex + ADDRESS_LENGTH, newCertifiers, foundIndex, certifiers.Length - foundIndex - ADDRESS_LENGTH);
 
         //    var length = newCertifiers.Length / ADDRESS_LENGTH;
         //    BolStorage.Put(certifiersKey, newCertifiers);
@@ -286,67 +289,67 @@ namespace Bol.Coin.Persistence
 
         internal static byte[] BolKey(byte[] address)
         {
-            return new[] { BOL }.Concat(address);
+            return new byte[] { BOL }.Concat(address);
         }
 
         internal static byte[] BolKey()
         {
-            return new[] { BOL };
+            return new byte[] { BOL };
         }
 
         internal static byte[] CodeNameKey(byte[] address)
         {
-            return new[] { CODENAME }.Concat(address);
+            return CODENAME.AsByteArray().Concat(address);
         }
 
         internal static byte[] EdiKey(byte[] address)
         {
-            return new[] { EDI }.Concat(address);
+            return EDI.AsByteArray().Concat(address);
         }
 
         internal static byte[] CertificationsKey(byte[] address)
         {
-            return new[] { CERTIFICATIONS }.Concat(address);
+            return CERTIFICATIONS.AsByteArray().Concat(address);
         }
 
         internal static byte[] CertifiersKey(byte[] address)
         {
-            return new[] { CERTIFIERS }.Concat(address);
+            return CERTIFIERS.AsByteArray().Concat(address);
         }
 
         internal static byte[] IsCertifierKey(byte[] address)
         {
-            return new[] { IS_CERTIFIER }.Concat(address);
+            return IS_CERTIFIER.AsByteArray().Concat(address);
         }
 
         internal static byte[] CollateralKey(byte[] address)
         {
-            return new[] { COLLATERAL }.Concat(address);
+            return COLLATERAL.AsByteArray().Concat(address);
         }
 
         internal static byte[] RegistrationHeightKey(byte[] address)
         {
-            return new[] { REGISTRATION_HEIGHT }.Concat(address);
+            return REGISTRATION_HEIGHT.AsByteArray().Concat(address);
         }
 
         internal static byte[] LastClaimHeightKey(byte[] address)
         {
-            return new[] { LAST_CLAIM_HEIGHT }.Concat(address);
+            return LAST_CLAIM_HEIGHT.AsByteArray().Concat(address);
         }
 
         internal static byte[] TotalRegisteredPersonsKey()
         {
-            return new[] { TOTAL_REGISTERED_PERSONS };
+            return TOTAL_REGISTERED_PERSONS.AsByteArray();
         }
 
         internal static byte[] TotalRegisteredCompaniesKey()
         {
-            return new[] { TOTAL_REGISTERED_COMPANIES };
+            return TOTAL_REGISTERED_COMPANIES.AsByteArray();
         }
 
         internal static byte[] TotalCertifiersKey()
         {
-            return new[] { TOTAL_CERTIFIERS };
+            return TOTAL_CERTIFIERS.AsByteArray();
         }
 
         //public static object[] Slices(this byte[] source, int chunkSize)
@@ -365,24 +368,6 @@ namespace Bol.Coin.Persistence
 
         //    return result;
         //}
-
-        public static bool ArraysEqual(byte[] a1, byte[] a2)
-        {
-            if (a1 == null || a2 == null)
-                return false;
-
-            if (a1.Length != a2.Length)
-                return false;
-
-            for (int i = 0; i < a1.Length; i++)
-            {
-                if (a1[i] != a2[i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         //public static byte[][] RemoveFromArray(byte[][] source, int position)
         //{

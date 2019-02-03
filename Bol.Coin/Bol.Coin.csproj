@@ -48,7 +48,8 @@
   <ItemGroup>
     <Compile Include="Abstractions\IRuntimeService.cs" />
     <Compile Include="Bol.cs" />
-    <Compile Include="Helpers\BolFactory.cs" />
+    <Compile Include="Helpers\AddressHelper.cs" />
+    <Compile Include="Helpers\ArraysHelper.cs" />
     <Compile Include="Services\BlockChainService.cs" />
     <Compile Include="Services\BolService.cs" />
     <Compile Include="Persistence\BolStorage.cs" />

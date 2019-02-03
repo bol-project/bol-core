@@ -6,7 +6,7 @@ namespace Bol.Coin.Services
     public class BlockChainService
     {
         public static uint GetCurrentHeight()
-        {
+        {            
             return Blockchain.GetHeight();
         }
     }
