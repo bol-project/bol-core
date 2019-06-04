@@ -50,6 +50,8 @@
     <Compile Include="Bol.cs" />
     <Compile Include="Helpers\AddressHelper.cs" />
     <Compile Include="Helpers\ArraysHelper.cs" />
+    <Compile Include="Models\BolAccount.cs" />
+    <Compile Include="Models\BolResponse.cs" />
     <Compile Include="Services\BlockChainService.cs" />
     <Compile Include="Services\BolService.cs" />
     <Compile Include="Persistence\BolStorage.cs" />
@@ -59,10 +61,11 @@
     <Compile Include="Persistence\BolRepository.cs" />
     <Compile Include="Abstractions\IBlockChainService.cs" />
     <Compile Include="Services\RuntimeService.cs" />
+    <Compile Include="Validators\BolValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="build.tasks" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Neo.ConvertTask.dll" />
