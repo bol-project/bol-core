@@ -1,7 +1,5 @@
-﻿using Bol.Coin.Helpers;
+﻿using Bol.Coin.Models;
 using Neo.SmartContract.Framework;
-using System;
-using System.Linq;
 using System.Numerics;
 
 namespace Bol.Coin.Persistence
@@ -27,201 +25,17 @@ namespace Bol.Coin.Persistence
         public static readonly int ADDRESS_LENGTH = 20;
         public static readonly BigInteger COLLATERAL_BOL = 1000;
 
-        public static void AddBols(byte[] address, BigInteger amount)
+        public static void Save(BolAccount account)
         {
-            if (amount < 0) throw new Exception("Cannot add negative amount of Bols.");
-
-            var key = BolKey(address);
-            var currentAmmountBytes = BolStorage.Get(key);
-
-            var currentAmount = BolStorage.GetAsBigInteger(key);
-            var newAmount = currentAmount + amount;
-            BolStorage.Put(key, newAmount);
+            var bytes = account.Serialize();
+            BolStorage.Put(account.Address, bytes);
         }
 
-        public static void RemoveBols(byte[] address, BigInteger amount)
+        public static BolAccount Get(byte[] address)
         {
-            if (amount < 0) throw new Exception("Cannot remove negative amount of Bols.");
-
-            var key = BolKey(address);
-            var currentAmount = BolStorage.GetAsBigInteger(key);
-
-            if (amount > currentAmount) throw new Exception("Cannot remove more Bols than the current amount.");
-
-            var newAmount = currentAmount - amount;
-            BolStorage.Put(key, newAmount);
-        }
-
-        public static void SetBols(byte[] address, BigInteger amount)
-        {
-            var key = BolKey(address);
-            BolStorage.Put(key, amount);
-        }
-
-        public static BigInteger GetBols(byte[] address)
-        {
-            var key = BolKey(address);
-            return BolStorage.GetAsBigInteger(key);
-        }
-
-        public static void SetCodeName(byte[] address, byte[] codeName)
-        {
-            var key = CodeNameKey(address);
-            BolStorage.Put(key, codeName);
-        }
-
-        public static byte[] GetCodeName(byte[] address)
-        {
-            var key = CodeNameKey(address);
-            return BolStorage.Get(key);
-        }
-
-        public static void SetEdi(byte[] address, byte[] edi)
-        {
-            var key = EdiKey(address);
-            BolStorage.Put(key, edi);
-        }
-
-        public static byte[] GetEdi(byte[] address)
-        {
-            var key = EdiKey(address);
-            return BolStorage.Get(key);
-        }
-
-        public static BigInteger GetCertifications(byte[] address)
-        {
-            var key = CertificationsKey(address);
-            return BolStorage.GetAsBigInteger(key);
-        }
-
-        public static void AddCertification(byte[] address, byte[] certifier)
-        {
-            var certifiersKey = CertifiersKey(address);
-            var certificationsKey = CertificationsKey(address);
-
-            var certifiers = BolStorage.Get(certifiersKey);
-            var length = certifiers.Length / ADDRESS_LENGTH;
-
-            for (int i = 0; i < certifiers.Length; i += ADDRESS_LENGTH)
-            {
-                var c = new byte[ADDRESS_LENGTH];
-                Buffer.BlockCopy(certifiers, i, c, 0, ADDRESS_LENGTH);
-
-                if (ArraysHelper.ArraysEqual(c, certifier))
-                {
-                    throw new Exception("Certifier already exists");
-                }
-            }
-
-            var newCertifiers = certifiers.Concat(certifier);
-            length = newCertifiers.Length / ADDRESS_LENGTH;
-            BolStorage.Put(certifiersKey, newCertifiers);
-            BolStorage.Put(certificationsKey, length);
-        }
-
-        //public static void RemoveCertification(byte[] address, byte[] certifier)
-        //{
-        //    var certifiersKey = CertifiersKey(address);
-        //    var certificationsKey = CertificationsKey(address);
-
-        //    var certifiers = BolStorage.Get(certifiersKey);
-
-        //    var foundIndex = -1;
-        //    for (int i = 0; i < certifiers.Length; i += ADDRESS_LENGTH)
-        //    {
-        //        var c = new byte[ADDRESS_LENGTH];
-        //        Buffer.BlockCopy(certifiers, i, c, 0, ADDRESS_LENGTH);
-
-        //        if (ArraysHelper.ArraysEqual(c, certifier))
-        //        {
-        //            foundIndex = i;
-        //        }
-        //    }
-
-        //    if (foundIndex == -1)
-        //    {
-        //        throw new Exception("Certifier does not exist");
-        //    }
-
-        //    var newCertifiers = certifiers.Take(foundIndex);
-        //    newCertifiers = newCertifiers.
-        //    var newCertifiers = new byte[certifiers.Length - ADDRESS_LENGTH];
-
-        //    if (foundIndex != 0)
-        //    {
-        //        Buffer.BlockCopy(certifiers, 0, newCertifiers, 0, foundIndex);
-        //    }
-        //    Buffer.BlockCopy(certifiers, foundIndex + ADDRESS_LENGTH, newCertifiers, foundIndex, certifiers.Length - foundIndex - ADDRESS_LENGTH);
-
-        //    var length = newCertifiers.Length / ADDRESS_LENGTH;
-        //    BolStorage.Put(certifiersKey, newCertifiers);
-        //    BolStorage.Put(certificationsKey, length);
-        //}
-
-        public static byte[] GetCertifiers(byte[] address)
-        {
-            var certifiersKey = CertifiersKey(address);
-
-            var certifiers = BolStorage.Get(certifiersKey);
-
-            return certifiers;
-        }
-
-        public static bool IsCertifier(byte[] address)
-        {
-            var key = IsCertifierKey(address);
-            var isCertifier = BolStorage.GetAsBigInteger(key);
-            return isCertifier == 1;
-        }
-
-        public static void RegisterAsCertifier(byte[] address)
-        {
-            var key = IsCertifierKey(address);
-            BolStorage.Put(key, 1);
-        }
-
-        public static void UnregisterAsCertifier(byte[] address)
-        {
-            var key = IsCertifierKey(address);
-            BolStorage.Put(key, 0);
-        }
-
-        public static void BindCollateral(byte[] address)
-        {
-            var key = CollateralKey(address);
-            RemoveBols(address, COLLATERAL_BOL);
-            BolStorage.Put(key, COLLATERAL_BOL);
-        }
-
-        public static void ReleaseCollateral(byte[] address)
-        {
-            var key = CollateralKey(address);
-            AddBols(address, COLLATERAL_BOL);
-            BolStorage.Put(key, 0);
-        }
-
-        public static void SetRegistrationHeight(byte[] address, BigInteger height)
-        {
-            var key = RegistrationHeightKey(address);
-            BolStorage.Put(key, height);
-        }
-
-        public static BigInteger GetRegistrationHeight(byte[] address)
-        {
-            var key = RegistrationHeightKey(address);
-            return BolStorage.GetAsBigInteger(key);
-        }
-
-        public static void SetLastClaimHeight(byte[] address, BigInteger height)
-        {
-            var key = LastClaimHeightKey(address);
-            BolStorage.Put(key, height);
-        }
-
-        public static BigInteger GetLastClaimHeight(byte[] address)
-        {
-            var key = LastClaimHeightKey(address);
-            return BolStorage.GetAsBigInteger(key);
+            var bytes = BolStorage.Get(address);
+            var account = (BolAccount)bytes.Deserialize();
+            return account;
         }
 
         public static BigInteger GetTotalRegisteredPersons()
@@ -252,8 +66,6 @@ namespace Bol.Coin.Persistence
 
         public static void AddBols(BigInteger amount)
         {
-            if (amount < 0) throw new Exception("Cannot add negative amount of Bols.");
-
             var key = BolKey();
             var currentAmmountBytes = BolStorage.Get(key);
 
@@ -264,12 +76,8 @@ namespace Bol.Coin.Persistence
 
         public static void RemoveBols(BigInteger amount)
         {
-            if (amount < 0) throw new Exception("Cannot remove negative amount of Bols.");
-
             var key = BolKey();
             var currentAmount = BolStorage.GetAsBigInteger(key);
-
-            if (amount > currentAmount) throw new Exception("Cannot remove more Bols than the current amount.");
 
             var newAmount = currentAmount - amount;
             BolStorage.Put(key, newAmount);
@@ -287,54 +95,9 @@ namespace Bol.Coin.Persistence
             return BolStorage.GetAsBigInteger(key);
         }
 
-        internal static byte[] BolKey(byte[] address)
-        {
-            return new byte[] { BOL }.Concat(address);
-        }
-
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
-        }
-
-        internal static byte[] CodeNameKey(byte[] address)
-        {
-            return CODENAME.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] EdiKey(byte[] address)
-        {
-            return EDI.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] CertificationsKey(byte[] address)
-        {
-            return CERTIFICATIONS.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] CertifiersKey(byte[] address)
-        {
-            return CERTIFIERS.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] IsCertifierKey(byte[] address)
-        {
-            return IS_CERTIFIER.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] CollateralKey(byte[] address)
-        {
-            return COLLATERAL.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] RegistrationHeightKey(byte[] address)
-        {
-            return REGISTRATION_HEIGHT.AsByteArray().Concat(address);
-        }
-
-        internal static byte[] LastClaimHeightKey(byte[] address)
-        {
-            return LAST_CLAIM_HEIGHT.AsByteArray().Concat(address);
         }
 
         internal static byte[] TotalRegisteredPersonsKey()
@@ -351,53 +114,5 @@ namespace Bol.Coin.Persistence
         {
             return TOTAL_CERTIFIERS.AsByteArray();
         }
-
-        //public static object[] Slices(this byte[] source, int chunkSize)
-        //{
-        //    int count = source.Length / chunkSize;
-        //    var result = new object[count];
-
-        //    var j = 0;
-        //    for (var i = 0; i < source.Length; i += count)
-        //    {
-        //        byte[] slice = new byte[chunkSize];
-        //        Array.Copy(source, i, slice, 0, chunkSize);
-        //        result[j] = slice;
-        //        j++;
-        //    }
-
-        //    return result;
-        //}
-
-        //public static byte[][] RemoveFromArray(byte[][] source, int position)
-        //{
-        //    var result = new byte[source.Length - 1][];
-
-        //    int j = 0;
-        //    for (int i = 0; i < source.Length; i++)
-        //    {
-        //        if (i == position)
-        //        {
-        //            continue;
-        //        }
-        //        result[j] = source[i];
-        //        j++;
-        //    }
-
-        //    return result;
-        //}
-
-        //public static byte[] Combine(byte[][] source, int chunkSize)
-        //{
-        //    int length = source.Length * chunkSize;
-        //    byte[] result = new byte[length];
-
-        //    for (int i = 0; i < source.Length; i++)
-        //    {
-        //        Buffer.BlockCopy(source[i], 0, result, i * chunkSize, chunkSize);
-        //    }
-
-        //    return result;
-        //}
     }
 }
