@@ -14,9 +14,9 @@ namespace Bol.Core.Services
 {
     public class AddressService : IAddressService
     {
-        public const byte B_ADDRESS_START = 0x99;
-        public const byte C_ADDRESS_START = 0xAA;
-        public const string B_ADDRESS_END = "BBB";
+        public const byte B_ADDRESS_PREFIX = 0x99;
+        public const byte C_ADDRESS_PREFIX = 0xAA;
+        public const string B_ADDRESS_START = "BBBB";
 
         private readonly ISha256Hasher _sha256Hasher;
 
@@ -42,7 +42,7 @@ namespace Bol.Core.Services
                     {
                         var testNonce = BitConverter.GetBytes(counter);
                         var address = GenerateAddressB(codeName, keyPair, testNonce);
-                        if (address.Address.EndsWith(B_ADDRESS_END))
+                        if (address.Address.StartsWith(B_ADDRESS_START))
                         {
                             return address;
                         }
