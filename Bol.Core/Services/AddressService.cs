@@ -19,12 +19,10 @@ namespace Bol.Core.Services
         public const string B_ADDRESS_END = "BBB";
 
         private readonly ISha256Hasher _sha256Hasher;
-        private readonly IBase58Encoder _base58Encoder;
 
-        public AddressService(ISha256Hasher sha256Hasher, IBase58Encoder base58Encoder)
+        public AddressService(ISha256Hasher sha256Hasher)
         {
             _sha256Hasher = sha256Hasher ?? throw new ArgumentNullException(nameof(sha256Hasher));
-            _base58Encoder = base58Encoder ?? throw new ArgumentNullException(nameof(base58Encoder));
         }
 
         public async Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
