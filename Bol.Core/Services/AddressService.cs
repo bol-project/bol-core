@@ -15,13 +15,6 @@ namespace Bol.Core.Services
 {
     public class AddressService : IAddressService
     {
-        public const byte B_ADDRESS_PREFIX = 0x19;
-
-        private static uint B_ADDRESS_START = 0x1949C6B9;
-        private static uint B_ADDRESS_END = 0x1949C78C;
-        private static uint C_ADDRESS_START = 0x1954F01A;
-        private static uint C_ADDRESS_END = 0x1954F0ED;
-
         private readonly ISha256Hasher _sha256Hasher;
 
         public AddressService(ISha256Hasher sha256Hasher)
@@ -31,18 +24,18 @@ namespace Bol.Core.Services
 
         public Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
         {
-            return GenerateAddressAsync(codeName, keyPair, B_ADDRESS_START, B_ADDRESS_END, token);
+            return GenerateAddressAsync(codeName, keyPair, Constants.B_ADDRESS_START, Constants.B_ADDRESS_END, token);
         }
 
         public Task<BolAddress> GenerateAddressCAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
         {
-            return GenerateAddressAsync(codeName, keyPair, C_ADDRESS_START, C_ADDRESS_END, token);
+            return GenerateAddressAsync(codeName, keyPair, Constants.C_ADDRESS_START, Constants.C_ADDRESS_END, token);
         }
 
         public BolAddress GenerateAddressB(string codeName, KeyPair keyPair, byte[] nonce)
         {
             var address = GenerateAddress(codeName, keyPair, nonce);
-            if (!address.Address.StartsWith("BBBB"))
+            if (!address.Address.StartsWith(Constants.B_ADDRESS_PLAIN_PREFIX))
             {
                 throw new ArgumentException("The provided nonce was invalid and could not create a valid B Address");
             }
@@ -52,7 +45,7 @@ namespace Bol.Core.Services
         public BolAddress GenerateAddressC(string codeName, KeyPair keyPair, byte[] nonce)
         {
             var address = GenerateAddress(codeName, keyPair, nonce);
-            if (!address.Address.StartsWith("BCCC"))
+            if (!address.Address.StartsWith(Constants.C_ADDRESS_PLAIN_PREFIX))
             {
                 throw new ArgumentException("The provided nonce was invalid and could not create a valid C Address");
             }
@@ -88,7 +81,7 @@ namespace Bol.Core.Services
                         var scriptHash = CreateScriptHash(codeNameKeyPair, extendedPrivateKeyPair);
 
                         //Add address prefix byte at start
-                        var addressHash = new[] { B_ADDRESS_PREFIX }.Concat(scriptHash.ToArray());
+                        var addressHash = new[] { Constants.B_ADDRESS_PREFIX }.Concat(scriptHash.ToArray());
 
                         //Take the first 4 bytes of the hash for range comparison
                         addressHash = addressHash.Take(4).ToArray();
