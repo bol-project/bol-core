@@ -41,7 +41,10 @@ namespace Bol.Core.Helpers
 
             while (counter <= end)
             {
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested)
+                {
+                    return null;
+                }
 
                 var testNonce = BitConverter.GetBytes(counter);
 
@@ -68,8 +71,7 @@ namespace Bol.Core.Helpers
                 counter++;
             }
 
-            await Task.Delay(-1, token);
-            throw new InvalidOperationException();
+            return null;
         }
 
         private static UInt160 CreateScriptHash(params KeyPair[] keyPairs)
