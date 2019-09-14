@@ -25,14 +25,37 @@ namespace Bol.Core.Helpers
             var parallelChunks = Environment.ProcessorCount;
             var iterations = uint.MaxValue / (uint)parallelChunks;
 
-            var tasks = Enumerable.Range(0, parallelChunks)
-                .Select(async chunk => await Task.Run(async () => await CalculateNonceAsync(codeNameKeyPair, privateKeyPair, rangeFrom, rangeTo, token, iterations, chunk, parallelChunks), token));
+            // Create a linked token to provide as cancellation support to the calculation tasks.
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
 
-            var result = await Task.WhenAny(tasks);
-            return await result;
+            var tasks = Enumerable.Range(0, parallelChunks)
+                .Select(chunk => Task.Run(() => CalculateNonce(codeNameKeyPair, privateKeyPair, rangeFrom, rangeTo, iterations, chunk, parallelChunks, cts.Token), token))
+                .ToList();
+
+            do
+            {
+                var task = await Task.WhenAny(tasks);
+                
+                if (task.IsCompleted && task.Result != null)
+                {
+                    // We have a winner. Now we need to let others know so they don't sweat without reason.
+                    cts.Cancel();
+                    
+                    return task.Result;
+                }
+
+                // Kick the loser out, there's no room for it.
+                tasks.Remove(task);
+                
+                // Make sure cancellation is not requested before moving on to the next possible loser...
+                token.ThrowIfCancellationRequested();
+            } while (tasks.Count > 0);
+            
+            // What are the chances this will happen?
+            throw new Exception("Nonce calculation finished without result");
         }
 
-        private async Task<byte[]> CalculateNonceAsync(KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo, CancellationToken token, uint iterations, int chunk, int parallelChunks)
+        private byte[] CalculateNonce(KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo, uint iterations, int chunk, int parallelChunks, CancellationToken token)
         {
             var counter = iterations * (uint)chunk;
             var end = chunk < parallelChunks - 1
