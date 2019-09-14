@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Bol.Core.Abstractions
 {
+    /// <summary>
+    /// Defines an BOL address service.
+    /// </summary>
     public interface IAddressService
     {
         /// <summary>
@@ -40,16 +43,5 @@ namespace Bol.Core.Abstractions
         /// <param name="publicKey"></param>
         /// <returns></returns>
         BolAddress GenerateAddressC(string codeName, KeyPair keyPair, byte[] nonce);
-
-        /// <summary>
-        /// Calculates a nonce that can satisfy the given arithmetic range by executing a proof of work.
-        /// </summary>
-        /// <param name="codeNameKeyPair"></param>
-        /// <param name="privateKeyPair"></param>
-        /// <param name="rangeFrom"></param>
-        /// <param name="rangeTo"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task<byte[]> CalculateNonceAsync(KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default);
     }
 }
