@@ -65,13 +65,13 @@ namespace Bol.Core.Services
         {
             var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
             var codeNameKeyPair = new KeyPair(hashedCodeName);
-            var codeNameAddress = Contract.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+            var codeNameAddress = _contractService.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
 
             var nonce = await _nonceCalculator.CalculateAsync(testNonce => ValidateNonce(testNonce, codeNameKeyPair, keyPair, rangeFrom, rangeTo), token);
 
             var extendedPrivateKey = _sha256Hasher.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
             var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
-            var internalAddress = Contract.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
+            var internalAddress = _contractService.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
 
             var address = CreateAddress(codeNameKeyPair, extendedPrivateKeyPair);
 
@@ -92,11 +92,11 @@ namespace Bol.Core.Services
         {
             var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
             var codeNameKeyPair = new KeyPair(hashedCodeName);
-            var codeNameAddress = Contract.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+            var codeNameAddress = _contractService.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
 
             var extendedPrivateKey = _sha256Hasher.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
             var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
-            var internalAddress = Contract.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
+            var internalAddress = _contractService.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
 
             var address = CreateAddress(codeNameKeyPair, extendedPrivateKeyPair);
 
