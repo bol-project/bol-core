@@ -1,6 +1,6 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Neo.Wallets;
 
 namespace Bol.Core.Abstractions
 {
@@ -10,14 +10,11 @@ namespace Bol.Core.Abstractions
     public interface INonceCalculator
     {
         /// <summary>
-        /// Calculates a nonce that can satisfy the given arithmetic range by executing a proof of work.
+        /// Calculates a nonce that can satisfy the given validation function by executing a proof of work.
         /// </summary>
-        /// <param name="codeNameKeyPair"></param>
-        /// <param name="privateKeyPair"></param>
-        /// <param name="rangeFrom"></param>
-        /// <param name="rangeTo"></param>
+        /// <param name="validationFunction"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<byte[]> CalculateAsync(KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default);
+        Task<byte[]> CalculateAsync(Func<byte[], bool> validationFunction, CancellationToken token = default);
     }
 }
