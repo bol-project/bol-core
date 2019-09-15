@@ -1,4 +1,4 @@
-﻿namespace Bol.Core
+namespace Bol.Core
 {
     public class Constants
     {
@@ -7,7 +7,7 @@
         public const string COMMERCIAL_CODENAME_INITIAL = "C";
         public const string ORGANIZATION_CODENAME_INITIAL = "O";
         
-        public const byte B_ADDRESS_PREFIX = 0x19;
+        public const byte BOL_ADDRESS_PREFIX = 0x19;
         public const string B_ADDRESS_PLAIN_PREFIX = "BBBB";
         public const string C_ADDRESS_PLAIN_PREFIX = "BCCC";
 
