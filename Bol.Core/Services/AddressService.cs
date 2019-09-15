@@ -1,15 +1,14 @@
-using Bol.Core.Abstractions;
-using Bol.Core.Hashers;
-using Bol.Core.Model;
-using Neo;
-using Neo.SmartContract;
-using Neo.Wallets;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Core.Abstractions;
+using Bol.Core.Hashers;
+using Bol.Core.Model;
+using Neo;
+using Neo.Wallets;
 
 namespace Bol.Core.Services
 {

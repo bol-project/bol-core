@@ -1,8 +1,7 @@
-using Bol.Core.Model;
-using Neo.Wallets;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Core.Model;
+using Neo.Wallets;
 
 namespace Bol.Core.Abstractions
 {
