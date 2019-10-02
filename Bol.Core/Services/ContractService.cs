@@ -1,6 +1,7 @@
-﻿using Akka.Actor;
+using Akka.Actor;
 using Bol.Core.Abstractions;
 using Neo;
+using Neo.Cryptography.ECC;
 using Neo.Ledger;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
@@ -190,6 +191,16 @@ namespace Bol.Core.Services
         private void SubmitTransaction(InvocationTransaction transaction)
         {
             _localNode.Tell(new LocalNode.Relay { Inventory = transaction });
+        }
+
+        public Contract CreateMultiSigContract(int requiredSignatures, params ECPoint[] publicKeys)
+        {
+            return Contract.CreateMultiSigContract(requiredSignatures, publicKeys);
+        }
+
+        public Contract CreateSignatureContract(ECPoint publicKey)
+        {
+            return Contract.CreateSignatureContract(publicKey);
         }
     }
 

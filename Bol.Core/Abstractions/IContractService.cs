@@ -1,5 +1,7 @@
-﻿using Bol.Core.Services;
+using Bol.Core.Services;
+using Neo.Cryptography.ECC;
 using Neo.Network.P2P.Payloads;
+using Neo.SmartContract;
 using Neo.Wallets;
 using System.Collections.Generic;
 
@@ -11,5 +13,7 @@ namespace Bol.Core.Abstractions
         InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys);
         ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys);
         ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters);
+        Contract CreateSignatureContract(ECPoint publicKey);
+        Contract CreateMultiSigContract(int requiredSignatures, params ECPoint[] publicKeys);
     }
 }
