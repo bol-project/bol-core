@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Bol.Core.Abstractions;
 using Neo;
 using Neo.Ledger;
 using Neo.Network.P2P;
@@ -12,13 +13,6 @@ using System.Linq;
 
 namespace Bol.Core.Services
 {
-    public interface IContractService
-    {
-        InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<KeyPair> keys);
-        InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys);
-        ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys);
-    }
-
     public class ContractService : IContractService
     {
         private readonly IActorRef _localNode;
@@ -58,6 +52,23 @@ namespace Bol.Core.Services
         }
 
         public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys)
+        {
+            var scriptHash = ParseOrThrowIfNotFound(contract);
+            var multiSig = CreateMultiSig(keys);
+            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
+            var transaction = CreateTransaction(executionScript, multiSig);
+            var transactionSigned = SignTransaction(transaction, multiSig, keys);
+
+            if (!transactionSigned) throw new Exception("Could not sign transaction.");
+
+            ApplicationEngine engine = ApplicationEngine.Run(transaction.Script, transaction);
+
+            if (engine.State.HasFlag(VMState.FAULT)) return ContractExecutionResult.Fail();
+
+            return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
+        }
+
+        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters)
         {
             var scriptHash = ParseOrThrowIfNotFound(contract);
             var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
