@@ -20,6 +20,7 @@
       "IssueTransaction": 500,
       "PublishTransaction": 500,
       "RegisterTransaction": 10000
-    }
+    },
+    "BolContract": "1bf4ae877af615104a78e490dedfa9053405d51f"
   }
 }
