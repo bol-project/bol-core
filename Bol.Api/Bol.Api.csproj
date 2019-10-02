@@ -33,6 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Bol.Coin.avm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="libleveldb.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
