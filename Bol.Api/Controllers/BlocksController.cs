@@ -20,7 +20,7 @@ namespace Bol.Api.Controllers
         [HttpGet("current")]
         public ActionResult GetCurrentBlock()
         {
-            return Ok(Blockchain.Singleton.CurrentBlockHash.ToString());
+            return Ok(Blockchain.Singleton.GetBlock(Blockchain.Singleton.CurrentBlockHash).ToJson());
         }
 
         [HttpGet("{id}")]
