@@ -1,4 +1,5 @@
 ﻿using Bol.Core.Abstractions;
+using Neo;
 using Neo.Cryptography;
 using Neo.IO.Json;
 using Neo.SmartContract;
@@ -23,16 +24,20 @@ namespace Bol.Core.Services
             _walletIndexer = walletIndexer ?? throw new ArgumentNullException(nameof(walletIndexer));
         }
 
-        public async Task<NEP6Wallet> CreateWallet(string codeName, byte[] privateKey, string walletPassword, CancellationToken token = default)
+        public async Task<NEP6Wallet> CreateWallet(string codeName, string edi, string privateKey, string walletPassword, CancellationToken token = default)
         {
             var wallet = new NEP6Wallet(_walletIndexer, $"{codeName}.json", codeName);
             wallet.Unlock(walletPassword);
 
             var codeNamePrivateKey = Encoding.ASCII.GetBytes(codeName).Sha256();
-            var codeNameAccount = wallet.CreateAccount(codeNamePrivateKey);
+            var codeNameAccount = (NEP6Account)wallet.CreateAccount(codeNamePrivateKey);
             codeNameAccount.Label = "codename";
+            var extraCodeName = new JObject();
+            extraCodeName["codename"] = codeName;
+            extraCodeName["edi"] = edi;
+            codeNameAccount.Extra = extraCodeName;
 
-            var privateKeyPair = new KeyPair(privateKey);
+            var privateKeyPair = new KeyPair(privateKey.HexToBytes());
 
             var bolAddress = await _addressService.GenerateAddressBAsync(codeName, privateKeyPair, token);
             var nonce = BitConverter.GetBytes(bolAddress.Nonce);
@@ -40,9 +45,9 @@ namespace Bol.Core.Services
             var extendedPrivateKey = privateKeyPair.PrivateKey.Concat(nonce).Sha256();
             var privateAccount = (NEP6Account)wallet.CreateAccount(extendedPrivateKey);
             privateAccount.Label = "private";
-            var extra = new JObject();
-            extra["nonce"] = bolAddress.Nonce;
-            privateAccount.Extra = extra;
+            var extraPrivate = new JObject();
+            extraPrivate["nonce"] = bolAddress.Nonce;
+            privateAccount.Extra = extraPrivate;
 
             var multisig = Contract.CreateMultiSigContract(2, codeNameAccount.GetKey().PublicKey, privateAccount.GetKey().PublicKey);
 
