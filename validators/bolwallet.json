@@ -1,0 +1,74 @@
+{
+    "name": "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
+    "version": "1.0",
+    "scrypt": {
+        "n": 16384,
+        "r": 8,
+        "p": 8
+    },
+    "accounts": [
+        {
+            "address": "B5sBfiBknypHXgtAmpfEXgeu6bjgmmRxiv",
+            "label": "codename",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYVbuFoY5BkzEF52QD833H2dvh1aMTL9bAEKtN78fsR3E1myg29WYuNrF",
+            "contract": {
+                "script": "21034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c006ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": {
+                "codename": "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
+                "edi": "e3274f6bbd018f920e7d629ba035d211e68e41f23f28f5a9f9b89b7b0ea860db"
+            }
+        },
+        {
+            "address": "BAEb3qummGN8PcTDtYkCYzJdmyCzsCPnw1",
+            "label": "private",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYVkG2LoRZdYT28DjAZFUjaWHXM5w61LXcZE9BGbZdiARVs3zBT8VZmHd",
+            "contract": {
+                "script": "2103a6fba200d366f76c6490551e550bc6692647c313cae3df3c3477aff619bb86a0ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": {
+                "nonce": 1431658311
+            }
+        },
+        {
+            "address": "BBBBGUo7Q1SMLhAbh2P2EpZF8c153jC7Nb",
+            "label": "B",
+            "isDefault": true,
+            "lock": false,
+            "key": null,
+            "contract": {
+                "script": "5221034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c0062103a6fba200d366f76c6490551e550bc6692647c313cae3df3c3477aff619bb86a052ae",
+                "parameters": [
+                    {
+                        "name": "parameter0",
+                        "type": "Signature"
+                    },
+                    {
+                        "name": "parameter1",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        }
+    ]
+}

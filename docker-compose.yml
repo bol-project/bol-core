@@ -66,6 +66,22 @@ services:
       - "11459:11456"     
     networks:
         - bol-network
-        
+
+  api-node:
+    image: api-node
+    environment:
+      ASPNETCORE_ENVIRONMENT : Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Dockerfile
+      args:
+        validator_wallet : bolwallet.json
+    extra_hosts:
+      - "node1:${MACHINE_IP}"    
+    ports:
+      - "5000:80"
+    networks:
+        - bol-network
+                
 networks:
   bol-network:
