@@ -8,7 +8,7 @@ services:
       # ASPNETCORE_ENVIRONMENT : Development
     # build:
       # context: .
-      # dockerfile: Bol.Api/Dockerfile
+      # dockerfile: Bol.Api/Validator.Dockerfile
       # args:
         # validator_wallet : val1.json
     # extra_hosts:
@@ -25,7 +25,7 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Dockerfile
+      dockerfile: Bol.Api/Validator.Dockerfile
       args:
         validator_wallet : val2.json
     extra_hosts:
@@ -41,7 +41,7 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Dockerfile
+      dockerfile: Bol.Api/Validator.Dockerfile
       args:
         validator_wallet : val3.json
     extra_hosts:
@@ -57,7 +57,7 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Dockerfile
+      dockerfile: Bol.Api/Validator.Dockerfile
       args:
         validator_wallet : val4.json
     extra_hosts:
@@ -74,8 +74,6 @@ services:
     build:
       context: .
       dockerfile: Bol.Api/Dockerfile
-      args:
-        validator_wallet : bolwallet.json
     extra_hosts:
       - "node1:${MACHINE_IP}"    
     ports:

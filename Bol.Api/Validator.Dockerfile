@@ -17,6 +17,7 @@ COPY . .
 WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
+COPY ./Bol.Api/config.internal.json ./out/config.json
 
 FROM microsoft/dotnet:2.1.3-aspnetcore-runtime AS runtime-base
 
@@ -35,9 +36,10 @@ RUN apt-get update && apt-get install -y \
 RUN rm -rf /var/lib/apt/lists/*
 
 FROM runtime-base AS runtime
+ARG validator_wallet=val1.json
 
 WORKDIR /app
 COPY --from=build /app/Bol.Api/out ./
-COPY ./validators /validators
+COPY validators/$validator_wallet ./validator.json
 RUN mkdir /blockchain
 ENTRYPOINT ["dotnet", "Bol.Api.dll"]
