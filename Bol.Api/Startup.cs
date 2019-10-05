@@ -1,9 +1,10 @@
-﻿using Akka.Actor;
+using Akka.Actor;
 using Bol.Api.BackgroundServices;
 using Bol.Core.Abstractions;
 using Bol.Core.Accessors;
 using Bol.Core.Encoders;
 using Bol.Core.Hashers;
+using Bol.Core.Helpers;
 using Bol.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Neo.Shell;
+using Neo.Wallets;
 using Neo.Wallets.NEP6;
 using Prometheus;
 using System;
@@ -39,10 +41,12 @@ namespace Bol.Api
             services.AddScoped<IBolService, BolService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<INonceCalculator, NonceCalculator>();
             services.AddScoped<ISha256Hasher, Sha256Hasher>();
             services.AddScoped<IBase16Encoder, Base16Encoder>();
             services.AddScoped<IBase58Encoder, Base58Encoder>();
             services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
+            services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
 
             return services.BuildServiceProvider();
