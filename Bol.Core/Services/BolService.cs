@@ -1,7 +1,10 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using Neo;
+using Neo.Wallets;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Bol.Core.Services
@@ -17,10 +20,38 @@ namespace Bol.Core.Services
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
         }
 
+        public BolResponse Create(IEnumerable<KeyPair> keys)
+        {
+            var settings = ProtocolSettings.Default.BolSettings;
+            var script = File.ReadAllBytes(settings.Path);
+
+            var transaction = _contractService.DeployContract(script, settings.Name, settings.Version, settings.Author, settings.Email, settings.Description, keys);
+
+            return new BolResponse
+            {
+                Success = true,
+                TransactionId = transaction.Hash.ToString()
+            };
+        }
+
+        public BolResponse Deploy(IEnumerable<KeyPair> keys)
+        {
+            var settings = ProtocolSettings.Default.BolSettings;
+            var script = File.ReadAllBytes(settings.Path);
+
+            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys);
+
+            return new BolResponse
+            {
+                Success = true,
+                TransactionId = transaction.Hash.ToString()
+            };
+        }
+
         public BolResponse Register()
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolContract;
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
                 Encoding.ASCII.GetBytes(context.CodeName),
@@ -47,7 +78,7 @@ namespace Bol.Core.Services
         public BolResponse Claim()
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolContract;
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
                 context.BAddress.ToArray()
@@ -72,7 +103,7 @@ namespace Bol.Core.Services
 
         public BolResponse Decimals()
         {
-            var bolContract = ProtocolSettings.Default.BolContract;
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
             var parameters = new byte[0][];
 
