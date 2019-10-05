@@ -1,4 +1,4 @@
-﻿using Bol.Api.NeoPlugins;
+using Bol.Api.NeoPlugins;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neo.Shell;
@@ -11,6 +11,9 @@ namespace Bol.Api.BackgroundServices
     public class NodeBackgroundService : BackgroundService
     {
         private readonly ILogger<NodeBackgroundService> _logger;
+
+        private static MainService _mainService;
+        public static MainService MainService => _mainService;
 
         public NodeBackgroundService(ILogger<NodeBackgroundService> logger)
         {
@@ -25,6 +28,7 @@ namespace Bol.Api.BackgroundServices
                 new LogPlugin(_logger);
 
                 var mainService = new MainService();
+                _mainService = mainService;
                 return Task.Run(() => mainService.Run(new string[0]));
             }
             catch (Exception ex)
