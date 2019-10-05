@@ -15,7 +15,7 @@
       "SslCertPassword": ""
     },
     "UnlockWallet": {
-      "Path": "validator.json",
+      "Path": "bolwallet.json",
       "Password": "bol",
       "StartConsensus": true,
       "IsActive": true
