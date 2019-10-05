@@ -21,6 +21,14 @@
       "PublishTransaction": 500,
       "RegisterTransaction": 10000
     },
-    "BolContract": "1bf4ae877af615104a78e490dedfa9053405d51f"
+    "BolContract": {
+      "ScriptHash": "1bf4ae877af615104a78e490dedfa9053405d51f",
+      "Name": "Bol",
+      "Version": "0.1",
+      "Author": "Bol Team",
+      "Email": "admin@bolchain.net",
+      "Description": "Bonus Of Life",
+      "Path": "Bol.Coin.avm"
+    }
   }
 }
