@@ -17,6 +17,7 @@ COPY . .
 WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
+COPY ./Bol.Api/config.internal.json ./out/config.json
 
 FROM microsoft/dotnet:2.1.3-aspnetcore-runtime AS runtime-base
 
