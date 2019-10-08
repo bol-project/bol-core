@@ -16,6 +16,10 @@ using Neo.Wallets;
 using Neo.Wallets.NEP6;
 using Prometheus;
 using System;
+using Bol.Core.Abstractions.Mappers;
+using Bol.Core.Mappers;
+using Bol.Core.Model.Responses;
+using Neo.Network.P2P.Payloads;
 
 namespace Bol.Api
 {
@@ -48,6 +52,8 @@ namespace Bol.Api
             services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
             services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
+
+            services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
 
             return services.BuildServiceProvider();
         }
