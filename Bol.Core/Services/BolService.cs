@@ -1,11 +1,15 @@
-using Bol.Core.Abstractions;
-using Bol.Core.Model;
-using Neo;
-using Neo.Wallets;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Bol.Core.Abstractions;
+using Bol.Core.Abstractions.Mappers;
+using Bol.Core.Model;
+using Bol.Core.Model.Responses;
+using Neo;
+using Neo.Network.P2P.Payloads;
+using Neo.Wallets;
 
 namespace Bol.Core.Services
 {
@@ -13,42 +17,43 @@ namespace Bol.Core.Services
     {
         private IContractService _contractService;
         private IContextAccessor _contextAccessor;
+        private readonly IBolResponseMapper<InvocationTransaction, CreateContractResult> _createContractResponseMapper;
 
-        public BolService(IContractService contractService, IContextAccessor contextAccessor)
+        public BolService(
+            IContractService contractService,
+            IContextAccessor contextAccessor,
+            IBolResponseMapper<InvocationTransaction, CreateContractResult> createContractResponseMapper)
         {
             _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+            _createContractResponseMapper = createContractResponseMapper ?? throw new ArgumentNullException(nameof(createContractResponseMapper));
         }
 
-        public BolResponse Create(IEnumerable<KeyPair> keys)
+        public BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys)
         {
             var settings = ProtocolSettings.Default.BolSettings;
             var script = File.ReadAllBytes(settings.Path);
 
             var transaction = _contractService.DeployContract(script, settings.Name, settings.Version, settings.Author, settings.Email, settings.Description, keys);
 
-            return new BolResponse
-            {
-                Success = true,
-                TransactionId = transaction.Hash.ToString()
-            };
+            return _createContractResponseMapper.Map(transaction);
         }
 
-        public BolResponse Deploy(IEnumerable<KeyPair> keys)
+        public BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys)
         {
             var settings = ProtocolSettings.Default.BolSettings;
             var script = File.ReadAllBytes(settings.Path);
 
             var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys);
 
-            return new BolResponse
+            return new BolResponse<DeployContractResult>
             {
                 Success = true,
                 TransactionId = transaction.Hash.ToString()
             };
         }
 
-        public BolResponse Register()
+        public BolResponse<RegisterContractResult> Register()
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
@@ -68,14 +73,14 @@ namespace Bol.Core.Services
 
             var transaction = _contractService.InvokeContract(bolContract, "register", parameters, keys);
 
-            return new BolResponse
+            return new BolResponse<RegisterContractResult>
             {
                 Success = true,
                 TransactionId = transaction.Hash.ToString()
             };
         }
 
-        public BolResponse Claim()
+        public BolResponse<ClaimResult> Claim()
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
@@ -94,14 +99,14 @@ namespace Bol.Core.Services
 
             var transaction = _contractService.InvokeContract(bolContract, "claim", parameters, keys);
 
-            return new BolResponse
+            return new BolResponse<ClaimResult>
             {
                 Success = true,
                 TransactionId = transaction.Hash.ToString()
             };
         }
 
-        public BolResponse Decimals()
+        public BolResponse<int> Decimals()
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
@@ -114,9 +119,10 @@ namespace Bol.Core.Services
                 throw new Exception(); //Deserialize BolResult first
             }
 
-            return new BolResponse
+            return new BolResponse<int>
             {
-                Success = true
+                Success = true,
+                Result = result.Result.First()
             };
         }
     }
