@@ -1,4 +1,3 @@
-using Bol.Core.Model;
 using Bol.Core.Model.Responses;
 
 namespace Bol.Core.Abstractions.Mappers
