@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Neo;
-using Neo.Ledger;
-using System.Linq;
+using System;
+using Bol.Core.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Bol.Api.Controllers
 {
@@ -9,24 +8,35 @@ namespace Bol.Api.Controllers
     [ApiController]
     public class BlocksController : ControllerBase
     {
+        private readonly IBlockChainService _blockChainService;
+
+        public BlocksController(IBlockChainService blockChainService)
+        {
+            _blockChainService = blockChainService ?? throw new ArgumentNullException(nameof(blockChainService));
+        }
+
         [HttpGet]
         public ActionResult GetBlocks()
         {
-            var blocks = Blockchain.Singleton.Store.GetBlocks().Find();
-            var count = blocks.Count();
-            return Ok(blocks);
+            var result = _blockChainService.GetBlocks();
+
+            return Ok(result);
         }
 
         [HttpGet("current")]
         public ActionResult GetCurrentBlock()
         {
-            return Ok(Blockchain.Singleton.GetBlock(Blockchain.Singleton.CurrentBlockHash).ToJson());
+            var result = _blockChainService.GetCurrentBlock();
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult Get(string id)
+        public ActionResult Get([FromRoute] string id)
         {
-            return Ok(Blockchain.Singleton.GetBlock(UInt256.Parse(id)).ToJson());
+            var result = _blockChainService.GetBlock(id);
+
+            return Ok(result);
         }
     }
 }
