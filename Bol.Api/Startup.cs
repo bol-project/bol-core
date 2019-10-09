@@ -1,25 +1,27 @@
+using System;
 using Akka.Actor;
 using Bol.Api.BackgroundServices;
 using Bol.Core.Abstractions;
+using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
+using Bol.Core.Dtos;
 using Bol.Core.Encoders;
 using Bol.Core.Hashers;
 using Bol.Core.Helpers;
+using Bol.Core.Mappers;
+using Bol.Core.Model.Responses;
 using Bol.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Neo.Ledger;
+using Neo.Network.P2P.Payloads;
 using Neo.Shell;
 using Neo.Wallets;
 using Neo.Wallets.NEP6;
 using Prometheus;
-using System;
-using Bol.Core.Abstractions.Mappers;
-using Bol.Core.Mappers;
-using Bol.Core.Model.Responses;
-using Neo.Network.P2P.Payloads;
 
 namespace Bol.Api
 {
@@ -56,7 +58,10 @@ namespace Bol.Api
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
             services.AddScoped<IBlockChainService, BlockChainService>();
 
+            // Mappers
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
+            services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
+            services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
 
             return services.BuildServiceProvider();
         }
