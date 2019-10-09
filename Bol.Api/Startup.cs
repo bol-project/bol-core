@@ -51,7 +51,10 @@ namespace Bol.Api
             services.AddScoped<IBase58Encoder, Base58Encoder>();
             services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
             services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
+
+            services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
+            services.AddScoped<IBlockChainService, BlockChainService>();
 
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
 
