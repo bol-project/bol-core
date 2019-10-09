@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
-using Bol.Core.Model;
 using Bol.Core.Model.Responses;
 using Neo;
 using Neo.Network.P2P.Payloads;
