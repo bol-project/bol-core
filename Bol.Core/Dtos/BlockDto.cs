@@ -1,15 +1,17 @@
+using System.Collections.Generic;
+
 namespace Bol.Core.Dtos
 {
     public class BlockDto
     {
         public string Hash;
-        public int Size;
-        public uint Timestamp;
-        public uint Index;
-        public uint Version;
         public string PrevHash;
         public string MerkleRoot;
+        public uint Timestamp;
+        public uint Height;
+        public uint Version;
         public ulong ConsensusData;
         public string NextConsensus;
+        public IEnumerable<string> Transactions { get; set; }
     }
 }
