@@ -1,3 +1,4 @@
+using System.Linq;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Dtos;
 using Neo.Network.P2P.Payloads;
@@ -18,12 +19,12 @@ namespace Bol.Core.Mappers
                 Version = source.Version,
                 Hash = source.Hash.ToString(),
                 PrevHash = source.PrevHash.ToString(),
-                Size = source.Size,
+                Height = source.Index,
                 Timestamp = source.Timestamp,
-                Index = source.Index,
                 NextConsensus = source.NextConsensus.ToString(),
                 ConsensusData = source.ConsensusData,
-                MerkleRoot = source.MerkleRoot.ToString()
+                MerkleRoot = source.MerkleRoot.ToString(),
+                Transactions = source.Transactions.Select(t => t.ToString())
             };
         }
     }
