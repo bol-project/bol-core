@@ -57,12 +57,13 @@ namespace Bol.Api
             services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
             services.AddScoped<IBlockChainService, BlockChainService>();
+            services.AddScoped<ITransactionService, BlockChainService>();
 
             // Mappers
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
             services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
             services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
-
+            services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
             return services.BuildServiceProvider();
         }
 
