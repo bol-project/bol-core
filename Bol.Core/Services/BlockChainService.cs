@@ -11,17 +11,20 @@ using Neo.Network.P2P.Payloads;
 
 namespace Bol.Core.Services
 {
-    public class BlockChainService : IBlockChainService
+    public class BlockChainService : IBlockChainService, ITransactionService
     {
         private readonly IMapper<Block, BlockDto> _blockDtoMapper;
         private readonly IMapper<TrimmedBlock, BaseBlockDto> _baseBlockDtoMapper;
+        private readonly IMapper<Transaction, BaseTransactionDto> _baseTransactionDtoMapper;
 
         public BlockChainService(
             IMapper<Block, BlockDto> blockDtoMapper,
-            IMapper<TrimmedBlock, BaseBlockDto> baseBlockDtoMapper)
+            IMapper<TrimmedBlock, BaseBlockDto> baseBlockDtoMapper,
+            IMapper<Transaction, BaseTransactionDto> baseTransactionDtoMapper)
         {
             _blockDtoMapper = blockDtoMapper ?? throw new ArgumentNullException(nameof(blockDtoMapper));
             _baseBlockDtoMapper = baseBlockDtoMapper ?? throw new ArgumentNullException(nameof(baseBlockDtoMapper));
+            _baseTransactionDtoMapper = baseTransactionDtoMapper ?? throw new ArgumentNullException(nameof(baseTransactionDtoMapper));
         }
 
         public GetContractResult GetContract(string contract)
@@ -72,7 +75,31 @@ namespace Bol.Core.Services
 
             var trimmedBlocks = blocks.Select(b => b.Value.TrimmedBlock);
 
-            return trimmedBlocks.Select(b => _baseBlockDtoMapper.Map(b));
+            return trimmedBlocks.Select(_baseBlockDtoMapper.Map);
+        }
+
+        public IEnumerable<BaseTransactionDto> GetTransactions()
+        {
+            var transactions = Blockchain.Singleton.Store
+                .GetTransactions()
+                .Find()
+                .Select(t => t.Value.Transaction);
+
+            return transactions.Select(_baseTransactionDtoMapper.Map);
+        }
+
+        public BaseTransactionDto GetTransaction(string id)
+        {
+            var hash = UInt256.Parse(id);
+
+            var result = Blockchain.Singleton.Store.GetTransactions().TryGet(hash);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return _baseTransactionDtoMapper.Map(result.Transaction);
         }
     }
 }
