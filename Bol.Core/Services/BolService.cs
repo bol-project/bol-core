@@ -1,10 +1,17 @@
+using Bol.Coin.Models;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using Neo;
+using Neo.Cryptography;
+using Neo.Ledger;
 using Neo.Wallets;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace Bol.Core.Services
@@ -54,14 +61,22 @@ namespace Bol.Core.Services
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
-                Encoding.ASCII.GetBytes(context.CodeName),
                 context.BAddress.ToArray(),
+                Encoding.ASCII.GetBytes(context.CodeName),                
                 context.Edi.HexToBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
             var result = _contractService.TestContract(bolContract, "register", parameters, keys);
 
             if (!result.Success)
+            {
+                throw new Exception(); //Deserialize BolResult first
+            }
+
+            var json = Encoding.UTF8.GetString(result.Result);
+            var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
+
+            if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception(); //Deserialize BolResult first
             }
@@ -87,17 +102,72 @@ namespace Bol.Core.Services
 
             var result = _contractService.TestContract(bolContract, "claim", parameters, keys);
 
-            if (!result.Success)
+            var json = Encoding.UTF8.GetString(result.Result);
+            var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
+            
+            if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception(); //Deserialize BolResult first
             }
 
-            var transaction = _contractService.InvokeContract(bolContract, "claim", parameters, keys);
+            var transaction = _contractService.InvokeContract(bolContract, "claim", parameters, keys, remark: Blockchain.Singleton.Height.ToString());
 
             return new BolResponse
             {
                 Success = true,
                 TransactionId = transaction.Hash.ToString()
+            };
+        }
+
+        public BolResponse BalanceOf()
+        {
+            var context = _contextAccessor.GetContext();
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var parameters = new[]
+            {
+                context.BAddress.ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys);
+
+            if (!result.Success)
+            {
+                throw new Exception(); //Deserialize BolResult first
+            }
+
+            var balance = new BigInteger(result.Result);
+
+            return new BolResponse
+            {
+                Success = true,
+                Result = balance.ToString()
+            };
+        }
+
+        public BolResponse TotalSupply()
+        {
+            var context = _contextAccessor.GetContext();
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var parameters = new[]
+            {
+                context.BAddress.ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = _contractService.TestContract(bolContract, "totalSupply", parameters, keys);
+
+            if (!result.Success)
+            {
+                throw new Exception(); //Deserialize BolResult first
+            }
+
+            var balance = new BigInteger(result.Result);
+
+            return new BolResponse
+            {
+                Success = true,
+                Result = balance.ToString()
             };
         }
 
@@ -109,6 +179,25 @@ namespace Bol.Core.Services
 
             var result = _contractService.TestContract(bolContract, "decimals", parameters);
 
+            if (!result.Success)
+            {
+                throw new Exception(); //Deserialize BolResult first
+            }
+
+            return new BolResponse
+            {
+                Success = true
+            };
+        }
+
+        public BolResponse Name()
+        {
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
+            var parameters = new byte[0][];
+
+            var result = _contractService.TestContract(bolContract, "name", parameters);
+            var name = Encoding.UTF8.GetString(result.Result);
             if (!result.Success)
             {
                 throw new Exception(); //Deserialize BolResult first

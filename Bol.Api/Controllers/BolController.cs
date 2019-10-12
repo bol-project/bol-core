@@ -98,5 +98,26 @@ namespace Bol.Api.Controllers
             var result = _bolService.Decimals();
             return Ok(result);
         }
+
+        [HttpGet("name")]
+        public ActionResult Name()
+        {
+            var result = _bolService.Name();
+            return Ok(result);
+        }
+
+        [HttpGet("balanceOf")]
+        public ActionResult BalanceOf()
+        {
+            var result = _bolService.BalanceOf();
+            return Ok(result);
+        }
+
+        [HttpGet("totalSupply")]
+        public ActionResult TotalSupply()
+        {
+            var result = _bolService.TotalSupply();
+            return Ok(result);
+        }
     }
 }

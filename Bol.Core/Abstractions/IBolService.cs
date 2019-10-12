@@ -11,5 +11,8 @@ namespace Bol.Core.Abstractions
         BolResponse Claim();
         BolResponse Decimals();
         BolResponse Register();
+        BolResponse Name();
+        BolResponse BalanceOf();
+        BolResponse TotalSupply();
     }
 }
