@@ -1,27 +1,29 @@
-using Akka.Actor;
-using Bol.Core.Abstractions;
-using Neo;
-using Neo.Cryptography.ECC;
-using Neo.Ledger;
-using Neo.Network.P2P;
-using Neo.Network.P2P.Payloads;
-using Neo.SmartContract;
-using Neo.VM;
-using Neo.Wallets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Bol.Core.Abstractions;
+using Neo;
+using Neo.Cryptography.ECC;
+using Neo.Ledger;
+using Neo.Network.P2P.Payloads;
+using Neo.SmartContract;
+using Neo.VM;
+using Neo.Wallets;
 
 namespace Bol.Core.Services
 {
     public class ContractService : IContractService
     {
-        private readonly IActorRef _localNode;
+        private readonly ITransactionPublisher _transactionPublisher;
+        private readonly IBlockChainService _blockChainService;
 
-        public ContractService(IActorRef localNode)
+        public ContractService(
+            ITransactionPublisher transactionPublisher,
+            IBlockChainService blockChainService)
         {
-            _localNode = localNode ?? throw new ArgumentNullException(nameof(localNode));
+            _transactionPublisher = transactionPublisher ?? throw new ArgumentNullException(nameof(transactionPublisher));
+            _blockChainService = blockChainService ?? throw new ArgumentNullException(nameof(blockChainService));
         }
 
         public InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<KeyPair> keys)
@@ -85,15 +87,14 @@ namespace Bol.Core.Services
 
         private UInt160 ParseOrThrowIfNotFound(string contract)
         {
-            var scriptHash = UInt160.Parse(contract);
-            ContractState contractState = Blockchain.Singleton.Store.GetContracts().TryGet(scriptHash);
+            var result = _blockChainService.GetContract(contract);
 
-            if (contractState == null)
+            if (!result.ContractExists)
             {
                 throw new Exception("Contract was not found in the blockchain.");
             }
 
-            return scriptHash;
+            return result.ScriptHash;
         }
 
         private Contract CreateMultiSig(IEnumerable<KeyPair> keys)
@@ -213,7 +214,7 @@ namespace Bol.Core.Services
 
         private void SubmitTransaction(InvocationTransaction transaction)
         {
-            _localNode.Tell(new LocalNode.Relay { Inventory = transaction });
+            _transactionPublisher.Publish(transaction);
         }
 
         public Contract CreateMultiSigContract(int requiredSignatures, params ECPoint[] publicKeys)

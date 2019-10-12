@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Neo;
-using Neo.Ledger;
-using System.Linq;
+using System;
+using Bol.Core.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Bol.Api.Controllers
 {
@@ -9,18 +8,27 @@ namespace Bol.Api.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
+        private readonly ITransactionService _transactionService;
+
+        public TransactionsController(ITransactionService transactionService)
+        {
+            _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
+        }
+
         [HttpGet]
         public ActionResult Get()
         {
-            var transactions = Blockchain.Singleton.Store.GetTransactions().Find();
-            var count = transactions.Count();
-            return Ok(transactions);
+            var result = _transactionService.GetTransactions();
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult Get(string id)
+        public ActionResult Get([FromRoute]string id)
         {
-            return Ok(Blockchain.Singleton.GetTransaction(UInt256.Parse(id)).ToJson());
+            var result = _transactionService.GetTransaction(id);
+
+            return Ok(result);
         }
     }
 }
