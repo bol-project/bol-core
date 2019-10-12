@@ -11,6 +11,7 @@ using Neo.Wallets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Bol.Core.Services
 {
@@ -37,12 +38,12 @@ namespace Bol.Core.Services
             return transaction;
         }
 
-        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys)
+        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys, string description = null, string remark = null)
         {
             var scriptHash = ParseOrThrowIfNotFound(contract);
             var multiSig = CreateMultiSig(keys);
             var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
-            var transaction = CreateTransaction(executionScript, multiSig);
+            var transaction = CreateTransaction(executionScript, multiSig, description, remark);
             var transactionSigned = SignTransaction(transaction, multiSig, keys);
 
             if (!transactionSigned) throw new Exception("Could not sign transaction.");
@@ -66,7 +67,7 @@ namespace Bol.Core.Services
 
             if (engine.State.HasFlag(VMState.FAULT)) return ContractExecutionResult.Fail();
 
-            return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
+            return ContractExecutionResult.Succeed(engine.ResultStack.SelectMany(r => r.GetByteArray()).ToArray(), engine.GasConsumed);
         }
 
         public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters)
@@ -138,8 +139,8 @@ namespace Bol.Core.Services
         private byte[] CreateContractScript(byte[] script, string name, string version, string author, string email, string description)
         {
             byte[] parameter_list = "0710".HexToBytes();
-            ContractParameterType return_type = ContractParameterType.ByteArray;
-            ContractPropertyState properties = ContractPropertyState.HasStorage;
+            var return_type = ContractParameterType.ByteArray;
+            var properties = ContractPropertyState.HasStorage;
 
             using (ScriptBuilder sb = new ScriptBuilder())
             {
@@ -148,7 +149,7 @@ namespace Bol.Core.Services
             }
         }
 
-        private InvocationTransaction CreateTransaction(byte[] executionScript, Contract multiSig = null)
+        private InvocationTransaction CreateTransaction(byte[] executionScript, Contract multiSig = null, string description = null, string remark = null)
         {
             var transaction = new InvocationTransaction
             {
@@ -159,17 +160,39 @@ namespace Bol.Core.Services
                 Outputs = new TransactionOutput[0],
                 Witnesses = new Witness[0]
             };
+            var attributes = new List<TransactionAttribute>();
 
             if (multiSig != null)
             {
-                transaction.Attributes = new[]
-                {
-                    new TransactionAttribute {
+                attributes.Add(
+                    new TransactionAttribute
+                    {
                         Usage = TransactionAttributeUsage.Script,
                         Data = multiSig.ScriptHash.ToArray()
-                    }
-                };
+                    });
             }
+
+            if (description != null)
+            {
+                attributes.Add(
+                    new TransactionAttribute
+                    {
+                        Usage = TransactionAttributeUsage.Description,
+                        Data = Encoding.UTF8.GetBytes(description),
+                    });
+            }
+
+            if (remark != null)
+            {
+                attributes.Add(
+                    new TransactionAttribute
+                    {
+                        Usage = TransactionAttributeUsage.Remark,
+                        Data = Encoding.UTF8.GetBytes(remark),
+                    });
+            }
+
+            transaction.Attributes = attributes.ToArray();
 
             return transaction;
         }
