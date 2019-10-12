@@ -1,4 +1,5 @@
-﻿using Bol.Coin.Services;
+using Bol.Coin.Helpers;
+using Bol.Coin.Services;
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 using System;
@@ -28,7 +29,7 @@ namespace Neo.SmartContract
                     byte[] to = (byte[])args[1];
                     BigInteger value = (BigInteger)args[2];
                     //Runtime.Log(value.AsByteArray().AsString());
-                    return BolService.Transfer(from, to, value).Serialize();
+                    return JsonHelper.AsJson(BolService.Transfer(from, to, value));
                 }
                 if (operation == "balanceOf")
                 {
@@ -44,32 +45,32 @@ namespace Neo.SmartContract
                     byte[] codeName = (byte[])args[1];
                     byte[] edi = (byte[])args[2];
 
-                    return BolService.Register(address, codeName, edi).Serialize();
+                    return JsonHelper.AsJson(BolService.Register(address, codeName, edi));
                 }
                 if (operation == "registerCertifier")
                 {
                     if (args.Length != 1) return false;
                     byte[] address = (byte[])args[0];
-                    return BolService.RegisterAsCertifier(address).Serialize();
+                    return JsonHelper.AsJson(BolService.RegisterAsCertifier(address));
                 }
                 if (operation == "unregisterCertifier")
                 {
                     if (args.Length != 1) return false;
                     byte[] address = (byte[])args[0];
-                    return BolService.UnregisterAsCertifier(address).Serialize();
+                    return JsonHelper.AsJson(BolService.UnregisterAsCertifier(address));
                 }
                 if (operation == "certify")
                 {
                     if (args.Length != 2) return false;
                     byte[] certifier = (byte[])args[0];
                     byte[] address = (byte[])args[1];
-                    return BolService.Certify(certifier, address).Serialize();
+                    return JsonHelper.AsJson(BolService.Certify(certifier, address));
                 }
                 if (operation == "claim")
                 {
                     if (args.Length != 1) return false;
                     byte[] address = (byte[])args[0];
-                    return BolService.Claim(address).Serialize();
+                    return JsonHelper.AsJson(BolService.Claim(address));
                 }
             }
             return false;

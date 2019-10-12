@@ -1,4 +1,4 @@
-﻿using Bol.Coin.Helpers;
+using Bol.Coin.Helpers;
 using Bol.Coin.Models;
 using Bol.Coin.Persistence;
 using Bol.Coin.Validators;
@@ -24,17 +24,17 @@ namespace Bol.Coin.Services
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
 
-        public static BolResponse Register(byte[] address, byte[] codeName, byte[] edi)
+        public static BolResult Register(byte[] address, byte[] codeName, byte[] edi)
         {
-            if (BolValidator.AddressEmpty(address)) return BolResponse.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResponse.BadRequest("Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(address)) return BolResponse.Unauthorized("Only the Address owner can perform this action.");
-            if (BolValidator.CodeNameEmpty(codeName)) return BolResponse.BadRequest("CodeName cannot be empty.");
-            if (BolValidator.EdiEmpty(edi)) return BolResponse.BadRequest("EDI cannot be empty.");
-            if (BolValidator.EdiBadLength(edi)) return BolResponse.BadRequest("EDI length must be 32 bytes.");
+            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
+            if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.CodeNameEmpty(codeName)) return BolResult.BadRequest("CodeName cannot be empty.");
+            if (BolValidator.EdiEmpty(edi)) return BolResult.BadRequest("EDI cannot be empty.");
+            if (BolValidator.EdiBadLength(edi)) return BolResult.BadRequest("EDI length must be 32 bytes.");
 
             var account = BolRepository.Get(address);
-            if (account != null) return BolResponse.BadRequest("A Bol Account already exists for this address.");
+            if (account.Address != null) return BolResult.BadRequest("A Bol Account already exists for this address.");
 
             var currentHeight = BlockChainService.GetCurrentHeight();
 
@@ -46,18 +46,22 @@ namespace Bol.Coin.Services
             account.RegistrationHeight = currentHeight;
             account.LastClaimHeight = currentHeight;
             account.Certifications = 0;
-            account.Certifiers = new byte[3][];
+            account.IsCertifier = 0;
+            account.Collateral = 0;            
+            //account.Certifiers = new byte[3][];
 
             BolRepository.Save(account);
 
-            return BolResponse.Ok();
+            var result = BolRepository.Get(account.Address);
+
+            return BolResult.Ok(JsonHelper.AsJson(result));
         }
 
         public static bool Deploy()
         {
             var totalSupply = BolRepository.GetBols();
 
-            if (totalSupply != null) return false;
+            //if (totalSupply != null) return false;
 
             BolRepository.SetBols(0);
             return true;
@@ -68,23 +72,23 @@ namespace Bol.Coin.Services
             return BolRepository.GetBols();
         }
 
-        public static BolResponse Transfer(byte[] from, byte[] to, BigInteger value)
+        public static BolResult Transfer(byte[] from, byte[] to, BigInteger value)
         {
-            if (BolValidator.AddressEmpty(from)) return BolResponse.BadRequest("From Address cannot be empty.");
-            if (BolValidator.AddressBadLength(from)) return BolResponse.BadRequest("From Address length must be 20 bytes.");
-            if (BolValidator.AddressEmpty(to)) return BolResponse.BadRequest("To Address cannot be empty.");
-            if (BolValidator.AddressBadLength(to)) return BolResponse.BadRequest("To Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(from)) return BolResponse.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.AddressEmpty(from)) return BolResult.BadRequest("From Address cannot be empty.");
+            if (BolValidator.AddressBadLength(from)) return BolResult.BadRequest("From Address length must be 20 bytes.");
+            if (BolValidator.AddressEmpty(to)) return BolResult.BadRequest("To Address cannot be empty.");
+            if (BolValidator.AddressBadLength(to)) return BolResult.BadRequest("To Address length must be 20 bytes.");
+            if (BolValidator.AddressNotOwner(from)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
 
-            if (value <= 0) return BolResponse.BadRequest("Cannot transfer a negative or zero value");
+            if (value <= 0) return BolResult.BadRequest("Cannot transfer a negative or zero value");
 
             var fromAccount = BolRepository.Get(from);
-            if (fromAccount == null) return BolResponse.BadRequest("From Address is not a registerd Bol Account.");
+            if (fromAccount.Address == null) return BolResult.BadRequest("From Address is not a registerd Bol Account.");
 
             var toAccount = BolRepository.Get(to);
-            if (toAccount == null) return BolResponse.BadRequest("To Address is not a registerd Bol Account.");
+            if (toAccount.Address == null) return BolResult.BadRequest("To Address is not a registerd Bol Account.");
 
-            if (fromAccount.Balance < value) return BolResponse.BadRequest("Cannot transfer more Bols that account balance.");
+            if (fromAccount.Balance < value) return BolResult.BadRequest("Cannot transfer more Bols that account balance.");
 
             fromAccount.Balance = fromAccount.Balance - value;
             toAccount.Balance = toAccount.Balance + value;
@@ -93,7 +97,7 @@ namespace Bol.Coin.Services
             BolRepository.Save(toAccount);
             Transferred(from, to, value);
 
-            return BolResponse.Ok();
+            return BolResult.Ok();
         }
 
         public static BigInteger GetBalance(byte[] address)
@@ -102,73 +106,73 @@ namespace Bol.Coin.Services
             if (BolValidator.AddressBadLength(address)) return new BigInteger(0);
 
             var account = BolRepository.Get(address);
-            if (account == null) return new BigInteger(0);
+            if (account.Address == null) return new BigInteger(0);
 
             return account.Balance;
         }
 
-        public static BolResponse RegisterAsCertifier(byte[] address)
+        public static BolResult RegisterAsCertifier(byte[] address)
         {
-            if (BolValidator.AddressEmpty(address)) return BolResponse.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResponse.BadRequest("Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(address)) return BolResponse.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
+            if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
 
             var bolAccount = BolRepository.Get(address);
-            if (bolAccount == null) return BolResponse.BadRequest("Address is not a registerd Bol Account.");
+            if (bolAccount.Address == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
 
-            if (bolAccount.IsCertifier) return BolResponse.BadRequest("Address is already a Bol Certifier.");
+            if (bolAccount.IsCertifier == 1) return BolResult.BadRequest("Address is already a Bol Certifier.");
 
-            if (bolAccount.Balance < COLLATERAL_BOL) return BolResponse.BadRequest("Account does not have enough Bols to become a certifier.");
+            if (bolAccount.Balance < COLLATERAL_BOL) return BolResult.BadRequest("Account does not have enough Bols to become a certifier.");
 
             bolAccount.Balance = bolAccount.Balance - COLLATERAL_BOL;
             bolAccount.Collateral = COLLATERAL_BOL;
-            bolAccount.IsCertifier = true;
+            bolAccount.IsCertifier = 1;
 
             BolRepository.Save(bolAccount);
 
-            return BolResponse.Ok();
+            return BolResult.Ok();
         }
 
-        public static BolResponse UnregisterAsCertifier(byte[] address)
+        public static BolResult UnregisterAsCertifier(byte[] address)
         {
-            if (BolValidator.AddressEmpty(address)) return BolResponse.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResponse.BadRequest("Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(address)) return BolResponse.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
+            if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
 
             var bolAccount = BolRepository.Get(address);
-            if (bolAccount == null) return BolResponse.BadRequest("Address is not a registerd Bol Account.");
+            if (bolAccount.Address == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
 
-            if (!bolAccount.IsCertifier) return BolResponse.BadRequest("Address is not a Bol Certifier.");
+            if (bolAccount.IsCertifier == 0) return BolResult.BadRequest("Address is not a Bol Certifier.");
 
             bolAccount.Balance = bolAccount.Balance + bolAccount.Collateral;
             bolAccount.Collateral = 0;
-            bolAccount.IsCertifier = false;
+            bolAccount.IsCertifier = 0;
 
             BolRepository.Save(bolAccount);
 
-            return BolResponse.Ok();
+            return BolResult.Ok();
         }
 
-        public static BolResponse Certify(byte[] certifier, byte[] address)
+        public static BolResult Certify(byte[] certifier, byte[] address)
         {
-            if (BolValidator.AddressEmpty(certifier)) return BolResponse.BadRequest("Certifier Address cannot be empty.");
-            if (BolValidator.AddressBadLength(certifier)) return BolResponse.BadRequest("Certifier Address length must be 20 bytes.");
-            if (BolValidator.AddressEmpty(address)) return BolResponse.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResponse.BadRequest("Address length must be 20 bytes.");
+            if (BolValidator.AddressEmpty(certifier)) return BolResult.BadRequest("Certifier Address cannot be empty.");
+            if (BolValidator.AddressBadLength(certifier)) return BolResult.BadRequest("Certifier Address length must be 20 bytes.");
+            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
 
-            if (BolValidator.AddressNotOwner(certifier)) return BolResponse.Unauthorized("Only the Certifier Address owner can perform this action.");
+            if (BolValidator.AddressNotOwner(certifier)) return BolResult.Unauthorized("Only the Certifier Address owner can perform this action.");
 
             var certifierBolAccount = BolRepository.Get(certifier);
-            if (certifierBolAccount == null) return BolResponse.BadRequest("Certifier Address is not a registerd Bol Account.");
+            if (certifierBolAccount.Address == null) return BolResult.BadRequest("Certifier Address is not a registerd Bol Account.");
 
             var bolAccount = BolRepository.Get(address);
-            if (bolAccount == null) return BolResponse.BadRequest("Address is not a registerd Bol Account.");
+            if (bolAccount.Address == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
 
-            if (!bolAccount.IsCertifier) return BolResponse.BadRequest("Certifier Address is not a Bol Certifier.");
+            if (bolAccount.IsCertifier == 0) return BolResult.BadRequest("Certifier Address is not a Bol Certifier.");
 
             if (bolAccount.Certifications >= 3)
             {
-                return BolResponse.BadRequest("Address cannot be certified more than 3 times.");
+                return BolResult.BadRequest("Address cannot be certified more than 3 times.");
             }
 
             var appointedCertifiers = GetCertifiers(address);
@@ -176,10 +180,10 @@ namespace Bol.Coin.Services
                 && !ArraysHelper.ArraysEqual(certifier, appointedCertifiers[0])
                 && !ArraysHelper.ArraysEqual(certifier, appointedCertifiers[1]))
             {
-                return BolResponse.BadRequest("Certifier is not one of the appointed Certifiers for this Address.");
+                return BolResult.BadRequest("Certifier is not one of the appointed Certifiers for this Address.");
             }
 
-            bolAccount.Certifiers[bolAccount.Certifications] = certifier;
+            //bolAccount.Certifiers[bolAccount.Certifications] = certifier;
             bolAccount.Certifications = bolAccount.Certifications + 1;
 
             certifierBolAccount.Balance = certifierBolAccount.Balance + CERTIFIER_FEE;
@@ -187,19 +191,22 @@ namespace Bol.Coin.Services
             BolRepository.Save(bolAccount);
             BolRepository.Save(certifierBolAccount);
 
-            return BolResponse.Ok();
+            return BolResult.Ok();
         }
 
-        public static BolResponse Claim(byte[] address)
+        public static BolResult Claim(byte[] address)
         {
-            if (BolValidator.AddressEmpty(address)) return BolResponse.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResponse.BadRequest("Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(address)) return BolResponse.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
+            if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
 
             var bolAccount = BolRepository.Get(address);
-            if (bolAccount == null) return BolResponse.BadRequest("Address is not a registerd Bol Account.");
+            if (bolAccount.Address == null)
+            {
+                return BolResult.BadRequest("Address is not a registerd Bol Account.");
+            }
 
-            if (bolAccount.Certifications < 2) return BolResponse.BadRequest("Address is not a certified Bol Account.");
+            //if (bolAccount.Certifications < 2) return BolResult.BadRequest("Address is not a certified Bol Account.");
 
             var previousHeight = bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
@@ -218,7 +225,7 @@ namespace Bol.Coin.Services
 
             Transferred(null, address, bonus);
 
-            return BolResponse.Ok();
+            return BolResult.Ok();
         }
 
         public static byte[][] GetCertifiers(byte[] address)
