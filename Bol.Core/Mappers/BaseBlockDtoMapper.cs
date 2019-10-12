@@ -18,7 +18,7 @@ namespace Bol.Core.Mappers
                 Hash = source.Hash.ToString(),
                 Size = source.Size,
                 Timestamp = source.Timestamp,
-                Creator = "Spyros",
+                Creator = source.Witness.ScriptHash.ToString(),
                 Height = source.Index,
                 Transactions = source.Hashes.Length 
             };
