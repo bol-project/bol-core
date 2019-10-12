@@ -1,4 +1,4 @@
-﻿using Bol.Coin.Models;
+using Bol.Coin.Models;
 using Neo.SmartContract.Framework;
 using System.Numerics;
 
@@ -34,6 +34,8 @@ namespace Bol.Coin.Persistence
         public static BolAccount Get(byte[] address)
         {
             var bytes = BolStorage.Get(address);
+            if (bytes == null) return new BolAccount();
+
             var account = (BolAccount)bytes.Deserialize();
             return account;
         }
