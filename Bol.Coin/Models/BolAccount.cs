@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 
 namespace Bol.Coin.Models
@@ -12,10 +12,10 @@ namespace Bol.Coin.Models
 
         public BigInteger Balance;
 
-        public int Certifications;
-        public byte[][] Certifiers;
+        public BigInteger Certifications;
+        //public byte[][] Certifiers;
 
-        public bool IsCertifier;
+        public BigInteger IsCertifier;
         public BigInteger Collateral;
 
         public BigInteger RegistrationHeight;
