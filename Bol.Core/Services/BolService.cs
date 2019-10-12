@@ -62,7 +62,7 @@ namespace Bol.Core.Services
             var parameters = new[]
             {
                 context.BAddress.ToArray(),
-                Encoding.ASCII.GetBytes(context.CodeName),                
+                Encoding.ASCII.GetBytes(context.CodeName),
                 context.Edi.HexToBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
@@ -74,19 +74,20 @@ namespace Bol.Core.Services
             }
 
             var json = Encoding.UTF8.GetString(result.Result);
-            var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
+            //var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
 
-            if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                throw new Exception(); //Deserialize BolResult first
-            }
+            //if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
+            //{
+            //    throw new Exception(); //Deserialize BolResult first
+            //}
 
             var transaction = _contractService.InvokeContract(bolContract, "register", parameters, keys);
 
             return new BolResponse
             {
                 Success = true,
-                TransactionId = transaction.Hash.ToString()
+                TransactionId = transaction.Hash.ToString(),
+                Result = json
             };
         }
 
@@ -104,7 +105,7 @@ namespace Bol.Core.Services
 
             var json = Encoding.UTF8.GetString(result.Result);
             var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
-            
+
             if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception(); //Deserialize BolResult first
