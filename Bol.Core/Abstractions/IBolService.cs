@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Bol.Core.BolContract.Models;
 using Bol.Core.Model;
 using Bol.Core.Model.Responses;
+using Neo;
 using Neo.Wallets;
 
 namespace Bol.Core.Abstractions
@@ -9,11 +11,12 @@ namespace Bol.Core.Abstractions
     {
         BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys);
         BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys);
-        BolResponse<ClaimResult> Claim();
+        BolResult<BolAccount> Claim();
         BolResponse<int> Decimals();
-        BolResponse<RegisterContractResult> Register();
+        BolResult<BolAccount> Register();
         BolResponse Name();
         BolResponse BalanceOf();
         BolResponse TotalSupply();
+        BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress);
     }
 }
