@@ -92,6 +92,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("addCommercialAddress")]
+        public ActionResult Claim(string address)
+        {
+            var result = _bolService.AddCommercialAddress(address.ToScriptHash());
+            return Ok(result);
+        }
+
         [HttpGet("decimals")]
         public ActionResult Decimals()
         {
