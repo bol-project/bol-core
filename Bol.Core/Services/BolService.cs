@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Text;
-using Bol.Coin.Models;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
+using Bol.Core.BolContract.Models;
 using Bol.Core.Model;
 using Bol.Core.Model.Responses;
 using Neo;
 using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
+using Neo.SmartContract;
+using Neo.VM;
 using Neo.Wallets;
-using Newtonsoft.Json;
 
 namespace Bol.Core.Services
 {
@@ -57,10 +59,11 @@ namespace Bol.Core.Services
             };
         }
 
-        public BolResponse<RegisterContractResult> Register()
+        public BolResult<BolAccount> Register()
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var a = context.BAddress.ToAddress();
             var parameters = new[]
             {
                 context.BAddress.ToArray(),
@@ -68,35 +71,13 @@ namespace Bol.Core.Services
                 context.Edi.HexToBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
-            var result = _contractService.TestContract(bolContract, "register", parameters, keys);
 
-            if (!result.Success)
-            {
-                throw new Exception(); //Deserialize BolResult first
-            }
+            var result = TestAndInvokeBolContract<BolAccount>("register", keys, parameters);
 
-            var json = Encoding.UTF8.GetString(result.Result);
-            //var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
-
-            //if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
-            //{
-            //    throw new Exception(); //Deserialize BolResult first
-            //}
-
-            var transaction = _contractService.InvokeContract(bolContract, "register", parameters, keys);
-
-            return new BolResponse<RegisterContractResult>
-            {
-                Success = true,
-                TransactionId = transaction.Hash.ToString(),
-                Result = new RegisterContractResult
-                {
-                    Result = json
-                }
-            };
+            return result;
         }
 
-        public BolResponse<ClaimResult> Claim()
+        public BolResult<BolAccount> Claim()
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
@@ -106,23 +87,25 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = _contractService.TestContract(bolContract, "claim", parameters, keys);
+            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, parameters);
 
-            var json = Encoding.UTF8.GetString(result.Result);
-            var bolResult = JsonConvert.DeserializeObject<BolResult>(json);
+            return result;
+        }
 
-            if (bolResult.StatusCode != System.Net.HttpStatusCode.OK)
+        public BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress)
+        {
+            var context = _contextAccessor.GetContext();
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var parameters = new[]
             {
-                throw new Exception(); //Deserialize BolResult first
-            }
-
-            var transaction = _contractService.InvokeContract(bolContract, "claim", parameters, keys, remark: Blockchain.Singleton.Height.ToString());
-
-            return new BolResponse<ClaimResult>
-            {
-                Success = true,
-                TransactionId = transaction.Hash.ToString()
+                context.BAddress.ToArray(),
+                commercialAddress.ToArray()
             };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, parameters);
+
+            return result;
         }
 
         public BolResponse BalanceOf()
@@ -214,6 +197,105 @@ namespace Bol.Core.Services
             {
                 Success = true
             };
+        }
+
+        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, params byte[][] parameters)
+        {
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
+            BolResult<T> bolResult = default;
+            Action<BolResult<T>> callback = (result) =>
+            {
+                bolResult = result;
+            };
+
+            EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(null, operation, args, callback);
+
+            StandardService.Notify += handler;
+
+            var executionResult = _contractService.TestContract(bolContract, operation, parameters, keys);
+
+            StandardService.Notify -= handler;
+
+            if (!executionResult.Success || bolResult?.StatusCode != HttpStatusCode.OK)
+            {
+                return bolResult;
+            }
+
+            var transaction = _contractService.InvokeContract(bolContract, operation, parameters, keys, remark: Blockchain.Singleton.Height.ToString());
+
+            bolResult.Transaction = transaction.Hash.ToString();
+            return bolResult;
+        }
+
+        private void ResponseHandler<T>(UInt256 transactionHash, string operation, NotifyEventArgs args, Action<BolResult<T>> callback)
+        {
+            //var eventTranscation = args.ScriptContainer as InvocationTransaction;
+            //if (eventTranscation == null || eventTranscation.Hash != transactionHash) return;
+
+            var parameters = args.State.ToParameter().Value as List<ContractParameter>;
+
+            if (parameters == null || parameters.Count != 2) return;
+
+            var op = Encoding.UTF8.GetString(parameters[0].Value as byte[]);
+
+            if (op == "error")
+            {
+                var result = (List<ContractParameter>)parameters[1].Value;
+                var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
+                var message = Encoding.UTF8.GetString(result[1].Value as byte[]);
+                var bolResult = new BolResult<T>
+                {
+                    StatusCode = (HttpStatusCode)statusCode,
+                    Message = message
+                };
+                callback(bolResult);
+                return;
+            }
+
+            if (op == operation)
+            {
+                var result = (List<ContractParameter>)parameters[1].Value;
+                var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
+
+                var resultList = (List<ContractParameter>)result[2].Value;
+
+                var properties = typeof(T).GetProperties();
+
+                var resultObject = Activator.CreateInstance<T>();
+
+                for (int i = 0; i < resultList.Count; i++)
+                {
+                    var value = resultList[i].Value;
+
+                    if (value is byte[])
+                    {
+                        properties[i].SetValue(resultObject, ((byte[])value).ToHexString());
+                        continue;
+                    }
+                    if (value is BigInteger)
+                    {
+                        properties[i].SetValue(resultObject, value.ToString());
+                        continue;
+                    }
+                    if (value is List<KeyValuePair<ContractParameter, ContractParameter>>)
+                    {
+                        var keyValueList = (List<KeyValuePair<ContractParameter, ContractParameter>>)value;
+                        var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair => (pair.Value.Value as byte[]).ToHexString());
+
+                        properties[i].SetValue(resultObject, valueDictionary);
+                        continue;
+                    }
+                }
+
+                var bolResult = new BolResult<T>
+                {
+                    StatusCode = (HttpStatusCode)statusCode,
+                    Result = resultObject
+                };
+                callback(bolResult);
+                return;
+            }
         }
     }
 }
