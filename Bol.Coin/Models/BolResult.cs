@@ -4,7 +4,7 @@ namespace Bol.Coin.Models
     {
         public string StatusCode;
         public string Message;
-        public string Result;
+        public object Result;
 
         public static BolResult BadRequest(string message)
         {
@@ -14,6 +14,11 @@ namespace Bol.Coin.Models
         public static BolResult Unauthorized(string message)
         {
             return Fail("401", message);
+        }
+
+        public static BolResult NotFound(string message)
+        {
+            return Fail("404", message);
         }
 
         public static BolResult Fail(string statusCode, string message)
@@ -29,7 +34,7 @@ namespace Bol.Coin.Models
             return Ok(null);
         }
 
-        public static BolResult Ok(string result)
+        public static BolResult Ok(object result)
         {
             var response = new BolResult();
             response.StatusCode = "200";
