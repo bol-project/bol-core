@@ -28,7 +28,7 @@ namespace Bol.Coin.Persistence
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
-            BolStorage.Put(account.Address, bytes);
+            BolStorage.Put(account.MainAddress, bytes);
         }
 
         public static BolAccount Get(byte[] address)
@@ -37,6 +37,16 @@ namespace Bol.Coin.Persistence
             if (bytes == null) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
+            
+            var addresses = account.CommercialAddresses.Keys;
+            foreach(var commAddress in addresses)
+            {
+                var bols = GetBols(commAddress);
+                account.CommercialAddresses[commAddress] = bols;
+                account.TotalBalance += bols;
+            }
+            account.TotalBalance += account.ClaimBalance;
+
             return account;
         }
 
@@ -91,15 +101,38 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, amount);
         }
 
+        public static void SetBols(byte[] address, BigInteger amount)
+        {
+            var key = BolKey(address);
+            BolStorage.Put(key, amount);
+        }
+
         public static BigInteger GetBols()
         {
             var key = BolKey();
             return BolStorage.GetAsBigInteger(key);
         }
 
+        public static BigInteger GetBols(byte[] address)
+        {
+            var key = BolKey(address);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static bool AddressExists(byte[] address)
+        {
+            var key = BolKey(address);
+            return BolStorage.KeyExists(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
+        }
+
+        internal static byte[] BolKey(byte[] address)
+        {
+            return new byte[] { BOL }.Concat(address);
         }
 
         internal static byte[] TotalRegisteredPersonsKey()
