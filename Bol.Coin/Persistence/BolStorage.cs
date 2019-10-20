@@ -41,5 +41,11 @@ namespace Bol.Coin.Persistence
         {
             Storage.Put(Storage.CurrentContext, key, value);
         }
+
+        public static bool KeyExists(byte[] key)
+        {
+            var value = Storage.Get(Storage.CurrentContext, key);
+            return value != null && value.Length != 0;
+        }
     }
 }
