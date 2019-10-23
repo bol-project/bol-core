@@ -1,4 +1,5 @@
 using System.Net;
+using Neo.Network.P2P.Payloads;
 
 namespace Bol.Core.BolContract.Models
 {
@@ -7,6 +8,6 @@ namespace Bol.Core.BolContract.Models
         public HttpStatusCode StatusCode { get; set; }
         public string Message { get; set; }
         public T Result { get; set; }
-        public string Transaction { get; set; }
+        public InvocationTransaction Transaction { get; set; }
     }
 }
