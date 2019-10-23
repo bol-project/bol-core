@@ -48,9 +48,8 @@ namespace Bol.Core.Services
         public BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys)
         {
             var settings = ProtocolSettings.Default.BolSettings;
-            var script = File.ReadAllBytes(settings.Path);
 
-            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys);
+            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys);
 
             return new BolResponse<DeployContractResult>
             {
@@ -62,8 +61,7 @@ namespace Bol.Core.Services
         public BolResult<BolAccount> Register()
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
-            var a = context.BAddress.ToAddress();
+
             var parameters = new[]
             {
                 context.BAddress.ToArray(),
@@ -72,7 +70,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("register", keys, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters);
 
             return result;
         }
@@ -80,14 +78,14 @@ namespace Bol.Core.Services
         public BolResult<BolAccount> Claim()
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
             var parameters = new[]
             {
                 context.BAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { "" }, parameters);
 
             return result;
         }
@@ -95,7 +93,7 @@ namespace Bol.Core.Services
         public BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress)
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
             var parameters = new[]
             {
                 context.BAddress.ToArray(),
@@ -103,7 +101,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, "", new[] { "" }, parameters);
 
             return result;
         }
@@ -118,7 +116,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys);
+            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys: keys);
 
             if (!result.Success)
             {
@@ -144,7 +142,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = _contractService.TestContract(bolContract, "totalSupply", parameters, keys);
+            var result = _contractService.TestContract(bolContract, "totalSupply", parameters, keys: keys);
 
             if (!result.Success)
             {
@@ -199,7 +197,7 @@ namespace Bol.Core.Services
             };
         }
 
-        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, params byte[][] parameters)
+        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, params byte[][] parameters)
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
@@ -209,29 +207,40 @@ namespace Bol.Core.Services
                 bolResult = result;
             };
 
-            EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(null, operation, args, callback);
+            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, keys.Length);
+
+            EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(transaction.Hash, operation, args, callback);
 
             StandardService.Notify += handler;
 
-            var executionResult = _contractService.TestContract(bolContract, operation, parameters, keys);
+            var executionResult = _contractService.TestContract(transaction);
 
             StandardService.Notify -= handler;
 
-            if (!executionResult.Success || bolResult?.StatusCode != HttpStatusCode.OK)
+            if (!executionResult.Success) throw new Exception("Contract invocation on a local snapshot failed.");
+
+            bolResult.Transaction = transaction;
+            return bolResult;
+        }
+
+        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, params byte[][] parameters)
+        {
+            var bolResult = TestBolContract<T>(operation, keys, description, remarks, parameters);
+
+            if (bolResult?.StatusCode != HttpStatusCode.OK)
             {
                 return bolResult;
             }
 
-            var transaction = _contractService.InvokeContract(bolContract, operation, parameters, keys, remark: Blockchain.Singleton.Height.ToString());
+            _contractService.InvokeContract(bolResult.Transaction);
 
-            bolResult.Transaction = transaction.Hash.ToString();
             return bolResult;
         }
 
         private void ResponseHandler<T>(UInt256 transactionHash, string operation, NotifyEventArgs args, Action<BolResult<T>> callback)
         {
-            //var eventTranscation = args.ScriptContainer as InvocationTransaction;
-            //if (eventTranscation == null || eventTranscation.Hash != transactionHash) return;
+            var eventTranscation = args.ScriptContainer as InvocationTransaction;
+            if (eventTranscation == null || eventTranscation.Hash != transactionHash) return;
 
             var parameters = args.State.ToParameter().Value as List<ContractParameter>;
 
