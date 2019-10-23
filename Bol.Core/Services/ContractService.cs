@@ -26,9 +26,9 @@ namespace Bol.Core.Services
             _blockChainService = blockChainService ?? throw new ArgumentNullException(nameof(blockChainService));
         }
 
-        public InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<KeyPair> keys)
+        public InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<KeyPair> keys, int numberOfSignatures = 0)
         {
-            var multiSig = CreateMultiSig(keys);
+            var multiSig = CreateAddressContract(keys, numberOfSignatures);
             var executionScript = CreateContractScript(script, name, version, author, email, description);
             var transaction = CreateTransaction(executionScript, multiSig);
             var transactionSigned = SignTransaction(transaction, multiSig, keys);
@@ -40,49 +40,54 @@ namespace Bol.Core.Services
             return transaction;
         }
 
-        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys, string description = null, string remark = null)
+        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
         {
-            var scriptHash = ParseOrThrowIfNotFound(contract);
-            var multiSig = CreateMultiSig(keys);
-            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
-            var transaction = CreateTransaction(executionScript, multiSig, description, remark);
-            var transactionSigned = SignTransaction(transaction, multiSig, keys);
-
-            if (!transactionSigned) throw new Exception("Could not sign transaction.");
-
-            SubmitTransaction(transaction);
-
+            var transaction = CreateTransaction(contract, operation, parameters, description, remarks, keys, numberOfSignatures);
+            InvokeContract(transaction);
             return transaction;
         }
 
-        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, IEnumerable<KeyPair> keys)
+        public void InvokeContract(InvocationTransaction transaction)
         {
-            var scriptHash = ParseOrThrowIfNotFound(contract);
-            var multiSig = CreateMultiSig(keys);
-            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
-            var transaction = CreateTransaction(executionScript, multiSig);
-            var transactionSigned = SignTransaction(transaction, multiSig, keys);
-
-            if (!transactionSigned) throw new Exception("Could not sign transaction.");
-
-            ApplicationEngine engine = ApplicationEngine.Run(transaction.Script, transaction);
-
-            if (engine.State.HasFlag(VMState.FAULT)) return ContractExecutionResult.Fail();
-
-            return ContractExecutionResult.Succeed(engine.ResultStack.SelectMany(r => r.GetByteArray()).ToArray(), engine.GasConsumed);
+            SubmitTransaction(transaction);
         }
 
-        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters)
+        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
         {
-            var scriptHash = ParseOrThrowIfNotFound(contract);
-            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
-            var transaction = CreateTransaction(executionScript);
+            var transaction = CreateTransaction(contract, operation, parameters, description, remarks, keys, numberOfSignatures);
 
-            ApplicationEngine engine = ApplicationEngine.Run(transaction.Script, transaction);
+            return TestContract(transaction);
+        }
+
+        public ContractExecutionResult TestContract(InvocationTransaction transaction)
+        {
+            var engine = ApplicationEngine.Run(transaction.Script, transaction);
 
             if (engine.State.HasFlag(VMState.FAULT)) return ContractExecutionResult.Fail();
 
             return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
+        }
+
+        public InvocationTransaction CreateTransaction(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
+        {
+            var scriptHash = ParseOrThrowIfNotFound(contract);
+            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
+
+            var addressContract = CreateAddressContract(keys, numberOfSignatures);
+
+            InvocationTransaction transaction;
+            if (keys != null && keys.Any())
+            {
+                transaction = CreateTransaction(executionScript, addressContract, description, remarks);
+                var transactionSigned = SignTransaction(transaction, addressContract, keys);
+                if (!transactionSigned) throw new Exception("Could not sign transaction.");
+            }
+            else
+            {
+                transaction = CreateTransaction(executionScript, description: description, remarks: remarks);
+            }
+
+            return transaction;
         }
 
         private UInt160 ParseOrThrowIfNotFound(string contract)
@@ -97,12 +102,23 @@ namespace Bol.Core.Services
             return result.ScriptHash;
         }
 
-        private Contract CreateMultiSig(IEnumerable<KeyPair> keys)
+        private Contract CreateAddressContract(IEnumerable<KeyPair> keys, int numberOfSignatures)
         {
             var publicKeys = keys
                 .Select(key => key.PublicKey)
                 .ToArray();
-            var multisig = Contract.CreateMultiSigContract(publicKeys.Length, publicKeys);
+
+            if (publicKeys.Length == 1)
+            {
+                return Contract.CreateSignatureContract(publicKeys[0]);
+            }
+
+            if (numberOfSignatures < publicKeys.Length || numberOfSignatures > publicKeys.Length)
+            {
+                throw new Exception("Number of signatures must be in the range of 1 -> Number of Keys");
+            }
+
+            var multisig = Contract.CreateMultiSigContract(numberOfSignatures, publicKeys);
             return multisig;
         }
 
@@ -130,7 +146,7 @@ namespace Bol.Core.Services
                 }
             };
 
-            using (ScriptBuilder sb = new ScriptBuilder())
+            using (var sb = new ScriptBuilder())
             {
                 sb.EmitAppCall(scriptHash, invocationParameters);
                 return sb.ToArray();
@@ -143,14 +159,14 @@ namespace Bol.Core.Services
             var return_type = ContractParameterType.ByteArray;
             var properties = ContractPropertyState.HasStorage;
 
-            using (ScriptBuilder sb = new ScriptBuilder())
+            using (var sb = new ScriptBuilder())
             {
                 sb.EmitSysCall("Neo.Contract.Create", script, parameter_list, return_type, properties, name, version, author, email, description);
                 return sb.ToArray();
             }
         }
 
-        private InvocationTransaction CreateTransaction(byte[] executionScript, Contract multiSig = null, string description = null, string remark = null)
+        private InvocationTransaction CreateTransaction(byte[] executionScript, Contract contract = null, string description = null, IEnumerable<string> remarks = null)
         {
             var transaction = new InvocationTransaction
             {
@@ -163,13 +179,13 @@ namespace Bol.Core.Services
             };
             var attributes = new List<TransactionAttribute>();
 
-            if (multiSig != null)
+            if (contract != null)
             {
                 attributes.Add(
                     new TransactionAttribute
                     {
                         Usage = TransactionAttributeUsage.Script,
-                        Data = multiSig.ScriptHash.ToArray()
+                        Data = contract.ScriptHash.ToArray()
                     });
             }
 
@@ -183,14 +199,17 @@ namespace Bol.Core.Services
                     });
             }
 
-            if (remark != null)
+            if (remarks != null && remarks.Any())
             {
-                attributes.Add(
-                    new TransactionAttribute
+                var remarkAttributes = Enumerable
+                    .Range(0xf0, 0xff)
+                    .Zip(remarks, (index, remark) => new TransactionAttribute
                     {
-                        Usage = TransactionAttributeUsage.Remark,
+                        Usage = (TransactionAttributeUsage)index,
                         Data = Encoding.UTF8.GetBytes(remark),
                     });
+
+                attributes.AddRange(remarkAttributes);
             }
 
             transaction.Attributes = attributes.ToArray();
