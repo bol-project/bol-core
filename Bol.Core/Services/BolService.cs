@@ -40,7 +40,7 @@ namespace Bol.Core.Services
             var settings = ProtocolSettings.Default.BolSettings;
             var script = File.ReadAllBytes(settings.Path);
 
-            var transaction = _contractService.DeployContract(script, settings.Name, settings.Version, settings.Author, settings.Email, settings.Description, keys);
+            var transaction = _contractService.DeployContract(script, settings.Name, settings.Version, settings.Author, settings.Email, settings.Description, keys, keys.Count() / 2 + 1);
 
             return _createContractResponseMapper.Map(transaction);
         }
@@ -49,7 +49,7 @@ namespace Bol.Core.Services
         {
             var settings = ProtocolSettings.Default.BolSettings;
 
-            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys);
+            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys, numberOfSignatures: keys.Count() / 2 + 1);
 
             return new BolResponse<DeployContractResult>
             {
