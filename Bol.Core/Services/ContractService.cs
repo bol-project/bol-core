@@ -113,7 +113,7 @@ namespace Bol.Core.Services
                 return Contract.CreateSignatureContract(publicKeys[0]);
             }
 
-            if (numberOfSignatures < publicKeys.Length || numberOfSignatures > publicKeys.Length)
+            if (numberOfSignatures < 1 || numberOfSignatures > publicKeys.Length)
             {
                 throw new Exception("Number of signatures must be in the range of 1 -> Number of Keys");
             }
