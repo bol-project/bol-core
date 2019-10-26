@@ -17,6 +17,7 @@ namespace Bol.Core.Abstractions
         BolResponse Name();
         BolResponse BalanceOf();
         BolResponse TotalSupply();
+        BolResult<BolAccount> GetAccount(UInt160 mainAddress);
         BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress);
     }
 }

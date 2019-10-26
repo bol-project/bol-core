@@ -99,6 +99,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getAccount")]
+        public ActionResult GetAccount(string address)
+        {
+            var result = _bolService.GetAccount(address.ToScriptHash());
+            return Ok(result);
+        }
+
         [HttpGet("decimals")]
         public ActionResult Decimals()
         {

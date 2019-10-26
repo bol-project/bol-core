@@ -106,6 +106,21 @@ namespace Bol.Core.Services
             return result;
         }
 
+        public BolResult<BolAccount> GetAccount(UInt160 mainAddress)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                mainAddress.ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters);
+
+            return result;
+        }
+
         public BolResponse BalanceOf()
         {
             var context = _contextAccessor.GetContext();
