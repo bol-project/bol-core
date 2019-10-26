@@ -85,7 +85,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { "" }, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { Blockchain.Singleton.Height.ToString() }, parameters);
 
             return result;
         }
