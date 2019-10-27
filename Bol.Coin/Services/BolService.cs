@@ -30,6 +30,8 @@ namespace Bol.Coin.Services
         public static readonly BigInteger C_ADDRESS_START = new BigInteger("0x1AF05400".HexToBytes());
         public static readonly BigInteger C_ADDRESS_END = new BigInteger("0xEDF05400".HexToBytes());
 
+        public static readonly BigInteger DPS = 184200000;
+
 
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
@@ -115,6 +117,10 @@ namespace Bol.Coin.Services
             account.CommercialAddresses = new Map<byte[], BigInteger>();
 
             BolRepository.Save(account);
+
+            BolRepository.AddRegisteredPerson();
+            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
+            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
 
             var result = BolRepository.Get(account.MainAddress);
 
@@ -368,22 +374,41 @@ namespace Bol.Coin.Services
 
             //if (bolAccount.Certifications < 2) return BolResult.BadRequest("Address is not a certified Bol Account.");
 
-            var previousHeight = bolAccount.LastClaimHeight;
+            var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            var diff = currentHeight - previousHeight;
+            var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
+            BigInteger cpp = 0;
+            for (var i = previousHeight; i <= currentHeight; i++)
+            {
+                var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
+                if (nextBlockTotal != 0)
+                {
+                    totalPerBlock = nextBlockTotal;
+                }
 
-            var bonus = diff * Factor; //TODO: Fix the calculation according to the algorithm
+                var currentStamp = Blockchain.GetBlock(i).Timestamp;
+                var previousStamp = Blockchain.GetBlock(i - 1).Timestamp;
+                var diff = currentStamp - previousStamp;
+                cpp += diff * DPS / totalPerBlock;
+            }
 
-            bolAccount.ClaimBalance = bolAccount.ClaimBalance + bonus;
+            //var diff = currentHeight - previousHeight;
+
+            //var bonus = diff * Factor; //TODO: Fix the calculation according to the algorithm
+
+            bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
             BolRepository.Save(bolAccount);
 
-            var totalSupply = BolRepository.GetBols() + bonus;
+            var totalSupply = BolRepository.GetBols() + cpp;
             BolRepository.SetBols(totalSupply);
 
-            Transferred(null, address, bonus);
+            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
+            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
+
+            Transferred(null, address, cpp);
 
             Runtime.Notify("claim", BolResult.Ok(bolAccount));
 
