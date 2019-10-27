@@ -37,9 +37,10 @@ namespace Bol.Coin.Persistence
             if (bytes == null) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
-            
+
+            account.TotalBalance = 0;
             var addresses = account.CommercialAddresses.Keys;
-            foreach(var commAddress in addresses)
+            foreach (var commAddress in addresses)
             {
                 var bols = GetBols(commAddress);
                 account.CommercialAddresses[commAddress] = bols;
@@ -125,6 +126,18 @@ namespace Bol.Coin.Persistence
             return BolStorage.KeyExists(key);
         }
 
+        public static void SetRegisteredAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = TotalRegisteredPerBlock(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetRegisteredAtBlock(BigInteger blockHeight)
+        {
+            var key = TotalRegisteredPerBlock(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -148,6 +161,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] TotalCertifiersKey()
         {
             return TOTAL_CERTIFIERS.AsByteArray();
+        }
+
+        internal static byte[] TotalRegisteredPerBlock(BigInteger blockHeight)
+        {
+            return new byte[] { TOTAL_REGISTERED_PERSONS }.Concat(blockHeight.AsByteArray());
         }
     }
 }
