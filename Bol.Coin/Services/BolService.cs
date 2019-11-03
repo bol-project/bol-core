@@ -14,7 +14,7 @@ namespace Bol.Coin.Services
     {
         public static string Name() => "Bonus of Life";
         public static string Symbol() => "BoL";
-        public static readonly byte[] Owner = "B4VskCVnBfVEyUoBMrog1zkx9qYMGqpYm4".ToScriptHash(); //Blockchain validators multisig address
+        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address
         public static byte Decimals() => 8;
 
         private static readonly BigInteger Factor = 100000000;
@@ -38,6 +38,16 @@ namespace Bol.Coin.Services
 
         public static bool Register(byte[] address, byte[] codeName, byte[] edi)
         {
+            if (BolValidator.AddressNotOwner(address))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+                return false;
+            }
+            return RegisterAccount(address, codeName, edi);
+        }
+
+        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi)
+        {
             if (BolValidator.AddressEmpty(address))
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
@@ -46,11 +56,6 @@ namespace Bol.Coin.Services
             if (BolValidator.AddressBadLength(address))
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressNotOwner(address))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
             if (BolValidator.CodeNameEmpty(codeName))
@@ -206,11 +211,43 @@ namespace Bol.Coin.Services
 
         public static bool Deploy()
         {
-            //TODO: Check storage if contract was deployed before
-            //TODO: Check witness for owner address
-            //TODO: Add initialization of first certifiers
+            Runtime.Notify("debug", Owner.Reverse());
+
+            var isDeployed = BolRepository.IsContractDeployed();
+            if (isDeployed)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Bol Contract is already deployed."));
+                return false;
+            }
+
+            if (BolValidator.AddressNotOwner(Owner))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
+                return false;
+            }
+
+            var certifiers = Certifiers.GenesisCertifiers();
+            for (var i = 0; i < certifiers.Length; i++)
+            {
+                var certifier = certifiers[i];
+
+                Runtime.Notify("debug", certifier);
+
+                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi);
+                if (!result)
+                {
+                    return result;
+                }
+                var account = BolRepository.Get(certifier.MainAddress);
+                account.IsCertifier = 1;
+                BolRepository.Save(account);
+            }
 
             BolRepository.SetBols(0);
+
+            BolRepository.SetContractDeployed();
+
+            Runtime.Notify("deploy", BolResult.Ok());
             return true;
         }
 
