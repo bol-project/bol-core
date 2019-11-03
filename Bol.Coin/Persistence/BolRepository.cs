@@ -7,23 +7,14 @@ namespace Bol.Coin.Persistence
     public static class BolRepository
     {
         public const byte BOL = 0x00;
-        public const byte CODENAME = 0x01;
-        public const byte EDI = 0x02;
-        public const byte CERTIFICATIONS = 0x03;
+
         public const byte CERTIFIERS = 0x04;
-
-        public const byte IS_CERTIFIER = 0x05;
-        public const byte COLLATERAL = 0x06;
-
-        public const byte REGISTRATION_HEIGHT = 0x06;
-        public const byte LAST_CLAIM_HEIGHT = 0x07;
 
         public const byte TOTAL_REGISTERED_PERSONS = 0x08;
         public const byte TOTAL_REGISTERED_COMPANIES = 0x09;
         public const byte TOTAL_CERTIFIERS = 0x0A;
 
-        public static readonly int ADDRESS_LENGTH = 20;
-        public static readonly BigInteger COLLATERAL_BOL = 1000;
+        public const byte DEPLOY = 0xFF;
 
         public static void Save(BolAccount account)
         {
@@ -138,6 +129,19 @@ namespace Bol.Coin.Persistence
             return BolStorage.GetAsBigInteger(key);
         }
 
+        public static bool IsContractDeployed()
+        {
+            var key = DeployKey();
+            var deployed = BolStorage.GetAsBigInteger(key);
+            return deployed == 1;
+        }
+
+        public static void SetContractDeployed()
+        {
+            var key = DeployKey();
+            BolStorage.Put(key, 1);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -166,6 +170,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] TotalRegisteredPerBlock(BigInteger blockHeight)
         {
             return new byte[] { TOTAL_REGISTERED_PERSONS }.Concat(blockHeight.AsByteArray());
+        }
+
+        internal static byte[] DeployKey()
+        {
+            return new byte[] { DEPLOY };
         }
     }
 }
