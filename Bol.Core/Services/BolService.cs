@@ -49,12 +49,14 @@ namespace Bol.Core.Services
         {
             var settings = ProtocolSettings.Default.BolSettings;
 
-            var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys, numberOfSignatures: keys.Count() / 2 + 1);
+            var result = TestAndInvokeBolContract<BolAccount>("deploy", keys.ToArray(), "", new[] { "" }, numberOfSignatures: keys.Count() / 2 + 1, parameters: new byte[0][]);
+
+            //var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys, numberOfSignatures: keys.Count() / 2 + 1);
 
             return new BolResponse<DeployContractResult>
             {
                 Success = true,
-                TransactionId = transaction.Hash.ToString()
+                TransactionId = result.Transaction.Hash.ToString()
             };
         }
 
@@ -70,7 +72,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters: parameters);
 
             return result;
         }
@@ -85,7 +87,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { Blockchain.Singleton.Height.ToString() }, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { Blockchain.Singleton.Height.ToString() }, parameters: parameters);
 
             return result;
         }
@@ -101,7 +103,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, "", new[] { "" }, parameters);
+            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, "", new[] { "" }, parameters: parameters);
 
             return result;
         }
@@ -116,7 +118,7 @@ namespace Bol.Core.Services
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters);
+            var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters: parameters);
 
             return result;
         }
@@ -212,7 +214,7 @@ namespace Bol.Core.Services
             };
         }
 
-        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, params byte[][] parameters)
+        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
@@ -222,7 +224,7 @@ namespace Bol.Core.Services
                 bolResult = result;
             };
 
-            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, keys.Length);
+            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, numberOfSignatures ?? keys.Length);
 
             EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(transaction.Hash, operation, args, callback);
 
@@ -238,9 +240,9 @@ namespace Bol.Core.Services
             return bolResult;
         }
 
-        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, params byte[][] parameters)
+        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
-            var bolResult = TestBolContract<T>(operation, keys, description, remarks, parameters);
+            var bolResult = TestBolContract<T>(operation, keys, description, remarks, numberOfSignatures, parameters);
 
             if (bolResult?.StatusCode != HttpStatusCode.OK)
             {
