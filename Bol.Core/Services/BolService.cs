@@ -284,34 +284,39 @@ namespace Bol.Core.Services
                 var result = (List<ContractParameter>)parameters[1].Value;
                 var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
 
-                var resultList = (List<ContractParameter>)result[2].Value;
+                var resultList = result[2].Value as List<ContractParameter>;
 
-                var properties = typeof(T).GetProperties();
-
-                var resultObject = Activator.CreateInstance<T>();
-
-                for (int i = 0; i < resultList.Count; i++)
+                T resultObject = default;
+                if (resultList != null)
                 {
-                    var value = resultList[i].Value;
+                    var properties = typeof(T).GetProperties();
 
-                    if (value is byte[])
-                    {
-                        properties[i].SetValue(resultObject, ((byte[])value).ToHexString());
-                        continue;
-                    }
-                    if (value is BigInteger)
-                    {
-                        properties[i].SetValue(resultObject, value.ToString());
-                        continue;
-                    }
-                    if (value is List<KeyValuePair<ContractParameter, ContractParameter>>)
-                    {
-                        var keyValueList = (List<KeyValuePair<ContractParameter, ContractParameter>>)value;
-                        var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair => (pair.Value.Value as byte[]).ToHexString());
+                    resultObject = Activator.CreateInstance<T>();
 
-                        properties[i].SetValue(resultObject, valueDictionary);
-                        continue;
+                    for (int i = 0; i < resultList.Count; i++)
+                    {
+                        var value = resultList[i].Value;
+
+                        if (value is byte[])
+                        {
+                            properties[i].SetValue(resultObject, ((byte[])value).ToHexString());
+                            continue;
+                        }
+                        if (value is BigInteger)
+                        {
+                            properties[i].SetValue(resultObject, value.ToString());
+                            continue;
+                        }
+                        if (value is List<KeyValuePair<ContractParameter, ContractParameter>>)
+                        {
+                            var keyValueList = (List<KeyValuePair<ContractParameter, ContractParameter>>)value;
+                            var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair => (pair.Value.Value as byte[]).ToHexString());
+
+                            properties[i].SetValue(resultObject, valueDictionary);
+                            continue;
+                        }
                     }
+
                 }
 
                 var bolResult = new BolResult<T>
