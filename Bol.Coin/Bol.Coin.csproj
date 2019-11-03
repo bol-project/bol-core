@@ -50,6 +50,7 @@
     <Compile Include="Helpers\ArraysHelper.cs" />
     <Compile Include="Models\BolAccount.cs" />
     <Compile Include="Models\BolResult.cs" />
+    <Compile Include="Persistence\Certifiers.cs" />
     <Compile Include="Services\BlockChainService.cs" />
     <Compile Include="Services\BolService.cs" />
     <Compile Include="Persistence\BolStorage.cs" />
