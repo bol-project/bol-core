@@ -7,6 +7,7 @@ namespace Bol.Coin.Models
     [Serializable]
     public class BolAccount
     {
+        public byte AccountStatus;
         public byte AccountType;
 
         public byte[] CodeName;
