@@ -4,6 +4,7 @@ namespace Bol.Core.BolContract.Models
 {
     public class BolAccount
     {
+        public string AccountStatus { get; set; }
         public string AccountType { get; set; }
 
         public string CodeName { get; set; }
