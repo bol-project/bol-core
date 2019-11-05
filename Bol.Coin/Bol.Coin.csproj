@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Abstractions\IRuntimeService.cs" />
     <Compile Include="Bol.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Helpers\ArraysHelper.cs" />
     <Compile Include="Models\BolAccount.cs" />
     <Compile Include="Models\BolResult.cs" />
