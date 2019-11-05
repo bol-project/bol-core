@@ -1,4 +1,4 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Neo;
 using Neo.Cryptography;
 using Neo.IO.Json;
@@ -24,7 +24,7 @@ namespace Bol.Core.Services
             _walletIndexer = walletIndexer ?? throw new ArgumentNullException(nameof(walletIndexer));
         }
 
-        public async Task<NEP6Wallet> CreateWallet(string codeName, string edi, string privateKey, string walletPassword, CancellationToken token = default)
+        public async Task<NEP6Wallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
             var wallet = new NEP6Wallet(_walletIndexer, $"{codeName}.json", codeName);
             wallet.Unlock(walletPassword);
@@ -52,8 +52,20 @@ namespace Bol.Core.Services
             var multisig = Contract.CreateMultiSigContract(2, codeNameAccount.GetKey().PublicKey, privateAccount.GetKey().PublicKey);
 
             var bAddressAccount = wallet.CreateAccount(multisig);
-            bAddressAccount.Label = "B";
+            bAddressAccount.Label = "main";
             bAddressAccount.IsDefault = true;
+
+            var blockchainAccount = (NEP6Account)wallet.CreateAccount();
+            blockchainAccount.Label = "blockchain";
+
+            var socialAccount = (NEP6Account)wallet.CreateAccount();
+            socialAccount.Label = "social";
+
+            for (var i = 0; i < 9; i++)
+            {
+                var commercialAccount = (NEP6Account)wallet.CreateAccount();
+                commercialAccount.Label = "commercial";
+            }
 
             return wallet;
         }

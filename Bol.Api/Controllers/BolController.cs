@@ -63,7 +63,7 @@ namespace Bol.Api.Controllers
         [HttpPost("wallet")]
         public async Task<ActionResult> CreateWallet([FromBody] CreateWalletRequest request, CancellationToken token = default)
         {
-            var result = await _walletService.CreateWallet(request.CodeName, request.Edi, request.PrivateKey, request.WalletPassword, token);
+            var result = await _walletService.CreateWallet(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
 
             JObject wallet = new JObject();
             wallet["name"] = result.Name;
