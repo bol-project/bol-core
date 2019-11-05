@@ -66,9 +66,12 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.BAddress.ToArray(),
+                context.MainAddress.ToArray(),
                 Encoding.ASCII.GetBytes(context.CodeName),
-                context.Edi.HexToBytes()
+                context.Edi.HexToBytes(),
+                context.BlockChainAddress.Key.ToArray(),
+                context.SocialAddress.Key.ToArray(),
+                context.CommercialAddresses.SelectMany(pair => pair.Key.ToArray()).ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
@@ -83,7 +86,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.BAddress.ToArray()
+                context.MainAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
@@ -98,7 +101,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.BAddress.ToArray(),
+                context.MainAddress.ToArray(),
                 commercialAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
@@ -129,7 +132,7 @@ namespace Bol.Core.Services
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
-                context.BAddress.ToArray()
+                context.MainAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
@@ -155,7 +158,7 @@ namespace Bol.Core.Services
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
-                context.BAddress.ToArray()
+                context.MainAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
