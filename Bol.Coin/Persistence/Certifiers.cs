@@ -33,6 +33,7 @@ namespace Bol.Coin.Persistence
             pstathas.BlockChainAddress = PSTATHAS_BLOCKCHAIN_ADDRESS;
             pstathas.SocialAddress = PSTATHAS_SOCIAL_ADDRESS;
             pstathas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            pstathas.Countries = Constants.ALL_COUNTRIES;
 
             var cchomenidis = new BolAccount();
             cchomenidis.CodeName = CCHOMENIDIS_CODENAME;
@@ -41,6 +42,7 @@ namespace Bol.Coin.Persistence
             cchomenidis.BlockChainAddress = CCHOMENIDIS_BLOCKCHAIN_ADDRESS;
             cchomenidis.SocialAddress = CCHOMENIDIS_SOCIAL_ADDRESS;
             cchomenidis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            cchomenidis.Countries = Constants.ALL_COUNTRIES;
 
             var ftokas = new BolAccount();
             ftokas.CodeName = FTOKAS_CODENAME;
@@ -49,6 +51,7 @@ namespace Bol.Coin.Persistence
             ftokas.BlockChainAddress = FTOKAS_BLOCKCHAIN_ADDRESS;
             ftokas.SocialAddress = FTOKAS_SOCIAL_ADDRESS;
             ftokas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            ftokas.Countries = Constants.ALL_COUNTRIES;
 
             return new[] { pstathas, cchomenidis, ftokas };
         }
