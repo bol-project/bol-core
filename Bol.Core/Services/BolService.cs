@@ -217,6 +217,53 @@ namespace Bol.Core.Services
             };
         }
 
+        public BolResult<object> GetCertifiers(string countryCode)
+        {
+            var context = _contextAccessor.GetContext();
+            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(countryCode)
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = TestBolContract<object>("getCertifiers", keys, "", new[] { "" }, parameters: parameters);
+
+            return result;
+        }
+
+        public BolResult<BolAccount> Certify(UInt160 address)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                context.MainAddress.ToArray(),
+                address.ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = TestAndInvokeBolContract<BolAccount>("certify", keys, "", new[] { "" }, parameters: parameters);
+
+            return result;
+        }
+
+        public BolResult<BolAccount> UnCertify(UInt160 address)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                context.MainAddress.ToArray(),
+                address.ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var result = TestAndInvokeBolContract<BolAccount>("unCertify", keys, "", new[] { "" }, parameters: parameters);
+
+            return result;
+        }
+
         private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
@@ -313,7 +360,17 @@ namespace Bol.Core.Services
                         if (value is List<KeyValuePair<ContractParameter, ContractParameter>>)
                         {
                             var keyValueList = (List<KeyValuePair<ContractParameter, ContractParameter>>)value;
-                            var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair => (pair.Value.Value as byte[]).ToHexString());
+                            var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair =>
+                            {
+                                if (pair.Value.Value is byte[])
+                                {
+                                    return (pair.Value.Value as byte[]).ToHexString();
+                                }
+                                else
+                                {
+                                    return pair.Value.Value.ToString();
+                                }
+                            });
 
                             properties[i].SetValue(resultObject, valueDictionary);
                             continue;

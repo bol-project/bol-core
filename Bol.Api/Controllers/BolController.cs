@@ -99,6 +99,20 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("certify")]
+        public ActionResult Certify(string address)
+        {
+            var result = _bolService.Certify(address.ToScriptHash());
+            return Ok(result);
+        }
+
+        [HttpPost("unCertify")]
+        public ActionResult UnCertify(string address)
+        {
+            var result = _bolService.UnCertify(address.ToScriptHash());
+            return Ok(result);
+        }
+
         [HttpGet("getAccount")]
         public ActionResult GetAccount(string address)
         {
@@ -131,6 +145,13 @@ namespace Bol.Api.Controllers
         public ActionResult TotalSupply()
         {
             var result = _bolService.TotalSupply();
+            return Ok(result);
+        }
+
+        [HttpGet("getCertifiers")]
+        public ActionResult TotalSupply(string countryCode)
+        {
+            var result = _bolService.GetCertifiers(countryCode);
             return Ok(result);
         }
     }
