@@ -5,10 +5,10 @@ namespace Bol.Coin
 {
     public class Constants
     {
-        private static readonly BigInteger Factor = 100000000;
+        public static readonly BigInteger FACTOR = 100000000;
 
-        public static readonly BigInteger COLLATERAL_BOL = 1000 * Factor;
-        public static readonly BigInteger CERTIFIER_FEE = 1 / 1000 * Factor;
+        public static readonly BigInteger COLLATERAL_BOL = 1000 * FACTOR;
+        public static readonly BigInteger CERTIFIER_FEE = FACTOR / 1000;
 
         public const byte B_ACCOUNT_TYPE = 0x01;
         public const byte C_ACCOUNT_TYPE = 0x02;
@@ -23,6 +23,8 @@ namespace Bol.Coin
         public const byte ACCOUNT_STATUS_OPEN = 0x01;
         public const byte ACCOUNT_STATUS_PENDING_CERTIFICATIONS = 0x02;
         public const byte ACCOUNT_STATUS_PENDING_FEES = 0x03;
-        public const byte ACCOUNT_STATUS_LOCKED = 0x04;        
+        public const byte ACCOUNT_STATUS_LOCKED = 0x04;
+
+        public static readonly byte[] ALL_COUNTRIES = "414C4C".HexToBytes();
     }
 }
