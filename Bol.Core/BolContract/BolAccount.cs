@@ -21,9 +21,11 @@ namespace Bol.Core.BolContract.Models
 
         public string Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
+        public string MandatoryCertifier { get; set; }
 
         public string IsCertifier { get; set; }
         public string Collateral { get; set; }
+        public string Countries { get; set; }
 
         public string RegistrationHeight { get; set; }
         public string LastClaimHeight { get; set; }
