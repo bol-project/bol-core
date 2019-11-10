@@ -23,10 +23,12 @@ namespace Bol.Coin.Models
         public BigInteger TotalBalance;
 
         public BigInteger Certifications;
-        public Map<byte[], bool> Certifiers;
+        public Map<byte[], BigInteger> Certifiers;
+        public byte[] MandatoryCertifier;
 
         public BigInteger IsCertifier;
         public BigInteger Collateral;
+        public byte[] Countries;
 
         public BigInteger RegistrationHeight;
         public BigInteger LastClaimHeight;
