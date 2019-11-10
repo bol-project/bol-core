@@ -155,6 +155,24 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, fee);
         }
 
+        public static Map<byte[], BigInteger> GetCertifiers(byte[] countryCode)
+        {
+            var key = CertifiersKey(countryCode);
+            var result = BolStorage.Get(key);
+            if (result == null || result.Length == 0)
+            {
+                return new Map<byte[], BigInteger>();
+            }
+            var certifiers = (Map<byte[], BigInteger>)result.Deserialize();
+            return certifiers;
+        }
+
+        public static void SetCertifiers(byte[] countryCode, Map<byte[], BigInteger> certifiers)
+        {
+            var key = CertifiersKey(countryCode);
+            BolStorage.Put(key, certifiers.Serialize());
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -193,6 +211,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] CertifierFeeKey()
         {
             return new byte[] { CERTIFIER_FEE };
+        }
+
+        internal static byte[] CertifiersKey(byte[] countryCode)
+        {
+            return new byte[] { CERTIFIERS }.Concat(countryCode);
         }
     }
 }
