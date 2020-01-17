@@ -16,6 +16,11 @@ namespace Bol.Coin.Models
             return Fail("401", message);
         }
 
+        public static BolResult Forbidden(string message)
+        {
+            return Fail("400", message);
+        }
+
         public static BolResult NotFound(string message)
         {
             return Fail("404", message);

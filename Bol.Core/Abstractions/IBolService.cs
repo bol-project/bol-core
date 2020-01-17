@@ -19,5 +19,8 @@ namespace Bol.Core.Abstractions
         BolResponse TotalSupply();
         BolResult<BolAccount> GetAccount(UInt160 mainAddress);
         BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress);
+        BolResult<object> GetCertifiers(string countryCode);
+        BolResult<BolAccount> Certify(UInt160 address);
+        BolResult<BolAccount> UnCertify(UInt160 address);
     }
 }

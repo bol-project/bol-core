@@ -9,6 +9,7 @@ namespace Bol.Coin.Persistence
         public const byte BOL = 0x00;
 
         public const byte CERTIFIERS = 0x04;
+        public const byte CERTIFIER_FEE = 0x05;
 
         public const byte TOTAL_REGISTERED_PERSONS = 0x08;
         public const byte TOTAL_REGISTERED_COMPANIES = 0x09;
@@ -119,13 +120,13 @@ namespace Bol.Coin.Persistence
 
         public static void SetRegisteredAtBlock(BigInteger blockHeight, BigInteger total)
         {
-            var key = TotalRegisteredPerBlock(blockHeight);
+            var key = TotalRegisteredPerBlockKey(blockHeight);
             BolStorage.Put(key, total);
         }
 
         public static BigInteger GetRegisteredAtBlock(BigInteger blockHeight)
         {
-            var key = TotalRegisteredPerBlock(blockHeight);
+            var key = TotalRegisteredPerBlockKey(blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 
@@ -140,6 +141,36 @@ namespace Bol.Coin.Persistence
         {
             var key = DeployKey();
             BolStorage.Put(key, 1);
+        }
+
+        public static BigInteger GetCertifierFee()
+        {
+            var key = CertifierFeeKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetCertifierFee(BigInteger fee)
+        {
+            var key = CertifierFeeKey();
+            BolStorage.Put(key, fee);
+        }
+
+        public static Map<byte[], BigInteger> GetCertifiers(byte[] countryCode)
+        {
+            var key = CertifiersKey(countryCode);
+            var result = BolStorage.Get(key);
+            if (result == null || result.Length == 0)
+            {
+                return new Map<byte[], BigInteger>();
+            }
+            var certifiers = (Map<byte[], BigInteger>)result.Deserialize();
+            return certifiers;
+        }
+
+        public static void SetCertifiers(byte[] countryCode, Map<byte[], BigInteger> certifiers)
+        {
+            var key = CertifiersKey(countryCode);
+            BolStorage.Put(key, certifiers.Serialize());
         }
 
         internal static byte[] BolKey()
@@ -167,7 +198,7 @@ namespace Bol.Coin.Persistence
             return TOTAL_CERTIFIERS.AsByteArray();
         }
 
-        internal static byte[] TotalRegisteredPerBlock(BigInteger blockHeight)
+        internal static byte[] TotalRegisteredPerBlockKey(BigInteger blockHeight)
         {
             return new byte[] { TOTAL_REGISTERED_PERSONS }.Concat(blockHeight.AsByteArray());
         }
@@ -175,6 +206,16 @@ namespace Bol.Coin.Persistence
         internal static byte[] DeployKey()
         {
             return new byte[] { DEPLOY };
+        }
+
+        internal static byte[] CertifierFeeKey()
+        {
+            return new byte[] { CERTIFIER_FEE };
+        }
+
+        internal static byte[] CertifiersKey(byte[] countryCode)
+        {
+            return new byte[] { CERTIFIERS }.Concat(countryCode);
         }
     }
 }

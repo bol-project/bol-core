@@ -48,7 +48,7 @@ namespace Neo.SmartContract
                 if (operation == "decimals") return BolService.Decimals();
                 if (operation == "register")
                 {
-                    if (args.Length != 3)
+                    if (args.Length != 6)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
@@ -56,19 +56,23 @@ namespace Neo.SmartContract
                     var address = (byte[])args[0];
                     var codeName = (byte[])args[1];
                     var edi = (byte[])args[2];
+                    var blockChainAddress = (byte[])args[3];
+                    var socialAddress = (byte[])args[4];
+                    var commercialAddresses = (byte[])args[5];
 
-                    return BolService.Register(address, codeName, edi);
+                    return BolService.RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, commercialAddresses);
                 }
                 if (operation == "registerCertifier")
                 {
-                    if (args.Length != 1)
+                    if (args.Length != 2)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
                     var address = (byte[])args[0];
+                    var countries = (byte[])args[1];
 
-                    return BolService.RegisterAsCertifier(address);
+                    return BolService.RegisterAsCertifier(address, countries);
                 }
                 if (operation == "unregisterCertifier")
                 {
@@ -92,6 +96,18 @@ namespace Neo.SmartContract
                     var address = (byte[])args[1];
 
                     return BolService.Certify(certifier, address);
+                }
+                if (operation == "unCertify")
+                {
+                    if (args.Length != 2)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var certifier = (byte[])args[0];
+                    var address = (byte[])args[1];
+
+                    return BolService.UnCertify(certifier, address);
                 }
                 if (operation == "claim")
                 {
@@ -123,6 +139,16 @@ namespace Neo.SmartContract
                     var mainAddress = (byte[])args[0];
                     var commercialAddress = (byte[])args[1];
                     return BolService.AddCommercialAddress(mainAddress, commercialAddress);
+                }
+                if (operation == "getCertifiers")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var countryCode = (byte[])args[0];
+                    return BolService.GetCertifiers(countryCode);
                 }
             }
             return false;
