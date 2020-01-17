@@ -22,8 +22,4 @@
     <ProjectReference Include="..\neo\neo\neo.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Decorators\" />
-  </ItemGroup>
-
 </Project>

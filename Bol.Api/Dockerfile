@@ -10,7 +10,7 @@ COPY neo/neo/*.csproj ./neo/neo/
 COPY neo-cli/neo-cli/*.csproj ./neo-cli/neo-cli/
 COPY neo-vm/src/neo-vm/*.csproj ./neo-vm/src/neo-vm/
 
-RUN dotnet restore
+RUN dotnet restore /p:RestoreUseSkipNonexistentTargets="false"
 
 # copy everything else and build app
 COPY . .
@@ -35,10 +35,9 @@ RUN apt-get update && apt-get install -y \
 RUN rm -rf /var/lib/apt/lists/*
 
 FROM runtime-base AS runtime
-ARG validator_wallet=val1.json
 
 WORKDIR /app
 COPY --from=build /app/Bol.Api/out ./
-COPY validators/$validator_wallet ./validator.json
+COPY ./validators /validators
 RUN mkdir /blockchain
 ENTRYPOINT ["dotnet", "Bol.Api.dll"]
