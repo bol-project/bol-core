@@ -679,14 +679,8 @@ namespace Bol.Coin.Services
             var currentHeight = BlockChainService.GetCurrentHeight();
 
             var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
-            BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
-
-            uint ClaimInterval = 1000;
-            BigInteger prevHeightInterval = (uint)(previousHeight / ClaimInterval) * ClaimInterval;
-
-
             BigInteger cpp = 0;
-            for (var i = previousHeight; i <= currentHeight; i+= ClaimInterval)
+            for (var i = previousHeight; i <= currentHeight; i++)
             {
                 var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
                 if (nextBlockTotal != 0)
@@ -695,39 +689,9 @@ namespace Bol.Coin.Services
                 }
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
-                var previousStamp = Blockchain.GetBlock(i - ClaimInterval).Timestamp;
-                var middleStamp = Blockchain.GetBlock(i - (uint)(ClaimInterval / 2)).Timestamp;
-                var intervalTime = currentStamp - previousStamp;
-
-                DateTime middleDateTime = UnixTimeToDateTime(middleStamp);
-
-                string currentYear = middleDateTime.Year.ToString();
-                int currentYearInt = int.Parse(currentYear);
-                string currentMonth = middleDateTime.Month.ToString();
-                int currentMonthInt = int.Parse(currentMonth);
-
-                int cYear = currentYearInt - 2019; //convert to table index
-
-                BigInteger SecInYear = 0;
-                if (DateTime.IsLeapYear(currentYearInt)) 
-                    SecInYear = Constants.SecOfLeapYear;
-                else SecInYear = Constants.SecOfYear;
-
-                if (currentMonthInt < 7) cYear -= 1;
-
-                BigInteger timestampThisYear = Constants.yearStampSeconds[cYear];
-                BigInteger ThisYearDps = Constants.DpsYear[cYear];
-                BigInteger NextYearDps = Constants.DpsYear[cYear + 1];
-                BigInteger ThisYearPop = Constants.PopYear[cYear];
-                BigInteger NextYearPop = Constants.PopYear[cYear + 1];
-
-                var diffYear = middleStamp - timestampThisYear;
-
-                BigInteger DpsMid = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
-                BigInteger PopMid = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsMidNC = DpsMid * (PopMid - RegisteredTotal) / PopMid;
-
-                cpp += intervalTime * DpsMidNC / RegisteredTotal;
+                var previousStamp = Blockchain.GetBlock(i - 1).Timestamp;
+                var diff = currentStamp - previousStamp;
+                cpp += diff * Constants.DPS / totalPerBlock;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
@@ -746,20 +710,8 @@ namespace Bol.Coin.Services
             var result = BolRepository.Get(bolAccount.MainAddress);
 
             Runtime.Notify("claim", BolResult.Ok(result));
-            
-
 
             return true;
-        }
-        private static long ConvertToUnixTime(DateTime datetime)
-        {
-            DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return (long)(datetime - sTime).TotalSeconds;
-        }
-        private static DateTime UnixTimeToDateTime(long unixtime)
-        {
-            DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return sTime.AddSeconds(unixtime);
         }
 
         public static bool GetCertifiers(byte[] countryCode)
