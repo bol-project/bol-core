@@ -18,7 +18,6 @@ namespace Bol.Coin
         public static readonly BigInteger C_ADDRESS_START = new BigInteger("0x1AF05400".HexToBytes());
         public static readonly BigInteger C_ADDRESS_END = new BigInteger("0xEDF05400".HexToBytes());
 
-        public static readonly BigInteger DPS = 184200000;
 
         public static readonly BigInteger[] DpsYear = { 184661436, 187819619, 190637490, 193569717, 196034672, 199614745, 202682166, 205775244, 208348971, 212137640, 215434148, 218821347 };
         public static readonly BigInteger[] PopYear = { 7713468205, 7794798729, 7874965732, 7953952577, 8031800338, 8108605255, 8184437453, 8259276651, 8333078318, 8405863301, 8477660723, 8548487371 };
