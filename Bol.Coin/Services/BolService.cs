@@ -631,7 +631,7 @@ namespace Bol.Coin.Services
 
             return true;
         }
-
+		
         public static bool Claim(byte[] address)
         {
             if (BolValidator.AddressEmpty(address))
@@ -682,11 +682,11 @@ namespace Bol.Coin.Services
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
             uint ClaimInterval = 1000;
-            BigInteger prevHeightInterval = (uint)(previousHeight / ClaimInterval) * ClaimInterval;
-
+            BigInteger startClaimHeight = (uint)(previousHeight / ClaimInterval) * ClaimInterval;
+            BigInteger endClaimHeight = (uint)(currentHeight / ClaimInterval) * ClaimInterval;   
 
             BigInteger cpp = 0;
-            for (var i = previousHeight; i <= currentHeight; i+= ClaimInterval)
+            for (var i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
             {
                 var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
                 if (nextBlockTotal != 0)
@@ -761,7 +761,7 @@ namespace Bol.Coin.Services
             DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return sTime.AddSeconds(unixtime);
         }
-
+		
         public static bool GetCertifiers(byte[] countryCode)
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);
