@@ -12,6 +12,7 @@ variables:
 
 .build:
   stage: build
+  image: gitlab/dind
   only:
     - develop
     - master
