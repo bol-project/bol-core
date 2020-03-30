@@ -1,0 +1,102 @@
+services:
+  - docker:18.09-dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+.build:
+  stage: build
+  only:
+    - develop
+    - master
+  variables:
+    VALIDATOR_NAME: validator-1
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
+    - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+    - echo CI_BUILD_REF=$CI_BUILD_REF
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.$VALIDATOR_NAME
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - docker build --build-arg validator_wallet=$VALIDATOR_NAME.json -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  tags:
+    - build-internal
+
+build_node_1:
+  extends: .build
+  variables:
+    VALIDATOR_NAME: validator-1
+
+build_node_2:
+  extends: .build
+  variables:
+    VALIDATOR_NAME: validator-2
+
+build_node_3:
+  extends: .build
+  variables:
+    VALIDATOR_NAME: validator-3
+
+build_node_4:
+  extends: .build
+  variables:
+    VALIDATOR_NAME: validator-4
+
+.deploy:
+  image: lachlanevenson/k8s-kubectl:latest
+  environment:
+    name: bol-demo
+    url: https://explorer.demo.bolchain.net
+  tags:
+    - deploy-internal
+  variables:
+    VALIDATOR_NAME: validator-1
+  only:
+    - master
+    - develop
+  stage: deploy
+  when: manual
+  before_script:
+    - echo -n $KUBE_CONFIG | base64 -d > `pwd`/kube-config
+    - export KUBECONFIG=`pwd`/kube-config
+  script:
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.$VALIDATOR_NAME
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - kubectl version
+    - kubectl cluster-info
+    - cd manifests/    
+    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" deployment.yaml service.yaml ingress.yaml
+    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" deployment.yaml
+    - kubectl apply -f deployment.yaml
+    - kubectl apply -f service.yaml
+    - kubectl apply -f nginx-config.yaml
+    - kubectl rollout status -f deployment.yaml
+    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+
+deploy_node_1:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-1
+
+deploy_node_2:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-2
+
+deploy_node_3:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-3
+
+deploy_node_4:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-4

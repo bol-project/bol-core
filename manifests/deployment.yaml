@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+    track: stable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bol-__CI_BUILD_REF_SLUG__
+  template:
+    metadata:
+      labels:
+        app: bol-__CI_BUILD_REF_SLUG__
+        track: stable
+    spec:
+      imagePullSecrets:
+        - name: bol-registry-secret
+      containers:
+      - name: bol-__CI_BUILD_REF_SLUG__
+        image: __CI_IMAGE_TAG__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /self
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready 
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
