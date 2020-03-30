@@ -27,13 +27,13 @@ spec:
         - containerPort: 80
         livenessProbe:
           httpGet:
-            path: /
+            path: /swagger
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: / 
+            path: /swagger
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
