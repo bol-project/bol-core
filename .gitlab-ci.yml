@@ -18,8 +18,7 @@ variables:
     - master
   variables:
     VALIDATOR_NAME: validator-1
-  before_script:
-    - git submodule update --init --recursive
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - docker info
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
