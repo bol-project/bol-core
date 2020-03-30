@@ -75,7 +75,7 @@ build_node_4:
     - kubectl version
     - kubectl cluster-info
     - cd manifests/    
-    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" deployment.yaml service.yaml ingress.yaml
+    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" deployment.yaml service.yaml
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" deployment.yaml
     - kubectl apply -f deployment.yaml
     - kubectl apply -f service.yaml
