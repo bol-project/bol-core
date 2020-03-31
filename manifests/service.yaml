@@ -16,5 +16,9 @@ spec:
     - name: http-metrics
       port: 80
       protocol: TCP
+    - name: node-p2p
+      protocol: TCP
+      port: 11456
+      targetPort: 11456
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
