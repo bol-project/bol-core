@@ -28,6 +28,11 @@ spec:
         - containerPort: 11456
         - containerPort: 11455
         - containerPort: 11454
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting.Internal.WebHost
+            value: Warning
         livenessProbe:
           httpGet:
             path: /swagger
