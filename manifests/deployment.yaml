@@ -25,6 +25,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
+        - containerPort: 11456
+        - containerPort: 11455
+        - containerPort: 11454
         livenessProbe:
           httpGet:
             path: /swagger
