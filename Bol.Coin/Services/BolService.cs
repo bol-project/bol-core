@@ -696,14 +696,13 @@ namespace Bol.Coin.Services
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
                 var previousStamp = Blockchain.GetBlock(i - ClaimInterval).Timestamp;
-                var middleStamp = Blockchain.GetBlock(i - (uint)(ClaimInterval / 2)).Timestamp;
                 var intervalTime = currentStamp - previousStamp;
 
-                DateTime middleDateTime = UnixTimeToDateTime(middleStamp);
+                DateTime currentDateTime = UnixTimeToDateTime(currentStamp);
 
-                string currentYear = middleDateTime.Year.ToString();
+                string currentYear = currentDateTime.Year.ToString();
                 int currentYearInt = int.Parse(currentYear);
-                string currentMonth = middleDateTime.Month.ToString();
+                string currentMonth = currentDateTime.Month.ToString();
                 int currentMonthInt = int.Parse(currentMonth);
 
                 int cYear = currentYearInt - 2019; //convert to table index
@@ -721,13 +720,13 @@ namespace Bol.Coin.Services
                 BigInteger ThisYearPop = Constants.PopYear[cYear];
                 BigInteger NextYearPop = Constants.PopYear[cYear + 1];
 
-                var diffYear = middleStamp - timestampThisYear;
+                var diffYear = currentStamp - timestampThisYear;
 
-                BigInteger DpsMid = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
-                BigInteger PopMid = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsMidNC = DpsMid * (PopMid - RegisteredTotal) / PopMid;
+                BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
+                BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
+                BigInteger DpsNC = Dps * (Pop - RegisteredTotal) / Pop;
 
-                cpp += intervalTime * DpsMidNC / RegisteredTotal;
+                cpp += intervalTime * DpsNC / RegisteredTotal;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
