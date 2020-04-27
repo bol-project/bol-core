@@ -728,9 +728,9 @@ namespace Bol.Coin.Services
                 BigInteger NextYearPop = popyear[currentYear+1];
 
 				BigInteger SecInYear = 0;
-                //if (DateTime.IsLeapYear((int)currentYear)) 
-                //    SecInYear = Constants.SecOfLeapYear;
-                //else SecInYear = Constants.SecOfYear;
+                if (IsLeapYear(currentYear)) 
+                    SecInYear = Constants.SecOfLeapYear;
+                else SecInYear = Constants.SecOfYear;
 				
 				
                 var diffYear = currentStamp - timestampThisYear;
@@ -777,7 +777,10 @@ namespace Bol.Coin.Services
 			else
 			return 1970 + unixtime / 31556926;
         }
-
+		private static bool IsLeapYear(uint year)
+		{
+			return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)); 
+		} 
 		
         public static bool GetCertifiers(byte[] countryCode)
         {
