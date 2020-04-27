@@ -344,6 +344,23 @@ namespace Bol.Coin.Services
 
             BolRepository.SetContractDeployed();
 
+            var dpsYear = new Map<uint, BigInteger>();
+            dpsYear[2019] = 184661436;
+            dpsYear[2020] = 187819619;
+            dpsYear[2021] = 190637490;
+
+            var popYear = new Map<uint, BigInteger>();
+            popYear[2019] = 7713468205;
+            popYear[2020] = 7794798729;
+
+            var yearStamp = new Map<uint, BigInteger>();
+            yearStamp[2019] = 1561939200;
+            yearStamp[2020] = 1593561600;
+
+            BolRepository.SetDpsYear(dpsYear);
+            BolRepository.SetPopYear(popYear);
+            BolRepository.SetYearStamp(yearStamp);
+
             Runtime.Notify("deploy", BolResult.Ok());
             return true;
         }
@@ -683,10 +700,14 @@ namespace Bol.Coin.Services
 
             uint ClaimInterval = 1000;
             BigInteger startClaimHeight = (uint)(previousHeight / ClaimInterval) * ClaimInterval;
-            BigInteger endClaimHeight = (uint)(currentHeight / ClaimInterval) * ClaimInterval;   
+            BigInteger endClaimHeight = (uint)(currentHeight / ClaimInterval) * ClaimInterval;
+
+            var dpsYear = BolRepository.GetDpsYear();
+            var popyear = BolRepository.GetPopYear();
+            var yearStamp = BolRepository.GetYearStamp();
 
             BigInteger cpp = 0;
-            for (var i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
+            for (uint i = (uint) startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
             {
                 var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
                 if (nextBlockTotal != 0)
@@ -696,38 +717,36 @@ namespace Bol.Coin.Services
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
                 var previousStamp = Blockchain.GetBlock(i - ClaimInterval).Timestamp;
-                var middleStamp = Blockchain.GetBlock(i - (uint)(ClaimInterval / 2)).Timestamp;
                 var intervalTime = currentStamp - previousStamp;
 
-                DateTime middleDateTime = UnixTimeToDateTime(middleStamp);
+                uint currentYear = ConvertToYear(currentStamp);
 
-                string currentYear = middleDateTime.Year.ToString();
-                int currentYearInt = int.Parse(currentYear);
-                string currentMonth = middleDateTime.Month.ToString();
-                int currentMonthInt = int.Parse(currentMonth);
+                //string currentMonth = currentDateTime.Month.ToString();
+                int currentMonthInt = 7;
 
-                int cYear = currentYearInt - 2019; //convert to table index
+                uint cYear = currentYear - 2019; //convert to table index
 
                 BigInteger SecInYear = 0;
-                if (DateTime.IsLeapYear(currentYearInt)) 
-                    SecInYear = Constants.SecOfLeapYear;
-                else SecInYear = Constants.SecOfYear;
+                //if (DateTime.IsLeapYear((int)currentYear)) 
+                //    SecInYear = Constants.SecOfLeapYear;
+                //else SecInYear = Constants.SecOfYear;
 
                 if (currentMonthInt < 7) cYear -= 1;
 
-                BigInteger timestampThisYear = Constants.yearStampSeconds[cYear];
-                BigInteger ThisYearDps = Constants.DpsYear[cYear];
-                BigInteger NextYearDps = Constants.DpsYear[cYear + 1];
-                BigInteger ThisYearPop = Constants.PopYear[cYear];
-                BigInteger NextYearPop = Constants.PopYear[cYear + 1];
 
-                var diffYear = middleStamp - timestampThisYear;
+                BigInteger timestampThisYear = yearStamp[currentYear];
+                BigInteger ThisYearDps = dpsYear[currentYear];
+                BigInteger NextYearDps = dpsYear[currentYear + 1];
+                BigInteger ThisYearPop = popyear[currentYear];
+                BigInteger NextYearPop = popyear[currentYear+1];
 
-                BigInteger DpsMid = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
-                BigInteger PopMid = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsMidNC = DpsMid * (PopMid - RegisteredTotal) / PopMid;
+                var diffYear = currentStamp - timestampThisYear;
 
-                cpp += intervalTime * DpsMidNC / RegisteredTotal;
+                BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
+                BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
+                BigInteger DpsNC = Dps * (Pop - RegisteredTotal) / Pop;
+
+                cpp += intervalTime * DpsNC / RegisteredTotal;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
@@ -751,15 +770,14 @@ namespace Bol.Coin.Services
 
             return true;
         }
-        private static long ConvertToUnixTime(DateTime datetime)
+        //private static long ConvertToUnixTime(DateTime datetime)
+        //{
+        //    DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        //    return (long)(datetime - sTime).TotalSeconds;
+        //}
+        private static uint ConvertToYear(uint unixtime)
         {
-            DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return (long)(datetime - sTime).TotalSeconds;
-        }
-        private static DateTime UnixTimeToDateTime(long unixtime)
-        {
-            DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return sTime.AddSeconds(unixtime);
+            return 1970 + (unixtime / 31556926);
         }
 		
         public static bool GetCertifiers(byte[] countryCode)
