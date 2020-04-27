@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: nginx
+data:
+  8101: "bol-demo/bol-validator-1:11456"
+  8102: "bol-demo/bol-validator-2:11456"
+  8103: "bol-demo/bol-validator-3:11456"
+  8104: "bol-demo/bol-validator-4:11456"
+#   8105: "bol-demo/bol-validator-5:11456"
+#   8106: "bol-demo/bol-validator-6:11456"
+#   8107: "bol-demo/bol-validator-7:11456"
+#   8108: "bol-demo/bol-validator-8:11456"
+#   8109: "bol-demo/bol-validator-9:11456"
+#   8110: "bol-demo/bol-validator-10:11456"

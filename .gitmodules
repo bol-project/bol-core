@@ -1,12 +1,12 @@
 [submodule "neo"]
 	path = neo
-	url = git@gitlab.com:bolchain/neo-project/neo.git
+	url = ../../neo-project/neo.git
 	branch = feature/local_refs
 [submodule "neo-vm"]
 	path = neo-vm
-	url = git@gitlab.com:bolchain/neo-project/neo-vm.git
+	url = ../../neo-project/neo-vm.git
 	branch = master
 [submodule "neo-cli"]
 	path = neo-cli
-	url = git@gitlab.com:bolchain/neo-project/neo-cli.git
+	url = ../../neo-project/neo-cli.git
 	branch = feature/local_refs

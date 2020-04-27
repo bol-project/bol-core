@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+    track: stable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bol-__CI_BUILD_REF_SLUG__
+  template:
+    metadata:
+      labels:
+        app: bol-__CI_BUILD_REF_SLUG__
+        track: stable
+    spec:
+      imagePullSecrets:
+        - name: bol-registry-secret
+      containers:
+      - name: bol-__CI_BUILD_REF_SLUG__
+        image: __CI_IMAGE_TAG__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 11456
+        - containerPort: 11455
+        - containerPort: 11454
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting.Internal.WebHost
+            value: Warning
+        livenessProbe:
+          httpGet:
+            path: /swagger
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /swagger
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
