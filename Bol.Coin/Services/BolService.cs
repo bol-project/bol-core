@@ -720,26 +720,19 @@ namespace Bol.Coin.Services
                 var intervalTime = currentStamp - previousStamp;
 
                 uint currentYear = ConvertToYear(currentStamp);
-
-                //string currentMonth = currentDateTime.Month.ToString();
-                int currentMonthInt = 7;
-
-                uint cYear = currentYear - 2019; //convert to table index
-
-                BigInteger SecInYear = 0;
-                //if (DateTime.IsLeapYear((int)currentYear)) 
-                //    SecInYear = Constants.SecOfLeapYear;
-                //else SecInYear = Constants.SecOfYear;
-
-                if (currentMonthInt < 7) cYear -= 1;
-
-
+				uint cYear = currentYear - 2019; //convert to table index
                 BigInteger timestampThisYear = yearStamp[currentYear];
                 BigInteger ThisYearDps = dpsYear[currentYear];
                 BigInteger NextYearDps = dpsYear[currentYear + 1];
                 BigInteger ThisYearPop = popyear[currentYear];
                 BigInteger NextYearPop = popyear[currentYear+1];
 
+				BigInteger SecInYear = 0;
+                //if (DateTime.IsLeapYear((int)currentYear)) 
+                //    SecInYear = Constants.SecOfLeapYear;
+                //else SecInYear = Constants.SecOfYear;
+				
+				
                 var diffYear = currentStamp - timestampThisYear;
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
@@ -777,8 +770,14 @@ namespace Bol.Coin.Services
         //}
         private static uint ConvertToYear(uint unixtime)
         {
-            return 1970 + (unixtime / 31556926);
+            uint remainder = unixtime % 31556926;
+			uint month_seconds = 2629743;
+			if(remainder < 7 * month_seconds)
+            return 1970 + unixtime / 31556926 -1;
+			else
+			return 1970 + unixtime / 31556926;
         }
+
 		
         public static bool GetCertifiers(byte[] countryCode)
         {
