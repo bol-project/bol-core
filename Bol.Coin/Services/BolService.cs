@@ -344,6 +344,23 @@ namespace Bol.Coin.Services
 
             BolRepository.SetContractDeployed();
 
+            var dpsYear = new Map<uint, BigInteger>();
+            dpsYear[2019] = 184661436;
+            dpsYear[2020] = 187819619;
+            dpsYear[2021] = 190637490;
+
+            var popYear = new Map<uint, BigInteger>();
+            popYear[2019] = 7713468205;
+            popYear[2020] = 7794798729;
+
+            var yearStamp = new Map<uint, BigInteger>();
+            yearStamp[2019] = 1561939200;
+            yearStamp[2020] = 1593561600;
+
+            BolRepository.SetDpsYear(dpsYear);
+            BolRepository.SetPopYear(popYear);
+            BolRepository.SetYearStamp(yearStamp);
+
             Runtime.Notify("deploy", BolResult.Ok());
             return true;
         }
