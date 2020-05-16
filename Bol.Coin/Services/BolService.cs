@@ -679,19 +679,19 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Forbidden("You need a B Type Account in order to Claim Bol."));
                 return false;
             }
-
+            /* TEMPORARILY DISABLE FOR TESTING PURPOSES
             if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
             {
                 Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
                 return false;
             }
-
+            
             if (bolAccount.Certifications < 2)
             {
                 Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
                 return false;
             }
-
+            */
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
@@ -699,15 +699,15 @@ namespace Bol.Coin.Services
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
             uint ClaimInterval = 1000;
-            BigInteger startClaimHeight = (uint)(previousHeight / ClaimInterval) * ClaimInterval;
-            BigInteger endClaimHeight = (uint)(currentHeight / ClaimInterval) * ClaimInterval;
+            BigInteger startClaimHeight = (previousHeight / ClaimInterval) * ClaimInterval;
+            BigInteger endClaimHeight = (currentHeight / ClaimInterval) * ClaimInterval;
 
             var dpsYear = BolRepository.GetDpsYear();
             var popyear = BolRepository.GetPopYear();
             var yearStamp = BolRepository.GetYearStamp();
 
             BigInteger cpp = 0;
-            for (uint i = (uint) startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
+            for (uint i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
             {
                 var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
                 if (nextBlockTotal != 0)
