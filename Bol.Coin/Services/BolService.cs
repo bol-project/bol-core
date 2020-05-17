@@ -722,17 +722,18 @@ namespace Bol.Coin.Services
                 uint currentYear = ConvertToYear(currentStamp);
 				uint cYear = currentYear - 2019; //convert to table index
                 BigInteger timestampThisYear = yearStamp[currentYear];
+				BigInteger timestampNextYear = yearStamp[currentYear + 1];
                 BigInteger ThisYearDps = dpsYear[currentYear];
                 BigInteger NextYearDps = dpsYear[currentYear + 1];
                 BigInteger ThisYearPop = popyear[currentYear];
                 BigInteger NextYearPop = popyear[currentYear+1];
 
-				BigInteger SecInYear = 0;
-                if (IsLeapYear(currentYear)) 
-                    SecInYear = Constants.SecOfLeapYear;
-                else SecInYear = Constants.SecOfYear;
+				//BigInteger SecInYear = 0;
+                //if (IsLeapYear(currentYear)) 
+                //    SecInYear = Constants.SecOfLeapYear;
+                //else SecInYear = Constants.SecOfYear;
 				
-				
+				var SecInYear = timestampNextYear - timestampThisYear;
                 var diffYear = currentStamp - timestampThisYear;
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
@@ -763,11 +764,6 @@ namespace Bol.Coin.Services
 
             return true;
         }
-        //private static long ConvertToUnixTime(DateTime datetime)
-        //{
-        //    DateTime sTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        //    return (long)(datetime - sTime).TotalSeconds;
-        //}
         private static uint ConvertToYear(uint unixtime)
         {
             uint remainder = unixtime % 31556926;
@@ -777,10 +773,10 @@ namespace Bol.Coin.Services
 			else
 			return 1970 + unixtime / 31556926;
         }
-		private static bool IsLeapYear(uint year)
-		{
-			return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)); 
-		} 
+		//private static bool IsLeapYear(uint year)
+		//{
+		//	return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)); 
+		//} 
 		
         public static bool GetCertifiers(byte[] countryCode)
         {
