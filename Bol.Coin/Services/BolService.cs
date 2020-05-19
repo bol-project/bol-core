@@ -708,7 +708,6 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Forbidden("You need a B Type Account in order to Claim Bol."));
                 return false;
             }
-            /* TEMPORARILY DISABLE FOR TESTING PURPOSES
             if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
             {
                 Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
@@ -720,14 +719,14 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
                 return false;
             }
-            */
+            
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
             var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
-            uint ClaimInterval = 1; //CHANGE BACK TO 1000 WHEN DONE DEBUGGING
+            uint ClaimInterval = 1000;
             uint startClaimHeight = (previousHeight / ClaimInterval) * ClaimInterval;
             uint endClaimHeight = (currentHeight / ClaimInterval) * ClaimInterval;
 
