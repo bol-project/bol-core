@@ -348,14 +348,43 @@ namespace Bol.Coin.Services
             dpsYear[2019] = 184661436;
             dpsYear[2020] = 187819619;
             dpsYear[2021] = 190637490;
+            dpsYear[2022] = 193569717;
+            dpsYear[2023] = 196034672;
+            dpsYear[2024] = 199614745;
+            dpsYear[2025] = 202682166;
+            dpsYear[2026] = 205775244;
+            dpsYear[2027] = 208348971;
+            dpsYear[2028] = 212137640;
+            dpsYear[2029] = 215434148;
+            dpsYear[2030] = 218821347;
 
             var popYear = new Map<uint, BigInteger>();
             popYear[2019] = 7713468205;
             popYear[2020] = 7794798729;
+            popYear[2021] = 7874965732;
+            popYear[2022] = 7953952577;
+            popYear[2023] = 8031800338;
+            popYear[2024] = 8108605255;
+            popYear[2025] = 8184437453;
+            popYear[2026] = 8259276651;
+            popYear[2027] = 8333078318;
+            popYear[2028] = 8405863301;
+            popYear[2029] = 8477660723;
+            popYear[2030] = 8548487371;
 
-            var yearStamp = new Map<uint, BigInteger>();
+            var yearStamp = new Map<uint, BigInteger>(); //will need to change to milliseconds after upgrade to neo 3
             yearStamp[2019] = 1561939200;
             yearStamp[2020] = 1593561600;
+            yearStamp[2021] = 1625097600;
+            yearStamp[2022] = 1656633600;
+            yearStamp[2023] = 1688169600;
+            yearStamp[2024] = 1719792000;
+            yearStamp[2025] = 1751328000;
+            yearStamp[2026] = 1782864000;
+            yearStamp[2027] = 1814400000;
+            yearStamp[2028] = 1846022400;
+            yearStamp[2029] = 1877558400;
+            yearStamp[2030] = 1909094400;
 
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
@@ -703,12 +732,9 @@ namespace Bol.Coin.Services
             uint endClaimHeight = (currentHeight / ClaimInterval) * ClaimInterval;
 
 
-            //var dpsYear = BolRepository.GetDpsYear();
-            ////////////////////didn't work//////////////////////////////////////long[] dpsYear = { 184661436, 187819619 };
-            //var popYear = BolRepository.GetPopYear();
-            ////////////////////didn't work//////////////////////////////////////long[] popYear = { 7713468205, 7794798729};
-            //var yearStamp = BolRepository.GetYearStamp();
-            ////////////////////didn't work//////////////////////////////////////long[] yearStamp = { 1561939200, 1593561600 };
+            var dpsYear = BolRepository.GetDpsYear();
+            var popYear = BolRepository.GetPopYear();
+            var yearStamp = BolRepository.GetYearStamp();
 
             BigInteger cpp = 0;
             for (uint i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
@@ -724,21 +750,12 @@ namespace Bol.Coin.Services
                 var intervalTime = currentStamp - previousStamp;
 
                 uint currentYear = ConvertToYear(currentStamp);
-				uint cYear = currentYear - 2019; //convert to table index
-                //BigInteger timestampThisYear = yearStamp[currentYear];
-				//BigInteger timestampNextYear = yearStamp[currentYear + 1];
-                //BigInteger ThisYearDps = dpsYear[currentYear];
-                //BigInteger NextYearDps = dpsYear[currentYear + 1];
-                //BigInteger ThisYearPop = popYear[currentYear];
-                //BigInteger NextYearPop = popYear[currentYear+1];
-
-                BigInteger timestampThisYear = 1561939200;
-				BigInteger timestampNextYear = 1593561600;
-                BigInteger ThisYearDps = 184661436;
-                BigInteger NextYearDps = 187819619;
-                BigInteger ThisYearPop = 7713468205;
-                BigInteger NextYearPop = 7794798729;
-
+                BigInteger timestampThisYear = yearStamp[currentYear];
+				BigInteger timestampNextYear = yearStamp[currentYear + 1];
+                BigInteger ThisYearDps = dpsYear[currentYear];
+                BigInteger NextYearDps = dpsYear[currentYear + 1];
+                BigInteger ThisYearPop = popYear[currentYear];
+                BigInteger NextYearPop = popYear[currentYear+1];
 
                 var SecInYear = timestampNextYear - timestampThisYear;
                 var diffYear = currentStamp - timestampThisYear;
@@ -767,8 +784,6 @@ namespace Bol.Coin.Services
 
             Runtime.Notify("claim", BolResult.Ok(result));
             
-
-
             return true;
         }
         private static uint ConvertToYear(uint unixtime)
