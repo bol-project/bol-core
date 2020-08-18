@@ -726,7 +726,7 @@ namespace Bol.Coin.Services
             var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
-            uint ClaimInterval = 1000;
+            uint ClaimInterval = BolRepository.GetClaimInterval();
             uint startClaimHeight = (previousHeight / ClaimInterval) * ClaimInterval;
             uint endClaimHeight = (currentHeight / ClaimInterval) * ClaimInterval;
 
@@ -738,11 +738,14 @@ namespace Bol.Coin.Services
             BigInteger cpp = 0;
             for (uint i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
             {
-                var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
-                if (nextBlockTotal != 0)
-                {
-                    totalPerBlock = nextBlockTotal;
-                }
+				var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
+				uint pointer = i;
+				while (nextBlockTotal==0)
+				{
+						pointer -= ClaimInterval;
+						nextBlockTotal = BolRepository.GetRegisteredAtBlock(pointer);
+						totalPerBlock = nextBlockTotal;
+				}
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
                 var previousStamp = Blockchain.GetBlock(i - ClaimInterval).Timestamp;

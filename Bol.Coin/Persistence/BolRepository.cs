@@ -20,6 +20,7 @@ namespace Bol.Coin.Persistence
         public const byte DPSYEAR = 0xB0;
         public const byte POPYEAR = 0xB1;
         public const byte YEARSTAMP = 0xB2;
+        public const byte CLAIM_INTERVAL= 0xB3;
 
         public static void Save(BolAccount account)
         {
@@ -216,6 +217,18 @@ namespace Bol.Coin.Persistence
             return (Map<uint, BigInteger>)result.Deserialize();
         }
 
+        public static void SetClaimInterval(BigInteger interval)
+        {
+            var key = ClaimIntervalKey();
+            BolStorage.Put(key, interval);
+        }
+
+        public static BigInteger GetClaimInterval()
+        {
+            var key = ClaimIntervalKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -274,6 +287,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] YearStampKey()
         {
             return new byte[] { YEARSTAMP };
+        }
+
+        internal static byte[] ClaimIntervalKey()
+        {
+            return new byte[] { CLAIM_INTERVAL };
         }
     }
 }
