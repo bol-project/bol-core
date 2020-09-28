@@ -726,9 +726,9 @@ namespace Bol.Coin.Services
             var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
-            uint ClaimInterval = BolRepository.GetClaimInterval();
-            uint startClaimHeight = (previousHeight / ClaimInterval) * ClaimInterval;
-            uint endClaimHeight = (currentHeight / ClaimInterval) * ClaimInterval;
+            uint claimInterval = (uint) BolRepository.GetClaimInterval();
+            uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
+            uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
 
 
             var dpsYear = BolRepository.GetDpsYear();
@@ -736,19 +736,19 @@ namespace Bol.Coin.Services
             var yearStamp = BolRepository.GetYearStamp();
 
             BigInteger cpp = 0;
-            for (uint i = startClaimHeight; i <= endClaimHeight; i+= ClaimInterval)
+            for (uint i = startClaimHeight; i <= endClaimHeight; i+= claimInterval)
             {
 				var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
 				uint pointer = i;
 				while (nextBlockTotal==0)
 				{
-						pointer -= ClaimInterval;
+						pointer -= claimInterval;
 						nextBlockTotal = BolRepository.GetRegisteredAtBlock(pointer);
 						totalPerBlock = nextBlockTotal;
 				}
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
-                var previousStamp = Blockchain.GetBlock(i - ClaimInterval).Timestamp;
+                var previousStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
                 var intervalTime = currentStamp - previousStamp;
 
                 uint currentYear = ConvertToYear(currentStamp);
