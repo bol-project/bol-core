@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
+    <ProjectReference Include="..\neo-vm\src\neo-vm\neo-vm.csproj" />
+  </ItemGroup>
+
+</Project>
