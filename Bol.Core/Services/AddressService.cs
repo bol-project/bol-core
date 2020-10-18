@@ -15,12 +15,12 @@ namespace Bol.Core.Services
     public class AddressService : IAddressService
     {
         private readonly IContractService _contractService;
-        private readonly ISha256Hasher _sha256Hasher;
+        private readonly Cryptography.ISha256Hasher _sha256Hasher;
         private readonly INonceCalculator _nonceCalculator;
 
         public AddressService(
             IContractService contractService,
-            ISha256Hasher sha256Hasher,
+            Cryptography.ISha256Hasher sha256Hasher,
             INonceCalculator nonceCalculator)
         {
             _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
