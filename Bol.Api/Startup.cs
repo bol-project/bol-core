@@ -10,6 +10,7 @@ using Bol.Core.Hashers;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model.Responses;
+using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -43,14 +44,28 @@ namespace Bol.Api
 
             services.AddSingleton<IHostedService, NodeBackgroundService>();
 
+            //BOL Cryptography
+            services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
+            services.AddScoped<Cryptography.IBase64Encoder, Cryptography.Encoders.Base64Encoder>();
+            services.AddScoped<Cryptography.IBase58Encoder, Cryptography.Encoders.Base58Encoder>();
+            services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
+            services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
+            services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
+            services.AddScoped<Address.Abstractions.IXor, Address.Xor>();
+            //BOL Address
+            services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();
+            services.AddScoped<Address.IAddressTransformer, Address.AddressTransformer>();
+            services.AddScoped<Address.ISignatureScriptFactory, Address.Neo.SignatureScriptFactory>();
+
+            services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
             services.AddScoped<IBolService, BolService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
-            services.AddScoped<ISha256Hasher, Sha256Hasher>();
+           // services.AddScoped<ISha256Hasher, Sha256Hasher>();
             services.AddScoped<IBase16Encoder, Base16Encoder>();
-            services.AddScoped<IBase58Encoder, Base58Encoder>();
+          //  services.AddScoped<IBase58Encoder, Base58Encoder>();
             services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
             services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
 

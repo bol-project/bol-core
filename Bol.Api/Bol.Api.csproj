@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" />
     <ProjectReference Include="..\Bol.Core\Bol.Core.csproj" />
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" />
     <ProjectReference Include="..\neo-cli\neo-cli\neo-cli.csproj" />
   </ItemGroup>
 
