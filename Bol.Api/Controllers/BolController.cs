@@ -65,17 +65,17 @@ namespace Bol.Api.Controllers
         {
             var result = await _walletService.CreateWallet(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
 
-            JObject wallet = new JObject();
-            wallet["name"] = result.Name;
-            wallet["version"] = result.Version.ToString();
-            wallet["scrypt"] = result.Scrypt.ToJson();
-            wallet["accounts"] = new JArray(result
-                .GetAccounts()
-                .Select(account => account as NEP6Account)
-                .Select(account => account.ToJson())
-                );
+           // JObject wallet = new JObject();
+            //wallet["name"] = result.Name;
+            //wallet["version"] = result.Version.ToString();
+            //wallet["scrypt"] = result.Scrypt.ToJson();
+            //wallet["accounts"] = new JArray(result
+            //    .GetAccounts()
+            //    .Select(account => account as NEP6Account)
+            //    .Select(account => account.ToJson())
+            //    );
 
-            return Ok(wallet.ToString());
+            return Ok(result.ToString());
         }
 
         [HttpPost("register")]
