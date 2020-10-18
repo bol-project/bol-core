@@ -219,5 +219,19 @@ namespace Neo
                 yield return resultSelector(item, weight);
             }
         }
+       public  static byte[] AES256Encrypt(this byte[] block, byte[] key)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.Mode = CipherMode.ECB;
+                aes.Padding = PaddingMode.None;
+                using (ICryptoTransform encryptor = aes.CreateEncryptor())
+                {
+                    return encryptor.TransformFinalBlock(block, 0, block.Length);
+                }
+            }
+       }
+     
     }
 }
