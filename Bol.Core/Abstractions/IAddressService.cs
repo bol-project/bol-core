@@ -20,7 +20,7 @@ namespace Bol.Core.Abstractions
         /// <param name="codeName"></param>
         /// <param name="publicKey"></param>
         /// <returns></returns>
-        Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default);
+        Task<BolAddress> GenerateAddressBAsync(string codeName, Cryptography.IKeyPair keyPair, CancellationToken token = default);
 
         /// <summary>
         /// Generates a BoL C-Address by doing a proof of work.
@@ -33,7 +33,7 @@ namespace Bol.Core.Abstractions
         /// <param name="keyPair"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<BolAddress> GenerateAddressCAsync(string codeName, KeyPair keyPair, CancellationToken token = default);
+        Task<BolAddress> GenerateAddressCAsync(string codeName, Cryptography.IKeyPair keyPair, CancellationToken token = default);
 
         /// <summary>
         /// Generates a BoL B-Address with a predefined nonce, bypassing the proof of work.

@@ -28,12 +28,12 @@ namespace Bol.Core.Services
             _nonceCalculator = nonceCalculator ?? throw new ArgumentNullException(nameof(nonceCalculator));
         }
 
-        public Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
+        public Task<BolAddress> GenerateAddressBAsync(string codeName, Cryptography.IKeyPair keyPair, CancellationToken token = default)
         {
             return GenerateAddressAsync(codeName, keyPair, Constants.B_ADDRESS_START, Constants.B_ADDRESS_END, token);
         }
 
-        public Task<BolAddress> GenerateAddressCAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
+        public Task<BolAddress> GenerateAddressCAsync(string codeName, Cryptography.IKeyPair keyPair, CancellationToken token = default)
         {
             return GenerateAddressAsync(codeName, keyPair, Constants.C_ADDRESS_START, Constants.C_ADDRESS_END, token);
         }
@@ -60,7 +60,7 @@ namespace Bol.Core.Services
             return address;
         }
 
-        private async Task<BolAddress> GenerateAddressAsync(string codeName, KeyPair keyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default)
+        private async Task<BolAddress> GenerateAddressAsync(string codeName, Cryptography.IKeyPair keyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default)
         {
             var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
             var codeNameKeyPair = new KeyPair(hashedCodeName);
@@ -111,8 +111,8 @@ namespace Bol.Core.Services
                 InternalPublicKey = extendedPrivateKeyPair.PublicKey.ToString()
             };
         }
-
-        private bool ValidateNonce(byte[] testNonce, KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo)
+        
+        private bool ValidateNonce(byte[] testNonce,  KeyPair codeNameKeyPair, Cryptography.IKeyPair privateKeyPair, uint rangeFrom, uint rangeTo)
         {
             //Extend the private key with a random nonce
             var extendedPrivateKey = _sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(testNonce).ToArray());
@@ -130,6 +130,7 @@ namespace Bol.Core.Services
 
             //Scripthash must be in the specified range for successful proof of work
             return (rangeFrom <= scriptNumber && scriptNumber <= rangeTo);
+           
         }
 
         private string CreateAddress(KeyPair codeNameKeyPair, KeyPair secretKeyPair)
