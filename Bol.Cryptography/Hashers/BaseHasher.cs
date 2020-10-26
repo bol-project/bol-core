@@ -38,6 +38,6 @@ namespace Bol.Cryptography.Hashers
             if (bytes < 1) throw new ArgumentException("At least 1 byte of the Hash is needed for the checksum.");
         }
 
-        public abstract byte[] Hash(byte[] input, int? bytes = null);
+        public abstract byte[] Hash(System.Collections.Generic.IEnumerable<byte> input, int? bytes = null);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -5,11 +6,11 @@ namespace Bol.Cryptography.Hashers
 {
     public class Sha256Hasher : BaseHasher, ISha256Hasher
     {
-        public override byte[] Hash(byte[] input, int? bytes = default)
+        public override byte[] Hash(IEnumerable<byte> input, int? bytes = default)
         {
             using (var algorithm = SHA256.Create())
             {
-                var hash = algorithm.ComputeHash(input);
+                var hash = algorithm.ComputeHash(input.ToArray());
 
                 if (!bytes.HasValue) return hash;
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Bol.Cryptography
 {
     public interface IHasher
@@ -8,7 +10,7 @@ namespace Bol.Cryptography
         /// <param name="input"></param>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        byte[] Hash(byte[] input, int? bytes = default);
+        byte[] Hash(IEnumerable<byte> input, int? bytes = default);
 
         byte[] AddChecksum(byte[] input, int cycles = 1, int bytes = 2);
 
