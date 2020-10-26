@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Neo.IO.Json;
 
 namespace Bol.Core.Model
 {
@@ -17,18 +18,13 @@ namespace Bol.Core.Model
         public bool Lock { get; set; }
         public string Key { get; set; }
         public contract Contract { get; set; }
-        public extra Extra { get; set; }
+        public JObject Extra { get; set; }
     }
 
-    public class extra
-    {
-        public string Codename { get; set; }
-        public string Edi { get; set; }
-    }
     public class contract
     {
         public string Script { get; set; }
-        public parameters Parameters { get; set; }
+        public IList<parameters> Parameters { get; set; }
         public bool Deployed { get; set; }
     }
     public class parameters
