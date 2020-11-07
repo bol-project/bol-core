@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Neo.Cryptography.ECC;
 
 namespace Bol.Cryptography.Keys
@@ -21,7 +19,7 @@ namespace Bol.Cryptography.Keys
         public IKeyPair Create()
         {
             byte[] privateKey = new byte[32];
-            using (System.Security.Cryptography.RandomNumberGenerator rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+            using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
             {
                 rng.GetBytes(privateKey);
             }
