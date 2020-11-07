@@ -6,7 +6,6 @@ using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
 using Bol.Core.Dtos;
 using Bol.Core.Encoders;
-using Bol.Core.Hashers;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model.Responses;
@@ -51,7 +50,7 @@ namespace Bol.Api
             services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
             services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
             services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
-            services.AddScoped<Cryptography.Abstractions.IHexToBytesFactory, Cryptography.Neo.HexToBytesFactory>();
+
             //BOL Address
             services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();
             services.AddScoped<Address.IAddressTransformer, Address.AddressTransformer>();
