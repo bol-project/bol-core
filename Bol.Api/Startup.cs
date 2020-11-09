@@ -29,10 +29,14 @@ namespace Bol.Api
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+           // Configuration = configuration;
+            var configurationBuilder = new ConfigurationBuilder()
+                                       .AddJsonFile("protocol.json")
+                                       .AddEnvironmentVariables();
+            Configuration = configurationBuilder.Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -42,6 +46,10 @@ namespace Bol.Api
             services.AddOpenApiDocument(document => document.DocumentName = "v1");
 
             services.AddSingleton<IHostedService, NodeBackgroundService>();
+
+            //ProtocolConfiguration
+            services.AddOptions();
+            services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
@@ -56,7 +64,6 @@ namespace Bol.Api
             services.AddScoped<Address.IAddressTransformer, Address.AddressTransformer>();
             services.AddScoped<Address.ISignatureScriptFactory, Address.Neo.SignatureScriptFactory>();
             services.AddScoped<Address.Abstractions.IXor, Address.Xor>();
-            services.AddScoped<Address.Abstractions.IAddressVersion, Address.AddressVersion>();
 
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
