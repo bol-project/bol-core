@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" />
     <ProjectReference Include="..\Bol.Core\Bol.Core.csproj" />
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" />
   </ItemGroup>
 
 </Project>
