@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Bol.Address;
 using Bol.Core.Abstractions;
+//using Bol.Core.Model.Wallet;
 using Neo;
 using Neo.Cryptography.ECC;
 using Neo.Ledger;
@@ -17,16 +19,18 @@ namespace Bol.Core.Services
     {
         private readonly ITransactionPublisher _transactionPublisher;
         private readonly IBlockChainService _blockChainService;
-
+        private ISignatureScriptFactory _signatureScriptFactory;
         public ContractService(
             ITransactionPublisher transactionPublisher,
-            IBlockChainService blockChainService)
+            IBlockChainService blockChainService,
+            ISignatureScriptFactory signatureScriptFactory)
         {
             _transactionPublisher = transactionPublisher ?? throw new ArgumentNullException(nameof(transactionPublisher));
             _blockChainService = blockChainService ?? throw new ArgumentNullException(nameof(blockChainService));
+            _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
         }
 
-        public InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<KeyPair> keys, int numberOfSignatures = 0)
+        public InvocationTransaction DeployContract(byte[] script, string name, string version, string author, string email, string description, IEnumerable<Cryptography.IKeyPair> keys, int numberOfSignatures = 0)
         {
             var multiSig = CreateAddressContract(keys, numberOfSignatures);
             var executionScript = CreateContractScript(script, name, version, author, email, description);
@@ -40,7 +44,7 @@ namespace Bol.Core.Services
             return transaction;
         }
 
-        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
+        public InvocationTransaction InvokeContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<Cryptography.IKeyPair> keys = null, int numberOfSignatures = 0)
         {
             var transaction = CreateTransaction(contract, operation, parameters, description, remarks, keys, numberOfSignatures);
             InvokeContract(transaction);
@@ -52,7 +56,7 @@ namespace Bol.Core.Services
             SubmitTransaction(transaction);
         }
 
-        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
+        public ContractExecutionResult TestContract(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<Cryptography.IKeyPair> keys = null, int numberOfSignatures = 0)
         {
             var transaction = CreateTransaction(contract, operation, parameters, description, remarks, keys, numberOfSignatures);
 
@@ -68,7 +72,7 @@ namespace Bol.Core.Services
             return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
         }
 
-        public InvocationTransaction CreateTransaction(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<KeyPair> keys = null, int numberOfSignatures = 0)
+        public InvocationTransaction CreateTransaction(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<Cryptography.IKeyPair> keys = null, int numberOfSignatures = 0)
         {
             var scriptHash = ParseOrThrowIfNotFound(contract);
             var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
@@ -102,15 +106,28 @@ namespace Bol.Core.Services
             return result.ScriptHash;
         }
 
-        private Contract CreateAddressContract(IEnumerable<KeyPair> keys, int numberOfSignatures)
+        private Model.Wallet.Contract CreateAddressContract(IEnumerable<Cryptography.IKeyPair> keys, int numberOfSignatures)
         {
+            var parametersList = new List<Model.Wallet.Parameters>();
+            var _contract = new Model.Wallet.Contract();
             var publicKeys = keys
                 .Select(key => key.PublicKey)
                 .ToArray();
 
             if (publicKeys.Length == 1)
             {
-                return Contract.CreateSignatureContract(publicKeys[0]);
+
+                parametersList = new List<Model.Wallet.Parameters>() {
+                    new Model.Wallet.Parameters() { Type = "Signature", Name = "signature"} ,
+                 };
+                return _contract = new Model.Wallet.Contract
+                {
+                    Script = _signatureScriptFactory.Create(publicKeys[0]).ToHexString(),
+                    Parameters = parametersList,
+                    Deployed = false
+                };
+
+                //  return Contract.CreateSignatureContract( publicKeys[0]);
             }
 
             if (numberOfSignatures < 1 || numberOfSignatures > publicKeys.Length)
@@ -118,8 +135,18 @@ namespace Bol.Core.Services
                 throw new Exception("Number of signatures must be in the range of 1 -> Number of Keys");
             }
 
-            var multisig = Contract.CreateMultiSigContract(numberOfSignatures, publicKeys);
-            return multisig;
+            parametersList = new List<Model.Wallet.Parameters>() {
+                    new Model.Wallet.Parameters() { Type = "Signature", Name = "parameter0"} ,
+                     new Model.Wallet.Parameters() { Type = "Signature", Name = "parameter1"} ,
+            };
+            return _contract = new Model.Wallet.Contract
+            {
+                Script = _signatureScriptFactory.Create(publicKeys[0]).ToHexString(),
+                Parameters = parametersList,
+                Deployed = false
+            };
+            //var multisig = Contract.CreateMultiSigContract(numberOfSignatures, publicKeys);
+            // return multisig;
         }
 
         private byte[] CreateExecutionScript(UInt160 scriptHash, string operation, IEnumerable<byte[]> parameters)
@@ -165,8 +192,8 @@ namespace Bol.Core.Services
                 return sb.ToArray();
             }
         }
-
-        private InvocationTransaction CreateTransaction(byte[] executionScript, Contract contract = null, string description = null, IEnumerable<string> remarks = null)
+        
+        private InvocationTransaction CreateTransaction(byte[] executionScript, Model.Wallet.Contract contract = null, string description = null, IEnumerable<string> remarks = null)
         {
             var transaction = new InvocationTransaction
             {
@@ -185,7 +212,7 @@ namespace Bol.Core.Services
                     new TransactionAttribute
                     {
                         Usage = TransactionAttributeUsage.Script,
-                        Data = contract.ScriptHash.ToArray()
+                        Data = _signatureScriptFactory.Create(contract.Script).ToScriptHash().GetBytes()  // contract.ScriptHash.ToArray()  
                     });
             }
 
@@ -217,11 +244,13 @@ namespace Bol.Core.Services
             return transaction;
         }
 
-        private bool SignTransaction(InvocationTransaction transaction, Contract multiSig, IEnumerable<KeyPair> keys)
+        private bool SignTransaction (InvocationTransaction transaction, Model.Wallet.Contract multiSig, IEnumerable<Cryptography.IKeyPair> keys)
         {
             var context = new ContractParametersContext(transaction);
+          
             foreach (var key in keys)
             {
+               
                 context.AddSignature(multiSig, key.PublicKey, transaction.Sign(key));
             }
 
