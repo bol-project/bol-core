@@ -55,5 +55,10 @@ namespace Bol.Address.Neo
         {
             return new SignatureScript(script.ToArray(), _encoder, _sha256, _ripemd160);
         }
+
+        public ISignatureScript Create(string script)
+        {
+            return new SignatureScript(_encoder.Decode(script).ToArray(), _encoder, _sha256, _ripemd160);
+        }
     }
 }

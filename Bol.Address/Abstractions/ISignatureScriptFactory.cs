@@ -9,5 +9,6 @@ namespace Bol.Address
         ISignatureScript Create(IPublicKey publicKey);
         ISignatureScript Create(IEnumerable<IPublicKey> publicKeys, int numberOfSignatures);
         ISignatureScript Create(byte[] script);
+        ISignatureScript Create(string script);
     }
 }
