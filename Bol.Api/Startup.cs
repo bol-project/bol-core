@@ -9,6 +9,7 @@ using Bol.Core.Encoders;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model.Responses;
+using Bol.Core.Model.Wallet;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Microsoft.AspNetCore.Builder;
@@ -29,9 +30,13 @@ namespace Bol.Api
     {
         public Startup(IConfiguration configuration)
         {
-           // Configuration = configuration;
+           //Get BolWalletPath
+           var bolWalletPath =  new ConfigurationBuilder().AddJsonFile("config.json").Build().GetSection("ApplicationConfiguration").GetSection("UnlockWallet").GetSection("Path").Value;
+
+            // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
                                        .AddJsonFile("protocol.json")
+                                       .AddJsonFile(bolWalletPath)
                                        .AddEnvironmentVariables();
             Configuration = configurationBuilder.Build();
         }
@@ -50,6 +55,7 @@ namespace Bol.Api
             //ProtocolConfiguration
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
+            services.Configure<BolWallet>(Configuration);
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
@@ -58,12 +64,14 @@ namespace Bol.Api
             services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
             services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
             services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
+          
 
             //BOL Address
             services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();
             services.AddScoped<Address.IAddressTransformer, Address.AddressTransformer>();
             services.AddScoped<Address.ISignatureScriptFactory, Address.Neo.SignatureScriptFactory>();
             services.AddScoped<Address.Abstractions.IXor, Address.Xor>();
+            services.AddScoped<Address.IScriptHashFactory, Address.ScriptHashFactory>();
 
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
@@ -73,9 +81,10 @@ namespace Bol.Api
             services.AddScoped<INonceCalculator, NonceCalculator>();
            // services.AddScoped<ISha256Hasher, Sha256Hasher>();
             services.AddScoped<IBase16Encoder, Base16Encoder>();
-          //  services.AddScoped<IBase58Encoder, Base58Encoder>();
-            services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
-            services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
+            //  services.AddScoped<IBase58Encoder, Base58Encoder>();
+           //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
+          services.AddScoped<IContextAccessor, WalletContextAccessor>();
+           services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
 
             services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
