@@ -9,8 +9,8 @@ namespace Bol.Core.Abstractions
 {
     public interface IBolService
     {
-        BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys);
-        BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys);
+        BolResponse<CreateContractResult> Create(IEnumerable<Cryptography.IKeyPair> keys);
+        BolResponse<DeployContractResult> Deploy(IEnumerable<Cryptography.IKeyPair> keys);
         BolResult<BolAccount> Claim();
         BolResponse<int> Decimals();
         BolResult<BolAccount> Register();

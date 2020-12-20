@@ -35,7 +35,7 @@ namespace Bol.Core.Services
             _createContractResponseMapper = createContractResponseMapper ?? throw new ArgumentNullException(nameof(createContractResponseMapper));
         }
 
-        public BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys)
+        public BolResponse<CreateContractResult> Create(IEnumerable<Cryptography.IKeyPair> keys)
         {
             var settings = ProtocolSettings.Default.BolSettings;
             var script = File.ReadAllBytes(settings.Path);
@@ -45,7 +45,7 @@ namespace Bol.Core.Services
             return _createContractResponseMapper.Map(transaction);
         }
 
-        public BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys)
+        public BolResponse<DeployContractResult> Deploy(IEnumerable<Cryptography.IKeyPair> keys)
         {
             var settings = ProtocolSettings.Default.BolSettings;
 
@@ -64,15 +64,16 @@ namespace Bol.Core.Services
         {
             var context = _contextAccessor.GetContext();
 
+
             var parameters = new[]
-            {
-                context.MainAddress.ToArray(),
-                Encoding.ASCII.GetBytes(context.CodeName),
-                context.Edi.HexToBytes(),
-                context.BlockChainAddress.Key.ToArray(),
-                context.SocialAddress.Key.ToArray(),
-                context.CommercialAddresses.SelectMany(pair => pair.Key.ToArray()).ToArray()
-            };
+           {
+                 context.MainAddress.GetBytes(),
+                 Encoding.ASCII.GetBytes(context.CodeName),
+                 context.Edi.HexToBytes(),
+                 context.BlockChainAddress.Key.GetBytes(),
+                 context.SocialAddress.Key.GetBytes(),
+                 context.CommercialAddresses.SelectMany(pair => pair.Key.GetBytes()).ToArray()
+             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
             var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters: parameters);
@@ -86,7 +87,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.MainAddress.ToArray()
+                context.MainAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
@@ -101,7 +102,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.MainAddress.ToArray(),
+                context.MainAddress.GetBytes(),
                 commercialAddress.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
@@ -117,7 +118,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                mainAddress.ToArray()
+                context.MainAddress.GetBytes(),
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
@@ -130,11 +131,13 @@ namespace Bol.Core.Services
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
             var parameters = new[]
             {
-                context.MainAddress.ToArray()
+                context.MainAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
 
             var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys: keys);
 
@@ -156,11 +159,13 @@ namespace Bol.Core.Services
         {
             var context = _contextAccessor.GetContext();
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
             var parameters = new[]
             {
-                context.MainAddress.ToArray()
+                context.MainAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
 
             var result = _contractService.TestContract(bolContract, "totalSupply", parameters, keys: keys);
 
@@ -237,8 +242,8 @@ namespace Bol.Core.Services
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
-            {
-                context.MainAddress.ToArray(),
+           {
+                context.MainAddress.GetBytes(),
                 address.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
@@ -253,8 +258,8 @@ namespace Bol.Core.Services
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
-            {
-                context.MainAddress.ToArray(),
+           {
+                context.MainAddress.GetBytes(),
                 address.ToArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
@@ -264,7 +269,7 @@ namespace Bol.Core.Services
             return result;
         }
 
-        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
+        private BolResult<T> TestBolContract<T>(string operation, Cryptography.IKeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
@@ -290,7 +295,7 @@ namespace Bol.Core.Services
             return bolResult;
         }
 
-        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
+        private BolResult<T> TestAndInvokeBolContract<T>(string operation, Cryptography.IKeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
             var bolResult = TestBolContract<T>(operation, keys, description, remarks, numberOfSignatures, parameters);
 
