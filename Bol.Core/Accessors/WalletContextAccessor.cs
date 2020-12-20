@@ -1,28 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bol.Address;
+using Bol.Address.Abstractions;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
-using Neo;
-using Neo.Wallets;
-using Neo.Wallets.NEP6;
+using Bol.Core.Model.Wallet;
+using Bol.Cryptography;
+using Microsoft.Extensions.Options;
+
 
 namespace Bol.Core.Accessors
 {
     public class WalletContextAccessor : IContextAccessor
     {
-        private NEP6Wallet _wallet;
 
-        public WalletContextAccessor(NEP6Wallet wallet)
+        private readonly BolWallet _BolWallet;
+        private IExportKeyFactory _exportKeyFactory;
+        private IKeyPairFactory _keyPairFactory;
+        private IAddressTransformer _addressTransformer;
+
+
+        public WalletContextAccessor(IOptions<BolWallet> bolWallet, IExportKeyFactory exportKeyFactory, IKeyPairFactory keyPairFactory,  IAddressTransformer addressTransformer)
         {
-            _wallet = wallet ?? throw new ArgumentNullException(nameof(wallet));
+          
+            _BolWallet = bolWallet.Value ?? throw new ArgumentNullException(nameof(bolWallet));
+            _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
+            _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
+         
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
         public BolContext GetContext()
         {
-            var accounts = _wallet.GetAccounts()
-                .Select(a => a as NEP6Account)
-                .ToList();
+
+            var accounts = _BolWallet.accounts.Select(a => a as Account).ToList();
 
             var codeNameAccount = accounts.Where(account => account.Label == "codename").Single();
             var privateAccount = accounts.Where(account => account.Label == "private").Single();
@@ -32,16 +44,19 @@ namespace Bol.Core.Accessors
             var socialAddressAccount = accounts.Where(account => account.Label == "social").SingleOrDefault();
             var commercialAddressAccounts = accounts.Where(account => account.Label == "commercial");
 
+
+
             return new BolContext(
-                codeNameAccount.Extra["codename"].AsString(),
-                codeNameAccount.Extra["edi"].AsString(),
-                new KeyPair(codeNameAccount.GetKey().PrivateKey),
-                new KeyPair(privateAccount.GetKey().PrivateKey),
-                mainAddressAccount.ScriptHash,
-                new KeyValuePair<UInt160, KeyPair>(blockchainAddressAccount?.ScriptHash, blockchainAddressAccount?.GetKey()),
-                new KeyValuePair<UInt160, KeyPair>(socialAddressAccount?.ScriptHash, socialAddressAccount?.GetKey()),
-                commercialAddressAccounts.Select(account => new KeyValuePair<UInt160, KeyPair>(account.ScriptHash, account.GetKey())).ToList()
+                codeNameAccount.Extra.codename,
+                codeNameAccount.Extra.edi,
+                _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, "bol", _BolWallet.Scrypt.N, _BolWallet.Scrypt.R, _BolWallet.Scrypt.P))),
+                _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, "bol", _BolWallet.Scrypt.N, _BolWallet.Scrypt.R, _BolWallet.Scrypt.P))),
+                _addressTransformer.ToScriptHash(mainAddressAccount.Address),
+                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(blockchainAddressAccount.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, "bol", _BolWallet.Scrypt.N, _BolWallet.Scrypt.R, _BolWallet.Scrypt.P)))),
+                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(socialAddressAccount.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, "bol", _BolWallet.Scrypt.N, _BolWallet.Scrypt.R, _BolWallet.Scrypt.P)))),
+                commercialAddressAccounts.Select(account => new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(account.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", _BolWallet.Scrypt.N, _BolWallet.Scrypt.R, _BolWallet.Scrypt.P))))).ToList()
                 );
+
         }
     }
 }
