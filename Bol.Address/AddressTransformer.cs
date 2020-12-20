@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Bol.Address.Model.Configuration;
 using Bol.Cryptography;
 using Microsoft.Extensions.Options;
@@ -28,7 +29,11 @@ namespace Bol.Address
         public IScriptHash ToScriptHash(string address)
         {
             var bytes = _base58.ChecksumDecode(address);
-            return new ScriptHash(bytes, _base16);
+            if (bytes.Length != 21)
+                throw new FormatException();
+            if (bytes[0].ToString() != _ProtocolConfiguration.AddressVersion)
+                throw new FormatException();
+            return new ScriptHash(bytes.Skip(1).ToArray(), _base16);
         }
 
         public byte[] AddAddressVersion(IScriptHash scriptHash)
