@@ -1,9 +1,11 @@
+using Bol.Address.Abstractions;
 using Bol.Api.Dtos;
 using Bol.Core.Abstractions;
+using Bol.Core.Model.Wallet;
+using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Neo.IO.Json;
 using Neo.Wallets;
-using Neo.Wallets.NEP6;
 using System;
 using System.IO;
 using System.Linq;
@@ -17,14 +19,20 @@ namespace Bol.Api.Controllers
     {
         private IBolService _bolService;
         private IWalletService _walletService;
-        private WalletIndexer _walletIndexer;
 
-        public BolController(IBolService bolService, IWalletService walletService, WalletIndexer walletIndexer)
+        private IExportKeyFactory _exportKeyFactory;
+        private IJsonSerializer _jsonSerializer;
+        private IKeyPairFactory _keyPairFactory;
+
+        public BolController(IBolService bolService, IWalletService walletService, WalletIndexer walletIndexer, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
-            _walletIndexer = walletIndexer ?? throw new ArgumentNullException(nameof(walletIndexer));
-        }
+            _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
+           
+    }
 
         [HttpPost("create")]
         public ActionResult Create()
@@ -33,10 +41,12 @@ namespace Bol.Api.Controllers
 
             var keys = files.Select(file =>
             {
-                var wallet = new NEP6Wallet(_walletIndexer, file);
-                wallet.Unlock("bol");
-                return wallet.GetAccounts().First().GetKey();
-            });
+            var bolWallet = _jsonSerializer.Deserialize<BolWallet>(file);
+            var accounts = bolWallet.accounts.Select(a => a as Account).ToList();
+
+            return _keyPairFactory.Create( _exportKeyFactory.GetDecryptedPrivateKey(accounts.First().Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
+
+        });
 
             var result = _bolService.Create(keys);
 
@@ -50,9 +60,9 @@ namespace Bol.Api.Controllers
 
             var keys = files.Select(file =>
             {
-                var wallet = new NEP6Wallet(_walletIndexer, file);
-                wallet.Unlock("bol");
-                return wallet.GetAccounts().First().GetKey();
+                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(file);
+                var accounts = bolWallet.accounts.Select(a => a as Account).ToList();
+                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(accounts.First().Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
             });
 
             var result = _bolService.Deploy(keys);
