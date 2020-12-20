@@ -232,6 +232,19 @@ namespace Neo
                 }
             }
        }
-     
+        public static byte[] AES256Decrypt(this byte[] block, byte[] key)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.Mode = CipherMode.ECB;
+                aes.Padding = PaddingMode.None;
+                using (ICryptoTransform decryptor = aes.CreateDecryptor())
+                {
+                    return decryptor.TransformFinalBlock(block, 0, block.Length);
+                }
+            }
+        }
+
     }
 }

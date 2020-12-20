@@ -37,5 +37,28 @@ namespace Bol.Address.Neo
             Buffer.BlockCopy(encryptedkey, 0, buffer, 7, encryptedkey.Length);
             return buffer.Base58CheckEncode();
         }
+
+        public byte[] GetDecryptedPrivateKey(string encryptedKey, string passphrase, int N, int r, int p)
+        {
+            if (encryptedKey == null) throw new ArgumentNullException(nameof(encryptedKey));
+            if (passphrase == null) throw new ArgumentNullException(nameof(passphrase));
+            byte[] data = encryptedKey.Base58CheckDecode();
+            if (data.Length != 39 || data[0] != 0x01 || data[1] != 0x42 || data[2] != 0xe0)
+                throw new FormatException();
+            byte[] addresshash = new byte[4];
+            Buffer.BlockCopy(data, 3, addresshash, 0, 4);
+            byte[] derivedkey = SCrypt.DeriveKey(Encoding.UTF8.GetBytes(passphrase), addresshash, N, r, p, 64);
+            byte[] derivedhalf1 = derivedkey.Take(32).ToArray();
+            byte[] derivedhalf2 = derivedkey.Skip(32).ToArray();
+            byte[] encryptedkey = new byte[32];
+            Buffer.BlockCopy(data, 7, encryptedkey, 0, 32);
+            byte[] prikey = _xor.XOR(encryptedkey.AES256Decrypt(derivedhalf2), derivedhalf1);
+            //Cryptography.ECC.ECPoint pubkey = Cryptography.ECC.ECCurve.Secp256r1.G * prikey;
+            //UInt160 script_hash = Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash();
+            //string address = script_hash.ToAddress();
+            //if (!Encoding.ASCII.GetBytes(address).Sha256().Sha256().Take(4).SequenceEqual(addresshash))
+            //    throw new FormatException();
+            return prikey;
+        }
     }
 }
