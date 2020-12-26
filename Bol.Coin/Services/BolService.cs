@@ -764,9 +764,9 @@ namespace Bol.Coin.Services
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
                 BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsNC = Dps * (Pop - RegisteredTotal) / Pop;
+                BigInteger DpsNC = Dps * (Pop - totalPerBlock) / Pop;
 
-                cpp += intervalTime * DpsNC / RegisteredTotal;
+                cpp += intervalTime * DpsNC / totalPerBlock;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
