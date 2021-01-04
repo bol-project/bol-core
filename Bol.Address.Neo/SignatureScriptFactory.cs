@@ -60,5 +60,21 @@ namespace Bol.Address.Neo
         {
             return new SignatureScript(_encoder.Decode(script).ToArray(), _encoder, _sha256, _ripemd160);
         }
+
+        public ISignatureScript CreateContractOperationScript(IScriptHash contract, string operation, byte[][] parameters)
+        {
+            using var sb = new ScriptBuilder();
+
+            for (int i = parameters.Length - 1; i >= 0; i--)
+                sb.EmitPush(parameters[i]);
+            sb.EmitPush(parameters.Length);
+            sb.Emit(OpCode.PACK);
+
+            sb.EmitPush(operation);
+
+            sb.EmitAppCall(contract.GetBytes(), false);
+
+            return new SignatureScript(sb.ToArray(), _encoder, _sha256, _ripemd160);
+        }
     }
 }
