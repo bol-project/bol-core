@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Neo.Cryptography.ECC;
 
 namespace Bol.Cryptography.Keys
@@ -20,6 +21,11 @@ namespace Bol.Cryptography.Keys
         public byte[] ToBytes()
         {
             return ECPoint.EncodePoint(true);
+        }
+
+        public byte[] ToRawValue()
+        {
+            return ECPoint.EncodePoint(false).Skip(1).ToArray();
         }
     }
 }
