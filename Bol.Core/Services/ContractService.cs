@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Bol.Address;
 using Bol.Core.Abstractions;
+using Bol.Cryptography;
+using Bol.Cryptography.Abstractions;
 //using Bol.Core.Model.Wallet;
 using Neo;
 using Neo.Cryptography.ECC;
@@ -20,6 +23,8 @@ namespace Bol.Core.Services
         private readonly ITransactionPublisher _transactionPublisher;
         private readonly IBlockChainService _blockChainService;
         private ISignatureScriptFactory _signatureScriptFactory;
+        private IScriptHashFactory _scriptHashFactory;
+
         public ContractService(
             ITransactionPublisher transactionPublisher,
             IBlockChainService blockChainService,
@@ -72,38 +77,24 @@ namespace Bol.Core.Services
             return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
         }
 
-        public InvocationTransaction CreateTransaction(string contract, string operation, IEnumerable<byte[]> parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<Cryptography.IKeyPair> keys = null, int numberOfSignatures = 0)
+        //public InvocationTransaction CreateTransaction(string contract, string operation, byte[][] parameters, Cryptography.IKeyPair key, string description = null, IEnumerable<string> remarks = null)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public InvocationTransaction CreateTransaction(string contract, string operation, byte[][] parameters, string description = null, IEnumerable<string> remarks = null, IEnumerable<Cryptography.IKeyPair> keys = null, int numberOfSignatures = 0)
         {
-            var scriptHash = ParseOrThrowIfNotFound(contract);
-            var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
+            //TODO: Add validations
 
-            var addressContract = CreateAddressContract(keys, numberOfSignatures);
+            var contractHash = _scriptHashFactory.Create(contract);
+            var executionScript = _signatureScriptFactory.CreateContractOperationScript(contractHash, operation, parameters);
 
-            InvocationTransaction transaction;
-            if (keys != null && keys.Any())
-            {
-                transaction = CreateTransaction(executionScript, addressContract, description, remarks);
-                var transactionSigned = SignTransaction(transaction, addressContract, keys);
-                if (!transactionSigned) throw new Exception("Could not sign transaction.");
-            }
-            else
-            {
-                transaction = CreateTransaction(executionScript, description: description, remarks: remarks);
-            }
+            var addressContract = _signatureScriptFactory.Create(keys.Select(key => key.PublicKey), numberOfSignatures);
+
+            var transaction = CreateBolTransaction(executionScript, addressContract.ToScriptHash(), description, remarks);
+            var transactionSigned = SignTransaction(transaction, addressContract, keys);
 
             return transaction;
-        }
-
-        private UInt160 ParseOrThrowIfNotFound(string contract)
-        {
-            var result = _blockChainService.GetContract(contract);
-
-            if (!result.ContractExists)
-            {
-                throw new Exception("Contract was not found in the blockchain.");
-            }
-
-            return result.ScriptHash;
         }
 
         private Model.Wallet.Contract CreateAddressContract(IEnumerable<Cryptography.IKeyPair> keys, int numberOfSignatures)
@@ -149,37 +140,7 @@ namespace Bol.Core.Services
             // return multisig;
         }
 
-        private byte[] CreateExecutionScript(UInt160 scriptHash, string operation, IEnumerable<byte[]> parameters)
-        {
-            var contractParameters = parameters
-                .Select(parameter => new ContractParameter
-                {
-                    Type = ContractParameterType.ByteArray,
-                    Value = parameter
-                })
-                .ToArray();
-
-            var invocationParameters = new[]
-{
-                new ContractParameter
-                {
-                    Type = ContractParameterType.String,
-                    Value = operation
-                },
-                new ContractParameter
-                {
-                    Type = ContractParameterType.Array,
-                    Value = contractParameters
-                }
-            };
-
-            using (var sb = new ScriptBuilder())
-            {
-                sb.EmitAppCall(scriptHash, invocationParameters);
-                return sb.ToArray();
-            }
-        }
-
+        //TODO: Move to SignatureScriptFactory
         private byte[] CreateContractScript(byte[] script, string name, string version, string author, string email, string description)
         {
             byte[] parameter_list = "0710".HexToBytes();
@@ -192,37 +153,34 @@ namespace Bol.Core.Services
                 return sb.ToArray();
             }
         }
-        
-        private InvocationTransaction CreateTransaction(byte[] executionScript, Model.Wallet.Contract contract = null, string description = null, IEnumerable<string> remarks = null)
-        {
-            var transaction = new InvocationTransaction
-            {
-                Version = 1,
-                Script = executionScript,
-                Gas = Fixed8.Zero,
-                Inputs = new CoinReference[0],
-                Outputs = new TransactionOutput[0],
-                Witnesses = new Witness[0]
-            };
-            var attributes = new List<TransactionAttribute>();
 
-            if (contract != null)
-            {
-                attributes.Add(
-                    new TransactionAttribute
-                    {
-                        Usage = TransactionAttributeUsage.Script,
-                        Data = _signatureScriptFactory.Create(contract.Script).ToScriptHash().GetBytes()  // contract.ScriptHash.ToArray()  
-                    });
-            }
+        private BolTransaction CreateBolTransaction(ISignatureScript executionScript, IScriptHash address, string description = null, IEnumerable<string> remarks = null)
+        {
+            //var transaction = new BolTransaction
+            //{
+            //    Version = 1,
+            //    Script = executionScript.GetBytes(),
+            //    Gas = Fixed8.Zero,
+            //    Inputs = new CoinReference[0],
+            //    Outputs = new TransactionOutput[0],
+            //    Witnesses = new Witness[0]
+            //};
+            var attributes = new List<BolTransactionAttribute>();
+
+            attributes.Add(
+                new BolTransactionAttribute
+                {
+                    Type = TransactionAttributeType.Script,
+                    Value = address.GetBytes()
+                });
 
             if (description != null)
             {
                 attributes.Add(
-                    new TransactionAttribute
+                    new BolTransactionAttribute
                     {
-                        Usage = TransactionAttributeUsage.Description,
-                        Data = Encoding.UTF8.GetBytes(description),
+                        Type = TransactionAttributeType.Description,
+                        Value = Encoding.UTF8.GetBytes(description),
                     });
             }
 
@@ -230,27 +188,29 @@ namespace Bol.Core.Services
             {
                 var remarkAttributes = Enumerable
                     .Range(0xf0, 0xff)
-                    .Zip(remarks, (index, remark) => new TransactionAttribute
+                    .Zip(remarks, (index, remark) => new BolTransactionAttribute
                     {
-                        Usage = (TransactionAttributeUsage)index,
-                        Data = Encoding.UTF8.GetBytes(remark),
+                        Type = (TransactionAttributeType)index,
+                        Value = Encoding.UTF8.GetBytes(remark),
                     });
 
                 attributes.AddRange(remarkAttributes);
             }
 
-            transaction.Attributes = attributes.ToArray();
-
-            return transaction;
+            return new BolTransaction
+            {
+                ExecutionScript = executionScript,
+                Attributes = attributes
+            };
         }
 
-        private bool SignTransaction (InvocationTransaction transaction, Model.Wallet.Contract multiSig, IEnumerable<Cryptography.IKeyPair> keys)
+        private bool SignTransaction(InvocationTransaction transaction, Model.Wallet.Contract multiSig, IEnumerable<Cryptography.IKeyPair> keys)
         {
             var context = new ContractParametersContext(transaction);
-          
+
             foreach (var key in keys)
             {
-               
+
                 context.AddSignature(multiSig, key.PublicKey, transaction.Sign(key));
             }
 
@@ -276,28 +236,163 @@ namespace Bol.Core.Services
         }
     }
 
-    public class ContractExecutionResult
+    public interface ITransactionNotarizer
     {
-        public bool Success { get; private set; }
-        public Fixed8 GasConsumed { get; private set; }
-        public byte[] Result { get; private set; }
+        BolTransaction Notarize(BolTransaction transaction, IEnumerable<IKeyPair> keys);
+    }
 
-        public static ContractExecutionResult Succeed(byte[] result, Fixed8 gas = default)
+    public class TransactionNotarizer : ITransactionNotarizer
+    {
+        private readonly ITransactionSigner _signer;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+
+        public BolTransaction Notarize(BolTransaction transaction, IEnumerable<IKeyPair> keys)
         {
-            return new ContractExecutionResult
-            {
-                Success = true,
-                GasConsumed = gas,
-                Result = result,
-            };
+            var witnesses = keys.OrderBy(key => key.PublicKey)
+                .Select(key =>
+                {
+
+                    var signature = _signer.GenerateSignature(transaction, key);
+                    var witness = _signatureScriptFactory.Create(key.PublicKey);
+                    return new BolTransactionWitness
+                    {
+                        InvocationScript = signature,
+                        VerificationScript = witness.GetBytes()
+                    };
+                });
+            transaction.Witnesses = witnesses;
+            return transaction;
+        }
+    }
+
+    public interface ITransactionSigner
+    {
+        byte[] GenerateSignature(BolTransaction transaction, IKeyPair key);
+    }
+
+    public class TransactionSigner : ITransactionSigner
+    {
+        private readonly ITransactionHasher _transactionHasher;
+        private readonly IECCurveSigner _signer;
+
+        public TransactionSigner(ITransactionHasher transactionHasher, IECCurveSigner signer)
+        {
+            _transactionHasher = transactionHasher ?? throw new ArgumentNullException(nameof(transactionHasher));
+            _signer = signer ?? throw new ArgumentNullException(nameof(signer));
         }
 
-        public static ContractExecutionResult Fail()
+        public byte[] GenerateSignature(BolTransaction transaction, IKeyPair key)
         {
-            return new ContractExecutionResult
-            {
-                Success = false
-            };
+            var transactionHash = _transactionHasher.Hash(transaction);
+            return _signer.Sign(transactionHash, key.PrivateKey, key.PublicKey.ToRawValue());
         }
+    }
+
+    public interface ITransactionHasher
+    {
+        byte[] Hash(BolTransaction transaction);
+    }
+
+    public class TransactionHasher : ITransactionHasher
+    {
+        public byte[] Hash(BolTransaction transaction)
+        {
+            using var ms = new MemoryStream();
+            using var writer = new BinaryWriter(ms);
+
+            writer.Write((byte)0xd1); //Writes 0xd1 as InvocationTransaction Type
+            writer.Write(1); //Writes 1 as Transaction Version
+
+            writer.WriteVarBytes(transaction.ExecutionScript.GetBytes());
+
+            writer.Write(0); //Writes 0 for GAS for Transaction Version >= 1
+
+            //Writes Attributes
+            writer.WriteVarInt(transaction.Attributes.Count());
+            foreach(var attr in transaction.Attributes)
+            {
+                writer.Write((byte)attr.Type);
+                if (attr.Type == TransactionAttributeType.DescriptionUrl)
+                    writer.Write((byte)attr.Value.Length);
+                else if (attr.Type == TransactionAttributeType.Description || attr.Type >= TransactionAttributeType.Remark)
+                    writer.WriteVarInt(attr.Value.Length);
+                if (attr.Type == TransactionAttributeType.ECDH02 || attr.Type == TransactionAttributeType.ECDH03)
+                    writer.Write(attr.Value, 1, 32);
+                else
+                    writer.Write(attr.Value);
+            }
+
+            writer.Write(0); //Writes 0 as empty Inputs
+            writer.Write(0); //Writes 0 as empty Outputs
+
+            writer.Flush();
+            return ms.ToArray();
+        }
+    }
+
+    public class BolTransaction
+    {
+        public ISignatureScript ExecutionScript { get; set; }
+        public IEnumerable<BolTransactionAttribute> Attributes { get; set; }
+        public IEnumerable<BolTransactionWitness> Witnesses { get; set; } = new List<BolTransactionWitness>();
+    }
+
+    public class BolTransactionWitness
+    {
+        public byte[] InvocationScript { get; set; }
+        public byte[] VerificationScript { get; set; }
+    }
+
+    public class BolTransactionAttribute
+    {
+        public TransactionAttributeType Type { get; set; }
+        public byte[] Value { get; set; }
+    }
+    public enum TransactionAttributeType : byte
+    {
+        ContractHash = 0x00,
+
+        ECDH02 = 0x02,
+        ECDH03 = 0x03,
+
+        Script = 0x20,
+
+        Vote = 0x30,
+
+        DescriptionUrl = 0x81,
+        Description = 0x90,
+
+        Hash1 = 0xa1,
+        Hash2 = 0xa2,
+        Hash3 = 0xa3,
+        Hash4 = 0xa4,
+        Hash5 = 0xa5,
+        Hash6 = 0xa6,
+        Hash7 = 0xa7,
+        Hash8 = 0xa8,
+        Hash9 = 0xa9,
+        Hash10 = 0xaa,
+        Hash11 = 0xab,
+        Hash12 = 0xac,
+        Hash13 = 0xad,
+        Hash14 = 0xae,
+        Hash15 = 0xaf,
+
+        Remark = 0xf0,
+        Remark1 = 0xf1,
+        Remark2 = 0xf2,
+        Remark3 = 0xf3,
+        Remark4 = 0xf4,
+        Remark5 = 0xf5,
+        Remark6 = 0xf6,
+        Remark7 = 0xf7,
+        Remark8 = 0xf8,
+        Remark9 = 0xf9,
+        Remark10 = 0xfa,
+        Remark11 = 0xfb,
+        Remark12 = 0xfc,
+        Remark13 = 0xfd,
+        Remark14 = 0xfe,
+        Remark15 = 0xff
     }
 }
