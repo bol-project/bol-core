@@ -1,11 +1,12 @@
 using System;
 using Akka.Actor;
+using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
+using Bol.Api.Services;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
 using Bol.Core.Dtos;
-using Bol.Core.Encoders;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model.Responses;
@@ -75,12 +76,11 @@ namespace Bol.Api
 
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
-            services.AddScoped<IBolService, BolService>();
+            services.AddScoped<Api.Services.IBolService, Api.Services.BolService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
            // services.AddScoped<ISha256Hasher, Sha256Hasher>();
-            services.AddScoped<IBase16Encoder, Base16Encoder>();
             //  services.AddScoped<IBase58Encoder, Base58Encoder>();
            //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
           services.AddScoped<IContextAccessor, WalletContextAccessor>();
