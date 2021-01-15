@@ -1,10 +1,10 @@
 using System;
 using Akka.Actor;
-using Bol.Core.Abstractions;
+using Bol.Api.Abstractions;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
 
-namespace Bol.Core.Services
+namespace Bol.Api.Services
 {
     public class LocalNodeTransactionPublisher : ITransactionPublisher
     {

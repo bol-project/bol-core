@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Bol.Core.Dtos;
 using Bol.Core.Model.Internal;
 
-namespace Bol.Core.Abstractions
+namespace Bol.Api.Abstractions
 {
     public interface IBlockChainService
     {

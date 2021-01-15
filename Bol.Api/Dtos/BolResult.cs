@@ -1,7 +1,7 @@
 using System.Net;
 using Neo.Network.P2P.Payloads;
 
-namespace Bol.Core.BolContract.Models
+namespace Bol.Api.Dtos
 {
     public class BolResult<T>
     {

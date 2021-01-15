@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bol.Core.Abstractions;
+using Bol.Api.Abstractions;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Dtos;
 using Bol.Core.Model.Internal;
@@ -9,7 +9,7 @@ using Neo;
 using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
 
-namespace Bol.Core.Services
+namespace Bol.Api.Services
 {
     public class BlockChainService : IBlockChainService, ITransactionService
     {

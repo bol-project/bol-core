@@ -1,5 +1,5 @@
 using System;
-using Bol.Core.Abstractions;
+using Bol.Api.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bol.Api.Controllers

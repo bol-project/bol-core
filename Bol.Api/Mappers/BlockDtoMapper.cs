@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Dtos;
-using Bol.Core.Encoders;
+using Bol.Cryptography;
 using Neo.Network.P2P.Payloads;
 
 namespace Bol.Core.Mappers
