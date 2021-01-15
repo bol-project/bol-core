@@ -34,7 +34,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
     <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" />
-    <ProjectReference Include="..\neo\neo\neo.csproj" />
   </ItemGroup>
 
 </Project>
