@@ -1,10 +1,10 @@
-﻿#if !NET47
+#if !NET47
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
 
-namespace Neo.Cryptography
+namespace Bol.Neo.Cryptography
 {
     [ComVisible(true)]
     public class RIPEMD160Managed : HashAlgorithm

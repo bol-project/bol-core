@@ -1,4 +1,4 @@
-using Neo.Cryptography;
+using Bol.Neo.Cryptography;
 
 namespace Bol.Cryptography.Hashers
 {

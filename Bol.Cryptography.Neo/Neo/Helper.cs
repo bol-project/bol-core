@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Neo
+namespace Bol.Neo
 {
     public static class Helper
     {

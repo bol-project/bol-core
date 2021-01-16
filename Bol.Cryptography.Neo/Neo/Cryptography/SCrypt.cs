@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Neo.Cryptography
+namespace Bol.Neo.Cryptography
 {
 
    public static  class SCrypt

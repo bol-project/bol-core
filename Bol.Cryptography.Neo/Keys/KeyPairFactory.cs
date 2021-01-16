@@ -1,5 +1,5 @@
 using System;
-using Neo.Cryptography.ECC;
+using Bol.Neo.Cryptography.ECC;
 
 namespace Bol.Cryptography.Keys
 {

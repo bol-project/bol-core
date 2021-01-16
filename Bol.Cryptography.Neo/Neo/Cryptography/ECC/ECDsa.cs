@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace Neo.Cryptography.ECC
+namespace Bol.Neo.Cryptography.ECC
 {
     public class ECDsa
     {

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Bol.Address.Abstractions;
 using Bol.Cryptography;
-using Neo;
-using Neo.Cryptography;
+using Bol.Neo;
+using Bol.Neo.Cryptography;
 
 
 namespace Bol.Address.Neo
