@@ -16,7 +16,7 @@ namespace Bol.Cryptography.Hashers
             }
 
             return input
-                .Concat(hash.Take(Convert.ToInt32(bytes)))
+                .Concat(hash.Take(bytes))
                 .ToArray();
         }
 
@@ -25,7 +25,7 @@ namespace Bol.Cryptography.Hashers
             ValidateAndThrow(cycles, bytes);
 
             var inputWithoutChecksum = input
-                .SkipLastN(Convert.ToInt32(bytes))
+                .SkipLastN(bytes)
                 .ToArray();
 
             var hash = AddChecksum(inputWithoutChecksum, cycles, bytes);
