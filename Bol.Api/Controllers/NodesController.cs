@@ -1,4 +1,4 @@
-﻿using Bol.Api.Dtos;
+using Bol.Api.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Neo.Ledger;
 using Neo.Network.P2P;
@@ -12,11 +12,9 @@ namespace Bol.Api.Controllers
         [HttpGet("status")]
         public ActionResult GetStatus()
         {
-            uint wh = (Neo.Program.Wallet.WalletHeight > 0) ? Neo.Program.Wallet.WalletHeight - 1 : 0;
-
             var status = new NodeStatus
             {
-                Block = wh,
+                Block = Blockchain.Singleton.Height,
                 Height = Blockchain.Singleton.Height,
                 HeaderHeight = Blockchain.Singleton.HeaderHeight,
                 ConnectedNodes = LocalNode.Singleton.ConnectedCount,
