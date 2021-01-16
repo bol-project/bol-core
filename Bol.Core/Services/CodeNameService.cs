@@ -50,7 +50,7 @@ namespace Bol.Core.Services
 
             var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName));
 
-            return _hex.Encode(codeNameBytes);
+            return Encoding.ASCII.GetString(codeNameBytes);
         }
     }
 }
