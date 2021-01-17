@@ -723,7 +723,7 @@ namespace Bol.Coin.Services
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
+            var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
             BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
 
             uint claimInterval = (uint) BolRepository.GetClaimInterval();
@@ -744,7 +744,7 @@ namespace Bol.Coin.Services
 				{
 						pointer -= claimInterval;
 						nextBlockTotal = BolRepository.GetRegisteredAtBlock(pointer);
-						totalPerBlock = nextBlockTotal;
+						intervalTotal = nextBlockTotal;
 				}
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
@@ -764,9 +764,9 @@ namespace Bol.Coin.Services
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
                 BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsNC = Dps * (Pop - totalPerBlock) / Pop;
+                BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
 
-                cpp += intervalTime * DpsNC / totalPerBlock;
+                cpp += intervalTime * DpsNC / intervalTotal;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
