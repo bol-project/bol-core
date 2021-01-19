@@ -11,6 +11,9 @@ using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model.Responses;
 using Bol.Core.Model.Wallet;
+using Bol.Core.Rpc;
+using Bol.Core.Rpc.Abstractions;
+using Bol.Core.Rpc.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +41,8 @@ namespace Bol.Api
             var configurationBuilder = new ConfigurationBuilder()
                                        .AddJsonFile("protocol.json")
                                        .AddJsonFile(bolWalletPath)
-                                       .AddEnvironmentVariables();
+                                       .AddJsonFile("config.json")
+                                       .AddEnvironmentVariables();                                              
             Configuration = configurationBuilder.Build();
         }
 
@@ -56,7 +60,8 @@ namespace Bol.Api
             //ProtocolConfiguration
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
-            services.Configure<BolWallet>(Configuration);
+            services.Configure<RpcInfo>(Configuration.GetSection("ApplicationConfiguration").GetSection("RPC"));
+             services.Configure<BolWallet>(Configuration);
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
@@ -74,6 +79,7 @@ namespace Bol.Api
             services.AddScoped<Address.Abstractions.IXor, Address.Xor>();
             services.AddScoped<Address.IScriptHashFactory, Address.ScriptHashFactory>();
 
+            services.AddScoped<IRpcClient, RpcClient>();
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
             services.AddScoped<Api.Services.IBolService, Api.Services.BolService>();
