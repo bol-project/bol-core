@@ -46,7 +46,6 @@ namespace Bol.Api.BackgroundServices
             }
             catch (Exception ex)
             {
-                var e = ex.ToStringDemystified();
                 _logger.LogError(ex, "Error while executing MainService");
                 throw;
             }
