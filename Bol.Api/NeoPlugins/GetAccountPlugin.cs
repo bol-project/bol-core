@@ -1,31 +1,39 @@
 using System;
-using System.Linq;
-using Bol.Api.Services;
+using Bol.Core.Abstractions;
 using Microsoft.AspNetCore.Http;
+using Neo;
 using Neo.IO.Json;
-using Neo.Network.P2P.Payloads;
 using Neo.Plugins;
+using Neo.Wallets;
 using Neo.SmartContract;
-using Neo.VM;
+using IBolService = Bol.Api.Services.IBolService;
 
 namespace Bol.Api.NeoPlugins
 {
     public class GetAccountPlugin : Plugin, IRpcPlugin
     {
+        private readonly IBolService _bolService;
+        private readonly IJsonSerializer _json;
+
+        public GetAccountPlugin(IBolService bolService, IJsonSerializer json) : base()
+        {
+            _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
+            _json = json ?? throw new ArgumentNullException(nameof(json));
+        }
+
         public override void Configure() { }
 
         public JObject OnProcess(HttpContext context, string method, JArray _params)
         {
-            throw new NotImplementedException();
-        }
+            if (method != "GetAccount") return null;
+            
+            var address = _params[0].AsString().ToScriptHash();
 
-        public ContractExecutionResult TestContract(InvocationTransaction transaction)
-        {
-            var engine = ApplicationEngine.Run(transaction.Script, transaction);
+            var result = _bolService.GetAccount(address);
 
-            if (engine.State.HasFlag(VMState.FAULT)) return ContractExecutionResult.Fail();
+            var json = _json.Serialize(result);
 
-            return ContractExecutionResult.Succeed(engine.ResultStack.First().GetByteArray(), engine.GasConsumed);
+            return JObject.Parse(json);
         }
     }
 }
