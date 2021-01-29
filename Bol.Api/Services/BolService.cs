@@ -24,6 +24,7 @@ namespace Bol.Api.Services
     {
         BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys);
         BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys);
+        BolResult<BolAccount> Register();
         BolResponse<int> Decimals();
         BolResponse Name();
         BolResponse BalanceOf();
@@ -70,6 +71,28 @@ namespace Bol.Api.Services
                 Success = true,
                 TransactionId = result.Transaction.Hash.ToString()
             };
+        }
+
+        public BolResult<BolAccount> Register()
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                context.MainAddress.GetBytes(),
+                Encoding.ASCII.GetBytes(context.CodeName),
+                context.Edi.HexToBytes(),
+                context.BlockChainAddress.Key.GetBytes(),
+                context.SocialAddress.Key.GetBytes(),
+                context.CommercialAddresses.SelectMany(pair => pair.Key.GetBytes()).ToArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey }
+                .Select(key => new KeyPair(key.PrivateKey))
+                .ToArray();
+
+            var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters: parameters);
+
+            return result;
         }
 
         public BolResult<BolAccount> GetAccount(UInt160 mainAddress)

@@ -16,6 +16,7 @@ using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Rpc.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
+using Bol.Core.Transactions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -49,7 +50,7 @@ namespace Bol.Api
         public IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -79,6 +80,12 @@ namespace Bol.Api
             services.AddScoped<Address.Abstractions.IXor, Address.Xor>();
             services.AddScoped<Address.IScriptHashFactory, Address.ScriptHashFactory>();
 
+            //BOL Transactions
+            services.AddScoped<ITransactionNotarizer, TransactionNotarizer>();
+            services.AddScoped<ITransactionSerializer, TransactionSerializer>();
+            services.AddScoped<ITransactionSigner, TransactionSigner>();
+            services.AddScoped<Core.Transactions.ITransactionService, TransactionService>();
+
             services.AddScoped<IRpcClient, RpcClient>();
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
@@ -95,14 +102,14 @@ namespace Bol.Api
             services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
             services.AddScoped<IBlockChainService, BlockChainService>();
-            services.AddScoped<ITransactionService, BlockChainService>();
+            services.AddScoped<Api.Abstractions.ITransactionService, BlockChainService>();
 
             // Mappers
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
             services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
             services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
             services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
-            return services.BuildServiceProvider();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

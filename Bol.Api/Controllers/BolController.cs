@@ -31,8 +31,8 @@ namespace Bol.Api.Controllers
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
-           
-    }
+
+        }
 
         [HttpPost("create")]
         public ActionResult Create()
@@ -41,14 +41,17 @@ namespace Bol.Api.Controllers
 
             var keys = files.Select(file =>
             {
-            var bolWallet = _jsonSerializer.Deserialize<BolWallet>(file);
-            var accounts = bolWallet.accounts.Select(a => a as Account).ToList();
+                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
 
-            return _keyPairFactory.Create( _exportKeyFactory.GetDecryptedPrivateKey(accounts.First().Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
+                var account = bolWallet.accounts.First();
 
-        });
+                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
 
-            var result = _bolService.Create(keys.Select(key => new KeyPair(key.PrivateKey)));
+            })
+            .Select(key => new KeyPair(key.PrivateKey))
+            .ToList();
+
+            var result = _bolService.Create(keys);
 
             return Ok(result);
         }
@@ -60,12 +63,17 @@ namespace Bol.Api.Controllers
 
             var keys = files.Select(file =>
             {
-                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(file);
-                var accounts = bolWallet.accounts.Select(a => a as Account).ToList();
-                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(accounts.First().Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
-            });
+                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
 
-            var result = _bolService.Deploy(keys.Select(key => new KeyPair(key.PrivateKey)));
+                var account = bolWallet.accounts.First();
+
+                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
+
+            })
+            .Select(key => new KeyPair(key.PrivateKey))
+            .ToList();
+
+            var result = _bolService.Deploy(keys);
 
             return Ok(result);
         }
@@ -75,6 +83,13 @@ namespace Bol.Api.Controllers
         {
             var result = await _walletService.CreateWallet(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
 
+            return Ok(result);
+        }
+
+        [HttpPost("register")]
+        public ActionResult Register()
+        {
+            var result = _bolService.Register();
             return Ok(result);
         }
 
