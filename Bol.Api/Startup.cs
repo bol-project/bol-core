@@ -87,6 +87,8 @@ namespace Bol.Api
             services.AddScoped<Core.Transactions.ITransactionService, TransactionService>();
 
             services.AddScoped<IRpcClient, RpcClient>();
+            services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
+
             services.AddScoped<IJsonSerializer, JsonSerializer>();
             services.AddScoped<IContractService, ContractService>();
             services.AddScoped<Api.Services.IBolService, Api.Services.BolService>();
