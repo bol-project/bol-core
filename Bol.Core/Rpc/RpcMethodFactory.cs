@@ -30,9 +30,9 @@ namespace Bol.Core.Rpc
            return await _rpcClient.InvokeAsync<T>(_bse16Encoder.Encode(bolSignedTransaction), "sendrawtransaction",  token );
         }
 
-        public async Task<T> GetAccount<T>(string codeName, CancellationToken token = default) 
+        public async Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default) 
         {
-            return await _rpcClient.InvokeAsync<T>(codeName, "getaccountstate", token);
+            return await _rpcClient.InvokeAsync<T>(mainAddress, "GetAccount", token);
         }
         
     }

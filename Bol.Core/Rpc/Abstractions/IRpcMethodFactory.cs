@@ -11,6 +11,6 @@ namespace Bol.Core.Rpc.Abstractions
     {
         Task<T> SendRawTransaction<T>(BolTransaction bolTx, CancellationToken token = default);
 
-        Task<T> GetAccount<T>(string codeName, CancellationToken token = default);
+        Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default);
     }
 }
