@@ -25,6 +25,7 @@ namespace Bol.Api.Services
         BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys);
         BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys);
         BolResult<BolAccount> Register();
+        BolResult<BolAccount> Claim();
         BolResponse<int> Decimals();
         BolResponse Name();
         BolResponse BalanceOf();
@@ -108,6 +109,24 @@ namespace Bol.Api.Services
                 .ToArray();
 
             var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters: parameters);
+
+            return result;
+        }
+
+        public BolResult<BolAccount> Claim()
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                context.MainAddress.GetBytes()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey }
+                .Select(key => new KeyPair(key.PrivateKey))
+                .ToArray();
+
+
+            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { Blockchain.Singleton.Height.ToString() }, parameters: parameters);
 
             return result;
         }

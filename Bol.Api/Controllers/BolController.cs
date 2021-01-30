@@ -93,6 +93,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("claim")]
+        public ActionResult Claim()
+        {
+            var result = _bolService.Claim();
+            return Ok(result);
+        }
+
         [HttpGet("getAccount")]
         public ActionResult GetAccount(string address)
         {
