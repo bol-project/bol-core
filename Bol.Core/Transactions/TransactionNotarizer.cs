@@ -1,14 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bol.Address;
 using Bol.Cryptography;
-//using Neo.VM;
 
 namespace Bol.Core.Transactions
 {
     public class TransactionNotarizer : ITransactionNotarizer
     {
         private readonly ITransactionSigner _signer;
+
+        public TransactionNotarizer(ITransactionSigner signer)
+        {
+            _signer = signer ?? throw new ArgumentNullException(nameof(signer));
+        }
 
         public BolTransaction Notarize(BolTransaction transaction, ISignatureScript witness, IEnumerable<IKeyPair> keys)
         {
