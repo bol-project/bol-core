@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Bol.Core.Transactions
 {
@@ -11,8 +12,10 @@ namespace Bol.Core.Transactions
 
             if (transaction.Witnesses == null) return unsigned;
 
-            using var ms = new MemoryStream(unsigned);
-            using var writer = new BinaryWriter(ms);
+            using var ms = new MemoryStream();
+            using var writer = new BinaryWriter(ms, Encoding.UTF8);
+
+            writer.Write(unsigned);
 
             writer.WriteVarInt(transaction.Witnesses.Count());
             foreach (var witness in transaction.Witnesses)
@@ -28,14 +31,14 @@ namespace Bol.Core.Transactions
         public byte[] SerializeUnsigned(BolTransaction transaction)
         {
             using var ms = new MemoryStream();
-            using var writer = new BinaryWriter(ms);
+            using var writer = new BinaryWriter(ms, Encoding.UTF8);
 
             writer.Write((byte)0xd1); //Writes 0xd1 as InvocationTransaction Type
-            writer.Write(1); //Writes 1 as Transaction Version
+            writer.Write((byte)1); //Writes 1 as Transaction Version
 
             writer.WriteVarBytes(transaction.ExecutionScript.GetBytes());
 
-            writer.Write(0); //Writes 0 for GAS for Transaction Version >= 1
+            writer.Write(0L); //Writes 0 for GAS for Transaction Version >= 1
 
             //Writes Attributes
             writer.WriteVarInt(transaction.Attributes.Count());
@@ -52,8 +55,8 @@ namespace Bol.Core.Transactions
                     writer.Write(attr.Value);
             }
 
-            writer.Write(0); //Writes 0 as empty Inputs
-            writer.Write(0); //Writes 0 as empty Outputs
+            writer.WriteVarInt(0L); //Writes 0 as empty Inputs
+            writer.WriteVarInt(0L); //Writes 0 as empty Outputs
 
             writer.Flush();
             return ms.ToArray();
