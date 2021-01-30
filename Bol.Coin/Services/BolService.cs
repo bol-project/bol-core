@@ -663,17 +663,17 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
-                return false;
-            }
+            //if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
+            //{
+            //    Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
+            //    return false;
+            //}
 
-            if (bolAccount.Certifications < 2)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
-                return false;
-            }
+            //if (bolAccount.Certifications < 2)
+            //{
+            //    Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
+            //    return false;
+            //}
 
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
