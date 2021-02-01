@@ -20,5 +20,9 @@ spec:
       protocol: TCP
       port: 11456
       targetPort: 11456
+    - name: node-rpc
+      protocol: TCP
+      port: 11454
+      targetPort: 11454
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
