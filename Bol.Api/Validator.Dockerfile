@@ -5,6 +5,10 @@ WORKDIR /app
 COPY *.sln .
 COPY Bol.Api/*.csproj ./Bol.Api/
 COPY Bol.Core/*.csproj ./Bol.Core/
+COPY Bol.Cryptography/*.csproj ./Bol.Cryptography/
+COPY Bol.Cryptography.Neo/*.csproj ./Bol.Cryptography.Neo/
+COPY Bol.Address/*.csproj ./Bol.Address/
+COPY Bol.Address.Neo/*.csproj ./Bol.Address.Neo/
 COPY Bol.Core.Tests/*.csproj ./Bol.Core.Tests/
 COPY neo/neo/*.csproj ./neo/neo/
 COPY neo-cli/neo-cli/*.csproj ./neo-cli/neo-cli/
