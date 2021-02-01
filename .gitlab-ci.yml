@@ -66,7 +66,7 @@ build_rpc_node:
     - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
     - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
     - echo CI_BUILD_REF=$CI_BUILD_REF
-    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.RpcNode
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.rpcnode
     - echo IMAGE_TAG=$IMAGE_TAG
     - docker build -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
@@ -127,4 +127,4 @@ deploy_node_4:
 deploy_rpc_node:
   extends: .deploy
   variables:
-    VALIDATOR_NAME: RpcNode
+    VALIDATOR_NAME: rpcnode
