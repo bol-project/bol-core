@@ -41,7 +41,7 @@ namespace Bol.Api
             // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
                                        .AddJsonFile("protocol.json")
-                                       .AddJsonFile(bolWalletPath)
+                                       .AddJsonFile(bolWalletPath, true)
                                        .AddJsonFile("config.json")
                                        .AddEnvironmentVariables();                                              
             Configuration = configurationBuilder.Build();
