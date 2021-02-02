@@ -85,11 +85,11 @@ namespace Bol.Api.Services
             var scriptHash = ParseOrThrowIfNotFound(contract);
             var executionScript = CreateExecutionScript(scriptHash, operation, parameters);
 
-            var addressContract = CreateAddressContract(keys, numberOfSignatures);
-
             InvocationTransaction transaction;
             if (keys != null && keys.Any())
             {
+                var addressContract = CreateAddressContract(keys, numberOfSignatures);
+
                 transaction = CreateTransaction(executionScript, addressContract, description, remarks);
                 var transactionSigned = SignTransaction(transaction, addressContract, keys);
                 if (!transactionSigned) throw new Exception("Could not sign transaction.");

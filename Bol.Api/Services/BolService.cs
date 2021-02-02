@@ -98,17 +98,12 @@ namespace Bol.Api.Services
 
         public BolResult<BolAccount> GetAccount(UInt160 mainAddress)
         {
-            var context = _contextAccessor.GetContext();
-
             var parameters = new[]
             {
                 mainAddress.ToArray()
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey }
-                .Select(key => new KeyPair(key.PrivateKey))
-                .ToArray();
 
-            var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters: parameters);
+            var result = TestBolContract<BolAccount>("getAccount", null, "", new[] { "" }, parameters: parameters);
 
             return result;
         }
@@ -226,7 +221,7 @@ namespace Bol.Api.Services
             };
         }
 
-        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
+        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys = null, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
         {
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
 
@@ -236,7 +231,7 @@ namespace Bol.Api.Services
                 bolResult = result;
             };
 
-            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, numberOfSignatures ?? keys.Length);
+            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, numberOfSignatures ?? keys?.Length ?? 0);
 
             EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(transaction.Hash, operation, args, callback);
 
