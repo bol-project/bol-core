@@ -677,7 +677,7 @@ namespace Bol.Coin.Services
 
             return true;
         }
-		
+
         public static bool Claim(byte[] address)
         {
             if (BolValidator.AddressEmpty(address))
@@ -713,20 +713,19 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
                 return false;
             }
-            
+
             if (bolAccount.Certifications < 2)
             {
                 Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
                 return false;
             }
-            
+
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            var totalPerBlock = BolRepository.GetRegisteredAtBlock(previousHeight);
-            BigInteger RegisteredTotal = BolRepository.GetTotalRegisteredPersons();
+            var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
 
-            uint claimInterval = (uint) BolRepository.GetClaimInterval();
+            uint claimInterval = (uint)BolRepository.GetClaimInterval();
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
 
@@ -736,16 +735,15 @@ namespace Bol.Coin.Services
             var yearStamp = BolRepository.GetYearStamp();
 
             BigInteger cpp = 0;
-            for (uint i = startClaimHeight; i <= endClaimHeight; i+= claimInterval)
+            for (uint i = startClaimHeight; i <= endClaimHeight; i += claimInterval)
             {
-				var nextBlockTotal = BolRepository.GetRegisteredAtBlock(i);
-				uint pointer = i;
-				while (nextBlockTotal==0)
-				{
-						pointer -= claimInterval;
-						nextBlockTotal = BolRepository.GetRegisteredAtBlock(pointer);
-						totalPerBlock = nextBlockTotal;
-				}
+                intervalTotal = BolRepository.GetRegisteredAtBlock(i + claimInterval); ;
+                uint pointer = i;
+                while (intervalTotal == 0)
+                {
+                    pointer -= claimInterval;
+                    intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
+                }
 
                 var currentStamp = Blockchain.GetBlock(i).Timestamp;
                 var previousStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
@@ -753,20 +751,20 @@ namespace Bol.Coin.Services
 
                 uint currentYear = ConvertToYear(currentStamp);
                 BigInteger timestampThisYear = yearStamp[currentYear];
-				BigInteger timestampNextYear = yearStamp[currentYear + 1];
+                BigInteger timestampNextYear = yearStamp[currentYear + 1];
                 BigInteger ThisYearDps = dpsYear[currentYear];
                 BigInteger NextYearDps = dpsYear[currentYear + 1];
                 BigInteger ThisYearPop = popYear[currentYear];
-                BigInteger NextYearPop = popYear[currentYear+1];
+                BigInteger NextYearPop = popYear[currentYear + 1];
 
                 var SecInYear = timestampNextYear - timestampThisYear;
                 var diffYear = currentStamp - timestampThisYear;
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
                 BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsNC = Dps * (Pop - RegisteredTotal) / Pop;
+                BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
 
-                cpp += intervalTime * DpsNC / RegisteredTotal;
+                cpp += intervalTime * DpsNC / intervalTotal;
             }
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
@@ -785,18 +783,18 @@ namespace Bol.Coin.Services
             var result = BolRepository.Get(bolAccount.MainAddress);
 
             Runtime.Notify("claim", BolResult.Ok(result));
-            
+
             return true;
         }
         private static uint ConvertToYear(uint unixtime)
         {
             uint remainder = unixtime % 31556926;
-			uint month_seconds = 2629743;
-			if(remainder < 7 * month_seconds)
-            return 1970 + unixtime / 31556926 -1;
-			else
-			return 1970 + unixtime / 31556926;
-        }		
+            uint month_seconds = 2629743;
+            if (remainder < 7 * month_seconds)
+                return 1970 + unixtime / 31556926 - 1;
+            else
+                return 1970 + unixtime / 31556926;
+        }
         public static bool GetCertifiers(byte[] countryCode)
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);
