@@ -739,7 +739,7 @@ namespace Bol.Coin.Services
             {
                 intervalTotal = BolRepository.GetRegisteredAtBlock(i + claimInterval); ;
                 uint pointer = i;
-                while (intervalTotal == 0)
+                while (intervalTotal == 0 && pointer > 0)
                 {
                     pointer -= claimInterval;
                     intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
