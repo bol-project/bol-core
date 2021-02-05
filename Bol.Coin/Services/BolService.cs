@@ -737,7 +737,7 @@ namespace Bol.Coin.Services
             BigInteger cpp = 0;
             for (uint i = startClaimHeight; i <= endClaimHeight; i += claimInterval)
             {
-                intervalTotal = BolRepository.GetRegisteredAtBlock(i + claimInterval); ;
+                intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                 uint pointer = i;
                 while (intervalTotal == 0 && pointer > 0)
                 {
