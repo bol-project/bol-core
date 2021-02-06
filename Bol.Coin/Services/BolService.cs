@@ -168,6 +168,12 @@ namespace Bol.Coin.Services
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
             BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
+            
+            uint claimInterval = (uint) BolRepository.GetClaimInterval();
+            //uint intervalEnd = (currentHeight / 1000);               //DEPLOYS WITH THIS
+            uint intervalEnd = (currentHeight / claimInterval);       //DOESNT DEPLOY WITH THIS
+            /*uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+            BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered); */
 
             var result = BolRepository.Get(account.MainAddress);
 
@@ -389,6 +395,7 @@ namespace Bol.Coin.Services
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
+            BolRepository.SetClaimInterval(1000);
 
             Runtime.Notify("deploy", BolResult.Ok());
             return true;
@@ -702,12 +709,12 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
                 return false;
             }
-
             if (bolAccount.AccountType != Constants.B_ACCOUNT_TYPE)
             {
                 Runtime.Notify("error", BolResult.Forbidden("You need a B Type Account in order to Claim Bol."));
                 return false;
             }
+			/* TESTING PURPOSES 
             if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
             {
                 Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
@@ -719,7 +726,7 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
                 return false;
             }
-
+            */
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
@@ -737,7 +744,7 @@ namespace Bol.Coin.Services
             BigInteger cpp = 0;
             for (uint i = startClaimHeight; i <= endClaimHeight; i += claimInterval)
             {
-                intervalTotal = BolRepository.GetRegisteredAtBlock(i);
+                intervalTotal = BolRepository.GetRegisteredAtBlock(i + claimInterval);
                 uint pointer = i;
                 while (intervalTotal == 0 && pointer > 0)
                 {
