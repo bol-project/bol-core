@@ -1,4 +1,3 @@
-using System;
 using Akka.Actor;
 using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
@@ -26,7 +25,6 @@ using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
 using Neo.Shell;
 using Neo.Wallets;
-using Neo.Wallets.NEP6;
 using Prometheus;
 
 namespace Bol.Api
@@ -35,15 +33,21 @@ namespace Bol.Api
     {
         public Startup(IConfiguration configuration)
         {
-           //Get BolWalletPath
-           var bolWalletPath =  new ConfigurationBuilder().AddJsonFile("config.json").Build().GetSection("ApplicationConfiguration").GetSection("UnlockWallet").GetSection("Path").Value;
+            //Get BolWalletPath
+            var bolWalletPath = new ConfigurationBuilder()
+                 .AddJsonFile("config.json")
+                 .Build()
+                 .GetSection("ApplicationConfiguration")
+                 .GetSection("UnlockWallet")
+                 .GetSection("Path")
+                 .Value;
 
             // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
                                        .AddJsonFile("protocol.json")
                                        .AddJsonFile(bolWalletPath)
                                        .AddJsonFile("config.json")
-                                       .AddEnvironmentVariables();                                              
+                                       .AddEnvironmentVariables();
             Configuration = configurationBuilder.Build();
         }
 
@@ -62,7 +66,7 @@ namespace Bol.Api
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
             services.Configure<RpcInfo>(Configuration.GetSection("ApplicationConfiguration").GetSection("RPC"));
-             services.Configure<BolWallet>(Configuration);
+            services.Configure<BolWallet>(Configuration);
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
@@ -71,7 +75,7 @@ namespace Bol.Api
             services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
             services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
             services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
-          
+
 
             //BOL Address
             services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();
@@ -95,11 +99,11 @@ namespace Bol.Api
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
-           // services.AddScoped<ISha256Hasher, Sha256Hasher>();
+            // services.AddScoped<ISha256Hasher, Sha256Hasher>();
             //  services.AddScoped<IBase58Encoder, Base58Encoder>();
-           //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
-          services.AddScoped<IContextAccessor, WalletContextAccessor>();
-           services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
+            //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
+            services.AddScoped<IContextAccessor, WalletContextAccessor>();
+            services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
 
             services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
