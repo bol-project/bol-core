@@ -141,7 +141,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var currentHeight = BlockChainService.GetCurrentHeight();
+            uint currentHeight = BlockChainService.GetCurrentHeight();
 
             account = new BolAccount();
             account.AccountStatus = Constants.ACCOUNT_STATUS_PENDING_CERTIFICATIONS;
@@ -168,12 +168,11 @@ namespace Bol.Coin.Services
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
             BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
-            
-            uint claimInterval = (uint) BolRepository.GetClaimInterval();
-            //uint intervalEnd = (currentHeight / 1000);               //DEPLOYS WITH THIS
-            uint intervalEnd = (currentHeight / claimInterval);       //DOESNT DEPLOY WITH THIS
-            /*uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
-            BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered); */
+
+            uint claimInterval = (uint)BolRepository.GetClaimInterval();
+            uint intervalEnd = (currentHeight / claimInterval);   
+            uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+            BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
             var result = BolRepository.Get(account.MainAddress);
 
@@ -327,6 +326,8 @@ namespace Bol.Coin.Services
 
                 Runtime.Notify("debug", certifier);
 
+                BolRepository.SetClaimInterval(1000);
+
                 var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress);
                 if (!result)
                 {
@@ -395,7 +396,6 @@ namespace Bol.Coin.Services
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
-            BolRepository.SetClaimInterval(1000);
 
             Runtime.Notify("deploy", BolResult.Ok());
             return true;
