@@ -1,11 +1,9 @@
 using Bol.Api.NeoPlugins;
-using Bol.Api.Services;
 using Bol.Core.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neo.Shell;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +17,7 @@ namespace Bol.Api.BackgroundServices
         private readonly IServiceProvider _serviceProvider;
 
         private static MainService _mainService;
-        public static MainService MainService => _mainService;
+        internal static MainService MainService => _mainService;
 
         public NodeBackgroundService(ILogger<NodeBackgroundService> logger, IServiceProvider serviceProvider)
         {
