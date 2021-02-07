@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -12,7 +12,6 @@ COPY Bol.Address.Neo/*.csproj ./Bol.Address.Neo/
 COPY Bol.Core.Tests/*.csproj ./Bol.Core.Tests/
 COPY neo/neo/*.csproj ./neo/neo/
 COPY neo-cli/neo-cli/*.csproj ./neo-cli/neo-cli/
-COPY neo-vm/src/neo-vm/*.csproj ./neo-vm/src/neo-vm/
 
 RUN dotnet restore /p:RestoreUseSkipNonexistentTargets="false"
 
@@ -23,7 +22,7 @@ RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 COPY ./Bol.Api/config.internal.json ./out/config.json
 
-FROM microsoft/dotnet:2.1.3-aspnetcore-runtime AS runtime-base
+FROM microsoft/dotnet:2.2-aspnetcore-runtime AS runtime-base
 
 # Install dependencies:
 RUN apt-get update && apt-get install -y \
