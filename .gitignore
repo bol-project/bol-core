@@ -265,3 +265,5 @@ __pycache__/
 #Peronal Usage shortcuts and files
 *.lnk
 st.bat
+s.exe
+s.py
