@@ -8,7 +8,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
     <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" />
-    <ProjectReference Include="..\neo-vm\src\neo-vm\neo-vm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo.VM" Version="2.4.3" />
   </ItemGroup>
 
 </Project>
