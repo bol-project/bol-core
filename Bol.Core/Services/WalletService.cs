@@ -14,13 +14,13 @@ namespace Bol.Core.Services
 {
     public class WalletService : IWalletService
     {
-        private IAddressService _addressService;
-        private IKeyPairFactory _keyPairFactory;
-        private ISha256Hasher _sha256Hasher;
-        private ISignatureScriptFactory _signatureScriptFactory;
-        private IAddressTransformer _addressTransformer;
-        private IExportKeyFactory _exportKeyFactory;
-        private IBase16Encoder _base16Encoder;
+        private readonly IAddressService _addressService;
+        private readonly IKeyPairFactory _keyPairFactory;
+        private readonly ISha256Hasher _sha256Hasher;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IAddressTransformer _addressTransformer;
+        private readonly IExportKeyFactory _exportKeyFactory;
+        private readonly IBase16Encoder _base16Encoder;
 
         public WalletService(
             IAddressService addressService,
@@ -39,7 +39,6 @@ namespace Bol.Core.Services
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _base16Encoder = base16Encoder ?? throw new ArgumentNullException(nameof(base16Encoder));
         }
-
 
         public async Task<BolWallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
@@ -76,7 +75,6 @@ namespace Bol.Core.Services
             var extendedPrivateKey = _sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce));
             var extendedKeyPair = _keyPairFactory.Create(extendedPrivateKey);
             var extendedSignatureScript = _signatureScriptFactory.Create(extendedKeyPair.PublicKey);
-
 
             var _accountprivate = CreateAccount(extendedSignatureScript, extendedPrivateKey, walletPassword, _scrypt);
             _accountprivate.Label = "private";
