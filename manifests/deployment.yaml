@@ -25,9 +25,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
-        - containerPort: 11456
-        - containerPort: 11455
-        - containerPort: 11454
+        - containerPort: 10332
+        - containerPort: 10333
+        - containerPort: 10334
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development

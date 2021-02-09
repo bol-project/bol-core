@@ -18,11 +18,11 @@ spec:
       protocol: TCP
     - name: node-p2p
       protocol: TCP
-      port: 11456
-      targetPort: 11456
+      port: 10333
+      targetPort: 10333
     - name: node-rpc
       protocol: TCP
-      port: 11454
-      targetPort: 11454
+      port: 10332
+      targetPort: 10332
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
