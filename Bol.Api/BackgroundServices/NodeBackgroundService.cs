@@ -40,6 +40,13 @@ namespace Bol.Api.BackgroundServices
                 var mainService = new MainService();
                 _mainService = mainService;
 
+                stoppingToken.Register(() =>
+                {
+                    _logger.LogWarning("Stopping neo mainservice...");
+                    mainService.OnStop();
+                    _logger.LogWarning("Stopped neo mainservice...");
+                });
+
                 return Task.Run(() => mainService.Run(new[] { "-r" }));
             }
             catch (Exception ex)

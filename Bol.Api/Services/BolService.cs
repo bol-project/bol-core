@@ -342,7 +342,6 @@ namespace Bol.Api.Services
                     Result = resultObject
                 };
                 callback(bolResult);
-                return;
             }
         }
     }
