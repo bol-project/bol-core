@@ -17,21 +17,24 @@ namespace Bol.Api.Controllers
     [Route("api/bol")]
     public class BolController : ControllerBase
     {
-        private IBolService _bolService;
-        private IWalletService _walletService;
+        private readonly IBolService _bolService;
+        private readonly IWalletService _walletService;
+        private readonly IExportKeyFactory _exportKeyFactory;
+        private readonly IJsonSerializer _jsonSerializer;
+        private readonly IKeyPairFactory _keyPairFactory;
 
-        private IExportKeyFactory _exportKeyFactory;
-        private IJsonSerializer _jsonSerializer;
-        private IKeyPairFactory _keyPairFactory;
-
-        public BolController(IBolService bolService, IWalletService walletService, WalletIndexer walletIndexer, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory)
+        public BolController(
+            IBolService bolService,
+            IWalletService walletService,
+            IExportKeyFactory exportKeyFactory,
+            IJsonSerializer jsonSerializer,
+            IKeyPairFactory keyPairFactory)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
-
         }
 
         [HttpPost("create")]

@@ -14,13 +14,13 @@ namespace Bol.Core.Services
 {
     public class WalletService : IWalletService
     {
-        private IAddressService _addressService;
-        private IKeyPairFactory _keyPairFactory;
-        private ISha256Hasher _sha256Hasher;
-        private ISignatureScriptFactory _signatureScriptFactory;
-        private IAddressTransformer _addressTransformer;
-        private IExportKeyFactory _exportKeyFactory;
-        private IBase16Encoder _base16Encoder;
+        private readonly IAddressService _addressService;
+        private readonly IKeyPairFactory _keyPairFactory;
+        private readonly ISha256Hasher _sha256Hasher;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IAddressTransformer _addressTransformer;
+        private readonly IExportKeyFactory _exportKeyFactory;
+        private readonly IBase16Encoder _base16Encoder;
 
         public WalletService(
             IAddressService addressService,
@@ -40,7 +40,6 @@ namespace Bol.Core.Services
             _base16Encoder = base16Encoder ?? throw new ArgumentNullException(nameof(base16Encoder));
         }
 
-
         public async Task<BolWallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
             var accounts = new List<Account>();
@@ -57,7 +56,7 @@ namespace Bol.Core.Services
             var CodeNamekeyPair = _keyPairFactory.Create(codeNamePrivateKey);
             var codeNameSignatureScript = _signatureScriptFactory.Create(CodeNamekeyPair.PublicKey);
 
-            var _accountCodeName = CreateAccount(codeNameSignatureScript, codeNamePrivateKey, privateKey, _scrypt);
+            var _accountCodeName = CreateAccount(codeNameSignatureScript, codeNamePrivateKey, walletPassword, _scrypt);
             _accountCodeName.Label = "codename";
             var _extraCodeName = new Extra
             {
@@ -77,8 +76,7 @@ namespace Bol.Core.Services
             var extendedKeyPair = _keyPairFactory.Create(extendedPrivateKey);
             var extendedSignatureScript = _signatureScriptFactory.Create(extendedKeyPair.PublicKey);
 
-
-            var _accountprivate = CreateAccount(extendedSignatureScript, extendedPrivateKey, privateKey, _scrypt);
+            var _accountprivate = CreateAccount(extendedSignatureScript, extendedPrivateKey, walletPassword, _scrypt);
             _accountprivate.Label = "private";
             var _extraPrivate = new Extra
             {
@@ -91,7 +89,7 @@ namespace Bol.Core.Services
             var multisigList = new[] { CodeNamekeyPair.PublicKey, extendedKeyPair.PublicKey };
 
             var multisigSignatureScript = _signatureScriptFactory.Create(multisigList, 2);
-            var _accountMultisig = CreateAccount(multisigSignatureScript, null, privateKey, _scrypt);
+            var _accountMultisig = CreateAccount(multisigSignatureScript, null, walletPassword, _scrypt);
             _accountMultisig.Label = "main";
             _accountMultisig.IsDefault = true;
             accounts.Add(_accountMultisig);
@@ -99,14 +97,14 @@ namespace Bol.Core.Services
             // blockchain
             var blockchainkeyPair = _keyPairFactory.Create();
             var blockchainSignatureScript = _signatureScriptFactory.Create(blockchainkeyPair.PublicKey);
-            var _accountBlockchain = CreateAccount(blockchainSignatureScript, blockchainkeyPair.PrivateKey, privateKey, _scrypt);
+            var _accountBlockchain = CreateAccount(blockchainSignatureScript, blockchainkeyPair.PrivateKey, walletPassword, _scrypt);
             _accountBlockchain.Label = "blockchain";
             accounts.Add(_accountBlockchain);
 
             // social
             var socialkeyPair = _keyPairFactory.Create();
             var socialSignatureScript = _signatureScriptFactory.Create(socialkeyPair.PublicKey);
-            var _accountSocial = CreateAccount(socialSignatureScript, socialkeyPair.PrivateKey, privateKey, _scrypt);
+            var _accountSocial = CreateAccount(socialSignatureScript, socialkeyPair.PrivateKey, walletPassword, _scrypt);
             _accountSocial.Label = "social";
             accounts.Add(_accountSocial);
 
@@ -115,7 +113,7 @@ namespace Bol.Core.Services
             {
                 var commercialkeyPair = _keyPairFactory.Create();
                 var commercialSignatureScript = _signatureScriptFactory.Create(commercialkeyPair.PublicKey);
-                var _commercialSocial = CreateAccount(commercialSignatureScript, commercialkeyPair.PrivateKey, privateKey, _scrypt);
+                var _commercialSocial = CreateAccount(commercialSignatureScript, commercialkeyPair.PrivateKey, walletPassword, _scrypt);
                 _commercialSocial.Label = "commercial";
                 accounts.Add(_commercialSocial);
             }

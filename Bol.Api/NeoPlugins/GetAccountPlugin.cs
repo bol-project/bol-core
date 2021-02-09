@@ -1,11 +1,9 @@
 using System;
 using Bol.Core.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Neo;
 using Neo.IO.Json;
 using Neo.Plugins;
 using Neo.Wallets;
-using Neo.SmartContract;
 using IBolService = Bol.Api.Services.IBolService;
 
 namespace Bol.Api.NeoPlugins
@@ -35,5 +33,11 @@ namespace Bol.Api.NeoPlugins
 
             return JObject.Parse(json);
         }
+
+        public void PreProcess(HttpContext context, string method, JArray _params)
+        { }
+        
+        public void PostProcess(HttpContext context, string method, JArray _params, JObject result)
+        { }
     }
 }

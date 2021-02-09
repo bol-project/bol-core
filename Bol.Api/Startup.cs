@@ -45,7 +45,7 @@ namespace Bol.Api
             // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
                                        .AddJsonFile("protocol.json")
-                                       .AddJsonFile(bolWalletPath)
+                                       .AddJsonFile(bolWalletPath, true)
                                        .AddJsonFile("config.json")
                                        .AddEnvironmentVariables();
             Configuration = configurationBuilder.Build();
@@ -99,14 +99,10 @@ namespace Bol.Api
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
-            // services.AddScoped<ISha256Hasher, Sha256Hasher>();
-            //  services.AddScoped<IBase58Encoder, Base58Encoder>();
-            //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
             services.AddScoped<IContextAccessor, WalletContextAccessor>();
-            services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
 
             services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
-            services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
+            services.AddScoped<IActorRef>((sp) => NodeBackgroundService.MainService.system.LocalNode);
             services.AddScoped<IBlockChainService, BlockChainService>();
             services.AddScoped<Api.Abstractions.ITransactionService, BlockChainService>();
 

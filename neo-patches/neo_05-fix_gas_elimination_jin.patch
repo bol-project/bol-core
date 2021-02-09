@@ -1,0 +1,46 @@
+diff --git a/neo/SmartContract/ApplicationEngine.cs b/neo/SmartContract/ApplicationEngine.cs
+index d2da23bd5e5f71f2204c4e8142943c186eb35d09..40e52fb92aeab482cc584de0f77cf81916472986 100644
+--- a/neo/SmartContract/ApplicationEngine.cs
++++ b/neo/SmartContract/ApplicationEngine.cs
+@@ -141,7 +141,7 @@ namespace Neo.SmartContract
+         protected override bool PreExecuteInstruction()
+         {
+             // Check if instruction is bol invocation.
+-            _isBolInvocation = _isBolInvocation || BolScriptUtility.IsBolInvocation(CurrentContext.Script);
++            _isBolInvocation = _isBolInvocation || BolScriptUtility.IsBolInvocation(CurrentContext.ScriptHash) || BolScriptUtility.IsBolInvocation(CurrentContext.Script);
+             
+             if (CurrentContext.InstructionPointer >= CurrentContext.Script.Length)
+                 return true;
+diff --git a/neo/BolScriptUtility.cs b/neo/BolScriptUtility.cs
+index c39b519db6d59168aeb935140bc792a4cb0b54a2..8322633b1de9a635d906b6864a9a889b07667dcf 100644
+--- a/neo/BolScriptUtility.cs
++++ b/neo/BolScriptUtility.cs
+@@ -46,17 +46,21 @@ namespace Neo
+             {
+                 if (_bolScriptHash == null)
+                 {
+-                    _bolScriptHash = ProtocolSettings.Default.BolSettings.ScriptHash.HexToBytes();
++                    _bolScriptHash = ProtocolSettings.Default
++                        .BolSettings
++                        .ScriptHash
++                        .HexToBytes()
++                        .Reverse()
++                        .ToArray();
+                 }
+                 return _bolScriptHash;
+             }
+         }
+         
+-        public static bool IsBolInvocation(Script script)
++        public static bool IsBolInvocation(byte[] script)
+         {
+-            byte[] scriptValue = script;
+-            var currentScriptEnd = scriptValue.Skip(script.Length - 20);
+-            return currentScriptEnd.SequenceEqual(BolScriptHash) || scriptValue.SequenceEqual(BolScript);
++            var currentScriptEnd = script.Skip(script.Length - 20).ToArray();
++            return currentScriptEnd.SequenceEqual(BolScriptHash) || script.SequenceEqual(BolScript);
+         }
+     }
+-}
+\ No newline at end of file
++}

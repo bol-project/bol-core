@@ -14,10 +14,10 @@
       "036c34acb0eada2a4e717b5673de07fe32e9a2fff03d4c9b6befae8a89ed36ace0"
     ],
     "SeedList": [
-      "bol-validator-1:10333",
-      "bol-validator-2:10333",
-      "bol-validator-3:10333",
-      "bol-validator-4:10333"
+      "bolchain.net:8101",
+      "bolchain.net:8102",
+      "bolchain.net:8103",
+      "bolchain.net:8104"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
