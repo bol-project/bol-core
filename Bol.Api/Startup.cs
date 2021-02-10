@@ -8,6 +8,7 @@ using Bol.Core.Accessors;
 using Bol.Core.Dtos;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
+using Bol.Core.Model;
 using Bol.Core.Model.Responses;
 using Bol.Core.Model.Wallet;
 using Bol.Core.Rpc;
@@ -66,6 +67,7 @@ namespace Bol.Api
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
             services.Configure<RpcInfo>(Configuration.GetSection("ApplicationConfiguration").GetSection("RPC"));
+            services.Configure<WalletConfiguration>(Configuration.GetSection("ApplicationConfiguration").GetSection("UnlockWallet"));
             services.Configure<BolWallet>(Configuration);
 
             //BOL Cryptography
