@@ -272,6 +272,11 @@ namespace Bol.Api.Services
 
             var op = Encoding.UTF8.GetString(parameters[0].Value as byte[]);
 
+            if (op == "debug")
+            {
+                var message = parameters[1].ToString();
+                Console.WriteLine($"CONTRACT DEBUGGING: {operation} | {message}");
+            }
             if (op == "error")
             {
                 var result = (List<ContractParameter>)parameters[1].Value;
