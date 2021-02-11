@@ -1,11 +1,9 @@
-﻿using Bol.Core.Abstractions;
-using Bol.Core.Hashers;
-using Bol.Core.Model;
-using FluentValidation;
-using FluentValidation.Results;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text;
+using Bol.Core.Abstractions;
+using Bol.Core.Model;
+using Bol.Cryptography;
+using FluentValidation;
 
 namespace Bol.Core.Validators
 {
@@ -24,7 +22,7 @@ namespace Bol.Core.Validators
             _personSerializer = personSerializer ?? throw new ArgumentNullException(nameof(personSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
 
-            RuleFor(codeName => codeName)
+            RuleFor(codeName => Encoding.ASCII.GetBytes(codeName))
                 .Must(codeName => hasher.CheckChecksum(codeName))
                 .WithMessage("Checksum of CodeName is not valid.");
 

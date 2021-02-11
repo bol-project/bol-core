@@ -52,8 +52,29 @@ build_node_4:
   variables:
     VALIDATOR_NAME: validator-4
 
+build_rpc_node:
+  stage: build
+  image: gitlab/dind
+  only:
+    - develop
+    - master
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
+    - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+    - echo CI_BUILD_REF=$CI_BUILD_REF
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.rpcnode
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - docker build -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  tags:
+    - build-internal
+
 .deploy:
-  image: lachlanevenson/k8s-kubectl:latest
+  image: lachlanevenson/k8s-kubectl:v1.16.14
   environment:
     name: bol-demo
     url: https://explorer.demo.bolchain.net
@@ -102,3 +123,8 @@ deploy_node_4:
   extends: .deploy
   variables:
     VALIDATOR_NAME: validator-4
+
+deploy_rpc_node:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: rpcnode

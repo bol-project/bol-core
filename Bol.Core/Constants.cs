@@ -8,12 +8,12 @@ namespace Bol.Core
         public const string ORGANIZATION_CODENAME_INITIAL = "O";
         
         public const byte BOL_ADDRESS_PREFIX = 0x19;
-        public const string B_ADDRESS_PLAIN_PREFIX = "BBBB";
-        public const string C_ADDRESS_PLAIN_PREFIX = "BCCC";
+        public const string B_ADDRESS_PLAIN_PREFIX = "BBB";
+        public const string C_ADDRESS_PLAIN_PREFIX = "BCC";
 
-        public const uint B_ADDRESS_START = 0x1949C6B9;
-        public const uint B_ADDRESS_END = 0x1949C78C;
-        public const uint C_ADDRESS_START = 0x1954F01A;
-        public const uint C_ADDRESS_END = 0x1954F0ED;
+        public const uint B_ADDRESS_START = 0x1949BF00;
+        public const uint B_ADDRESS_END = 0x1949ED00;
+        public const uint C_ADDRESS_START = 0x1954E700;
+        public const uint C_ADDRESS_END = 0x19551600;
     }
 }

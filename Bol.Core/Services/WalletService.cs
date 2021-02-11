@@ -1,73 +1,171 @@
-using Bol.Core.Abstractions;
-using Neo;
-using Neo.Cryptography;
-using Neo.IO.Json;
-using Neo.SmartContract;
-using Neo.Wallets;
-using Neo.Wallets.NEP6;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Address;
+using Bol.Address.Abstractions;
+using Bol.Core.Abstractions;
+using Bol.Core.Model.Wallet;
+using Bol.Cryptography;
 
 namespace Bol.Core.Services
 {
     public class WalletService : IWalletService
     {
-        private IAddressService _addressService;
-        private WalletIndexer _walletIndexer;
+        private readonly IAddressService _addressService;
+        private readonly IKeyPairFactory _keyPairFactory;
+        private readonly ISha256Hasher _sha256Hasher;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IAddressTransformer _addressTransformer;
+        private readonly IExportKeyFactory _exportKeyFactory;
+        private readonly IBase16Encoder _base16Encoder;
 
-        public WalletService(IAddressService addressService, WalletIndexer walletIndexer)
+        public WalletService(
+            IAddressService addressService,
+            ISignatureScriptFactory signatureScriptFactory,
+            IKeyPairFactory keyPairFactory,
+            ISha256Hasher sha256Hasher,
+            IAddressTransformer addressTransformer,
+            IExportKeyFactory exportKeyFactory,
+            IBase16Encoder base16Encoder)
         {
             _addressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
-            _walletIndexer = walletIndexer ?? throw new ArgumentNullException(nameof(walletIndexer));
+            _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
+            _sha256Hasher = sha256Hasher ?? throw new ArgumentNullException(nameof(sha256Hasher));
+            _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
+            _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
+            _base16Encoder = base16Encoder ?? throw new ArgumentNullException(nameof(base16Encoder));
         }
 
-        public async Task<NEP6Wallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
+        public async Task<BolWallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
-            var wallet = new NEP6Wallet(_walletIndexer, $"{codeName}.json", codeName);
-            wallet.Unlock(walletPassword);
+            var accounts = new List<Account>();
 
-            var codeNamePrivateKey = Encoding.ASCII.GetBytes(codeName).Sha256();
-            var codeNameAccount = (NEP6Account)wallet.CreateAccount(codeNamePrivateKey);
-            codeNameAccount.Label = "codename";
-            var extraCodeName = new JObject();
-            extraCodeName["codename"] = codeName;
-            extraCodeName["edi"] = edi;
-            codeNameAccount.Extra = extraCodeName;
+            var _scrypt = new SCrypt
+            {
+                N = 16384,
+                R = 8,
+                P = 8,
+            };
 
-            var privateKeyPair = new KeyPair(privateKey.HexToBytes());
+            //codename
+            var codeNamePrivateKey = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
+            var CodeNamekeyPair = _keyPairFactory.Create(codeNamePrivateKey);
+            var codeNameSignatureScript = _signatureScriptFactory.Create(CodeNamekeyPair.PublicKey);
 
+            var _accountCodeName = CreateAccount(codeNameSignatureScript, codeNamePrivateKey, walletPassword, _scrypt);
+            _accountCodeName.Label = "codename";
+            var _extraCodeName = new Extra
+            {
+                codename = codeName,
+                edi = edi
+            };
+            _accountCodeName.Extra = _extraCodeName;
+            accounts.Add(_accountCodeName);
+
+            //private
+            var privateKeyPair = _keyPairFactory.Create(_base16Encoder.Decode(privateKey));
+            //Get Bol Address
             var bolAddress = await _addressService.GenerateAddressBAsync(codeName, privateKeyPair, token);
             var nonce = BitConverter.GetBytes(bolAddress.Nonce);
 
-            var extendedPrivateKey = privateKeyPair.PrivateKey.Concat(nonce).Sha256();
-            var privateAccount = (NEP6Account)wallet.CreateAccount(extendedPrivateKey);
-            privateAccount.Label = "private";
-            var extraPrivate = new JObject();
-            extraPrivate["nonce"] = bolAddress.Nonce;
-            privateAccount.Extra = extraPrivate;
+            var extendedPrivateKey = _sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce));
+            var extendedKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+            var extendedSignatureScript = _signatureScriptFactory.Create(extendedKeyPair.PublicKey);
 
-            var multisig = Contract.CreateMultiSigContract(2, codeNameAccount.GetKey().PublicKey, privateAccount.GetKey().PublicKey);
+            var _accountprivate = CreateAccount(extendedSignatureScript, extendedPrivateKey, walletPassword, _scrypt);
+            _accountprivate.Label = "private";
+            var _extraPrivate = new Extra
+            {
+                nonce = bolAddress.Nonce.ToString()
+            };
+            _accountprivate.Extra = _extraPrivate;
+            accounts.Add(_accountprivate);
 
-            var bAddressAccount = wallet.CreateAccount(multisig);
-            bAddressAccount.Label = "main";
-            bAddressAccount.IsDefault = true;
+            //multisig
+            var multisigList = new[] { CodeNamekeyPair.PublicKey, extendedKeyPair.PublicKey };
 
-            var blockchainAccount = (NEP6Account)wallet.CreateAccount();
-            blockchainAccount.Label = "blockchain";
+            var multisigSignatureScript = _signatureScriptFactory.Create(multisigList, 2);
+            var _accountMultisig = CreateAccount(multisigSignatureScript, null, walletPassword, _scrypt);
+            _accountMultisig.Label = "main";
+            _accountMultisig.IsDefault = true;
+            accounts.Add(_accountMultisig);
 
-            var socialAccount = (NEP6Account)wallet.CreateAccount();
-            socialAccount.Label = "social";
+            // blockchain
+            var blockchainkeyPair = _keyPairFactory.Create();
+            var blockchainSignatureScript = _signatureScriptFactory.Create(blockchainkeyPair.PublicKey);
+            var _accountBlockchain = CreateAccount(blockchainSignatureScript, blockchainkeyPair.PrivateKey, walletPassword, _scrypt);
+            _accountBlockchain.Label = "blockchain";
+            accounts.Add(_accountBlockchain);
 
+            // social
+            var socialkeyPair = _keyPairFactory.Create();
+            var socialSignatureScript = _signatureScriptFactory.Create(socialkeyPair.PublicKey);
+            var _accountSocial = CreateAccount(socialSignatureScript, socialkeyPair.PrivateKey, walletPassword, _scrypt);
+            _accountSocial.Label = "social";
+            accounts.Add(_accountSocial);
+
+            //commercial
             for (var i = 0; i < 9; i++)
             {
-                var commercialAccount = (NEP6Account)wallet.CreateAccount();
-                commercialAccount.Label = "commercial";
+                var commercialkeyPair = _keyPairFactory.Create();
+                var commercialSignatureScript = _signatureScriptFactory.Create(commercialkeyPair.PublicKey);
+                var _commercialSocial = CreateAccount(commercialSignatureScript, commercialkeyPair.PrivateKey, walletPassword, _scrypt);
+                _commercialSocial.Label = "commercial";
+                accounts.Add(_commercialSocial);
             }
 
-            return wallet;
+            //Create Bol Wallet
+            var bolWallet = new BolWallet
+            {
+                Name = codeName,
+                Version = "1.0",
+                Scrypt = _scrypt,
+                accounts = accounts
+            };
+
+            return bolWallet;
+        }
+
+        private Account CreateAccount(ISignatureScript signatureScript, byte[] privateKey, string password, SCrypt scrypt)
+        {
+            var key = "";
+            var parametersList = new List<Parameters>();
+            if (privateKey == null) // multisig
+            {
+                key = null;
+                parametersList = new List<Parameters>() {
+                    new Parameters() { Type = "Signature", Name = "parameter0"} ,
+                     new Parameters() { Type = "Signature", Name = "parameter1"} ,
+                };
+            }
+            else  //all the others
+            {
+                key = _exportKeyFactory.Export(privateKey, signatureScript.ToScriptHash(), password, scrypt.N, scrypt.R, scrypt.P);
+                parametersList = new List<Parameters>() {
+                    new Parameters() { Type = "Signature", Name = "signature"} ,
+                };
+            }
+            var _contract = new Contract
+            {
+                Script = signatureScript.ToHexString(),
+                Parameters = parametersList,
+                Deployed = false
+            };
+            var _accounts = new Account
+            {
+                Address = _addressTransformer.ToAddress(signatureScript.ToScriptHash()),
+                Label = "",
+                IsDefault = false,
+                Lock = false,
+                Key = key,
+                Contract = _contract,
+                Extra = null
+            };
+            return _accounts;
         }
     }
 }

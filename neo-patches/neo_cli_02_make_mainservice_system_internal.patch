@@ -1,0 +1,13 @@
+diff --git a/neo-cli/Shell/MainService.cs b/neo-cli/Shell/MainService.cs
+index 6f77207cb9ba3489c64af40f8f98bedc1ad37ca1..c4eddb6b69cfaa8d418d6775f977ad55edd9ad09 100644
+--- a/neo-cli/Shell/MainService.cs
++++ b/neo-cli/Shell/MainService.cs
+@@ -31,7 +31,7 @@ namespace Neo.Shell
+     internal class MainService : ConsoleServiceBase
+     {
+         private LevelDBStore store;
+-        private NeoSystem system;
++        internal NeoSystem system;
+         private WalletIndexer indexer;
+ 
+         protected override string Prompt => "neo";

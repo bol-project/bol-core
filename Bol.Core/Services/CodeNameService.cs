@@ -1,11 +1,9 @@
-﻿using Bol.Core.Abstractions;
-using Bol.Core.Hashers;
-using Bol.Core.Model;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using Bol.Core.Encoders;
+using Bol.Core.Abstractions;
+using Bol.Core.Model;
+using Bol.Cryptography;
 using FluentValidation;
 
 namespace Bol.Core.Services
@@ -16,17 +14,20 @@ namespace Bol.Core.Services
         private readonly ISha256Hasher _hasher;
         private readonly IBase58Encoder _base58Encoder;
         private readonly IValidator<NaturalPerson> _naturalPersonValidator;
+        private readonly IBase16Encoder _hex;
 
         public CodeNameService(
             IStringSerializer<NaturalPerson, CodenamePerson> stringSerializer,
             ISha256Hasher hasher,
             IBase58Encoder base58Encoder,
-            IValidator<NaturalPerson> naturalPersonValidator)
+            IValidator<NaturalPerson> naturalPersonValidator,
+            IBase16Encoder hex)
         {
             _stringSerializer = stringSerializer ?? throw new ArgumentNullException(nameof(stringSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
             _base58Encoder = base58Encoder ?? throw new ArgumentException(nameof(base58Encoder));
             _naturalPersonValidator = naturalPersonValidator ?? throw new ArgumentException(nameof(naturalPersonValidator));
+            _hex = hex ?? throw new ArgumentNullException(nameof(hex));
         }
 
         public string Generate(NaturalPerson person)
@@ -39,7 +40,7 @@ namespace Bol.Core.Services
             var birthdayToHash = person.Birthdate.ToString(CultureInfo.InvariantCulture);
             var ninToHash = person.Nin.Substring(0, person.Nin.Length - 2);
 
-            var shortHashBytes = Encoding.UTF8.GetBytes(nameToHash + birthdayToHash + ninToHash);
+            var shortHashBytes = Encoding.ASCII.GetBytes(nameToHash + birthdayToHash + ninToHash);
 
             var shortHash = _hasher.Hash(shortHashBytes, 8);
 
@@ -47,9 +48,9 @@ namespace Bol.Core.Services
 
             codeName = $"{codeName}{shortHashString}";
 
-            codeName = _hasher.AddChecksum(codeName);
+            var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName));
 
-            return codeName;
+            return Encoding.ASCII.GetString(codeNameBytes);
         }
     }
 }

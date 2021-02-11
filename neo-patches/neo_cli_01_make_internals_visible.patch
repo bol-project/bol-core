@@ -1,0 +1,9 @@
+diff --git a/neo-cli/Properties/AssemblyInfo.cs b/neo-cli/Properties/AssemblyInfo.cs
+index 0bf502d204eb59a733c7ed80595ec7ff9a43e04f..2ad18b30243873512ee29940e4f713308cc1435e 100644
+--- a/neo-cli/Properties/AssemblyInfo.cs
++++ b/neo-cli/Properties/AssemblyInfo.cs
+@@ -1,3 +1,4 @@
+ using System.Runtime.CompilerServices;
+ 
+ [assembly: InternalsVisibleTo("neo-cli.UnitTests")]
++[assembly: InternalsVisibleTo("Bol.Api")]

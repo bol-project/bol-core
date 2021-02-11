@@ -3,6 +3,10 @@
     "Magic": 630594781,
     "AddressVersion": 25,
     "SecondsPerBlock": 15,
+    "LowPriorityThreshold": 0.001,
+    "StateRootEnableIndex": 0,
+    "FreeGasChangeHeight": 0,
+    "MinimumNetworkFee": 0,
     "StandbyValidators": [
       "03bdd15f1cf59c9007eda6a4ac925e80581a9f9513c2c4f3ee771136b20ccf9332",
       "0323faa04f23d8ded0c617d9d3d8e808fe83d6d17a29218fe95a321fb035574877",
@@ -10,10 +14,10 @@
       "036c34acb0eada2a4e717b5673de07fe32e9a2fff03d4c9b6befae8a89ed36ace0"
     ],
     "SeedList": [
-      "bol-validator-1:11456",
-      "bol-validator-2:11456",
-      "bol-validator-3:11456",
-      "bol-validator-4:11456"
+      "bol-validator-1:10333",
+      "bol-validator-2:10333",
+      "bol-validator-3:10333",
+      "bol-validator-4:10333"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
@@ -22,7 +26,7 @@
       "RegisterTransaction": 10000
     },
     "BolContract": {
-      "ScriptHash": "bd675b67749493a4036029be4a53beba45ca5cb9",
+      "ScriptHash": "d915fe38180d3f6abc46e23514631cac4aede72f",
       "Name": "Bol",
       "Version": "0.1",
       "Author": "Bol Team",
