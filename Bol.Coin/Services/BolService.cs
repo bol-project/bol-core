@@ -351,7 +351,6 @@ namespace Bol.Coin.Services
             BolRepository.SetContractDeployed();
 
             var dpsYear = new Map<uint, BigInteger>();
-            dpsYear[2019] = 184661436;
             dpsYear[2020] = 187819619;
             dpsYear[2021] = 190637490;
             dpsYear[2022] = 193569717;
@@ -365,21 +364,19 @@ namespace Bol.Coin.Services
             dpsYear[2030] = 218821347;
 
             var popYear = new Map<uint, BigInteger>();
-            popYear[2019] = 7713468205;
-            popYear[2020] = 7794798729;
-            popYear[2021] = 7874965732;
-            popYear[2022] = 7953952577;
-            popYear[2023] = 8031800338;
-            popYear[2024] = 8108605255;
-            popYear[2025] = 8184437453;
-            popYear[2026] = 8259276651;
-            popYear[2027] = 8333078318;
-            popYear[2028] = 8405863301;
-            popYear[2029] = 8477660723;
-            popYear[2030] = 8548487371;
+            popYear[2020] = 779479872900000000;
+            popYear[2021] = 787496573200000000;
+            popYear[2022] = 795395257700000000;
+            popYear[2023] = 803180033800000000;
+            popYear[2024] = 810860525500000000;
+            popYear[2025] = 818443745300000000;
+            popYear[2026] = 825927665100000000;
+            popYear[2027] = 833307831800000000;
+            popYear[2028] = 840586330100000000;
+            popYear[2029] = 847766072300000000;
+            popYear[2030] = 854848737100000000;
 
             var yearStamp = new Map<uint, BigInteger>(); //will need to change to milliseconds after upgrade to neo 3
-            yearStamp[2019] = 1561939200;
             yearStamp[2020] = 1593561600;
             yearStamp[2021] = 1625097600;
             yearStamp[2022] = 1656633600;
@@ -753,9 +750,9 @@ namespace Bol.Coin.Services
 
             Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
-            for (uint i = startClaimHeight; i <= endClaimHeight; i += claimInterval)
+            for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
-                intervalTotal = BolRepository.GetRegisteredAtBlock(i + claimInterval);
+                intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                 uint pointer = i;
                 while (intervalTotal == 0 && pointer > 0)
                 {
@@ -763,11 +760,11 @@ namespace Bol.Coin.Services
                     intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
                 }
 
-                var currentStamp = Blockchain.GetBlock(i).Timestamp;
-                var previousStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
-                var intervalTime = currentStamp - previousStamp;
+                var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
+                var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
+                var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
-                uint currentYear = ConvertToYear(currentStamp);
+                uint currentYear = ConvertToYear(EndIntervalStamp);
                 BigInteger timestampThisYear = yearStamp[currentYear];
                 BigInteger timestampNextYear = yearStamp[currentYear + 1];
                 BigInteger ThisYearDps = dpsYear[currentYear];
@@ -776,7 +773,7 @@ namespace Bol.Coin.Services
                 BigInteger NextYearPop = popYear[currentYear + 1];
 
                 var SecInYear = timestampNextYear - timestampThisYear;
-                var diffYear = currentStamp - timestampThisYear;
+                var diffYear = EndIntervalStamp - timestampThisYear;
 
                 BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
                 BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
