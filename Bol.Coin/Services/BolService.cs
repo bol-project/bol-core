@@ -733,6 +733,11 @@ namespace Bol.Coin.Services
             var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
 
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
+            if(currentHeight <= claimInterval)
+            {
+                Runtime.Notify("debug", "No claim before first interval.");
+                return false;
+            }
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
 
