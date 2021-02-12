@@ -736,7 +736,7 @@ namespace Bol.Coin.Services
 
             if(currentHeight <= claimInterval)
             {
-                Runtime.Notify("debug", "No claim before first interval.");
+                Runtime.Notify("error", BolResult.Forbidden("No claim before first interval."));
                 return false;
             }
 
