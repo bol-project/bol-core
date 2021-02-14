@@ -1,0 +1,13 @@
+diff --git a/neo/Ledger/Blockchain.cs b/neo/Ledger/Blockchain.cs
+index 006025d47876023959057c398a2eaff36adfb12a..6cd22c035f667fc9e15557291046149d14328888 100644
+--- a/neo/Ledger/Blockchain.cs
++++ b/neo/Ledger/Blockchain.cs
+@@ -89,6 +89,8 @@ namespace Neo.Ledger
+                 },
+                 GoverningToken,
+                 UtilityToken,
++                BolScriptUtility.BolToken,
++                BolScriptUtility.BolDeploy,
+                 new IssueTransaction
+                 {
+                     Attributes = new TransactionAttribute[0],

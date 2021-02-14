@@ -12,9 +12,9 @@ namespace Bol.Core.Transactions
 {
     public class TransactionService : ITransactionService
     {
-        private ISignatureScriptFactory _signatureScriptFactory;
-        private IScriptHashFactory _scriptHashFactory;
-        private ITransactionNotarizer _transactionNotarizer;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IScriptHashFactory _scriptHashFactory;
+        private readonly ITransactionNotarizer _transactionNotarizer;
 
         public TransactionService(ISignatureScriptFactory signatureScriptFactory, IScriptHashFactory scriptHashFactory, ITransactionNotarizer transactionNotarizer)
         {
@@ -36,6 +36,20 @@ namespace Bol.Core.Transactions
             var contractHash = _scriptHashFactory.Create(contract);
             var executionScript = _signatureScriptFactory.CreateContractOperationScript(contractHash, operation, parameters);
 
+            var transaction = CreateBolTransaction(executionScript, witness.ToScriptHash(), description, remarks);
+
+            return transaction;
+        }
+
+        public BolTransaction Create(
+            ISignatureScript witness,
+            byte[] script,
+            string description = null,
+            IEnumerable<string> remarks = null)
+        {
+            //TODO: Add validations
+
+            var executionScript = _signatureScriptFactory.Create(script);
             var transaction = CreateBolTransaction(executionScript, witness.ToScriptHash(), description, remarks);
 
             return transaction;

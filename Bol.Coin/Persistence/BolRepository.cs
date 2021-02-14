@@ -17,6 +17,11 @@ namespace Bol.Coin.Persistence
 
         public const byte DEPLOY = 0xFF;
 
+        public const byte DPSYEAR = 0xB0;
+        public const byte POPYEAR = 0xB1;
+        public const byte YEARSTAMP = 0xB2;
+        public const byte CLAIM_INTERVAL= 0xB3;
+
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
@@ -173,6 +178,57 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, certifiers.Serialize());
         }
 
+        public static void SetDpsYear(Map<uint, BigInteger> dpsYear)
+        {
+            var key = DpsYearKey();
+            BolStorage.Put(key, dpsYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetDpsYear()
+        {
+            var key = DpsYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetPopYear(Map<uint, BigInteger> popYear)
+        {
+            var key = PopYearKey();
+            BolStorage.Put(key, popYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetPopYear()
+        {
+            var key = PopYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetYearStamp(Map<uint, BigInteger> yearStamp)
+        {
+            var key = YearStampKey();
+            BolStorage.Put(key, yearStamp.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetYearStamp()
+        {
+            var key = YearStampKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetClaimInterval(BigInteger interval)
+        {
+            var key = ClaimIntervalKey();
+            BolStorage.Put(key, interval);
+        }
+
+        public static BigInteger GetClaimInterval()
+        {
+            var key = ClaimIntervalKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -216,6 +272,26 @@ namespace Bol.Coin.Persistence
         internal static byte[] CertifiersKey(byte[] countryCode)
         {
             return new byte[] { CERTIFIERS }.Concat(countryCode);
+        }
+
+        internal static byte[] DpsYearKey()
+        {
+            return new byte[] { DPSYEAR };
+        }
+
+        internal static byte[] PopYearKey()
+        {
+            return new byte[] { POPYEAR };
+        }
+
+        internal static byte[] YearStampKey()
+        {
+            return new byte[] { YEARSTAMP };
+        }
+
+        internal static byte[] ClaimIntervalKey()
+        {
+            return new byte[] { CLAIM_INTERVAL };
         }
     }
 }
