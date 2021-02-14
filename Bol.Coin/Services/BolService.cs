@@ -312,11 +312,11 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            if (BolValidator.AddressNotOwner(Owner))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
-                return false;
-            }
+            //if (BolValidator.AddressNotOwner(Owner))
+            //{
+            //    Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
+            //    return false;
+            //}
 
             BolRepository.SetClaimInterval(10);
 
@@ -347,8 +347,6 @@ namespace Bol.Coin.Services
 
             BolRepository.SetBols(0);
             BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
-
-            BolRepository.SetContractDeployed();
 
             var dpsYear = new Map<uint, BigInteger>();
             dpsYear[2020] = 187819619;
@@ -392,6 +390,8 @@ namespace Bol.Coin.Services
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
+
+            BolRepository.SetContractDeployed();
 
             Runtime.Notify("deploy", BolResult.Ok());
             return true;
