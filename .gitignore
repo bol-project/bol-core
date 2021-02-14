@@ -261,3 +261,9 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+#Peronal Usage shortcuts and files
+*.lnk
+st.bat
+s.exe
+s.py

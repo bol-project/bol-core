@@ -77,4 +77,11 @@
     </Message>
     <ConvertTask DataSource="$(TargetPath)" />
   </Target>
+  <Target Name="HashandABIReplacementScript" AfterTargets="AfterBuild">
+    <Message Text="Executing hash and .abi replacement script" Importance="high">
+    </Message>
+	<Exec Command="ReplaceHashandABI.exe" ConsoleToMSBuild="True" StandardOutputImportance="high">
+	  <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+	</Exec>
+  </Target>
 </Project>
