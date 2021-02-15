@@ -15,19 +15,24 @@ namespace Bol.Core.Accessors
     {
         private readonly BolWallet _bolWallet;
         private readonly WalletConfiguration _walletConfig;
+        private readonly BolConfig _bolConfig;
         private readonly IExportKeyFactory _exportKeyFactory;
         private readonly IKeyPairFactory _keyPairFactory;
         private readonly IAddressTransformer _addressTransformer;
 
+        private BolContext _bolContext;
+
         public WalletContextAccessor(
             IOptions<BolWallet> bolWallet,
             IOptions<WalletConfiguration> walletConfig,
+            IOptions<BolConfig> bolConfig,
             IExportKeyFactory exportKeyFactory,
             IKeyPairFactory keyPairFactory,
             IAddressTransformer addressTransformer)
         {
             _bolWallet = bolWallet.Value ?? throw new ArgumentNullException(nameof(bolWallet));
             _walletConfig = walletConfig.Value ?? throw new ArgumentNullException(nameof(walletConfig));
+            _bolConfig = bolConfig.Value ?? throw new ArgumentNullException(nameof(bolConfig));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
@@ -35,6 +40,8 @@ namespace Bol.Core.Accessors
 
         public BolContext GetContext()
         {
+            if (_bolContext != null) return _bolContext;
+
             var accounts = _bolWallet.accounts.Select(a => a as Account).ToList();
             var password = _walletConfig.Password;
 
@@ -46,7 +53,8 @@ namespace Bol.Core.Accessors
             var socialAddressAccount = accounts.Where(account => account.Label == "social").SingleOrDefault();
             var commercialAddressAccounts = accounts.Where(account => account.Label == "commercial");
 
-            return new BolContext(
+            _bolContext =  new BolContext(
+                _bolConfig.Contract,
                 codeNameAccount.Extra.codename,
                 codeNameAccount.Extra.edi,
                 _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P))),
@@ -54,8 +62,9 @@ namespace Bol.Core.Accessors
                 _addressTransformer.ToScriptHash(mainAddressAccount.Address),
                 new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(blockchainAddressAccount.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)))),
                 new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(socialAddressAccount.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)))),
-                commercialAddressAccounts.Select(account => new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(account.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)))))
+                commercialAddressAccounts.Select(account => new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(account.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P))))).ToList()
                 );
+            return _bolContext;
         }
     }
 }
