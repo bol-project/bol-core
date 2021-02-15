@@ -23,7 +23,7 @@ namespace Bol.Api.NeoPlugins
 
         public JObject OnProcess(HttpContext context, string method, JArray _params)
         {
-            if (method != "GetAccount") return null;
+            if (method.ToLowerInvariant() != "getaccount") return null;
             
             var address = _params[0].AsString().ToScriptHash();
 
