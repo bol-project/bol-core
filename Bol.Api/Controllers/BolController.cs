@@ -11,6 +11,7 @@ using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Neo.Wallets;
 using IBolService = Bol.Api.Services.IBolService;
+using Neo;
 
 namespace Bol.Api.Controllers
 {
@@ -23,62 +24,22 @@ namespace Bol.Api.Controllers
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IKeyPairFactory _keyPairFactory;
 
+        private readonly Bol.Core.Abstractions.IBolService _coreBolService;
+
         public BolController(
             IBolService bolService,
             IWalletService walletService,
             IExportKeyFactory exportKeyFactory,
             IJsonSerializer jsonSerializer,
-            IKeyPairFactory keyPairFactory)
+            IKeyPairFactory keyPairFactory,
+            Bol.Core.Abstractions.IBolService coreBolService)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
-        }
-
-        [HttpPost("create")]
-        public ActionResult Create()
-        {
-            var files = Directory.GetFiles("../validators");
-
-            var keys = files.Select(file =>
-            {
-                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
-
-                var account = bolWallet.accounts.First();
-
-                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
-
-            })
-            .Select(key => new KeyPair(key.PrivateKey))
-            .ToList();
-
-            var result = _bolService.Create(keys);
-
-            return Ok(result);
-        }
-
-        [HttpPost("deploy")]
-        public ActionResult Deploy()
-        {
-            var files = Directory.GetFiles("../validators");
-
-            var keys = files.Select(file =>
-            {
-                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
-
-                var account = bolWallet.accounts.First();
-
-                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
-
-            })
-            .Select(key => new KeyPair(key.PrivateKey))
-            .ToList();
-
-            var result = _bolService.Deploy(keys);
-
-            return Ok(result);
+            _coreBolService = coreBolService ?? throw new ArgumentNullException(nameof(coreBolService));
         }
 
         [HttpPost("wallet")]
@@ -90,10 +51,12 @@ namespace Bol.Api.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult Register()
+        public async Task<ActionResult> Register(CancellationToken token)
         {
-            var result = _bolService.Register();
-            return Ok(result);
+            //_bolService.Register();
+
+            await _coreBolService.Register(token);
+            return Ok();
         }
 
         [HttpPost("claim")]
