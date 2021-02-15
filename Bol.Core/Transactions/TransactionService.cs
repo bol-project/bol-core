@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.BolContract.Models;
+using Bol.Core.Rpc.Abstractions;
 using Bol.Cryptography;
 
 namespace Bol.Core.Transactions
@@ -15,12 +16,14 @@ namespace Bol.Core.Transactions
         private readonly ISignatureScriptFactory _signatureScriptFactory;
         private readonly IScriptHashFactory _scriptHashFactory;
         private readonly ITransactionNotarizer _transactionNotarizer;
+        private readonly IRpcMethodFactory _rpc;
 
-        public TransactionService(ISignatureScriptFactory signatureScriptFactory, IScriptHashFactory scriptHashFactory, ITransactionNotarizer transactionNotarizer)
+        public TransactionService(ISignatureScriptFactory signatureScriptFactory, IScriptHashFactory scriptHashFactory, ITransactionNotarizer transactionNotarizer, IRpcMethodFactory rpc)
         {
             _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
             _scriptHashFactory = scriptHashFactory ?? throw new ArgumentNullException(nameof(scriptHashFactory));
             _transactionNotarizer = transactionNotarizer ?? throw new ArgumentNullException(nameof(transactionNotarizer));
+            _rpc = rpc ?? throw new ArgumentNullException(nameof(rpc));
         }
 
         public BolTransaction Create(
@@ -57,7 +60,7 @@ namespace Bol.Core.Transactions
 
         public Task Publish(BolTransaction transaction, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            return _rpc.SendRawTransaction<bool>(transaction, token);
         }
 
         public BolTransaction Sign(BolTransaction transaction, ISignatureScript witness, IEnumerable<IKeyPair> keys)
