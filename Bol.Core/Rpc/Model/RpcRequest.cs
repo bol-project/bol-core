@@ -1,17 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Bol.Core.Serializers;
+using Newtonsoft.Json;
 
 namespace Bol.Core.Rpc.Model
 {
+    [JsonObject(NamingStrategyType = typeof(LowercaseNamingStrategy))]
     public class RpcRequest
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public string jsonrpc { get; set; }
+        public string JsonRpc { get; set; }
 
-        public string method { get; set; }
+        public string Method { get; set; }
 
-        public object[] @params { get; set; }
+        public object[] Params { get; set; }
     }
 }
