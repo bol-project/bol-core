@@ -45,6 +45,7 @@ namespace Bol.Api
 
             // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
+                                       .AddConfiguration(configuration)
                                        .AddJsonFile("protocol.json")
                                        .AddJsonFile(bolWalletPath, true)
                                        .AddJsonFile("config.json")
@@ -67,6 +68,7 @@ namespace Bol.Api
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
             services.Configure<RpcInfo>(Configuration.GetSection("ApplicationConfiguration").GetSection("RPC"));
+            services.Configure<BolConfig>(Configuration.GetSection("BolConfig"));
             services.Configure<WalletConfiguration>(Configuration.GetSection("ApplicationConfiguration").GetSection("UnlockWallet"));
             services.Configure<BolWallet>(Configuration);
 
