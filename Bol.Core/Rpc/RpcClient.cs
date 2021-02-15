@@ -1,71 +1,59 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Core.Abstractions;
+using Bol.Core.Model;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Rpc.Model;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 
 namespace Bol.Core.Rpc
 {
     public class RpcClient : IRpcClient
     {
-        private readonly RpcInfo _rpcInfo;
-        private IJsonSerializer _iJsonSerializer;
-        private static HttpClient _httpClient = new HttpClient();
+        private readonly BolConfig _bolConfig;
+        private readonly IJsonSerializer _jsonSerializer;
+        private readonly HttpClient _httpClient;
 
-        public RpcClient(IOptions<RpcInfo> rpcInfo, IJsonSerializer iJsonSerializer)
+        public RpcClient(IOptions<BolConfig> bolConfig, IJsonSerializer jsonSerializer, HttpClient httpClient)
         {
 
-            _rpcInfo = rpcInfo.Value ?? throw new ArgumentNullException(nameof(rpcInfo));
-            _iJsonSerializer = iJsonSerializer ?? throw new ArgumentNullException(nameof(iJsonSerializer));
+            _bolConfig = bolConfig.Value ?? throw new ArgumentNullException(nameof(bolConfig));
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
-        public async Task<T> InvokeAsync<T>(string hexTx, string method, CancellationToken token = default) 
+
+        public async Task<T> InvokeAsync<T>(string method, object[] @params, CancellationToken token = default)
         {
-            var url = new Uri("http://" + _rpcInfo.BindAddress + ":" + _rpcInfo.Port + "/ ");
+            var url = new Uri(_bolConfig.RpcEndpoint);
             var request = new RpcRequest
             {
-                id = 1,
-                jsonrpc = "2.0",
-                method = method,
-                @params = new object[] { hexTx }
+                Id = 1,
+                JsonRpc = "2.0",
+                Method = method,
+                Params = @params
             };
 
+            var content = new StringContent(_jsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json-rpc");
 
-            var content = new StringContent(_iJsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json-rpc");
+            using var responseMessage = await _httpClient.PostAsync(url, content, token);
+            EnsureSuccessfulResponse(responseMessage);
 
-                using (var response = await _httpClient.PostAsync(url, content, token))
-                {
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        if (response.Content == null) { throw new ArgumentNullException(nameof(response.Content)); }
-       
-                        var responseJson = await response.Content.ReadAsStringAsync();
+            var responseString = await responseMessage.Content.ReadAsStringAsync();
+            var response = _jsonSerializer.Deserialize<RpcResponse<T>>(responseString);
 
-                       var jObjectResponse = JObject.Parse(responseJson);
+            if (response.Error != null)
+                throw new RpcException(responseMessage.StatusCode, response.Error);
 
-                        if (jObjectResponse.ContainsKey("error"))
-                        {
-                     
-                            throw new RpcException(Int32.Parse(jObjectResponse["error"]["code"].ToString()), jObjectResponse["error"]["message"].ToString());
-                        }
+            return response.Result;
+        }
 
-                        if (responseJson == null) { throw new ArgumentNullException(nameof(responseJson)); }
-
-                        return _iJsonSerializer.Deserialize<T>(responseJson);
-                    }
-                    else
-                    {
-                        throw new Exception(response.StatusCode.ToString());
-                    }
-
-                }
-
+        private void EnsureSuccessfulResponse(HttpResponseMessage message)
+        {
+            if (message.StatusCode != HttpStatusCode.OK || message.Content == null)
+                throw new RpcException(message.StatusCode);
         }
     }
 }
