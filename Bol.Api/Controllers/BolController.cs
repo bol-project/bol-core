@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Neo.Wallets;
 using IBolService = Bol.Api.Services.IBolService;
 using Neo;
+using Bol.Address;
 
 namespace Bol.Api.Controllers
 {
@@ -25,14 +26,9 @@ namespace Bol.Api.Controllers
         private readonly IKeyPairFactory _keyPairFactory;
 
         private readonly Bol.Core.Abstractions.IBolService _coreBolService;
+        private readonly IAddressTransformer _addressTransformer;
 
-        public BolController(
-            IBolService bolService,
-            IWalletService walletService,
-            IExportKeyFactory exportKeyFactory,
-            IJsonSerializer jsonSerializer,
-            IKeyPairFactory keyPairFactory,
-            Bol.Core.Abstractions.IBolService coreBolService)
+        public BolController(IBolService bolService, IWalletService walletService, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory, Core.Abstractions.IBolService coreBolService, IAddressTransformer addressTransformer)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
@@ -40,6 +36,7 @@ namespace Bol.Api.Controllers
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
             _coreBolService = coreBolService ?? throw new ArgumentNullException(nameof(coreBolService));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
         [HttpPost("wallet")]
@@ -67,9 +64,9 @@ namespace Bol.Api.Controllers
         }
 
         [HttpGet("getAccount")]
-        public ActionResult GetAccount(string address)
+        public async Task<ActionResult> GetAccount(string address, CancellationToken token)
         {
-            var result = _bolService.GetAccount(address.ToScriptHash());
+            var result = await _coreBolService.GetAccount(_addressTransformer.ToScriptHash(address), token);
             return Ok(result);
         }
 
