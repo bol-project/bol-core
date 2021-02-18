@@ -27,6 +27,18 @@ namespace Bol.Core.Rpc
             return _rpcClient.InvokeAsync<T>("sendrawtransaction", new[] { _bse16Encoder.Encode(bolSignedTransaction) }, token);
         }
 
+        public Task<T> TestRawTransaction<T>(BolTransaction transaction, CancellationToken token = default)
+        {
+            var clone = new BolTransaction
+            {
+                Attributes = transaction.Attributes,
+                ExecutionScript = transaction.ExecutionScript                
+            };
+            var unsignedTransaction = _transactionSerializer.SerializeSigned(clone);
+
+            return _rpcClient.InvokeAsync<T>("testrawtransaction", new[] { _bse16Encoder.Encode(unsignedTransaction) }, token);
+        }
+
         public Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default)
         {
             return _rpcClient.InvokeAsync<T>("getaccount", new[] { mainAddress }, token);
