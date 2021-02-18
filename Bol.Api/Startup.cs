@@ -112,6 +112,7 @@ namespace Bol.Api
             services.AddScoped<IActorRef>((sp) => NodeBackgroundService.MainService.system.LocalNode);
             services.AddScoped<IBlockChainService, Bol.Api.Services.BlockChainService>();
             services.AddScoped<Api.Abstractions.ITransactionService, Bol.Api.Services.BlockChainService>();
+            services.AddSingleton<ICachingService, CachingService>();
 
             // Mappers
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
