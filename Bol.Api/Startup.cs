@@ -97,6 +97,7 @@ namespace Bol.Api
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
+            services.AddSingleton<ICachingService, CachingService>();
            // services.AddScoped<ISha256Hasher, Sha256Hasher>();
             //  services.AddScoped<IBase58Encoder, Base58Encoder>();
            //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));

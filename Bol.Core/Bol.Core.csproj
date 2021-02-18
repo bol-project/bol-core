@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="7.6.104" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.23" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="YamlDotNet" Version="5.1.0" />
   </ItemGroup>
