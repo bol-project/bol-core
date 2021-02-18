@@ -95,13 +95,12 @@ namespace Bol.Core.Services
             {
                 address.GetBytes(),
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
             var mainAddress = CreateMainAddress(context);
 
             var transaction = _transactionService.Create(mainAddress, context.Contract, "getAccount", parameters);
 
-            var result = await _transactionService.Test(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
 
             return result;
         }
