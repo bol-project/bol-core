@@ -1,6 +1,5 @@
 using System;
 using Bol.Core.Abstractions;
-using Bol.Cryptography;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Bol.Core.Services
