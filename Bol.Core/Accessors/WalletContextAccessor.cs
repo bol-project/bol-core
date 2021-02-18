@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Abstractions;
 using Bol.Core.Abstractions;
@@ -45,31 +46,50 @@ namespace Bol.Core.Accessors
         {
             if (_bolContext != null) return _bolContext;
 
-            var accounts = _bolWallet.accounts.Select(a => a as Account).ToList();
+            var n = _bolWallet.Scrypt.N;
+            var r = _bolWallet.Scrypt.R;
+            var p = _bolWallet.Scrypt.P;
+
             var password = _walletConfig.Password;
+            var accounts = _bolWallet.accounts;
 
             var codeNameAccount = accounts.Where(account => account.Label == "codename").Single();
             var privateAccount = accounts.Where(account => account.Label == "private").Single();
             var mainAddressAccount = accounts.Where(account => account.Label == "main").Single();
 
-            var blockchainAddressAccount = accounts.Where(account => account.Label == "blockchain").SingleOrDefault();
-            var socialAddressAccount = accounts.Where(account => account.Label == "social").SingleOrDefault();
+            var blockchainAddressAccount = accounts.Where(account => account.Label == "blockchain").Single();
+            var socialAddressAccount = accounts.Where(account => account.Label == "social").Single();
             var commercialAddressAccounts = accounts.Where(account => account.Label == "commercial");
 
-            var codeNameAccountKey = _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)));
-            var privateAccountKey = _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)));
-            var blockChainAddressAccountKey = _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)));
-            var socialAddressAccountKey = _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)));
+            var codeNameKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, n, r, p));
+            var privateKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, password, n, r, p));
+            var blockchainKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, n, r, p));
+            var socialKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, n, r, p));
+
+            Task.WaitAll(codeNameKey, privateKey, blockchainKey, socialKey);
+
+            var codeNameAccountKeyPair = _keyPairFactory.Create(codeNameKey.Result);
+            var privateAccountKeyPair = _keyPairFactory.Create(privateKey.Result);
+            var blockChainAddressAccountKeyPair = _keyPairFactory.Create(blockchainKey.Result);
+            var socialAddressAccountKeyPair = _keyPairFactory.Create(socialKey.Result);
+
+            var comm = commercialAddressAccounts.AsParallel()
+                .Select(account => (account.Address, account.Key))
+                .Select(tuple => (tuple.Address, Key: _exportKeyFactory.GetDecryptedPrivateKey(tuple.Key, password, n, r, p)))
+                .Select(tuple => (tuple.Address, KeyPair: _keyPairFactory.Create(tuple.Key)))
+                .Select(tuple => (ScriptHash: _addressTransformer.ToScriptHash(tuple.Address), tuple.KeyPair))                
+                .ToDictionary(tuple => tuple.ScriptHash, tuple => tuple.KeyPair);
 
             return new BolContext(
+                _bolConfig.Contract,
                 codeNameAccount.Extra.codename,
                 codeNameAccount.Extra.edi,
-                codeNameAccountKey,
-                privateAccountKey,
+                codeNameAccountKeyPair,
+                privateAccountKeyPair,
                 _addressTransformer.ToScriptHash(mainAddressAccount.Address),
-                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(blockchainAddressAccount.Address), blockChainAddressAccountKey),
-                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(socialAddressAccount.Address), socialAddressAccountKey),
-                commercialAddressAccounts.Select(account => new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(account.Address), _keyPairFactory.Create((_exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, _bolWallet.Scrypt.N, _bolWallet.Scrypt.R, _bolWallet.Scrypt.P)))))
+                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(blockchainAddressAccount.Address), blockChainAddressAccountKeyPair),
+                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(socialAddressAccount.Address), socialAddressAccountKeyPair),
+                comm
             );
         }
 
