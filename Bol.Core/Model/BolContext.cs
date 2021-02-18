@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Bol.Address;
 using Bol.Cryptography;
 
-
 namespace Bol.Core.Model
 {
     public class BolContext
@@ -16,18 +15,18 @@ namespace Bol.Core.Model
         public IScriptHash MainAddress { get; private set; }
         public KeyValuePair<IScriptHash, IKeyPair> BlockChainAddress { get; private set; }
         public KeyValuePair<IScriptHash, IKeyPair> SocialAddress { get; private set; }
-        public IEnumerable<KeyValuePair<IScriptHash, IKeyPair>> CommercialAddresses { get; private set; }
+        public IDictionary<IScriptHash, IKeyPair> CommercialAddresses { get; private set; }
 
         public BolContext(
             string contract,
-            string codeName, 
-            string edi, 
-            IKeyPair codeNameKey, 
-            IKeyPair privateKey, 
-            IScriptHash mainAddress, 
-            KeyValuePair<IScriptHash, IKeyPair> blockChainAddress, 
-            KeyValuePair<IScriptHash, IKeyPair> socialAddress, 
-            IEnumerable<KeyValuePair<IScriptHash, IKeyPair>> commercialAddresses)
+            string codeName,
+            string edi,
+            IKeyPair codeNameKey,
+            IKeyPair privateKey,
+            IScriptHash mainAddress,
+            KeyValuePair<IScriptHash, IKeyPair> blockChainAddress,
+            KeyValuePair<IScriptHash, IKeyPair> socialAddress,
+            IDictionary<IScriptHash, IKeyPair> commercialAddresses)
         {
             Contract = contract ?? throw new ArgumentNullException(nameof(contract));
             CodeName = codeName ?? throw new ArgumentNullException(nameof(codeName));
@@ -39,6 +38,5 @@ namespace Bol.Core.Model
             SocialAddress = socialAddress;
             CommercialAddresses = commercialAddresses ?? throw new ArgumentNullException(nameof(commercialAddresses));
         }
-    
-    }   
+    }
 }
