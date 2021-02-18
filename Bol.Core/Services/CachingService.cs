@@ -5,16 +5,20 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Bol.Core.Services
 {
-    public class KeyPairCachingService : IIKeyPairCachingService
-    {
-        private MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());        
-
-        public IKeyPair GetOrCreate(object key, Func<IKeyPair> createItem)
+    public class CachingService : ICachingService
+    {   
+        private readonly IMemoryCache _memoryCache;
+        public CachingService(IMemoryCache memoryCache)
         {
-            if (!_cache.TryGetValue(key, out IKeyPair cacheEntry))
+            _memoryCache = memoryCache;
+        }
+
+        public T GetOrCreate<T>(object key, Func<T> createItem)
+        {
+            if (!_memoryCache.TryGetValue(key, out T cacheEntry))
             {
                 cacheEntry = createItem();
-                _cache.Set(key, cacheEntry);
+                _memoryCache.Set(key, cacheEntry);
             }
             return cacheEntry;
         }

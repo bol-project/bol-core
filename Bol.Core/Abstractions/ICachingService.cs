@@ -5,8 +5,8 @@ using Bol.Cryptography;
 
 namespace Bol.Core.Abstractions
 {
-    public interface IIKeyPairCachingService
+    public interface ICachingService
     {
-        IKeyPair GetOrCreate(object key, Func<IKeyPair> createItem);
+        T GetOrCreate<T>(object key, Func<T> createItem);
     }
 }

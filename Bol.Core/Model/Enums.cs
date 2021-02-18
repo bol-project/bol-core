@@ -6,9 +6,6 @@ namespace Bol.Core.Model
 {
     public enum CacheKeyNames
     {
-        CodeNameAccountKey,
-        PrivateAccountKey,
-        BlockChainAddressAccountKey,
-        SocialAddressAccountKey
+        BolContext
     }
 }
