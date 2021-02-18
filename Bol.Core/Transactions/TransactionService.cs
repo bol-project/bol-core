@@ -68,9 +68,9 @@ namespace Bol.Core.Transactions
             return _transactionNotarizer.Notarize(transaction, witness, keys);
         }
 
-        public Task<BolAccount> Test(BolTransaction transaction, CancellationToken token = default)
+        public Task<T> Test<T>(BolTransaction transaction, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            return _rpc.TestRawTransaction<T>(transaction, token);
         }
 
         private BolTransaction CreateBolTransaction(ISignatureScript executionScript, IScriptHash address, string description = null, IEnumerable<string> remarks = null)
