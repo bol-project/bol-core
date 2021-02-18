@@ -36,6 +36,7 @@ namespace Bol.Api.BackgroundServices
                 //Base constructor of neo plugin automatically registers itself
                 new LogPlugin(_logger);
                 new GetAccountPlugin(bolService, json);
+                new TestRawTransactionPlugin(json);
 
                 var mainService = new MainService();
                 _mainService = mainService;
