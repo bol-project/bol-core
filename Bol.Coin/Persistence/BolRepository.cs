@@ -25,12 +25,12 @@ namespace Bol.Coin.Persistence
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
-            BolStorage.Put(account.MainAddress, bytes);
+            BolStorage.Put(account.CodeName, bytes);
         }
 
-        public static BolAccount Get(byte[] address)
+        public static BolAccount Get(byte[] codeName)
         {
-            var bytes = BolStorage.Get(address);
+            var bytes = BolStorage.Get(codeName);
             if (bytes == null) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
