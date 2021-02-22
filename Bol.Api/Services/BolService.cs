@@ -30,7 +30,7 @@ namespace Bol.Api.Services
         BolResponse Name();
         BolResponse BalanceOf();
         BolResponse TotalSupply();
-        BolResult<BolAccount> GetAccount(UInt160 mainAddress);
+        BolResult<BolAccount> GetAccount(string codeName);
     }
 
     public class BolService : IBolService
@@ -96,11 +96,12 @@ namespace Bol.Api.Services
             return result;
         }
 
-        public BolResult<BolAccount> GetAccount(UInt160 mainAddress)
+        public BolResult<BolAccount> GetAccount(string codeName)
         {
             var parameters = new[]
             {
-                mainAddress.ToArray()
+                  Encoding.ASCII.GetBytes(codeName),
+               // mainAddress.ToArray()
             };
 
             var result = TestBolContract<BolAccount>("getAccount", null, "", new[] { "" }, parameters: parameters);
@@ -114,7 +115,8 @@ namespace Bol.Api.Services
 
             var parameters = new[]
             {
-                context.MainAddress.GetBytes()
+                  Encoding.ASCII.GetBytes(context.CodeName),
+                //context.MainAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey }
                 .Select(key => new KeyPair(key.PrivateKey))
@@ -132,13 +134,14 @@ namespace Bol.Api.Services
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
-                context.MainAddress.GetBytes()
+              //  context.MainAddress.GetBytes()
+               Encoding.ASCII.GetBytes(context.CodeName),
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey }
                 .Select(key => new KeyPair(key.PrivateKey))
                 .ToArray();
 
-            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys: keys);
+            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys: keys,numberOfSignatures: keys.Count() / 2 + 1);
 
             if (!result.Success)
             {
