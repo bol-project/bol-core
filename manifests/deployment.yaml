@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: bol-__CI_BUILD_REF_SLUG__
   namespace: __CI_ENV_SLUG__
@@ -11,6 +11,7 @@ spec:
   selector:
     matchLabels:
       app: bol-__CI_BUILD_REF_SLUG__
+  serviceName: bol-__CI_BUILD_REF_SLUG__
   template:
     metadata:
       labels:
@@ -28,6 +29,9 @@ spec:
         - containerPort: 10332
         - containerPort: 10333
         - containerPort: 10334
+        volumeMounts:
+        - name: blockchain
+          mountPath: /blockchain
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
@@ -45,3 +49,12 @@ spec:
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: blockchain
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn"
+      resources:
+        requests:
+          storage: 10Gi
