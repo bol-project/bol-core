@@ -809,6 +809,7 @@ namespace Bol.Coin.Services
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
+                    BolRepository.SetPopulationAtBlock(i, Pop);
 
 
                     cpp += intervalDistribute;
