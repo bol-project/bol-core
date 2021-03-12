@@ -23,6 +23,7 @@ namespace Bol.Coin.Persistence
         public const byte CLAIM_INTERVAL= 0xB3;
         public const byte TOTAL_DISTRIBUTE = 0xB4;
         public const byte BPSYEAR = 0xB5;
+        public const byte NEW_BOL = 0xB6;
 
         public static void Save(BolAccount account)
         {
@@ -256,6 +257,18 @@ namespace Bol.Coin.Persistence
             return BolStorage.GetAsBigInteger(key);
         }
 
+        public static void SetNewBolAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = NewBolAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetNewBolAtBlock(BigInteger blockHeight)
+        {
+            var key = NewBolAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -330,5 +343,11 @@ namespace Bol.Coin.Persistence
         {
             return new byte[] { TOTAL_DISTRIBUTE }.Concat(blockHeight.AsByteArray());
         }
+
+        internal static byte[] NewBolAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { NEW_BOL }.Concat(blockHeight.AsByteArray());
+        }
+        
     }
 }
