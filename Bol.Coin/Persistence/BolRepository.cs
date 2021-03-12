@@ -22,6 +22,7 @@ namespace Bol.Coin.Persistence
         public const byte YEARSTAMP = 0xB2;
         public const byte CLAIM_INTERVAL= 0xB3;
         public const byte TOTAL_DISTRIBUTE = 0xB4;
+        public const byte BPSYEAR = 0xB5;
 
         public static void Save(BolAccount account)
         {
@@ -179,6 +180,19 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, certifiers.Serialize());
         }
 
+        public static void SetBpsYear(Map<uint, BigInteger> bpsYear)
+        {
+            var key = BpsYearKey();
+            BolStorage.Put(key, bpsYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetBpsYear()
+        {
+            var key = BpsYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
         public static void SetDpsYear(Map<uint, BigInteger> dpsYear)
         {
             var key = DpsYearKey();
@@ -285,6 +299,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] CertifiersKey(byte[] countryCode)
         {
             return new byte[] { CERTIFIERS }.Concat(countryCode);
+        }
+
+        internal static byte[] BpsYearKey()
+        {
+            return new byte[] { BPSYEAR };
         }
 
         internal static byte[] DpsYearKey()

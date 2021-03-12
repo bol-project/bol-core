@@ -400,6 +400,7 @@ namespace Bol.Coin.Services
             yearStamp[2029] = 1877558400;
             yearStamp[2030] = 1909094400;
 
+            BolRepository.SetBpsYear(bpsYear);
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
@@ -757,6 +758,7 @@ namespace Bol.Coin.Services
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
 
             Runtime.Notify("debug", 3);
+            var bpsYear = BolRepository.GetBpsYear();
             var dpsYear = BolRepository.GetDpsYear();
             var popYear = BolRepository.GetPopYear();
             var yearStamp = BolRepository.GetYearStamp();
@@ -788,8 +790,8 @@ namespace Bol.Coin.Services
                     uint currentYear = ConvertToYear(EndIntervalStamp);
                     BigInteger timestampThisYear = yearStamp[currentYear];
                     BigInteger timestampNextYear = yearStamp[currentYear + 1];
-                    //BigInteger ThisYearBps = bpsYear[currentYear];
-                    //BigInteger NextYearBps = bpsYear[currentYear + 1];
+                    BigInteger ThisYearBps = bpsYear[currentYear];
+                    BigInteger NextYearBps = bpsYear[currentYear + 1];
                     BigInteger ThisYearDps = dpsYear[currentYear];
                     BigInteger NextYearDps = dpsYear[currentYear + 1];
                     BigInteger ThisYearPop = popYear[currentYear];
@@ -798,6 +800,7 @@ namespace Bol.Coin.Services
                     var SecInYear = timestampNextYear - timestampThisYear;
                     var diffYear = EndIntervalStamp - timestampThisYear;
 
+                    BigInteger Bps = ThisYearBps + (NextYearBps - ThisYearBps) * diffYear / SecInYear;
                     BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
                     BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
                     BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
