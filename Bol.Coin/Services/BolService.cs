@@ -348,6 +348,19 @@ namespace Bol.Coin.Services
             BolRepository.SetBols(0);
             BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
 
+            var bpsYear = new Map<uint, BigInteger>();
+            bpsYear[2020] = 443858774;
+            bpsYear[2021] = 443369755;
+            bpsYear[2022] = 442863080;
+            bpsYear[2023] = 441180088;
+            bpsYear[2024] = 441989231;
+            bpsYear[2025] = 441699642;
+            bpsYear[2026] = 441537345;
+            bpsYear[2027] = 440279783;
+            bpsYear[2028] = 441528472;
+            bpsYear[2029] = 441660296;
+            bpsYear[2030] = 441873887;
+
             var dpsYear = new Map<uint, BigInteger>();
             dpsYear[2020] = 187819619;
             dpsYear[2021] = 190637490;
@@ -734,7 +747,7 @@ namespace Bol.Coin.Services
             Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
-            if(currentHeight <= claimInterval)
+            if (currentHeight <= claimInterval)
             {
                 Runtime.Notify("error", BolResult.Forbidden("No claim before first interval."));
                 return false;
@@ -750,36 +763,53 @@ namespace Bol.Coin.Services
 
             Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
+            BigInteger intervalDistribute = 0;
             for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
-                intervalTotal = BolRepository.GetRegisteredAtBlock(i);
-                uint pointer = i;
-                while (intervalTotal == 0 && pointer > 0)
+                intervalDistribute = BolRepository.GetDistributeAtBlock(i);
+                if(intervalDistribute > 0)
                 {
-                    pointer -= claimInterval;
-                    intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
+                    cpp += intervalDistribute;
                 }
+                else
+                {
+                    intervalTotal = BolRepository.GetRegisteredAtBlock(i);
+                    uint pointer = i;
+                    while (intervalTotal == 0 && pointer > 0)
+                    {
+                        pointer -= claimInterval;
+                        intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
+                    }
 
-                var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
-                var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
-                var intervalTime = EndIntervalStamp - StartIntervalStamp;
+                    var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
+                    var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
+                    var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
-                uint currentYear = ConvertToYear(EndIntervalStamp);
-                BigInteger timestampThisYear = yearStamp[currentYear];
-                BigInteger timestampNextYear = yearStamp[currentYear + 1];
-                BigInteger ThisYearDps = dpsYear[currentYear];
-                BigInteger NextYearDps = dpsYear[currentYear + 1];
-                BigInteger ThisYearPop = popYear[currentYear];
-                BigInteger NextYearPop = popYear[currentYear + 1];
+                    uint currentYear = ConvertToYear(EndIntervalStamp);
+                    BigInteger timestampThisYear = yearStamp[currentYear];
+                    BigInteger timestampNextYear = yearStamp[currentYear + 1];
+                    //BigInteger ThisYearBps = bpsYear[currentYear];
+                    //BigInteger NextYearBps = bpsYear[currentYear + 1];
+                    BigInteger ThisYearDps = dpsYear[currentYear];
+                    BigInteger NextYearDps = dpsYear[currentYear + 1];
+                    BigInteger ThisYearPop = popYear[currentYear];
+                    BigInteger NextYearPop = popYear[currentYear + 1];
 
-                var SecInYear = timestampNextYear - timestampThisYear;
-                var diffYear = EndIntervalStamp - timestampThisYear;
+                    var SecInYear = timestampNextYear - timestampThisYear;
+                    var diffYear = EndIntervalStamp - timestampThisYear;
 
-                BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
-                BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
-                BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
+                    BigInteger Dps = ThisYearDps + (NextYearDps - ThisYearDps) * diffYear / SecInYear;
+                    BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
+                    BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
 
-                cpp += intervalTime * DpsNC / intervalTotal;
+                    intervalDistribute = intervalTime * DpsNC / intervalTotal;
+                    BolRepository.SetDistributeAtBlock(i, intervalDistribute);
+
+                    //
+
+
+                    cpp += intervalDistribute;
+                }                    
             }
 
             Runtime.Notify("debug", 5);
