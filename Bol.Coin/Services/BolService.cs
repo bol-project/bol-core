@@ -807,7 +807,7 @@ namespace Bol.Coin.Services
 
                     intervalDistribute = intervalTime * DpsNC / intervalTotal;
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
-                    BolRepository.SetRegisteredAtBlock(i,intervalTotal );
+                    BolRepository.SetRegisteredAtBlock(i, intervalTotal);
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
