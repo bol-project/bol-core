@@ -423,7 +423,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static BigInteger TotalSupply()
+        public static BigInteger CirculatingSupply()
         {
             return BolRepository.GetBols();
         }
@@ -810,7 +810,8 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-
+                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
 
                     cpp += intervalDistribute;
                 }                    
@@ -824,8 +825,8 @@ namespace Bol.Coin.Services
             BolRepository.Save(bolAccount);
 
             Runtime.Notify("debug", 6);
-            var totalSupply = BolRepository.GetBols() + cpp;
-            BolRepository.SetBols(totalSupply);
+            var circulatingSupply = BolRepository.GetBols() + cpp;
+            BolRepository.SetBols(circulatingSupply);
 
             Runtime.Notify("debug", 7);
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();

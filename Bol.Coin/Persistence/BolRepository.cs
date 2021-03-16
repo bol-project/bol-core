@@ -25,6 +25,7 @@ namespace Bol.Coin.Persistence
         public const byte BPSYEAR = 0xB5;
         public const byte NEW_BOL = 0xB6;
         public const byte POPULATION = 0xB7;
+        public const byte TOTAL_SUPPLY = 0xB8;
 
         public static void Save(BolAccount account)
         {
@@ -282,6 +283,18 @@ namespace Bol.Coin.Persistence
             return BolStorage.GetAsBigInteger(key);
         }
 
+        public static void SetTotalSupplyAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = TotalSupplyAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetTotalSupplyAtBlock(BigInteger blockHeight)
+        {
+            var key = TotalSupplyAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -365,6 +378,11 @@ namespace Bol.Coin.Persistence
         internal static byte[] PopulationAtBlockKey(BigInteger blockHeight)
         {
             return new byte[] { POPULATION }.Concat(blockHeight.AsByteArray());
+        }
+
+        internal static byte[] TotalSupplyAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { TOTAL_SUPPLY }.Concat(blockHeight.AsByteArray());
         }
     }
 }
