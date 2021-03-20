@@ -9,10 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="bin\Debug\net471\NEO-Emulator.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="LunarParser" Version="1.1.5" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
@@ -21,18 +18,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
     <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" />
+    <ProjectReference Include="..\neo-debugger-tools\NEO-Emulator\NEO-Emulator.csproj" />
+    <ProjectReference Include="..\neo\neo\neo.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="LunarParser">
-      <HintPath>bin\Debug\net471\LunarParser.dll</HintPath>
-    </Reference>
-    <Reference Include="NEO-Emulator">
-      <HintPath>bin\Debug\net471\NEO-Emulator.dll</HintPath>
-    </Reference>
-    <Reference Include="Neo.Lux">
-      <HintPath>bin\Debug\net471\Neo.Lux.dll</HintPath>
-    </Reference>
+    <Folder Include="bin\Debug\net471\" />
   </ItemGroup>
 
 </Project>
