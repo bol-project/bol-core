@@ -134,8 +134,7 @@ namespace Bol.Api.Services
             var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
             var parameters = new[]
             {
-              //  context.MainAddress.GetBytes()
-               Encoding.ASCII.GetBytes(context.CodeName),
+              context.MainAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey }
                 .Select(key => new KeyPair(key.PrivateKey))

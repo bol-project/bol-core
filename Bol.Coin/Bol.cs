@@ -41,9 +41,9 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var codeName = (byte[])args[0];
+                    var account = (byte[])args[0];
 
-                    return BolService.GetBalance(codeName);
+                    return BolService.GetBalance(account);
                 }
                 if (operation == "decimals") return BolService.Decimals();
                 if (operation == "register")

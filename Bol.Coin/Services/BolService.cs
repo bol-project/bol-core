@@ -460,18 +460,12 @@ namespace Bol.Coin.Services
             return BolResult.Ok();
         }
 
-        public static BigInteger GetBalance(byte[] codeName)
+        public static BigInteger GetBalance(byte[] address)
         {
-            //if (BolValidator.AddressEmpty(address)) return new BigInteger(0);
-            //if (BolValidator.AddressBadLength(address)) return new BigInteger(0);
+            if (BolValidator.AddressEmpty(address)) return new BigInteger(0);
+            if (BolValidator.AddressBadLength(address)) return new BigInteger(0);
 
-            if (BolValidator.CodeNameEmpty(codeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
-                new BigInteger(0);
-            }
-
-            var account = BolRepository.Get(codeName);
+            var account = BolRepository.Get(address);
             if (account.MainAddress == null) return new BigInteger(0);
 
             return account.ClaimBalance;
