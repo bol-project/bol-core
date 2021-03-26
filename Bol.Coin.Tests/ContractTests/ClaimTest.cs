@@ -12,10 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Neo.VM;
 using System.IO;
-using Neo.Debugger.Core.Utils;
-using Neo.Debugger.Core.Models;
 using Neo.IO.Json;
 using Bol.Coin.Tests.Helper;
+
 
 namespace Bol.Coin.Tests.ContractTests
 {
@@ -38,7 +37,7 @@ namespace Bol.Coin.Tests.ContractTests
 
 
         [Test]
-        public void TestBalanceOf()
+        public void TestClaim()
         {
             //Register
             var hasher = new Sha256Hasher();
@@ -78,6 +77,7 @@ namespace Bol.Coin.Tests.ContractTests
             };
             var loaderScript = emulator.GenerateLoaderScriptFromInputs(input, null);
             emulator.checkWitnessMode = CheckWitnessMode.AlwaysTrue;
+            emulator.blockchain.AddMockBlocks(5);
             emulator.Reset(loaderScript, null, "register");
 
             emulator.Run();
@@ -93,6 +93,7 @@ namespace Bol.Coin.Tests.ContractTests
             Assert.IsTrue(notifyOutputObject.AsString().Equals("register"));
 
             //claimOfTest
+           
             var input2 = debugParam.CreateDebugParam(
                  "claim",
                  new object[]
@@ -102,7 +103,9 @@ namespace Bol.Coin.Tests.ContractTests
 
             var loaderScript2 = emulator.GenerateLoaderScriptFromInputs(input2, null);
             emulator.checkWitnessMode = CheckWitnessMode.AlwaysTrue;
+            emulator.blockchain.AddMockBlocks(5);
             emulator.Reset(loaderScript2, null, "claim");
+            notifyOutput = "";
 
             emulator.Run();
 
@@ -112,6 +115,14 @@ namespace Bol.Coin.Tests.ContractTests
 
             var claim = result2.GetBoolean();
             Assert.IsTrue(claim.Equals(true));
+
+            Assert.IsTrue(JObject.Parse(notifyOutput.ToString()).AsString().Equals("claim"));
+
+            var notifyResult = notifyOutput.Replace("[","").Replace("]", "").Replace("{", "").Replace("}", "").ToString().Split('/')[1].ToString().Split(',');
+            var  ClaimBalance= notifyResult[10];
+            var  TotalBalance= notifyResult[11];
+
+
         }
     }
 }
