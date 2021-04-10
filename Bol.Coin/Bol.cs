@@ -136,9 +136,9 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var mainAddress = (byte[])args[0];
+                    var codeName = (byte[])args[0];
                     var commercialAddress = (byte[])args[1];
-                    return BolService.AddCommercialAddress(mainAddress, commercialAddress);
+                    return BolService.AddCommercialAddress(codeName, commercialAddress);
                 }
                 if (operation == "getCertifiers")
                 {

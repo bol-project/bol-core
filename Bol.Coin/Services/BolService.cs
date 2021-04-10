@@ -243,10 +243,16 @@ namespace Bol.Coin.Services
 
         public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
+            var account = BolRepository.Get(codeName);
 
             if (BolValidator.CodeNameEmpty(codeName))
             {
                 Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
+                return false;
+            }
+            if (BolValidator.AddressNotOwner(account.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
             //if (BolValidator.AddressEmpty(mainAddress))
@@ -302,6 +308,13 @@ namespace Bol.Coin.Services
             }
 
             var account = BolRepository.Get(codeName);
+
+            if (BolValidator.AddressNotOwner(account.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+                return false;
+            }
+
             if (account.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
@@ -726,6 +739,12 @@ namespace Bol.Coin.Services
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
+                return false;
+            }
+
+            if (BolValidator.AddressNotOwner(bolAccount.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
             if (bolAccount.AccountType != Constants.B_ACCOUNT_TYPE)
