@@ -18,7 +18,8 @@ namespace Neo.SmartContract
             else if (Runtime.Trigger == TriggerType.Application)
             {
                 if (operation == "deploy") return BolService.Deploy();
-                if (operation == "totalSupply") return BolService.TotalSupply();
+                if (operation == "totalSupply") return BolService.CirculatingSupply();
+                if (operation == "circulatingSupply") return BolService.CirculatingSupply();
                 if (operation == "name") return BolService.Name();
                 if (operation == "symbol") return BolService.Symbol();
                 if (operation == "transfer")
