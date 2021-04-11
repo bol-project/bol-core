@@ -70,10 +70,10 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var address = (byte[])args[0];
+                    var codeName = (byte[])args[0];
                     var countries = (byte[])args[1];
 
-                    return BolService.RegisterAsCertifier(address, countries);
+                    return BolService.RegisterAsCertifier(codeName, countries);
                 }
                 if (operation == "unregisterCertifier")
                 {
@@ -82,9 +82,9 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var address = (byte[])args[0];
+                    var codeName = (byte[])args[0];
 
-                    return BolService.UnregisterAsCertifier(address);
+                    return BolService.UnregisterAsCertifier(codeName);
                 }
                 if (operation == "certify")
                 {
