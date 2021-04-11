@@ -322,7 +322,7 @@ namespace Bol.Coin.Services
             }
 
             account.CommercialAddresses[commercialAddress] = 0;
-            BolRepository.SetBols(commercialAddress, 0);
+            BolRepository.SetBols("CommercialAddress",commercialAddress, 0);
 
             BolRepository.Save("accounts",account);
 
