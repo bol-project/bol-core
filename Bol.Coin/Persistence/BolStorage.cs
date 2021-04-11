@@ -16,6 +16,11 @@ namespace Bol.Coin.Persistence
         {
             return Storage.Get(Storage.CurrentContext, key);
         }
+        public static byte[] Get(string storageMap, byte[] key)
+        {
+            var Map = Storage.CurrentContext.CreateMap(storageMap);
+            return Map.Get(key);
+        }
 
         public static BigInteger GetAsBigInteger(byte[] key)
         {
@@ -41,7 +46,11 @@ namespace Bol.Coin.Persistence
         {
             Storage.Put(Storage.CurrentContext, key, value);
         }
-
+        public static void Put(string storageMap, byte[] key, byte[] value)
+        {
+            var Map = Storage.CurrentContext.CreateMap(storageMap);
+            Map.Put(key,value);          
+        }
         public static bool KeyExists(byte[] key)
         {
             var value = Storage.Get(Storage.CurrentContext, key);

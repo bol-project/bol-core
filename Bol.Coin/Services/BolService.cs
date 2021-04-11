@@ -58,7 +58,7 @@ namespace Bol.Coin.Services
 
             SetMandatoryCertifier(codeName);
 
-            var result = BolRepository.Get(codeName);
+            var result = BolRepository.Get("accounts",codeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
 
@@ -113,7 +113,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var account = BolRepository.Get(codeName);
+            var account = BolRepository.Get("accounts",codeName);
             if (account.MainAddress != null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("A Bol Account already exists for this address."));
@@ -163,7 +163,7 @@ namespace Bol.Coin.Services
             account.MandatoryCertifier = new byte[0];
             account.Countries = new byte[0];
 
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
@@ -173,7 +173,7 @@ namespace Bol.Coin.Services
             uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
-            var result = BolRepository.Get(account.CodeName);
+            var result = BolRepository.Get("accounts", account.CodeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
             return true;
@@ -181,7 +181,7 @@ namespace Bol.Coin.Services
 
         private static bool SetMandatoryCertifier(byte[] codeName)
         {
-            var account = BolRepository.Get(codeName);
+            var account = BolRepository.Get("accounts",codeName);
             var country = account.CodeName.Range(4, 6);
 
             var countryCertifiers = BolRepository.GetCertifiers(country);
@@ -205,7 +205,7 @@ namespace Bol.Coin.Services
 
             var selectedIndex = Blockchain.GetHeight() % availableCertifiers.Length;
             account.MandatoryCertifier = availableCertifiers[selectedIndex];
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
             return true;
         }
@@ -229,7 +229,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var account = BolRepository.Get(codeName);
+            var account = BolRepository.Get("accounts",codeName);
             if (account.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.NotFound("Main Address is not a registerd Bol Account."));
@@ -243,7 +243,7 @@ namespace Bol.Coin.Services
 
         public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
-            var account = BolRepository.Get(codeName);
+            var account = BolRepository.Get("accounts",codeName);
 
             if (BolValidator.CodeNameEmpty(codeName))
             {
@@ -306,8 +306,8 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Unauthorized("Commercial Address has already been registered."));
                 return false;
             }
-
-            var account = BolRepository.Get(codeName);
+            
+            var account = BolRepository.Get("accounts",codeName);
 
             if (BolValidator.AddressNotOwner(account.MainAddress))
             {
@@ -324,9 +324,9 @@ namespace Bol.Coin.Services
             account.CommercialAddresses[commercialAddress] = 0;
             BolRepository.SetBols(commercialAddress, 0);
 
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
-            var result = BolRepository.Get(account.CodeName);
+            var result = BolRepository.Get("accounts",account.CodeName);
 
             Runtime.Notify("addCommercialAddress", BolResult.Ok(result));
             return true;
@@ -510,7 +510,7 @@ namespace Bol.Coin.Services
             //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
             //    return false;
             //}
-            var bolAccount = BolRepository.Get(codeName);
+            var bolAccount = BolRepository.Get("accounts", codeName);
 
             if (BolValidator.CodeNameEmpty(codeName))
             {
@@ -541,7 +541,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var bolAccount = BolRepository.Get(codeName);
+            var bolAccount = BolRepository.Get("accounts",codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -573,7 +573,7 @@ namespace Bol.Coin.Services
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts",bolAccount);
 
             Runtime.Notify("registerAsCertifier", BolResult.Ok());
 
@@ -585,7 +585,7 @@ namespace Bol.Coin.Services
             //if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
             //if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
             //if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
-            var bolAccount = BolRepository.Get(codeName);
+            var bolAccount = BolRepository.Get("accounts", codeName);
 
             if (BolValidator.CodeNameEmpty(codeName)) return BolResult.BadRequest("CodeName cannot be empty."); 
             if (bolAccount.MainAddress == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
@@ -598,7 +598,7 @@ namespace Bol.Coin.Services
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts", bolAccount);
 
             return BolResult.Ok();
         }
@@ -766,7 +766,7 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            var bolAccount = BolRepository.Get(codeName);
+            var bolAccount = BolRepository.Get("accounts",codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -882,7 +882,7 @@ namespace Bol.Coin.Services
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts",bolAccount);
 
             Runtime.Notify("debug", 6);
             var circulatingSupply = BolRepository.GetBols() + cpp;
@@ -895,7 +895,7 @@ namespace Bol.Coin.Services
             Runtime.Notify("debug", 8);
             Transferred(null, bolAccount.MainAddress , cpp);
 
-            var result = BolRepository.Get(bolAccount.CodeName);
+            var result = BolRepository.Get("accounts",bolAccount.CodeName);
 
             Runtime.Notify("claim", BolResult.Ok(result));
 

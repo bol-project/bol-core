@@ -32,10 +32,36 @@ namespace Bol.Coin.Persistence
             var bytes = account.Serialize();
             BolStorage.Put(account.CodeName, bytes);
         }
+        // Save map storage
+        public static void Save(string storageMap, BolAccount account)
+        {
+            var bytes = account.Serialize();
+            BolStorage.Put(storageMap, account.CodeName, bytes);
+        }
 
         public static BolAccount Get(byte[] codeName)
         {
             var bytes = BolStorage.Get(codeName);
+            if (bytes == null) return new BolAccount();
+
+            var account = (BolAccount)bytes.Deserialize();
+
+            account.TotalBalance = 0;
+            var addresses = account.CommercialAddresses.Keys;
+            foreach (var commAddress in addresses)
+            {
+                var bols = GetBols(commAddress);
+                account.CommercialAddresses[commAddress] = bols;
+                account.TotalBalance += bols;
+            }
+            account.TotalBalance += account.ClaimBalance;
+
+            return account;
+        }
+        // Get map storage
+        public static BolAccount Get(string storageMap, byte[] codeName)
+        {
+            var bytes = BolStorage.Get(storageMap,codeName);
             if (bytes == null) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
