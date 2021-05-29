@@ -17,6 +17,16 @@ namespace Bol.Coin.Persistence
 
         public const byte DEPLOY = 0xFF;
 
+        public const byte DPSYEAR = 0xB0;
+        public const byte POPYEAR = 0xB1;
+        public const byte YEARSTAMP = 0xB2;
+        public const byte CLAIM_INTERVAL= 0xB3;
+        public const byte TOTAL_DISTRIBUTE = 0xB4;
+        public const byte BPSYEAR = 0xB5;
+        public const byte NEW_BOL = 0xB6;
+        public const byte POPULATION = 0xB7;
+        public const byte TOTAL_SUPPLY = 0xB8;
+
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
@@ -173,6 +183,118 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, certifiers.Serialize());
         }
 
+        public static void SetBpsYear(Map<uint, BigInteger> bpsYear)
+        {
+            var key = BpsYearKey();
+            BolStorage.Put(key, bpsYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetBpsYear()
+        {
+            var key = BpsYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetDpsYear(Map<uint, BigInteger> dpsYear)
+        {
+            var key = DpsYearKey();
+            BolStorage.Put(key, dpsYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetDpsYear()
+        {
+            var key = DpsYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetPopYear(Map<uint, BigInteger> popYear)
+        {
+            var key = PopYearKey();
+            BolStorage.Put(key, popYear.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetPopYear()
+        {
+            var key = PopYearKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetYearStamp(Map<uint, BigInteger> yearStamp)
+        {
+            var key = YearStampKey();
+            BolStorage.Put(key, yearStamp.Serialize());
+        }
+
+        public static Map<uint, BigInteger> GetYearStamp()
+        {
+            var key = YearStampKey();
+            var result = BolStorage.Get(key);
+            return (Map<uint, BigInteger>)result.Deserialize();
+        }
+
+        public static void SetClaimInterval(BigInteger interval)
+        {
+            var key = ClaimIntervalKey();
+            BolStorage.Put(key, interval);
+        }
+
+        public static BigInteger GetClaimInterval()
+        {
+            var key = ClaimIntervalKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetDistributeAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = TotalDistributeAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetDistributeAtBlock(BigInteger blockHeight)
+        {
+            var key = TotalDistributeAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetNewBolAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = NewBolAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetNewBolAtBlock(BigInteger blockHeight)
+        {
+            var key = NewBolAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetPopulationAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = PopulationAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetPopulationAtBlock(BigInteger blockHeight)
+        {
+            var key = PopulationAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetTotalSupplyAtBlock(BigInteger blockHeight, BigInteger total)
+        {
+            var key = TotalSupplyAtBlockKey(blockHeight);
+            BolStorage.Put(key, total);
+        }
+
+        public static BigInteger GetTotalSupplyAtBlock(BigInteger blockHeight)
+        {
+            var key = TotalSupplyAtBlockKey(blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -216,6 +338,51 @@ namespace Bol.Coin.Persistence
         internal static byte[] CertifiersKey(byte[] countryCode)
         {
             return new byte[] { CERTIFIERS }.Concat(countryCode);
+        }
+
+        internal static byte[] BpsYearKey()
+        {
+            return new byte[] { BPSYEAR };
+        }
+
+        internal static byte[] DpsYearKey()
+        {
+            return new byte[] { DPSYEAR };
+        }
+
+        internal static byte[] PopYearKey()
+        {
+            return new byte[] { POPYEAR };
+        }
+
+        internal static byte[] YearStampKey()
+        {
+            return new byte[] { YEARSTAMP };
+        }
+
+        internal static byte[] ClaimIntervalKey()
+        {
+            return new byte[] { CLAIM_INTERVAL };
+        }
+
+        internal static byte[] TotalDistributeAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { TOTAL_DISTRIBUTE }.Concat(blockHeight.AsByteArray());
+        }
+
+        internal static byte[] NewBolAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { NEW_BOL }.Concat(blockHeight.AsByteArray());
+        }
+
+        internal static byte[] PopulationAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { POPULATION }.Concat(blockHeight.AsByteArray());
+        }
+
+        internal static byte[] TotalSupplyAtBlockKey(BigInteger blockHeight)
+        {
+            return new byte[] { TOTAL_SUPPLY }.Concat(blockHeight.AsByteArray());
         }
     }
 }

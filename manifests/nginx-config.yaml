@@ -4,10 +4,10 @@ metadata:
   name: tcp-services
   namespace: nginx
 data:
-  8101: "bol-demo/bol-validator-1:11456"
-  8102: "bol-demo/bol-validator-2:11456"
-  8103: "bol-demo/bol-validator-3:11456"
-  8104: "bol-demo/bol-validator-4:11456"
+  8101: "bol-demo/bol-validator-1:10333"
+  8102: "bol-demo/bol-validator-2:10333"
+  8103: "bol-demo/bol-validator-3:10333"
+  8104: "bol-demo/bol-validator-4:10333"
 #   8105: "bol-demo/bol-validator-5:11456"
 #   8106: "bol-demo/bol-validator-6:11456"
 #   8107: "bol-demo/bol-validator-7:11456"

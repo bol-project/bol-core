@@ -2,22 +2,19 @@ version: '3.4'
 
 services:
 
-  # bol-validator-1:
-    # image: bol-validator-1
-    # environment:
-      # ASPNETCORE_ENVIRONMENT : Development
-    # build:
-      # context: .
-      # dockerfile: Bol.Api/Validator.Dockerfile
-      # args:
-        # validator_wallet : validator-1.json
-    # extra_hosts:
-      # - "bol-validator-1:host.docker.internal"      
-    # ports:
-      # - "11456:11456"
-      # - "5000:5000"
-    # networks:
-        # - bol-network
+  bol-validator-1:
+    image: bol-validator-1
+    environment:
+      ASPNETCORE_ENVIRONMENT : Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Validator.Dockerfile
+      args:
+        validator_wallet : validator-1.json
+    ports:
+      - "11333:10333"
+    networks:
+        - bol-network
 
   bol-validator-2:
     image: bol-validator-2
@@ -27,11 +24,9 @@ services:
       context: .
       dockerfile: Bol.Api/Validator.Dockerfile
       args:
-        validator_wallet : validator-2.json
-    extra_hosts:
-      - "bol-validator-1:${MACHINE_IP}"        
+        validator_wallet : validator-2.json    
     ports:
-      - "11457:11456"   
+      - "12333:10333"   
     networks:
         - bol-network
 
@@ -43,11 +38,9 @@ services:
       context: .
       dockerfile: Bol.Api/Validator.Dockerfile
       args:
-        validator_wallet : validator-3.json
-    extra_hosts:
-      - "bol-validator-1:${MACHINE_IP}"           
+        validator_wallet : validator-3.json      
     ports:
-      - "11458:11456"
+      - "13333:10333"
     networks:
         - bol-network
 
@@ -60,10 +53,8 @@ services:
       dockerfile: Bol.Api/Validator.Dockerfile
       args:
         validator_wallet : validator-4.json
-    extra_hosts:
-      - "bol-validator-1:${MACHINE_IP}"      
     ports:
-      - "11459:11456"     
+      - "14333:10333"     
     networks:
         - bol-network
 
@@ -74,10 +65,9 @@ services:
     build:
       context: .
       dockerfile: Bol.Api/Dockerfile
-    extra_hosts:
-      - "bol-validator-1:${MACHINE_IP}"    
     ports:
-      - "5000:80"
+      - "8000:80"
+      - "10332:10332"
     networks:
         - bol-network
                 

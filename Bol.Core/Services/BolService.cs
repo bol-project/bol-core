@@ -14,10 +14,18 @@ namespace Bol.Core.Services
 {
     public class BolService : IBolService
     {
-        private IContextAccessor _contextAccessor;
-        private ITransactionService _transactionService;
-        private ISignatureScriptFactory _signatureScriptFactory;
-        private IBase16Encoder _hex;
+        private readonly IContextAccessor _contextAccessor;
+        private readonly ITransactionService _transactionService;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IBase16Encoder _hex;
+
+        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex)
+        {
+            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+            _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
+            _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
+            _hex = hex ?? throw new ArgumentNullException(nameof(hex));
+        }
 
         public Task Register(CancellationToken token = default)
         {
@@ -87,13 +95,12 @@ namespace Bol.Core.Services
             {
                 address.GetBytes(),
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
             var mainAddress = CreateMainAddress(context);
 
             var transaction = _transactionService.Create(mainAddress, context.Contract, "getAccount", parameters);
 
-            var result = await _transactionService.Test(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
 
             return result;
         }

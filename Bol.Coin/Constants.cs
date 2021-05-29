@@ -18,8 +18,6 @@ namespace Bol.Coin
         public static readonly BigInteger C_ADDRESS_START = new BigInteger("0x00E75400".HexToBytes());
         public static readonly BigInteger C_ADDRESS_END = new BigInteger("0x00165500".HexToBytes());
 
-        public static readonly BigInteger DPS = 184200000;
-
         public const byte ACCOUNT_STATUS_OPEN = 0x01;
         public const byte ACCOUNT_STATUS_PENDING_CERTIFICATIONS = 0x02;
         public const byte ACCOUNT_STATUS_PENDING_FEES = 0x03;

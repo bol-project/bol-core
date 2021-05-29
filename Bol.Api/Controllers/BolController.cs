@@ -11,71 +11,32 @@ using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Neo.Wallets;
 using IBolService = Bol.Api.Services.IBolService;
+using Neo;
+using Bol.Address;
 
 namespace Bol.Api.Controllers
 {
     [Route("api/bol")]
     public class BolController : ControllerBase
     {
-        private IBolService _bolService;
-        private IWalletService _walletService;
+        private readonly IBolService _bolService;
+        private readonly IWalletService _walletService;
+        private readonly IExportKeyFactory _exportKeyFactory;
+        private readonly IJsonSerializer _jsonSerializer;
+        private readonly IKeyPairFactory _keyPairFactory;
 
-        private IExportKeyFactory _exportKeyFactory;
-        private IJsonSerializer _jsonSerializer;
-        private IKeyPairFactory _keyPairFactory;
+        private readonly Bol.Core.Abstractions.IBolService _coreBolService;
+        private readonly IAddressTransformer _addressTransformer;
 
-        public BolController(IBolService bolService, IWalletService walletService, WalletIndexer walletIndexer, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory)
+        public BolController(IBolService bolService, IWalletService walletService, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory, Core.Abstractions.IBolService coreBolService, IAddressTransformer addressTransformer)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
-
-        }
-
-        [HttpPost("create")]
-        public ActionResult Create()
-        {
-            var files = Directory.GetFiles("../validators");
-
-            var keys = files.Select(file =>
-            {
-                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
-
-                var account = bolWallet.accounts.First();
-
-                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
-
-            })
-            .Select(key => new KeyPair(key.PrivateKey))
-            .ToList();
-
-            var result = _bolService.Create(keys);
-
-            return Ok(result);
-        }
-
-        [HttpPost("deploy")]
-        public ActionResult Deploy()
-        {
-            var files = Directory.GetFiles("../validators");
-
-            var keys = files.Select(file =>
-            {
-                var bolWallet = _jsonSerializer.Deserialize<BolWallet>(System.IO.File.ReadAllText(file));
-
-                var account = bolWallet.accounts.First();
-
-                return _keyPairFactory.Create(_exportKeyFactory.GetDecryptedPrivateKey(account.Key, "bol", bolWallet.Scrypt.N, bolWallet.Scrypt.R, bolWallet.Scrypt.P));
-
-            })
-            .Select(key => new KeyPair(key.PrivateKey))
-            .ToList();
-
-            var result = _bolService.Deploy(keys);
-
-            return Ok(result);
+            _coreBolService = coreBolService ?? throw new ArgumentNullException(nameof(coreBolService));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
         [HttpPost("wallet")]
@@ -87,10 +48,12 @@ namespace Bol.Api.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult Register()
+        public async Task<ActionResult> Register(CancellationToken token)
         {
-            var result = _bolService.Register();
-            return Ok(result);
+            //_bolService.Register();
+
+            await _coreBolService.Register(token);
+            return Ok();
         }
 
         [HttpPost("claim")]
@@ -101,9 +64,9 @@ namespace Bol.Api.Controllers
         }
 
         [HttpGet("getAccount")]
-        public ActionResult GetAccount(string address)
+        public async Task<ActionResult> GetAccount(string address, CancellationToken token)
         {
-            var result = _bolService.GetAccount(address.ToScriptHash());
+            var result = await _coreBolService.GetAccount(_addressTransformer.ToScriptHash(address), token);
             return Ok(result);
         }
 

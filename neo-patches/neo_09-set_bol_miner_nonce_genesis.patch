@@ -1,0 +1,13 @@
+diff --git a/neo/Ledger/Blockchain.cs b/neo/Ledger/Blockchain.cs
+index 1dc36fa104235f05adea2702349f66a89b964a20..cdbe92bd88961f18f37a08fbd514e83a9c3eb26d 100644
+--- a/neo/Ledger/Blockchain.cs
++++ b/neo/Ledger/Blockchain.cs
+@@ -81,7 +81,7 @@ namespace Neo.Ledger
+             {
+                 new MinerTransaction
+                 {
+-                    Nonce = 2083236893,
++                    Nonce = 4345676,
+                     Attributes = new TransactionAttribute[0],
+                     Inputs = new CoinReference[0],
+                     Outputs = new TransactionOutput[0],

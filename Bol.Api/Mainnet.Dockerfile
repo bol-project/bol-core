@@ -12,7 +12,6 @@ COPY Bol.Address.Neo/*.csproj ./Bol.Address.Neo/
 COPY Bol.Core.Tests/*.csproj ./Bol.Core.Tests/
 COPY neo/neo/*.csproj ./neo/neo/
 COPY neo-cli/neo-cli/*.csproj ./neo-cli/neo-cli/
-COPY neo-vm/src/neo-vm/*.csproj ./neo-vm/src/neo-vm/
 
 RUN dotnet restore /p:RestoreUseSkipNonexistentTargets="false"
 

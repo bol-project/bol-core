@@ -1,22 +1,23 @@
-using System;
+using System.Net.Http;
 using Akka.Actor;
 using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
-using Bol.Api.Services;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
 using Bol.Core.Dtos;
 using Bol.Core.Helpers;
 using Bol.Core.Mappers;
+using Bol.Core.Model;
 using Bol.Core.Model.Responses;
 using Bol.Core.Model.Wallet;
 using Bol.Core.Rpc;
 using Bol.Core.Rpc.Abstractions;
-using Bol.Core.Rpc.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Bol.Core.Transactions;
+using Bol.Cryptography.Abstractions;
+using Bol.Cryptography.Signers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -24,9 +25,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
-using Neo.Shell;
-using Neo.Wallets;
-using Neo.Wallets.NEP6;
 using Prometheus;
 
 namespace Bol.Api
@@ -35,15 +33,22 @@ namespace Bol.Api
     {
         public Startup(IConfiguration configuration)
         {
-           //Get BolWalletPath
-           var bolWalletPath =  new ConfigurationBuilder().AddJsonFile("config.json").Build().GetSection("ApplicationConfiguration").GetSection("UnlockWallet").GetSection("Path").Value;
+            //Get BolWalletPath
+            var bolWalletPath = new ConfigurationBuilder()
+                 .AddJsonFile("config.json")
+                 .Build()
+                 .GetSection("ApplicationConfiguration")
+                 .GetSection("UnlockWallet")
+                 .GetSection("Path")
+                 .Value;
 
             // Configuration = configuration;
             var configurationBuilder = new ConfigurationBuilder()
+                                       .AddConfiguration(configuration)
                                        .AddJsonFile("protocol.json")
                                        .AddJsonFile(bolWalletPath, true)
                                        .AddJsonFile("config.json")
-                                       .AddEnvironmentVariables();                                              
+                                       .AddEnvironmentVariables();
             Configuration = configurationBuilder.Build();
         }
 
@@ -61,8 +66,17 @@ namespace Bol.Api
             //ProtocolConfiguration
             services.AddOptions();
             services.Configure<Address.Model.Configuration.ProtocolConfiguration>(Configuration.GetSection("ProtocolConfiguration"));
-            services.Configure<RpcInfo>(Configuration.GetSection("ApplicationConfiguration").GetSection("RPC"));
-             services.Configure<BolWallet>(Configuration);
+            services.Configure<BolConfig>(Configuration.GetSection("BolConfig"));
+            services.Configure<WalletConfiguration>(Configuration.GetSection("ApplicationConfiguration").GetSection("UnlockWallet"));
+            services.Configure<BolWallet>(Configuration);
+
+            //BOL Core
+            services.AddScoped<IBolService, BolService>();
+            services.AddScoped<IJsonSerializer, JsonSerializer>();
+            services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<INonceCalculator, NonceCalculator>();
+            services.AddScoped<IContextAccessor, WalletContextAccessor>();
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
@@ -71,7 +85,6 @@ namespace Bol.Api
             services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
             services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
             services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
-          
 
             //BOL Address
             services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();
@@ -85,33 +98,27 @@ namespace Bol.Api
             services.AddScoped<ITransactionSerializer, TransactionSerializer>();
             services.AddScoped<ITransactionSigner, TransactionSigner>();
             services.AddScoped<Core.Transactions.ITransactionService, TransactionService>();
+            services.AddScoped<IECCurveSigner, ECCurveSigner>();
 
+            //RPC
+            services.AddSingleton<HttpClient>();
             services.AddScoped<IRpcClient, RpcClient>();
             services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
 
-            services.AddScoped<IJsonSerializer, JsonSerializer>();
-            services.AddScoped<IContractService, ContractService>();
-            services.AddScoped<Api.Services.IBolService, Api.Services.BolService>();
-            services.AddScoped<IWalletService, WalletService>();
-            services.AddScoped<IAddressService, AddressService>();
-            services.AddScoped<INonceCalculator, NonceCalculator>();
-           // services.AddScoped<ISha256Hasher, Sha256Hasher>();
-            //  services.AddScoped<IBase58Encoder, Base58Encoder>();
-           //  services.AddScoped<IContextAccessor>((sp) => new WalletContextAccessor(Neo.Program.Wallet as NEP6Wallet));
-          services.AddScoped<IContextAccessor, WalletContextAccessor>();
-           services.AddScoped<WalletIndexer>((sp) => NodeBackgroundService.MainService.GetIndexer());
-
-            services.AddScoped<ITransactionPublisher, LocalNodeTransactionPublisher>();
-            services.AddScoped<IActorRef>((sp) => MainService.System.LocalNode);
-            services.AddScoped<IBlockChainService, BlockChainService>();
-            services.AddScoped<Api.Abstractions.ITransactionService, BlockChainService>();
+            //BOL API
+            services.AddScoped<Bol.Api.Services.IContractService, Bol.Api.Services.ContractService>();
+            services.AddScoped<Bol.Api.Services.IBolService, Bol.Api.Services.BolService>();
+            services.AddScoped<ITransactionPublisher, Bol.Api.Services.LocalNodeTransactionPublisher>();
+            services.AddScoped<IActorRef>((sp) => NodeBackgroundService.MainService.system.LocalNode);
+            services.AddScoped<IBlockChainService, Bol.Api.Services.BlockChainService>();
+            services.AddScoped<Api.Abstractions.ITransactionService, Bol.Api.Services.BlockChainService>();
+            services.AddSingleton<ICachingService, CachingService>();
 
             // Mappers
             services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
             services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
             services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
             services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

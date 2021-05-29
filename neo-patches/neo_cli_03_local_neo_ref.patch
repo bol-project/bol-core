@@ -1,0 +1,18 @@
+diff --git a/neo-cli/neo-cli.csproj b/neo-cli/neo-cli.csproj
+index 90d7802b7126de6cf168d60403f0aa34b90c8b03..018998f8cd05ae17f85effb9c478418b8174b2eb 100644
+--- a/neo-cli/neo-cli.csproj
++++ b/neo-cli/neo-cli.csproj
+@@ -28,8 +28,12 @@
+   </ItemGroup>
+ 
+   <ItemGroup>
+-    <PackageReference Include="Neo" Version="2.12.2" />
++<!--    <PackageReference Include="Neo" Version="2.12.2" />-->
+     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
+   </ItemGroup>
+ 
++  <ItemGroup>
++    <ProjectReference Include="..\..\neo\neo\neo.csproj" />
++  </ItemGroup>
++
+ </Project>

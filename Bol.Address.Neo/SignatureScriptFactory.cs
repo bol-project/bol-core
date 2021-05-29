@@ -72,7 +72,8 @@ namespace Bol.Address.Neo
 
             sb.EmitPush(operation);
 
-            sb.EmitAppCall(contract.GetBytes(), false);
+            var contractBytes = contract.GetBytes().Reverse().ToArray();
+            sb.EmitAppCall(contractBytes, false);
 
             return new SignatureScript(sb.ToArray(), _encoder, _sha256, _ripemd160);
         }

@@ -1,17 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net;
 
 namespace Bol.Core.Rpc.Model
 {
-  
     public class RpcException : Exception
     {
-
-        public int errorCode { get; set; }
-        public RpcException(int code, string message) : base(message)
+        public HttpStatusCode StatusCode { get; }
+        public RpcError Error { get; }
+        public RpcException(HttpStatusCode statusCode, RpcError error = null)
+            : base(error?.Message ?? "Unknown RPC Error")
         {
-            this.errorCode = code;
+            StatusCode = statusCode;
+            Error = error;
         }
     }
 }
