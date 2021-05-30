@@ -8,4 +8,4 @@
 	branch = feature/local_refs
 [submodule "neo-debugger-tools"]
 	path = neo-debugger-tools
-	url = https://gitlab.com/bolchain/coz-projects/neo-debugger-tools.git
+	url = ../../coz-projects/neo-debugger-tools.git
