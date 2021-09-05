@@ -1,29 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
-
-    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LunarParser" Version="1.1.5" />
-    <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0-preview-20180610-02" />
+    <PackageReference Include="Moq" Version="4.9.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" />
+    <ProjectReference Include="..\Bol.Core\Bol.Core.csproj" />
     <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" />
     <ProjectReference Include="..\neo-debugger-tools\NEO-Emulator\NEO-Emulator.csproj" />
-    <ProjectReference Include="..\neo\neo\neo.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="bin\Debug\net471\" />
+    <None Update="Bol.Coin.avm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="wallet.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
