@@ -741,9 +741,6 @@ namespace Bol.Coin.Services
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            Runtime.Notify("debug", 1);
-            var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
-
             Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
