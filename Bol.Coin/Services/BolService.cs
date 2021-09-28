@@ -167,8 +167,7 @@ namespace Bol.Coin.Services
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
-
+           
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
             uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
@@ -748,14 +747,14 @@ namespace Bol.Coin.Services
             Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
-            if (currentHeight <= claimInterval)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("No claim before first interval."));
-                return false;
-            }
-
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
+
+            if (startClaimHeight == endClaimHeight) 
+            {
+                Runtime.Notify("error", BolResult.Forbidden("Nothing to claim in the same interval."));
+                return false;
+            }
 
             Runtime.Notify("debug", 3);
             var bpsYear = BolRepository.GetBpsYear();
@@ -811,7 +810,7 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths; // to do (set initial value of Total supply = World pop in Genesis block )
                     BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
 
                     cpp += intervalDistribute;
@@ -828,10 +827,6 @@ namespace Bol.Coin.Services
             Runtime.Notify("debug", 6);
             var circulatingSupply = BolRepository.GetBols() + cpp;
             BolRepository.SetBols(circulatingSupply);
-
-            Runtime.Notify("debug", 7);
-            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
 
             Runtime.Notify("debug", 8);
             Transferred(null, address, cpp);
