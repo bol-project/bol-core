@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Abstractions;
-using Bol.Core.BolContract.Models;
 using Bol.Core.Model;
+using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
 
@@ -102,13 +102,13 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
-        public async Task<BolAccount> GetAccount(IScriptHash address, CancellationToken token = default)
+        public async Task<BolAccount> GetAccount(string codeName, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                address.GetBytes(),
+                Encoding.ASCII.GetBytes(codeName)
             };
 
             var mainAddress = CreateMainAddress(context);
