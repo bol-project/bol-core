@@ -25,9 +25,9 @@ namespace Bol.Api.NeoPlugins
         {
             if (method.ToLowerInvariant() != "getaccount") return null;
             
-            var address = _params[0].AsString().ToScriptHash();
+            var codeName = _params[0].AsString().ToScriptHash();
 
-            var result = _bolService.GetAccount(address);
+            var result = _bolService.GetAccount(codeName);
 
             var json = _json.Serialize(result);
 
