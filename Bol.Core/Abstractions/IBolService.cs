@@ -7,6 +7,7 @@ namespace Bol.Core.Abstractions
 {
     public interface IBolService
     {
+        Task Deploy(CancellationToken token = default);
         Task Claim(CancellationToken token = default);
         Task Register(CancellationToken token = default);
         Task<BolAccount> GetAccount(IScriptHash mainAddress, CancellationToken token = default);
