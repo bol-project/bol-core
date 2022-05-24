@@ -771,7 +771,7 @@ namespace Bol.Coin.Services
                 }
                 else
                 {
-                    intervalTotal = BolRepository.GetRegisteredAtBlock(i);
+                    var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                     uint pointer = i;
                     while (intervalTotal == 0 && pointer > 0)
                     {
