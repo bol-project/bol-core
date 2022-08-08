@@ -24,5 +24,7 @@ namespace Bol.Coin
         public const byte ACCOUNT_STATUS_LOCKED = 0x04;
 
         public static readonly byte[] ALL_COUNTRIES = "414C4C".HexToBytes();
+
+        public const uint CLAIM_INTERVAL = 100;
     }
 }

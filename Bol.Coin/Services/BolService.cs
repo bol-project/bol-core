@@ -317,7 +317,7 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            BolRepository.SetClaimInterval(10);
+            BolRepository.SetClaimInterval(Constants.CLAIM_INTERVAL);
 
             var certifiers = Certifiers.GenesisCertifiers();
             for (var i = 0; i < certifiers.Length; i++)
