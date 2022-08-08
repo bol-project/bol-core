@@ -16,7 +16,11 @@ namespace Bol.Coin.Tests.ContractTests
 
         public ClaimTest()
         {
-            _emulator = EmulatorUtils.Create((string notifyOutput) => _notifyOutput = notifyOutput);
+            _emulator = EmulatorUtils.Create((string notifyOutput) =>
+            {
+                _notifyOutput = notifyOutput;
+                Console.WriteLine(notifyOutput);
+            });
             _transactionGrabber = new TransactionGrabber();
             _service = BolServiceFactory.Create(_transactionGrabber);
         }
