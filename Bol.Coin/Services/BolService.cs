@@ -769,23 +769,30 @@ namespace Bol.Coin.Services
             BigInteger intervalDistribute = 0;
             for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
+                Runtime.Notify("debug", 5);
                 intervalDistribute = BolRepository.GetDistributeAtBlock(i);
                 if(intervalDistribute > 0)
                 {
+                    Runtime.Notify("debug", 6);
                     cpp += intervalDistribute;
                 }
                 else
                 {
+                    Runtime.Notify("debug", 7);
                     var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                     uint pointer = i;
                     while (intervalTotal == 0 && pointer > claimInterval)
                     {
+                        Runtime.Notify("debug", 8);
                         pointer -= claimInterval;
                         intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
                     }
 
                     var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
+                    Runtime.Notify("debug", 9);
+                    
                     var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
+                    Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
                     uint currentYear = ConvertToYear(EndIntervalStamp);
@@ -819,18 +826,18 @@ namespace Bol.Coin.Services
                 }                    
             }
 
-            Runtime.Notify("debug", 5);
+            Runtime.Notify("debug", 20);
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
             BolRepository.Save(bolAccount);
 
-            Runtime.Notify("debug", 6);
+            Runtime.Notify("debug", 21);
             var circulatingSupply = BolRepository.GetBols() + cpp;
             BolRepository.SetBols(circulatingSupply);
 
-            Runtime.Notify("debug", 8);
+            Runtime.Notify("debug", 22);
             Transferred(null, address, cpp);
 
             var result = BolRepository.Get(bolAccount.MainAddress);
