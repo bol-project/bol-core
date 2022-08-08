@@ -170,6 +170,11 @@ namespace Bol.Coin.Services
            
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
             uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+            if (currentHeight != 0 && currentHeight % claimInterval == 0)
+            {
+                endOfInterval = currentHeight;
+            }
+
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
             var result = BolRepository.Get(account.MainAddress);
