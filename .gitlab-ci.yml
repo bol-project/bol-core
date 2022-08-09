@@ -1,18 +1,14 @@
-services:
-  - docker:18.09-dind
-
 stages:
   - build
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker-dind:2375
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 .build:
   stage: build
-  image: gitlab/dind
+  image: docker:latest
   only:
     - develop
     - master
@@ -54,7 +50,7 @@ build_node_4:
 
 build_rpc_node:
   stage: build
-  image: gitlab/dind
+  image: docker:latest
   only:
     - develop
     - master
