@@ -167,10 +167,14 @@ namespace Bol.Coin.Services
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
-
+           
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
             uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+            if (currentHeight != 0 && currentHeight % claimInterval == 0)
+            {
+                endOfInterval = currentHeight;
+            }
+
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
             var result = BolRepository.Get(account.MainAddress);
@@ -318,7 +322,7 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            BolRepository.SetClaimInterval(10);
+            BolRepository.SetClaimInterval(Constants.CLAIM_INTERVAL);
 
             var certifiers = Certifiers.GenesisCertifiers();
             for (var i = 0; i < certifiers.Length; i++)
@@ -742,20 +746,17 @@ namespace Bol.Coin.Services
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            Runtime.Notify("debug", 1);
-            var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
-
             Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
-            if (currentHeight <= claimInterval)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("No claim before first interval."));
-                return false;
-            }
-
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
+
+            if (startClaimHeight == endClaimHeight) 
+            {
+                Runtime.Notify("error", BolResult.Forbidden("Nothing to claim in the same interval."));
+                return false;
+            }
 
             Runtime.Notify("debug", 3);
             var bpsYear = BolRepository.GetBpsYear();
@@ -768,23 +769,30 @@ namespace Bol.Coin.Services
             BigInteger intervalDistribute = 0;
             for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
+                Runtime.Notify("debug", 5);
                 intervalDistribute = BolRepository.GetDistributeAtBlock(i);
                 if(intervalDistribute > 0)
                 {
+                    Runtime.Notify("debug", 6);
                     cpp += intervalDistribute;
                 }
                 else
                 {
-                    intervalTotal = BolRepository.GetRegisteredAtBlock(i);
+                    Runtime.Notify("debug", 7);
+                    var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                     uint pointer = i;
-                    while (intervalTotal == 0 && pointer > 0)
+                    while (intervalTotal == 0 && pointer > claimInterval)
                     {
+                        Runtime.Notify("debug", 8);
                         pointer -= claimInterval;
                         intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
                     }
 
                     var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
+                    Runtime.Notify("debug", 9);
+                    
                     var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
+                    Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
                     uint currentYear = ConvertToYear(EndIntervalStamp);
@@ -811,29 +819,25 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths; // to do (set initial value of Total supply = World pop in Genesis block )
                     BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
 
                     cpp += intervalDistribute;
                 }                    
             }
 
-            Runtime.Notify("debug", 5);
+            Runtime.Notify("debug", 20);
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
             BolRepository.Save(bolAccount);
 
-            Runtime.Notify("debug", 6);
+            Runtime.Notify("debug", 21);
             var circulatingSupply = BolRepository.GetBols() + cpp;
             BolRepository.SetBols(circulatingSupply);
 
-            Runtime.Notify("debug", 7);
-            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
-
-            Runtime.Notify("debug", 8);
+            Runtime.Notify("debug", 22);
             Transferred(null, address, cpp);
 
             var result = BolRepository.Get(bolAccount.MainAddress);
