@@ -25,7 +25,8 @@ COPY ./Bol.Api/config.internal.json ./out/config.json
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-base
 
 # Install dependencies:
-RUN apt-get update && apt-get install -y \
+RUN apt-get update 
+RUN apt-get install -y \
     libleveldb-dev \
     sqlite3 \
     libsqlite3-dev \

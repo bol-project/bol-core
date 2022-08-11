@@ -24,7 +24,8 @@ COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-base
 
 # Install dependencies:
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     libleveldb-dev \
     sqlite3 \
     libsqlite3-dev \
