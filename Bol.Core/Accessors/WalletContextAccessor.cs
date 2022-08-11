@@ -21,9 +21,7 @@ namespace Bol.Core.Accessors
         private readonly IKeyPairFactory _keyPairFactory;
         private readonly IAddressTransformer _addressTransformer;
         private readonly ICachingService _iCachingService;
-
-        private BolContext _bolContext;
-
+        
         public WalletContextAccessor(
             IOptions<BolWallet> bolWallet,
             IOptions<WalletConfiguration> walletConfig,
@@ -44,8 +42,6 @@ namespace Bol.Core.Accessors
 
         private BolContext CreateContext()
         {
-            if (_bolContext != null) return _bolContext;
-
             var n = _bolWallet.Scrypt.N;
             var r = _bolWallet.Scrypt.R;
             var p = _bolWallet.Scrypt.P;
