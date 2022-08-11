@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -21,7 +21,7 @@ WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 
-FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS runtime-base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-base
 
 # Install dependencies:
 RUN apt-get update && apt-get install -y \
