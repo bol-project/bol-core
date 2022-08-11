@@ -10,6 +10,7 @@ variables:
   stage: build
   image: docker:latest
   only:
+    - feature/net6
     - develop
     - master
   variables:
@@ -52,6 +53,7 @@ build_rpc_node:
   stage: build
   image: docker:latest
   only:
+    - feature/net6
     - develop
     - master
   variables:
@@ -79,6 +81,7 @@ build_rpc_node:
   variables:
     VALIDATOR_NAME: validator-1
   only:
+    - feature/net6
     - master
     - develop
   stage: deploy
