@@ -1000,6 +1000,20 @@ namespace Bol.Coin.Services
             var popYear = BolRepository.GetPopYear();
             var yearStamp = BolRepository.GetYearStamp();
 
+            //adding a method to distribute the remaining amount of the multisign  address to each validator 
+
+            BigInteger firstIntClaim = 0;
+            firstIntClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
+
+             if(firstIntClaim == 0)
+                {
+                   // add new method
+                   // get balance of multisign  address
+                   // if balance > 0 transfer to each validator  amount = balance/number of validators 
+                   //  the transfer will be done without signatures  of multisign  address       
+                }
+
+
             Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
             BigInteger intervalDistribute = 0;
