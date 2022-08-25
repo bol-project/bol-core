@@ -807,7 +807,16 @@ namespace Bol.Coin.Services
                     Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
-                    uint currentYear = ConvertToYear(EndIntervalStamp);
+                    for (uint year = 2022 ; year <= 2033; year += 1)
+                    { 
+                        if(EndIntervalStamp > yearStamp[year] && EndIntervalStamp <= yearStamp[year+1] )
+                        {
+                            uint currentYear = year;                          
+
+                        }                            
+
+                    }
+
                     BigInteger timestampThisYear = yearStamp[currentYear];
                     BigInteger timestampNextYear = yearStamp[currentYear + 1];
                     BigInteger ThisYearBps = bpsYear[currentYear];
@@ -858,15 +867,7 @@ namespace Bol.Coin.Services
 
             return true;
         }
-        private static uint ConvertToYear(uint unixtime)
-        {
-            uint remainder = unixtime % 31556926;
-            uint month_seconds = 2629743;
-            if (remainder < 7 * month_seconds)
-                return 1970 + unixtime / 31556926 - 1;
-            else
-                return 1970 + unixtime / 31556926;
-        }
+        
         public static bool GetCertifiers(byte[] countryCode)
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);
