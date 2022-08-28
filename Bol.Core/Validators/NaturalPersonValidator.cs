@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Bol.Core.Model;
 using FluentValidation;
 using System.Text.RegularExpressions;

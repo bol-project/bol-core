@@ -1,11 +1,15 @@
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Bol.Core.Validators;
+using Bol.Cryptography;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
 using FluentValidation;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,54 +21,54 @@ namespace Bol.Core.Tests.Services
 {
     public class CodeNameServiceTests
     {
-        [Fact]
-        public void Generate_ShouldGenerateCodeName_WhenInputIsSpyros()
+        private readonly Sha256Hasher _hasher;
+        private readonly Base58Encoder _base58Encoder;
+        private readonly Base16Encoder _hex;
+        private readonly BasePersonValidator _basePersonValidator;
+        private readonly NaturalPersonValidator _naturalPersonValidator;
+        private readonly CodenamePersonValidator _codenamePersonValidator;
+        private readonly CodeNameValidator _codeNameValidator;
+        private readonly CodeNameService _service;
+
+        NaturalPerson person = new NaturalPerson
+
         {
-            var hasher = new Sha256Hasher();
-            var base58Encoder = new Base58Encoder(hasher);
-            var hex = new Base16Encoder(hasher);
-            var countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
-			var basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
-            var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator);
-			var codenamePersonValidator = new CodenamePersonValidator(basePersonValidator);
-            var codeNameValidator = new CodeNameValidator(basePersonValidator, new PersonStringSerializer(), hasher);
-            var service = new CodeNameService(new PersonStringSerializer(), hasher, base58Encoder, naturalPersonValidator, hex);
+            FirstName = "PETROS",
+            Surname = "SPATHAS",
+            MiddleName = "",
+            ThirdName = "",
+            CountryCode = "GRC",
+            Gender = Gender.Male,
+            Birthdate = new DateTime(1963, 05, 09),
+            Nin = "09056301212",
+            Combination = "1"
+        };
 
+        List<Country> countries;
 
-            var birthDate = new DateTime(1983, 05, 26);
+        public CodeNameServiceTests()
+        {
+            _hasher = new Sha256Hasher();
+            _base58Encoder = new Base58Encoder(_hasher);
+            _hex = new Base16Encoder(_hasher);
+            countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" } };
+            _basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
+            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator);
+            _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
+            _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher);
+            _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
+        }
 
-            var person = new NaturalPerson
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WhenInputIsPetros()
+        {
+            var codeName = _service.Generate(person);
 
-            {
-                FirstName = "SPYROS",
-                Surname = "PAPPAS",
-                MiddleName = "MANU",
-                ThirdName = "CHAO",
-                CountryCode = "GRC",
-                Gender = Gender.Male,
-                Birthdate = birthDate,
-                Nin = "A2347283423",
-                Combination = "P"
-            };
+            _codeNameValidator.ValidateAndThrow(codeName);
 
+            Assert.Equal("P<GRC<SPATHAS<P<<<1963M<gs6YcUk6UQs<14E76", codeName);
 
-            var shortHashBytes = Encoding.UTF8.GetBytes(
-                person.FirstName +
-                person.Birthdate.ToString(CultureInfo.InvariantCulture) +
-                new string(person.Nin.Take(person.Nin.Length - 2).ToArray())
-            );
-
-            var shortHash = hasher.Hash(shortHashBytes, 8);
-            var shortHashString = base58Encoder.Encode(shortHash);
-
-            var codeName = service.Generate(person);
-            var checkSum = hex.Encode(hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName))).Substring(codeName.Length - 4, 4);
-
-	        codeNameValidator.ValidateAndThrow("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}");
-
-			Assert.Equal("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}", codeName);
-
-            Assert.True(new Sha256Hasher().CheckChecksum(Encoding.ASCII.GetBytes("P<GRC<PAPPAS<S<MANU<CHAO<1983MP<" + $"{shortHashString}" + $"{checkSum}")));
+            Assert.True(new Sha256Hasher().CheckHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 4));
         }
     }
 }

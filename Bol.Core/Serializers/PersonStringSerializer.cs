@@ -1,4 +1,4 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using System;
 using System.Linq;
@@ -17,10 +17,11 @@ namespace Bol.Core.Serializers
             var birthDateParseResult = int.TryParse(parts[6].Substring(0, 4), out var birthDate);
 
             if (parts == null ||
-                parts.Length != 8 ||
+                parts.Length != 9 ||
                 parts[0] != P ||
-                parts[6].Length != 6 ||
-                parts[7].Length != 15 ||
+                parts[6].Length != 5 ||
+                parts[7].Length != 11 ||
+                parts[8].Length != 5 ||
                 !birthDateParseResult)
             {
                 throw new ArgumentException(INVALID_CODENAME);
@@ -39,7 +40,7 @@ namespace Bol.Core.Serializers
                 Gender = basePerson.Gender,
                 Combination = basePerson.Combination,
 				ShortHash = parts[7].Substring(0, 11),
-				CheckSum = parts[7].Substring(10, 4)
+				CheckSum = parts[8].Substring(1, 4)
             };
         }
 
@@ -55,9 +56,8 @@ namespace Bol.Core.Serializers
 			    MiddleName = inputStrings[4],
 			    ThirdName = inputStrings[5],
 			    Gender = gender,
-			    Combination = inputStrings[6].Substring(5, 1)
-		    };
-
+			    Combination = inputStrings[8].Substring(0, 1)
+            };
 	    }
 
         public string Serialize(NaturalPerson person)
@@ -90,8 +90,7 @@ namespace Bol.Core.Serializers
 
             result = result +
                      $"{DIV}{birthYear}" +
-                     $"{gender}" +
-                     $"{person.Combination}{DIV}";
+                     $"{gender}{DIV}";
 
             return result;
         }
@@ -113,6 +112,7 @@ namespace Bol.Core.Serializers
                 default:
                     throw new ArgumentException("Gender must be either M, F or U");
             }
+
             return gender;
         }
     }

@@ -37,20 +37,44 @@ namespace Bol.Core.Services
             var codeName = _stringSerializer.Serialize(person);
 
             var nameToHash = person.FirstName;
-            var birthdayToHash = person.Birthdate.ToString(CultureInfo.InvariantCulture);
-            var ninToHash = person.Nin.Substring(0, person.Nin.Length - 2);
 
-            var shortHashBytes = Encoding.ASCII.GetBytes(nameToHash + birthdayToHash + ninToHash);
+            var birthdayToHash = ReplaceMonthsWithAsterisk(person.Birthdate);
 
-            var shortHash = _hasher.Hash(shortHashBytes, 8);
+            var ninToHash = ReplaceNinWithAsterisk(person.Nin);
+
+            var shortHashBytes = Encoding.UTF8.GetBytes(birthdayToHash + nameToHash + ninToHash);
+
+            var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
 
             var shortHashString = _base58Encoder.Encode(shortHash);
 
-            codeName = $"{codeName}{shortHashString}";
+            codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCompinationIfEmpty(person.Combination)}";
 
-            var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName));
+            var codeNameBytes = _hasher.AddHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 2);
 
-            return Encoding.ASCII.GetString(codeNameBytes);
+            return Encoding.UTF8.GetString(codeNameBytes);
+        }
+
+        private string ReplaceMonthsWithAsterisk(DateTime birthDate)
+        {
+            return birthDate.ToString("yyyy**dd", CultureInfo.InvariantCulture);
+        }
+
+        private string ReplaceNinWithAsterisk(string nin)
+        {
+            StringBuilder sb = new StringBuilder(nin);
+
+            sb[2] = '*';
+            sb[3] = '*';
+            sb[9] = '*';
+            sb[10] = '*';
+
+            return sb.ToString();
+        }
+
+        private string ReplaceCompinationIfEmpty(string compination)
+        {
+            return string.IsNullOrEmpty(compination) ? "1" : compination;
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Org.BouncyCastle.Utilities.Encoders;
+using System.Text;
 
 namespace Bol.Cryptography.Hashers
 {
@@ -29,6 +31,36 @@ namespace Bol.Cryptography.Hashers
                 .ToArray();
 
             var hash = AddChecksum(inputWithoutChecksum, cycles, bytes);
+            return hash.SequenceEqual(input);
+        }
+
+        public byte[] AddHexChecksum(byte[] input, int cycles = 1, int bytes = 2)
+        {
+            ValidateAndThrow(cycles, bytes);
+
+            var hash = Hash(input);
+            for (int i = 1; i < cycles; i++)
+            {
+                hash = Hash(hash);
+            }
+
+            var hexEncode = string.Join(string.Empty, hash.Take(2).Select(x => x.ToString("X2")));
+
+            return input
+                .Concat(Encoding.UTF8.GetBytes(hexEncode))
+                .ToArray();
+        }
+
+        public bool CheckHexChecksum(byte[] input, int cycles = 1, int bytes = 2)
+        {
+            ValidateAndThrow(cycles, bytes);
+
+            var inputWithoutChecksum = input
+                .SkipLastN(bytes)
+                .ToArray();
+
+            var hash = AddHexChecksum(inputWithoutChecksum, cycles, bytes);
+
             return hash.SequenceEqual(input);
         }
 
