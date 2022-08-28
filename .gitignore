@@ -267,3 +267,5 @@ __pycache__/
 st.bat
 s.exe
 s.py
+
+.DS_Store

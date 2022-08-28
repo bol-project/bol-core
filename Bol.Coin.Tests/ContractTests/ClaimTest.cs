@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Bol.Coin.Tests.Utils;
 using Bol.Core.Services;
