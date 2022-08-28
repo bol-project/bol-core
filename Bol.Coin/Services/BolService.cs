@@ -352,48 +352,57 @@ namespace Bol.Coin.Services
             BolRepository.SetBols(0);
             BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
 
+            // The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
+            // World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+            // All data correspond to July 1 of each year
+ 
             var bpsYear = new Map<uint, BigInteger>();
-            bpsYear[2020] = 443858774;
-            bpsYear[2021] = 443369755;
-            bpsYear[2022] = 442863080;
-            bpsYear[2023] = 441180088;
-            bpsYear[2024] = 441989231;
-            bpsYear[2025] = 441699642;
-            bpsYear[2026] = 441537345;
-            bpsYear[2027] = 440279783;
-            bpsYear[2028] = 441528472;
-            bpsYear[2029] = 441660296;
-            bpsYear[2030] = 441873887;
+
+            bpsYear[2022] = 424332170;
+            bpsYear[2023] = 424082805;
+            bpsYear[2024] = 425890833;
+            bpsYear[2025] = 426608730;
+            bpsYear[2026] = 427223938;
+            bpsYear[2027] = 426972273;
+            bpsYear[2028] = 428953596;
+            bpsYear[2029] = 429874248;
+            bpsYear[2030] = 430700536;
+            bpsYear[2031] = 430293855;
+            bpsYear[2032] = 432722815;
+            bpsYear[2033] = 433549813;
 
             var dpsYear = new Map<uint, BigInteger>();
-            dpsYear[2020] = 187819619;
-            dpsYear[2021] = 190637490;
-            dpsYear[2022] = 193569717;
-            dpsYear[2023] = 196034672;
-            dpsYear[2024] = 199614745;
-            dpsYear[2025] = 202682166;
-            dpsYear[2026] = 205775244;
-            dpsYear[2027] = 208348971;
-            dpsYear[2028] = 212137640;
-            dpsYear[2029] = 215434148;
-            dpsYear[2030] = 218821347;
+
+            dpsYear[2022] = 212656072;
+            dpsYear[2023] = 192038779;
+            dpsYear[2024] = 193185613;
+            dpsYear[2025] = 196299975;
+            dpsYear[2026] = 199443455;
+            dpsYear[2027] = 202121623;
+            dpsYear[2028] = 206010807;
+            dpsYear[2029] = 209422815;
+            dpsYear[2030] = 212889047;
+            dpsYear[2031] = 215889642;
+            dpsYear[2032] = 220189761;
+            dpsYear[2033] = 223967735;
 
             var popYear = new Map<uint, BigInteger>();
-            popYear[2020] = 779479872900000000;
-            popYear[2021] = 787496573200000000;
-            popYear[2022] = 795395257700000000;
-            popYear[2023] = 803180033800000000;
-            popYear[2024] = 810860525500000000;
-            popYear[2025] = 818443745300000000;
-            popYear[2026] = 825927665100000000;
-            popYear[2027] = 833307831800000000;
-            popYear[2028] = 840586330100000000;
-            popYear[2029] = 847766072300000000;
-            popYear[2030] = 854848737100000000;
 
-            var yearStamp = new Map<uint, BigInteger>(); //will need to change to milliseconds after upgrade to neo 3
-            yearStamp[2020] = 1593561600;
-            yearStamp[2021] = 1625097600;
+            popYear[2022] = 796761887400000000;
+            popYear[2023] = 803768884700000000;
+            popYear[2024] = 811107464300000000;
+            popYear[2025] = 818408655000000000;
+            popYear[2026] = 825632180500000000;
+            popYear[2027] = 832779362800000000;
+            popYear[2028] = 839850268300000000;
+            popYear[2029] = 846842093700000000;
+            popYear[2030] = 853753020200000000;
+            popYear[2031] = 860577855400000000;
+            popYear[2032] = 867319455700000000;
+            popYear[2033] = 873975760200000000;
+
+            var yearStamp = new Map<uint, BigInteger>(); //yearStamp correspond to July 1 (00:00:00 GMT+0000) of each year
+
             yearStamp[2022] = 1656633600;
             yearStamp[2023] = 1688169600;
             yearStamp[2024] = 1719792000;
@@ -403,11 +412,16 @@ namespace Bol.Coin.Services
             yearStamp[2028] = 1846022400;
             yearStamp[2029] = 1877558400;
             yearStamp[2030] = 1909094400;
+            yearStamp[2031] = 1940630400;
+            yearStamp[2032] = 1972252800;
+            yearStamp[2033] = 2003788800;
 
             BolRepository.SetBpsYear(bpsYear);
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
+            
+            BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
 
             BolRepository.SetContractDeployed();
 
@@ -819,8 +833,8 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths; // to do (set initial value of Total supply = World pop in Genesis block )
-                    BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
+                    var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
 
                     cpp += intervalDistribute;
                 }                    
