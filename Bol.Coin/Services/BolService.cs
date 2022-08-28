@@ -809,14 +809,14 @@ namespace Bol.Coin.Services
                     Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
-                    for (uint year = 2022 ; year <= 2033; year += 1)
-                    { 
-                        if(EndIntervalStamp > yearStamp[year] && EndIntervalStamp <= yearStamp[year+1] )
+                    uint currentYear = 2022;
+                    while (currentYear <= 2033)
+                    {
+                        if(EndIntervalStamp > yearStamp[currentYear] && EndIntervalStamp <= yearStamp[currentYear+1] )
                         {
-                            uint currentYear = year;                          
-
-                        }                            
-
+                            break;
+                        }
+                        currentYear++;
                     }
 
                     BigInteger timestampThisYear = yearStamp[currentYear];
