@@ -50,3 +50,4 @@ hash_replace('../Bol.Api/protocol.mainnet.json', the_hash, protocol_path)
 
 hash_replace('../Bol.Api/appsettings.json', the_hash, appsettings_path)
 hash_replace('../Bol.Api/appsettings.Development.json', the_hash, appsettings_path)
+hash_replace('../Bol.Coin.Tests/appsettings.json', the_hash, appsettings_path)
