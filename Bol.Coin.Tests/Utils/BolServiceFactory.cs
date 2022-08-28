@@ -26,8 +26,9 @@ namespace Bol.Coin.Tests.Utils
             var wallet = Options.Create(JsonConvert.DeserializeObject<BolWallet>(walletJson));
             var walletConfig = Options.Create(new WalletConfiguration { Password = "bol" });
 
-            //TODO: Set Contract Hash via configuration
-            var bolConfig = Options.Create(new BolConfig { Contract = "49071c33087967cc6d3c0f0ef35c013163b047eb" });
+            var appsettingsJson = File.ReadAllText("appsettings.json");
+            var definition = new { BolConfig = new BolConfig() };
+            var bolConfig = Options.Create(JsonConvert.DeserializeAnonymousType(appsettingsJson, definition).BolConfig);
 
             var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
 
