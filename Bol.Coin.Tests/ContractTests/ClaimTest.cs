@@ -46,6 +46,25 @@ namespace Bol.Coin.Tests.ContractTests
         }
 
         [Fact]
+        public async Task Claim_ShouldExecute_WhenNextYear()
+        {
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.Register();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(400);
+
+            await _service.Claim();
+            var result = _emulator.Execute(_transactionGrabber);
+
+            Assert.True(result);
+        }
+
+        [Fact]
         public async Task Claim_ShouldExecute_WhenNoRegistrationExistsAfterFirstInterval()
         {
             await _service.Deploy();
