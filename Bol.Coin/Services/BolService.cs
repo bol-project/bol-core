@@ -420,6 +420,8 @@ namespace Bol.Coin.Services
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
+            
+            BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
 
             BolRepository.SetContractDeployed();
 
@@ -831,8 +833,8 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths; // to do (set initial value of Total supply = World pop in Genesis block )
-                    BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
+                    var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
 
                     cpp += intervalDistribute;
                 }                    
