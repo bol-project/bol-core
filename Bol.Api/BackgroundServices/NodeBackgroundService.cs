@@ -6,7 +6,9 @@ using Neo.Shell;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Core.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using IBolService = Bol.Api.Services.IBolService;
 
 namespace Bol.Api.BackgroundServices
@@ -32,11 +34,13 @@ namespace Bol.Api.BackgroundServices
                 using var scope = _serviceProvider.CreateScope();
                 var bolService = scope.ServiceProvider.GetService<IBolService>();
                 var json = scope.ServiceProvider.GetService<IJsonSerializer>();
+                var bolConfig = scope.ServiceProvider.GetService<IOptions<BolConfig>>();
 
                 //Base constructor of neo plugin automatically registers itself
                 new LogPlugin(_logger);
                 new GetAccountPlugin(bolService, json);
                 new TestRawTransactionPlugin(json);
+                new GetBolHashPlugin(bolConfig);
 
                 var mainService = new MainService();
                 _mainService = mainService;
