@@ -33,14 +33,14 @@ namespace Bol.Core.Tests.Services
         NaturalPerson person = new NaturalPerson
 
         {
-            FirstName = "PETROS",
-            Surname = "SPATHAS",
+            FirstName = "GIANNIS",
+            Surname = "PAPADOPOULOS",
             MiddleName = "",
             ThirdName = "",
             CountryCode = "GRC",
             Gender = Gender.Male,
-            Birthdate = new DateTime(1963, 05, 09),
-            Nin = "09056301212",
+            Birthdate = new DateTime(1963, 06, 23),
+            Nin = "23066301512",
             Combination = "1"
         };
 
@@ -66,7 +66,7 @@ namespace Bol.Core.Tests.Services
 
             _codeNameValidator.ValidateAndThrow(codeName);
 
-            Assert.Equal("P<GRC<SPATHAS<P<<<1963M<gs6YcUk6UQs<14E76", codeName);
+            Assert.Equal("P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941", codeName);
 
             Assert.True(new Sha256Hasher().CheckHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 4));
         }

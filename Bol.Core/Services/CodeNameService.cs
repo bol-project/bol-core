@@ -38,9 +38,9 @@ namespace Bol.Core.Services
 
             var nameToHash = person.FirstName;
 
-            var birthdayToHash = ReplaceMonthsWithAsterisk(person.Birthdate);
+            var birthdayToHash = person.Birthdate.ToString("yyyydd", CultureInfo.InvariantCulture);
 
-            var ninToHash = ReplaceNinWithAsterisk(person.Nin);
+            var ninToHash = GetLastFourNinDigits(person.Nin);
 
             var shortHashBytes = Encoding.UTF8.GetBytes(birthdayToHash + nameToHash + ninToHash);
 
@@ -55,21 +55,9 @@ namespace Bol.Core.Services
             return Encoding.UTF8.GetString(codeNameBytes);
         }
 
-        private string ReplaceMonthsWithAsterisk(DateTime birthDate)
+        private string GetLastFourNinDigits(string nin)
         {
-            return birthDate.ToString("yyyy**dd", CultureInfo.InvariantCulture);
-        }
-
-        private string ReplaceNinWithAsterisk(string nin)
-        {
-            StringBuilder sb = new StringBuilder(nin);
-
-            sb[2] = '*';
-            sb[3] = '*';
-            sb[9] = '*';
-            sb[10] = '*';
-
-            return sb.ToString();
+            return nin.Substring(nin.Length - 4);
         }
 
         private string ReplaceCompinationIfEmpty(string compination)
