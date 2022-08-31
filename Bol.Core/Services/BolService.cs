@@ -71,7 +71,7 @@ namespace Bol.Core.Services
 
             var parameters = new[]
             {
-                context.MainAddress.GetBytes()
+                Encoding.ASCII.GetBytes(context.CodeName)
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
