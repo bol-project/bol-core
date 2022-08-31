@@ -20,7 +20,7 @@ namespace Bol.Core.Mappers
                 Timestamp = source.Timestamp,
                 Creator = source.Witness.ScriptHash.ToString(),
                 Height = source.Index,
-                Transactions = source.Hashes.Length 
+                TransactionCount = source.Hashes.Length 
             };
         }
     }

@@ -2,57 +2,52 @@ import os
 from shutil import copyfile
 import json
 
+def hash_replace(path, contract_hash, json_path):
+  with open(path, 'r', encoding = 'utf-8-sig' ) as protocol:
+    data = json.load(protocol)
+    
+    if json_path(data, None) == contract_hash :
+      print ("The hash has not changed")
+      return
+    
+    json_path(data,contract_hash)
+    protocol.close()
+    
+  with open(path, 'w', encoding = 'utf-8-sig') as protocol:
+    json.dump(data, protocol, indent = 2, sort_keys = False)
+    protocol.close()
+  print("Replaced hash in " + path)
+
+ 
+def protocol_path(data, value): 
+  if value is not None:
+    data['ProtocolConfiguration']['BolContract']['ScriptHash'] = value
+  return data['ProtocolConfiguration']['BolContract']['ScriptHash']
+
+ 
+def appsettings_path(data, value): 
+  if value is not None:
+    data['BolConfig']['Contract'] = value
+  return data['BolConfig']['Contract']
+  
 #Copy Bol.Coin/bin/Debug/Bol.Coin.avm to Bol.Api/Bol.Coin.avm
-if os.path.exists("bin\\Debug\\Bol.Coin.avm"):
-  copyfile("bin\\Debug\\Bol.Coin.avm", "..\\Bol.Api\Bol.Coin.avm")
+if os.path.exists("bin/Debug/net6.0/Bol.Coin.avm"):
+  copyfile("bin/Debug/net6.0/Bol.Coin.avm", "../Bol.Api/Bol.Coin.avm")
+  copyfile("bin/Debug/net6.0/Bol.Coin.avm", "../Bol.Coin.Tests/Bol.Coin.avm")
   print("Copied Bol.Coin.avm")
 else:
   print("The file does not exist")
  
 #Obtain new contract's hash
-with open('bin\\Debug\\Bol.Coin.abi.json') as json_file:
+with open('bin/Debug/net6.0/Bol.Coin.abi.json') as json_file:
   data = json.load(json_file)
-  thehash = data['hash'][2:]
-  print(thehash)
+  the_hash = data['hash'][2:]
+  print(the_hash)
 
-#Replace hash in protocol.json
-with open('..\\Bol.Api\\protocol.json', 'r', encoding = 'utf-8-sig' ) as protocol:
-  data = json.load(protocol)
-  if data['ProtocolConfiguration']['BolContract']['ScriptHash'] == thehash :
-    print ("The hash has not changed")
-  else:
-    data['ProtocolConfiguration']['BolContract']['ScriptHash'] = thehash
-    protocol.close()
-    print("Replaced hash in protocol.json")
-    
-with open('..\\Bol.Api\\protocol.json', 'w', encoding = 'utf-8-sig') as protocol:
-    json.dump(data, protocol, indent = 2, sort_keys = False)
-    protocol.close()
-  
-#Replace hash in protocol.internal.json
-with open('..\\Bol.Api\\protocol.internal.json', 'r', encoding = 'utf-8-sig') as protocolInternal:
-  data = json.load(protocolInternal)
-  if data['ProtocolConfiguration']['BolContract']['ScriptHash'] == thehash :
-    print ("The hash has not changed")
-  else:
-    data['ProtocolConfiguration']['BolContract']['ScriptHash'] = thehash
-    protocolInternal.close()
-    print("Replaced hash in protocol.internal.json")
-    
-with open('..\\Bol.Api\\protocol.internal.json', 'w', encoding = 'utf-8-sig') as protocolInternal:
-    json.dump(data, protocolInternal, indent = 2, sort_keys = False)
-    protocolInternal.close()
-    
-#Replace hash in protocol.mainnet.json
-with open('..\\Bol.Api\\protocol.mainnet.json', 'r', encoding = 'utf-8-sig') as protocolMainnet:
-  data = json.load(protocolMainnet)
-  if data['ProtocolConfiguration']['BolContract']['ScriptHash'] == thehash :
-    print ("The hash has not changed")
-  else:
-    data['ProtocolConfiguration']['BolContract']['ScriptHash'] = thehash
-    protocolMainnet.close()
-    print("Replaced hash in protocol.mainnet.json")
-    
-with open('..\\Bol.Api\\protocol.mainnet.json', 'w', encoding = 'utf-8-sig') as protocolMainnet:
-    json.dump(data, protocolMainnet, indent = 2, sort_keys = False)
-    protocolMainnet.close()
+hash_replace('../Bol.Api/protocol.json', the_hash, protocol_path)
+hash_replace('../Bol.Api/protocol.internal.json', the_hash, protocol_path)
+hash_replace('../Bol.Api/protocol.mainnet.json', the_hash, protocol_path)
+
+hash_replace('../Bol.Api/appsettings.json', the_hash, appsettings_path)
+hash_replace('../Bol.Api/appsettings.Development.json', the_hash, appsettings_path)
+hash_replace('../Bol.Coin.Tests/appsettings.json', the_hash, appsettings_path)

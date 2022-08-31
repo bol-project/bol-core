@@ -27,6 +27,21 @@ namespace Bol.Core.Services
             _hex = hex ?? throw new ArgumentNullException(nameof(hex));
         }
 
+        public Task Deploy(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new byte[0][];
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "deploy", parameters);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
+
         public Task Register(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();

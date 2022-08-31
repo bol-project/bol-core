@@ -1,0 +1,24 @@
+diff --git a/neo-cli/neo-cli.csproj b/neo-cli/neo-cli.csproj
+index f2034fd0e0eedce9e0808dc24f866e96d535cb92..2b0a665c12fba88d13170f7731272ecb1e42c118 100644
+--- a/neo-cli/neo-cli.csproj
++++ b/neo-cli/neo-cli.csproj
+@@ -5,7 +5,7 @@
+     <AssemblyTitle>Neo.CLI</AssemblyTitle>
+     <Version>2.12.2</Version>
+     <Authors>The Neo Project</Authors>
+-    <TargetFramework>netcoreapp3.1</TargetFramework>
++    <TargetFramework>net6.0</TargetFramework>
+     <AssemblyName>neo-cli</AssemblyName>
+     <OutputType>Exe</OutputType>
+     <PackageId>Neo.CLI</PackageId>
+@@ -22,8 +22,8 @@
+ 
+   <ItemGroup>
+     <None Update="config.json;config.mainnet.json;config.testnet.json;protocol.json;protocol.mainnet.json;protocol.testnet.json">
+-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
++      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
++      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+     </None>
+   </ItemGroup>
+ 

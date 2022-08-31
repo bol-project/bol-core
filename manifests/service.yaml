@@ -27,7 +27,7 @@ spec:
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: bol-__CI_BUILD_REF_SLUG__
@@ -47,7 +47,10 @@ spec:
   - host: __CI_BUILD_REF_SLUG__.demo.bolchain.net
     http:
       paths:
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: bol-__CI_BUILD_REF_SLUG__
-          servicePort: 10332
+          service:
+            name: bol-__CI_BUILD_REF_SLUG__
+            port: 
+              number: 10332

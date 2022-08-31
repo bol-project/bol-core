@@ -57,7 +57,7 @@ namespace Bol.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc();
 
             services.AddOpenApiDocument(document => document.DocumentName = "v1");
 
@@ -124,12 +124,14 @@ namespace Bol.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRouting();
+
             app.UseMetricServer(url: "/health");
 
-            app.UseSwagger();
+            app.UseOpenApi();
             app.UseSwaggerUi3();
 
-            app.UseMvc();
+            app.UseEndpoints(c => c.MapControllers());
         }
     }
 }
