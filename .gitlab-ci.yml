@@ -83,7 +83,7 @@ build_rpc_node:
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE_ALLOWED: '*'
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
   only:
-    - feature/net6
+    - feature2021/transfer
     - master
     - develop
   stage: deploy
