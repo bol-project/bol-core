@@ -103,6 +103,29 @@ namespace Bol.Core.Services
 
             return _transactionService.Publish(transaction, token);
         }
+
+        public Task Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                from.GetBytes(),
+                to.GetBytes(),
+                Encoding.ASCII.GetBytes(codeName),
+                value.ToByteArray()
+            };
+            
+            var keys = new[] { context.CommercialAddresses[from] };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            transaction = _transactionService.Sign(transaction, witness, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
+
         public Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();

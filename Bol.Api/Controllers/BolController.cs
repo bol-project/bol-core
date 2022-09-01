@@ -77,6 +77,14 @@ namespace Bol.Api.Controllers
             await _coreBolService.TransferClaim(_addressTransformer.ToScriptHash(address), BigInteger.Parse(value), token);
             return Ok();
         }
+
+        [HttpGet("transfer")]
+        public async Task<ActionResult> Transfer(string from, string to, string codeName, string value, CancellationToken token)
+        {
+            await _coreBolService.Transfer(_addressTransformer.ToScriptHash(from), _addressTransformer.ToScriptHash(to), codeName, BigInteger.Parse(value), token);
+            return Ok();
+        }
+
         [HttpGet("decimals")]
         public ActionResult Decimals()
         {
