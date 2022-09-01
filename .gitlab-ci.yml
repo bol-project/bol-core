@@ -10,7 +10,7 @@ variables:
   stage: build
   image: docker:latest
   only:
-    - feature/net6
+    - feature2021/transfer
     - develop
     - master
   variables:
@@ -53,7 +53,7 @@ build_rpc_node:
   stage: build
   image: docker:latest
   only:
-    - feature/net6
+    - feature2021/transfer
     - develop
     - master
   variables:
