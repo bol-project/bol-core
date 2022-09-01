@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address.Abstractions;
@@ -70,6 +71,12 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("transferClaim")]
+        public async Task<ActionResult> TransferClaim(string address, string value, CancellationToken token)
+        {
+            await _coreBolService.TransferClaim(_addressTransformer.ToScriptHash(address), BigInteger.Parse(value), token);
+            return Ok();
+        }
         [HttpGet("decimals")]
         public ActionResult Decimals()
         {

@@ -22,13 +22,19 @@ namespace Neo.SmartContract
                 if (operation == "circulatingSupply") return BolService.CirculatingSupply();
                 if (operation == "name") return BolService.Name();
                 if (operation == "symbol") return BolService.Symbol();
-                if (operation == "transfer")
+                if (operation == "transferClaim")
                 {
                     if (args.Length != 3)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
+                    var codeName = (byte[])args[0];
+                    var address = (byte[])args[1];
+                    var value = (BigInteger)args[2];
+
+                    return BolService.TransferClaim(codeName, address, value);
+                }
                     var from = (byte[])args[0];
                     var to = (byte[])args[1];
                     var value = (BigInteger)args[2];

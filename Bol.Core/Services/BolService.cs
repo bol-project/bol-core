@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,6 +84,25 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
+        public Task TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                address.GetBytes(),
+                value.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
         public Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
