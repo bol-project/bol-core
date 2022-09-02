@@ -22,7 +22,7 @@ namespace Bol.Core.Validators
             _personSerializer = personSerializer ?? throw new ArgumentNullException(nameof(personSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
 
-            RuleFor(codeName => Encoding.UTF8.GetBytes(codeName))
+            RuleFor(codeName => Encoding.ASCII.GetBytes(codeName))
                 .Must(codeName => hasher.CheckHexChecksum(codeName,2,4))
                 .WithMessage("Checksum of CodeName is not valid.");
 

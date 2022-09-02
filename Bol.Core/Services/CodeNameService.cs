@@ -42,7 +42,7 @@ namespace Bol.Core.Services
 
             var ninToHash = GetLastFourNinDigits(person.Nin);
 
-            var shortHashBytes = Encoding.UTF8.GetBytes(birthdayToHash + nameToHash + ninToHash);
+            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
 
             var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
 
@@ -50,9 +50,9 @@ namespace Bol.Core.Services
 
             codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCompinationIfEmpty(person.Combination)}";
 
-            var codeNameBytes = _hasher.AddHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 2);
+            var codeNameBytes = _hasher.AddHexChecksum(Encoding.ASCII.GetBytes(codeName), 2, 2);
 
-            return Encoding.UTF8.GetString(codeNameBytes);
+            return Encoding.ASCII.GetString(codeNameBytes);
         }
 
         private string GetLastFourNinDigits(string nin)
