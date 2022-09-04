@@ -1,4 +1,5 @@
 using System;
+using Bol.Api.Mappers;
 using Bol.Core.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Neo.IO.Json;
@@ -12,11 +13,13 @@ namespace Bol.Api.NeoPlugins
     {
         private readonly IBolService _bolService;
         private readonly IJsonSerializer _json;
+        private readonly IAccountToAccountMapper _mapper;
 
-        public GetAccountPlugin(IBolService bolService, IJsonSerializer json) : base()
+        public GetAccountPlugin(IBolService bolService, IJsonSerializer json, IAccountToAccountMapper mapper) : base()
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _json = json ?? throw new ArgumentNullException(nameof(json));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public override void Configure() { }
@@ -27,8 +30,9 @@ namespace Bol.Api.NeoPlugins
 
             var codeName = _params[0].AsString();
             var result = _bolService.GetAccount(codeName);
-
-            var json = _json.Serialize(result);
+            var account = _mapper.Map(result.Result);
+            
+            var json = _json.Serialize(account);
 
             return JObject.Parse(json);
         }

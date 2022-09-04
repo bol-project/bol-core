@@ -40,7 +40,7 @@ namespace Bol.Api.BackgroundServices
 
                 //Base constructor of neo plugin automatically registers itself
                 new LogPlugin(_logger);
-                new GetAccountPlugin(bolService, json);
+                new GetAccountPlugin(bolService, json, mapper);
                 new TestRawTransactionPlugin(json, mapper);
                 new GetBolHashPlugin(bolConfig);
 
