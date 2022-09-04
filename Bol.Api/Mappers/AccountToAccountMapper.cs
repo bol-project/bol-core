@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using Bol.Address;
 using Bol.Core.Model;
@@ -33,16 +34,16 @@ namespace Bol.Api.Mappers
                 BlockChainAddress = ConvertToAddress(account.BlockChainAddress),
                 SocialAddress = ConvertToAddress(account.SocialAddress),
                 CommercialAddresses = new HashSet<string>(account.CommercialAddresses.Keys.Select(ConvertToAddress)),
-                CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDouble(pair.Value)),
-                ClaimBalance = ConvertToDouble(account.ClaimBalance),
+                CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(HexToNumber(pair.Value))),
+                ClaimBalance = ConvertToDecimal(account.ClaimBalance),
                 RegistrationHeight = int.Parse(account.RegistrationHeight),
                 LastClaimHeight = int.Parse(account.LastClaimHeight),
                 IsCertifier = account.IsCertifier == "1",
-                Collateral = ConvertToDouble(account.Collateral),
+                Collateral = ConvertToDecimal(account.Collateral),
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
                 MandatoryCertifier = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier))
             };
-            bolAccount.TotalBalance = bolAccount.CommercialBalances.Values.Sum();
+            bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;
         }
 
@@ -51,14 +52,23 @@ namespace Bol.Api.Mappers
             return _addressTransformer.ToAddress(_hashFactory.Create(scriptHex));
         }
 
-        private double ConvertToDouble(string number)
+        private string HexToNumber(string hex)
+        {
+            if (string.IsNullOrEmpty(hex)) return hex;
+            
+            var bytes = _hex.Decode(hex);
+            var result = new BigInteger(bytes).ToString();
+            return result;
+        }
+
+        private string ConvertToDecimal(string number)
         {
             if (string.IsNullOrWhiteSpace(number))
-                return 0;
+                return "0,00000000";
             else if (number.Length > 8)
-                return double.Parse(number.Insert(number.Length - 8, ","));
+                return number.Insert(number.Length - 8, ",");
             else
-                return double.Parse("0," + number);
+                return "0,".PadRight(10-number.Length, '0') + number;
         }
     }
 
