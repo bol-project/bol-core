@@ -2,6 +2,7 @@ using System.Net.Http;
 using Akka.Actor;
 using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
+using Bol.Api.Mappers;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
@@ -119,6 +120,7 @@ namespace Bol.Api
             services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
             services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
             services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
+            services.AddScoped<IAccountToAccountMapper, AccountToAccountMapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
