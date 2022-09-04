@@ -15,16 +15,16 @@ namespace Bol.Core.Model
         public string SocialAddress { get; set; }
         public ISet<string> CommercialAddresses { get; set; }
 
-        public double ClaimBalance { get; set; }
-        public double TotalBalance { get; set; }
-        public Dictionary<string, double> CommercialBalances { get; set; }
+        public string ClaimBalance { get; set; }
+        public string TotalBalance { get; set; }
+        public Dictionary<string, string> CommercialBalances { get; set; }
 
         public int Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
         public string MandatoryCertifier { get; set; }
 
         public bool IsCertifier { get; set; }
-        public double Collateral { get; set; }
+        public string Collateral { get; set; }
         public string Countries { get; set; }
 
         public int RegistrationHeight { get; set; }
