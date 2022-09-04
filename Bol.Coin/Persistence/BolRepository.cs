@@ -30,12 +30,18 @@ namespace Bol.Coin.Persistence
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
-            BolStorage.Put(account.MainAddress, bytes);
+            BolStorage.Put(account.CodeName, bytes);
+        }
+        // Save map storage
+        public static void Save(string storageMap, BolAccount account)
+        {
+            var bytes = account.Serialize();
+            BolStorage.Put(storageMap, account.CodeName, bytes);
         }
 
-        public static BolAccount Get(byte[] address)
+        public static BolAccount Get(byte[] codeName)
         {
-            var bytes = BolStorage.Get(address);
+            var bytes = BolStorage.Get(codeName);
             if (bytes == null) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
@@ -44,7 +50,27 @@ namespace Bol.Coin.Persistence
             var addresses = account.CommercialAddresses.Keys;
             foreach (var commAddress in addresses)
             {
-                var bols = GetBols(commAddress);
+                var bols = GetBols("CommercialAddress", commAddress);
+                account.CommercialAddresses[commAddress] = bols;
+                account.TotalBalance += bols;
+            }
+            account.TotalBalance += account.ClaimBalance;
+
+            return account;
+        }
+        // Get map storage
+        public static BolAccount Get(string storageMap, byte[] codeName)
+        {
+            var bytes = BolStorage.Get(storageMap,codeName);
+            if (bytes == null) return new BolAccount();
+
+            var account = (BolAccount)bytes.Deserialize();
+
+            account.TotalBalance = 0;
+            var addresses = account.CommercialAddresses.Keys;
+            foreach (var commAddress in addresses)
+            {
+                var bols = GetBols("CommercialAddress", commAddress);
                 account.CommercialAddresses[commAddress] = bols;
                 account.TotalBalance += bols;
             }
@@ -110,6 +136,12 @@ namespace Bol.Coin.Persistence
             BolStorage.Put(key, amount);
         }
 
+        //set bols for the CommercialAddress using storage map
+        public static void SetBols(string storageMap, byte[] address, BigInteger amount)
+        {
+            var key = BolKey(address);
+            BolStorage.Put(storageMap,key, amount);
+        }
         public static BigInteger GetBols()
         {
             var key = BolKey();
@@ -120,6 +152,12 @@ namespace Bol.Coin.Persistence
         {
             var key = BolKey(address);
             return BolStorage.GetAsBigInteger(key);
+        }
+        //Get bols for the CommercialAddress using storage map
+        public static BigInteger GetBols(string storageMap, byte[] address)
+        {
+            var key = BolKey(address);
+            return BolStorage.GetAsBigInteger(storageMap,key);
         }
 
         public static bool AddressExists(byte[] address)

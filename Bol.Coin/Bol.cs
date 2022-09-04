@@ -70,10 +70,10 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var address = (byte[])args[0];
+                    var codeName = (byte[])args[0];
                     var countries = (byte[])args[1];
 
-                    return BolService.RegisterAsCertifier(address, countries);
+                    return BolService.RegisterAsCertifier(codeName, countries);
                 }
                 if (operation == "unregisterCertifier")
                 {
@@ -82,9 +82,9 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var address = (byte[])args[0];
+                    var codeName = (byte[])args[0];
 
-                    return BolService.UnregisterAsCertifier(address);
+                    return BolService.UnregisterAsCertifier(codeName);
                 }
                 if (operation == "certify")
                 {
@@ -117,8 +117,8 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var address = (byte[])args[0];
-                    return BolService.Claim(address);
+                    var codeName = (byte[])args[0];
+                    return BolService.Claim(codeName);
                 }
                 if (operation == "getAccount")
                 {
@@ -127,8 +127,8 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var mainAddress = (byte[])args[0];
-                    return BolService.GetAccount(mainAddress);
+                    var codeName = (byte[])args[0];
+                    return BolService.GetAccount(codeName);
                 }
                 if (operation == "addCommercialAddress")
                 {
@@ -137,9 +137,9 @@ namespace Neo.SmartContract
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
-                    var mainAddress = (byte[])args[0];
+                    var codeName = (byte[])args[0];
                     var commercialAddress = (byte[])args[1];
-                    return BolService.AddCommercialAddress(mainAddress, commercialAddress);
+                    return BolService.AddCommercialAddress(codeName, commercialAddress);
                 }
                 if (operation == "getCertifiers")
                 {

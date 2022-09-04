@@ -64,9 +64,9 @@ namespace Bol.Api.Controllers
         }
 
         [HttpGet("getAccount")]
-        public async Task<ActionResult> GetAccount(string address, CancellationToken token)
+        public async Task<ActionResult> GetAccount(string codeName, CancellationToken token)
         {
-            var result = await _coreBolService.GetAccount(_addressTransformer.ToScriptHash(address), token);
+            var result = await _coreBolService.GetAccount(codeName, token);
             return Ok(result);
         }
 
