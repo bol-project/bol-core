@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,6 +80,48 @@ namespace Bol.Core.Services
 
             var transaction = _transactionService.Create(mainAddress, context.Contract, "claim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
+
+        public Task TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                address.GetBytes(),
+                value.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
+
+        public Task Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                from.GetBytes(),
+                to.GetBytes(),
+                Encoding.ASCII.GetBytes(codeName),
+                value.ToByteArray()
+            };
+            
+            var keys = new[] { context.CommercialAddresses[from] };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            transaction = _transactionService.Sign(transaction, witness, keys);
 
             return _transactionService.Publish(transaction, token);
         }

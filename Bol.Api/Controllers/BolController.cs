@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address.Abstractions;
@@ -68,6 +69,20 @@ namespace Bol.Api.Controllers
         {
             var result = await _coreBolService.GetAccount(codeName, token);
             return Ok(result);
+        }
+
+        [HttpGet("transferClaim")]
+        public async Task<ActionResult> TransferClaim(string address, string value, CancellationToken token)
+        {
+            await _coreBolService.TransferClaim(_addressTransformer.ToScriptHash(address), BigInteger.Parse(value), token);
+            return Ok();
+        }
+
+        [HttpGet("transfer")]
+        public async Task<ActionResult> Transfer(string from, string to, string codeName, string value, CancellationToken token)
+        {
+            await _coreBolService.Transfer(_addressTransformer.ToScriptHash(from), _addressTransformer.ToScriptHash(to), codeName, BigInteger.Parse(value), token);
+            return Ok();
         }
 
         [HttpGet("decimals")]

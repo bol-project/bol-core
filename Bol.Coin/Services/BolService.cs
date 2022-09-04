@@ -477,32 +477,162 @@ namespace Bol.Coin.Services
             return BolRepository.GetBols();
         }
 
-        public static BolResult Transfer(byte[] from, byte[] to, BigInteger value)
+        public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
-            if (BolValidator.AddressEmpty(from)) return BolResult.BadRequest("From Address cannot be empty.");
-            if (BolValidator.AddressBadLength(from)) return BolResult.BadRequest("From Address length must be 20 bytes.");
-            if (BolValidator.AddressEmpty(to)) return BolResult.BadRequest("To Address cannot be empty.");
-            if (BolValidator.AddressBadLength(to)) return BolResult.BadRequest("To Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(from)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.CodeNameEmpty(codeName))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
+                return false;
+            }
+            if (BolValidator.AddressEmpty(address))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+                return false;
+            }
 
-            if (value <= 0) return BolResult.BadRequest("Cannot transfer a negative or zero value");
+            if (BolValidator.AddressBadLength(address))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+                return false;
+            }
 
-            var fromAccount = BolRepository.Get(from);
-            if (fromAccount.MainAddress == null) return BolResult.BadRequest("From Address is not a registerd Bol Account.");
+            if (value <= 0)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
+                return false;
+            }
+            
+            var account = BolRepository.Get("accounts", codeName);
+            if (account.MainAddress == null)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
+                return false;
+            }
 
-            var toAccount = BolRepository.Get(to);
-            if (toAccount.MainAddress == null) return BolResult.BadRequest("To Address is not a registerd Bol Account.");
+            if (BolValidator.AddressNotOwner(account.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Main Address owner can perform this action."));
+                return false;
+            }
 
-            if (fromAccount.ClaimBalance < value) return BolResult.BadRequest("Cannot transfer more Bols that account balance.");
+            var claimBalance = account.ClaimBalance;
 
-            fromAccount.ClaimBalance = fromAccount.ClaimBalance - value;
-            toAccount.ClaimBalance = toAccount.ClaimBalance + value;
+            if (claimBalance < value)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
+                return false;
+            }
 
-            BolRepository.Save(fromAccount);
-            BolRepository.Save(toAccount);
+            var commercialAddresses = account.CommercialAddresses.Keys;
+            var addressExists = false;
+            for (int i = 0; i < commercialAddresses.Length; i++)
+            {
+                if (ArraysHelper.ArraysEqual(address, commercialAddresses[i]))
+                {
+                    addressExists = true;
+                    break;
+                }
+            }
+
+            if (!addressExists)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Commercial Address does not belong to Account."));
+                return false;
+            }
+            
+            var addressBalance = BolRepository.GetBols("CommercialAddress", address);
+
+            account.ClaimBalance = claimBalance - value;
+            BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
+            BolRepository.Save("accounts", account);
+            
+            Transferred(account.MainAddress, address, value);
+            return true;
+        }
+
+        public static bool Transfer(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
+        {
+            if (BolValidator.AddressEmpty(from))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("From Address cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressBadLength(from))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("From Address length must be 20 bytes."));
+                return false;
+            }
+
+            if (BolValidator.AddressEmpty(to))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("To Address cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressBadLength(to))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("To Address length must be 20 bytes."));
+                return false;
+            }
+
+            if (BolValidator.CodeNameEmpty(targetCodeName))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target CodeName cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressNotOwner(from))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+                return false;
+            }
+
+            if (value <= 0)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
+                return false;
+            }
+            
+            var targetAccount = BolRepository.Get("accounts", targetCodeName);
+            if (targetAccount.MainAddress == null)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
+                return false;
+            }
+
+            var targetCommercialAddresses = targetAccount.CommercialAddresses.Keys;
+            var addressExists = false;
+            for (int i = 0; i < targetCommercialAddresses.Length; i++)
+            {
+                if (ArraysHelper.ArraysEqual(to, targetCommercialAddresses[i]))
+                {
+                    addressExists = true;
+                    break;
+                }
+            }
+
+            if (!addressExists)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Address does not belong to Target Account."));
+                return false;
+            }
+
+            var fromBalance = BolRepository.GetBols("CommercialAddress",from);
+
+            if (fromBalance < value)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that account balance."));
+                return false;
+            }
+
+            var toBalance = BolRepository.GetBols("CommercialAddress",to);
+            
+            BolRepository.SetBols("CommercialAddress", from, fromBalance - value);
+            BolRepository.SetBols("CommercialAddress", to, toBalance + value);
+            
             Transferred(from, to, value);
-
-            return BolResult.Ok();
+            return true;
         }
 
         public static BigInteger GetBalance(byte[] address)
