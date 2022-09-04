@@ -24,9 +24,8 @@ namespace Bol.Api.NeoPlugins
         public JObject OnProcess(HttpContext context, string method, JArray _params)
         {
             if (method.ToLowerInvariant() != "getaccount") return null;
-            
-            var codeName = _params[0].AsString().ToScriptHash();
 
+            var codeName = _params[0].AsString();
             var result = _bolService.GetAccount(codeName);
 
             var json = _json.Serialize(result);

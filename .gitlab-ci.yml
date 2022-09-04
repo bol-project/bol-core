@@ -1,19 +1,16 @@
-services:
-  - docker:18.09-dind
-
 stages:
   - build
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker-dind:2375
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 .build:
   stage: build
-  image: gitlab/dind
+  image: docker:latest
   only:
+    - feature2021/transfer
     - develop
     - master
   variables:
@@ -54,8 +51,9 @@ build_node_4:
 
 build_rpc_node:
   stage: build
-  image: gitlab/dind
+  image: docker:latest
   only:
+    - feature2021/transfer
     - develop
     - master
   variables:
@@ -74,7 +72,7 @@ build_rpc_node:
     - build-internal
 
 .deploy:
-  image: lachlanevenson/k8s-kubectl:v1.16.14
+  image: lachlanevenson/k8s-kubectl:latest
   environment:
     name: bol-demo
     url: https://explorer.demo.bolchain.net
@@ -82,7 +80,10 @@ build_rpc_node:
     - deploy-internal
   variables:
     VALIDATOR_NAME: validator-1
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE_ALLOWED: '*'
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
   only:
+    - feature2021/transfer
     - master
     - develop
   stage: deploy

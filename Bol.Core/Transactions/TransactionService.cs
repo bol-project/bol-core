@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
-using Bol.Core.BolContract.Models;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Cryptography;
 

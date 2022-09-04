@@ -49,16 +49,16 @@ namespace Bol.Coin.Services
 
                 Runtime.Notify("debug", commercialAddress);
 
-                var addCommercialResult = AddCommercialAddress(address, commercialAddress);
+                var addCommercialResult = AddCommercialAddress(codeName, commercialAddress);
                 if (!addCommercialResult)
                 {
                     return false;
                 }
             }
 
-            SetMandatoryCertifier(address);
+            SetMandatoryCertifier(codeName);
 
-            var result = BolRepository.Get(address);
+            var result = BolRepository.Get("accounts",codeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
 
@@ -113,7 +113,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var account = BolRepository.Get(address);
+            var account = BolRepository.Get("accounts",codeName);
             if (account.MainAddress != null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("A Bol Account already exists for this address."));
@@ -163,25 +163,29 @@ namespace Bol.Coin.Services
             account.MandatoryCertifier = new byte[0];
             account.Countries = new byte[0];
 
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
-
+           
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
             uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+            if (currentHeight != 0 && currentHeight % claimInterval == 0)
+            {
+                endOfInterval = currentHeight;
+            }
+
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
-            var result = BolRepository.Get(account.MainAddress);
+            var result = BolRepository.Get("accounts", account.CodeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
             return true;
         }
 
-        private static bool SetMandatoryCertifier(byte[] mainAddress)
+        private static bool SetMandatoryCertifier(byte[] codeName)
         {
-            var account = BolRepository.Get(mainAddress);
+            var account = BolRepository.Get("accounts",codeName);
             var country = account.CodeName.Range(4, 6);
 
             var countryCertifiers = BolRepository.GetCertifiers(country);
@@ -205,25 +209,31 @@ namespace Bol.Coin.Services
 
             var selectedIndex = Blockchain.GetHeight() % availableCertifiers.Length;
             account.MandatoryCertifier = availableCertifiers[selectedIndex];
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
             return true;
         }
 
-        public static bool GetAccount(byte[] mainAddress)
+        public static bool GetAccount(byte[] codeName)
         {
-            if (BolValidator.AddressEmpty(mainAddress))
+            //if (BolValidator.AddressEmpty(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Main Address cannot be empty."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressBadLength(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Main Address length must be 20 bytes."));
+            //    return false;
+            //}
+
+            if (BolValidator.CodeNameEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Main Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(mainAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Main Address length must be 20 bytes."));
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
 
-            var account = BolRepository.Get(mainAddress);
+            var account = BolRepository.Get("accounts",codeName);
             if (account.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.NotFound("Main Address is not a registerd Bol Account."));
@@ -235,38 +245,56 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool AddCommercialAddress(byte[] mainAddress, byte[] commercialAddress)
+        public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
-            if (BolValidator.AddressEmpty(mainAddress))
+            var account = BolRepository.Get("accounts",codeName);
+
+            if (BolValidator.CodeNameEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
-            if (BolValidator.AddressBadLength(mainAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressNotOwner(mainAddress))
+            if (BolValidator.AddressNotOwner(account.MainAddress))
             {
                 Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
-            return AddCommercial(mainAddress, commercialAddress);
+            //if (BolValidator.AddressEmpty(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressBadLength(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressNotOwner(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+            //    return false;
+            //}
+            return AddCommercial(codeName, commercialAddress);
         }
 
-        private static bool AddCommercial(byte[] mainAddress, byte[] commercialAddress)
+        private static bool AddCommercial(byte[] codeName, byte[] commercialAddress)
         {
-            if (BolValidator.AddressEmpty(mainAddress))
+
+            if (BolValidator.CodeNameEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Main Address cannot be empty."));
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
-            if (BolValidator.AddressBadLength(mainAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Main Address length must be 20 bytes."));
-                return false;
-            }
+            //if (BolValidator.AddressEmpty(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Main Address cannot be empty."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressBadLength(mainAddress))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Main Address length must be 20 bytes."));
+            //    return false;
+            //}
             if (BolValidator.AddressEmpty(commercialAddress))
             {
                 Runtime.Notify("error", BolResult.BadRequest("Commercial Address cannot be empty."));
@@ -282,20 +310,27 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Unauthorized("Commercial Address has already been registered."));
                 return false;
             }
+            
+            var account = BolRepository.Get("accounts",codeName);
 
-            var account = BolRepository.Get(mainAddress);
+            if (BolValidator.AddressNotOwner(account.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+                return false;
+            }
+
             if (account.MainAddress == null)
             {
-                Runtime.Notify("error", BolResult.BadRequest("Main Address is not a registerd Bol Account."));
+                Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
                 return false;
             }
 
             account.CommercialAddresses[commercialAddress] = 0;
-            BolRepository.SetBols(commercialAddress, 0);
+            BolRepository.SetBols("CommercialAddress",commercialAddress, 0);
 
-            BolRepository.Save(account);
+            BolRepository.Save("accounts",account);
 
-            var result = BolRepository.Get(account.MainAddress);
+            var result = BolRepository.Get("accounts",account.CodeName);
 
             Runtime.Notify("addCommercialAddress", BolResult.Ok(result));
             return true;
@@ -318,7 +353,7 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            BolRepository.SetClaimInterval(10);
+            BolRepository.SetClaimInterval(Constants.CLAIM_INTERVAL);
 
             var certifiers = Certifiers.GenesisCertifiers();
             for (var i = 0; i < certifiers.Length; i++)
@@ -335,61 +370,70 @@ namespace Bol.Coin.Services
 
                 for (var j = 0; j < certifier.CommercialAddresses.Keys.Length; j++)
                 {
-                    var addCommercialResult = AddCommercial(certifier.MainAddress, certifier.CommercialAddresses.Keys[j]);
+                    var addCommercialResult = AddCommercial(certifier.CodeName, certifier.CommercialAddresses.Keys[j]);
                     if (!addCommercialResult)
                     {
                         return false;
                     }
                 }
 
-                RegisterAsCertifier(certifier.MainAddress, certifier.Countries, 0);
+                RegisterAsCertifier(certifier.CodeName, certifier.Countries, 0);
             }
 
             BolRepository.SetBols(0);
             BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
 
+            // The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
+            // World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+            // All data correspond to July 1 of each year
+ 
             var bpsYear = new Map<uint, BigInteger>();
-            bpsYear[2020] = 443858774;
-            bpsYear[2021] = 443369755;
-            bpsYear[2022] = 442863080;
-            bpsYear[2023] = 441180088;
-            bpsYear[2024] = 441989231;
-            bpsYear[2025] = 441699642;
-            bpsYear[2026] = 441537345;
-            bpsYear[2027] = 440279783;
-            bpsYear[2028] = 441528472;
-            bpsYear[2029] = 441660296;
-            bpsYear[2030] = 441873887;
+
+            bpsYear[2022] = 424332170;
+            bpsYear[2023] = 424082805;
+            bpsYear[2024] = 425890833;
+            bpsYear[2025] = 426608730;
+            bpsYear[2026] = 427223938;
+            bpsYear[2027] = 426972273;
+            bpsYear[2028] = 428953596;
+            bpsYear[2029] = 429874248;
+            bpsYear[2030] = 430700536;
+            bpsYear[2031] = 430293855;
+            bpsYear[2032] = 432722815;
+            bpsYear[2033] = 433549813;
 
             var dpsYear = new Map<uint, BigInteger>();
-            dpsYear[2020] = 187819619;
-            dpsYear[2021] = 190637490;
-            dpsYear[2022] = 193569717;
-            dpsYear[2023] = 196034672;
-            dpsYear[2024] = 199614745;
-            dpsYear[2025] = 202682166;
-            dpsYear[2026] = 205775244;
-            dpsYear[2027] = 208348971;
-            dpsYear[2028] = 212137640;
-            dpsYear[2029] = 215434148;
-            dpsYear[2030] = 218821347;
+
+            dpsYear[2022] = 212656072;
+            dpsYear[2023] = 192038779;
+            dpsYear[2024] = 193185613;
+            dpsYear[2025] = 196299975;
+            dpsYear[2026] = 199443455;
+            dpsYear[2027] = 202121623;
+            dpsYear[2028] = 206010807;
+            dpsYear[2029] = 209422815;
+            dpsYear[2030] = 212889047;
+            dpsYear[2031] = 215889642;
+            dpsYear[2032] = 220189761;
+            dpsYear[2033] = 223967735;
 
             var popYear = new Map<uint, BigInteger>();
-            popYear[2020] = 779479872900000000;
-            popYear[2021] = 787496573200000000;
-            popYear[2022] = 795395257700000000;
-            popYear[2023] = 803180033800000000;
-            popYear[2024] = 810860525500000000;
-            popYear[2025] = 818443745300000000;
-            popYear[2026] = 825927665100000000;
-            popYear[2027] = 833307831800000000;
-            popYear[2028] = 840586330100000000;
-            popYear[2029] = 847766072300000000;
-            popYear[2030] = 854848737100000000;
 
-            var yearStamp = new Map<uint, BigInteger>(); //will need to change to milliseconds after upgrade to neo 3
-            yearStamp[2020] = 1593561600;
-            yearStamp[2021] = 1625097600;
+            popYear[2022] = 796761887400000000;
+            popYear[2023] = 803768884700000000;
+            popYear[2024] = 811107464300000000;
+            popYear[2025] = 818408655000000000;
+            popYear[2026] = 825632180500000000;
+            popYear[2027] = 832779362800000000;
+            popYear[2028] = 839850268300000000;
+            popYear[2029] = 846842093700000000;
+            popYear[2030] = 853753020200000000;
+            popYear[2031] = 860577855400000000;
+            popYear[2032] = 867319455700000000;
+            popYear[2033] = 873975760200000000;
+
+            var yearStamp = new Map<uint, BigInteger>(); //yearStamp correspond to July 1 (00:00:00 GMT+0000) of each year
+
             yearStamp[2022] = 1656633600;
             yearStamp[2023] = 1688169600;
             yearStamp[2024] = 1719792000;
@@ -399,11 +443,16 @@ namespace Bol.Coin.Services
             yearStamp[2028] = 1846022400;
             yearStamp[2029] = 1877558400;
             yearStamp[2030] = 1909094400;
+            yearStamp[2031] = 1940630400;
+            yearStamp[2032] = 1972252800;
+            yearStamp[2033] = 2003788800;
 
             BolRepository.SetBpsYear(bpsYear);
             BolRepository.SetDpsYear(dpsYear);
             BolRepository.SetPopYear(popYear);
             BolRepository.SetYearStamp(yearStamp);
+            
+            BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
 
             BolRepository.SetContractDeployed();
 
@@ -428,32 +477,162 @@ namespace Bol.Coin.Services
             return BolRepository.GetBols();
         }
 
-        public static BolResult Transfer(byte[] from, byte[] to, BigInteger value)
+        public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
-            if (BolValidator.AddressEmpty(from)) return BolResult.BadRequest("From Address cannot be empty.");
-            if (BolValidator.AddressBadLength(from)) return BolResult.BadRequest("From Address length must be 20 bytes.");
-            if (BolValidator.AddressEmpty(to)) return BolResult.BadRequest("To Address cannot be empty.");
-            if (BolValidator.AddressBadLength(to)) return BolResult.BadRequest("To Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(from)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
+            if (BolValidator.CodeNameEmpty(codeName))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
+                return false;
+            }
+            if (BolValidator.AddressEmpty(address))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+                return false;
+            }
 
-            if (value <= 0) return BolResult.BadRequest("Cannot transfer a negative or zero value");
+            if (BolValidator.AddressBadLength(address))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+                return false;
+            }
 
-            var fromAccount = BolRepository.Get(from);
-            if (fromAccount.MainAddress == null) return BolResult.BadRequest("From Address is not a registerd Bol Account.");
+            if (value <= 0)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
+                return false;
+            }
+            
+            var account = BolRepository.Get("accounts", codeName);
+            if (account.MainAddress == null)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
+                return false;
+            }
 
-            var toAccount = BolRepository.Get(to);
-            if (toAccount.MainAddress == null) return BolResult.BadRequest("To Address is not a registerd Bol Account.");
+            if (BolValidator.AddressNotOwner(account.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Main Address owner can perform this action."));
+                return false;
+            }
 
-            if (fromAccount.ClaimBalance < value) return BolResult.BadRequest("Cannot transfer more Bols that account balance.");
+            var claimBalance = account.ClaimBalance;
 
-            fromAccount.ClaimBalance = fromAccount.ClaimBalance - value;
-            toAccount.ClaimBalance = toAccount.ClaimBalance + value;
+            if (claimBalance < value)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
+                return false;
+            }
 
-            BolRepository.Save(fromAccount);
-            BolRepository.Save(toAccount);
+            var commercialAddresses = account.CommercialAddresses.Keys;
+            var addressExists = false;
+            for (int i = 0; i < commercialAddresses.Length; i++)
+            {
+                if (ArraysHelper.ArraysEqual(address, commercialAddresses[i]))
+                {
+                    addressExists = true;
+                    break;
+                }
+            }
+
+            if (!addressExists)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Commercial Address does not belong to Account."));
+                return false;
+            }
+            
+            var addressBalance = BolRepository.GetBols("CommercialAddress", address);
+
+            account.ClaimBalance = claimBalance - value;
+            BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
+            BolRepository.Save("accounts", account);
+            
+            Transferred(account.MainAddress, address, value);
+            return true;
+        }
+
+        public static bool Transfer(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
+        {
+            if (BolValidator.AddressEmpty(from))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("From Address cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressBadLength(from))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("From Address length must be 20 bytes."));
+                return false;
+            }
+
+            if (BolValidator.AddressEmpty(to))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("To Address cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressBadLength(to))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("To Address length must be 20 bytes."));
+                return false;
+            }
+
+            if (BolValidator.CodeNameEmpty(targetCodeName))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target CodeName cannot be empty."));
+                return false;
+            }
+
+            if (BolValidator.AddressNotOwner(from))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+                return false;
+            }
+
+            if (value <= 0)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
+                return false;
+            }
+            
+            var targetAccount = BolRepository.Get("accounts", targetCodeName);
+            if (targetAccount.MainAddress == null)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
+                return false;
+            }
+
+            var targetCommercialAddresses = targetAccount.CommercialAddresses.Keys;
+            var addressExists = false;
+            for (int i = 0; i < targetCommercialAddresses.Length; i++)
+            {
+                if (ArraysHelper.ArraysEqual(to, targetCommercialAddresses[i]))
+                {
+                    addressExists = true;
+                    break;
+                }
+            }
+
+            if (!addressExists)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Target Address does not belong to Target Account."));
+                return false;
+            }
+
+            var fromBalance = BolRepository.GetBols("CommercialAddress",from);
+
+            if (fromBalance < value)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that account balance."));
+                return false;
+            }
+
+            var toBalance = BolRepository.GetBols("CommercialAddress",to);
+            
+            BolRepository.SetBols("CommercialAddress", from, fromBalance - value);
+            BolRepository.SetBols("CommercialAddress", to, toBalance + value);
+            
             Transferred(from, to, value);
-
-            return BolResult.Ok();
+            return true;
         }
 
         public static BigInteger GetBalance(byte[] address)
@@ -467,28 +646,42 @@ namespace Bol.Coin.Services
             return account.ClaimBalance;
         }
 
-        public static bool RegisterAsCertifier(byte[] address, byte[] countries)
+        public static bool RegisterAsCertifier(byte[] codeName, byte[] countries)
         {
-            if (BolValidator.AddressEmpty(address))
+            //if (BolValidator.AddressEmpty(address))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressBadLength(address))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+            //    return false;
+            //}
+            var bolAccount = BolRepository.Get("accounts", codeName);
+
+            if (BolValidator.CodeNameEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
-            if (BolValidator.AddressBadLength(address))
+            
+            if (bolAccount.MainAddress == null)
             {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+                Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
                 return false;
             }
-            if (BolValidator.AddressNotOwner(address))
+
+            if (BolValidator.AddressNotOwner(bolAccount.MainAddress))
             {
                 Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
-
-            return RegisterAsCertifier(address, countries, Constants.COLLATERAL_BOL);
+            
+            return RegisterAsCertifier(codeName, countries, Constants.COLLATERAL_BOL);
         }
 
-        private static bool RegisterAsCertifier(byte[] address, byte[] countries, BigInteger collateral)
+        private static bool RegisterAsCertifier(byte[] codeName, byte[] countries, BigInteger collateral)
         {
             if (countries.Length == 0)
             {
@@ -496,7 +689,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var bolAccount = BolRepository.Get(address);
+            var bolAccount = BolRepository.Get("accounts",codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -528,20 +721,23 @@ namespace Bol.Coin.Services
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts",bolAccount);
 
             Runtime.Notify("registerAsCertifier", BolResult.Ok());
 
             return true;
         }
 
-        public static BolResult UnregisterAsCertifier(byte[] address)
+        public static BolResult UnregisterAsCertifier(byte[] codeName)
         {
-            if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
-            if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
-            if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
+            //if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
+            //if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
+            //if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
+            var bolAccount = BolRepository.Get("accounts", codeName);
 
-            var bolAccount = BolRepository.Get(address);
+            if (BolValidator.CodeNameEmpty(codeName)) return BolResult.BadRequest("CodeName cannot be empty."); 
+            if (bolAccount.MainAddress == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
+            if (BolValidator.AddressNotOwner(bolAccount.MainAddress)) return BolResult.BadRequest("Only the Address owner can perform this action.");
             if (bolAccount.MainAddress == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
 
             if (bolAccount.IsCertifier == 0) return BolResult.BadRequest("Address is not a Bol Certifier.");
@@ -550,7 +746,7 @@ namespace Bol.Coin.Services
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts", bolAccount);
 
             return BolResult.Ok();
         }
@@ -695,28 +891,39 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool Claim(byte[] address)
+        public static bool Claim(byte[] codeName)
         {
-            if (BolValidator.AddressEmpty(address))
+            if (BolValidator.CodeNameEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressNotOwner(address))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
-                return false;
-            }
+            //if (BolValidator.AddressEmpty(address))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressBadLength(address))
+            //{
+            //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
+            //    return false;
+            //}
+            //if (BolValidator.AddressNotOwner(address))
+            //{
+            //    Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
+            //    return false;
+            //}
 
-            var bolAccount = BolRepository.Get(address);
+            var bolAccount = BolRepository.Get("accounts",codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
+                return false;
+            }
+
+            if (BolValidator.AddressNotOwner(bolAccount.MainAddress))
+            {
+                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
             if (bolAccount.AccountType != Constants.B_ACCOUNT_TYPE)
@@ -742,20 +949,17 @@ namespace Bol.Coin.Services
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            Runtime.Notify("debug", 1);
-            var intervalTotal = BolRepository.GetRegisteredAtBlock(previousHeight);
-
             Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
-            if (currentHeight <= claimInterval)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("No claim before first interval."));
-                return false;
-            }
-
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
+
+            if (startClaimHeight == endClaimHeight) 
+            {
+                Runtime.Notify("error", BolResult.Forbidden("Nothing to claim in the same interval."));
+                return false;
+            }
 
             Runtime.Notify("debug", 3);
             var bpsYear = BolRepository.GetBpsYear();
@@ -768,26 +972,42 @@ namespace Bol.Coin.Services
             BigInteger intervalDistribute = 0;
             for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
+                Runtime.Notify("debug", 5);
                 intervalDistribute = BolRepository.GetDistributeAtBlock(i);
                 if(intervalDistribute > 0)
                 {
+                    Runtime.Notify("debug", 6);
                     cpp += intervalDistribute;
                 }
                 else
                 {
-                    intervalTotal = BolRepository.GetRegisteredAtBlock(i);
+                    Runtime.Notify("debug", 7);
+                    var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                     uint pointer = i;
-                    while (intervalTotal == 0 && pointer > 0)
+                    while (intervalTotal == 0 && pointer > claimInterval)
                     {
+                        Runtime.Notify("debug", 8);
                         pointer -= claimInterval;
                         intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
                     }
 
                     var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
+                    Runtime.Notify("debug", 9);
+                    
                     var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
+                    Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
-                    uint currentYear = ConvertToYear(EndIntervalStamp);
+                    uint currentYear = 2022;
+                    while (currentYear <= 2033)
+                    {
+                        if(EndIntervalStamp > yearStamp[currentYear] && EndIntervalStamp <= yearStamp[currentYear+1] )
+                        {
+                            break;
+                        }
+                        currentYear++;
+                    }
+
                     BigInteger timestampThisYear = yearStamp[currentYear];
                     BigInteger timestampNextYear = yearStamp[currentYear + 1];
                     BigInteger ThisYearBps = bpsYear[currentYear];
@@ -811,46 +1031,34 @@ namespace Bol.Coin.Services
                     var intervalBirths = intervalTime * Bps;
                     BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
-                    var TotalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
-                    BolRepository.SetTotalSupplyAtBlock(i, TotalSupply);
+                    var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
+                    BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
 
                     cpp += intervalDistribute;
                 }                    
             }
 
-            Runtime.Notify("debug", 5);
+            Runtime.Notify("debug", 20);
 
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
-            BolRepository.Save(bolAccount);
+            BolRepository.Save("accounts",bolAccount);
 
-            Runtime.Notify("debug", 6);
+            Runtime.Notify("debug", 21);
             var circulatingSupply = BolRepository.GetBols() + cpp;
             BolRepository.SetBols(circulatingSupply);
 
-            Runtime.Notify("debug", 7);
-            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-            BolRepository.SetRegisteredAtBlock(currentHeight, totalRegistered);
+            Runtime.Notify("debug", 22);
+            Transferred(null, bolAccount.MainAddress , cpp);
 
-            Runtime.Notify("debug", 8);
-            Transferred(null, address, cpp);
-
-            var result = BolRepository.Get(bolAccount.MainAddress);
+            var result = BolRepository.Get("accounts",bolAccount.CodeName);
 
             Runtime.Notify("claim", BolResult.Ok(result));
 
             return true;
         }
-        private static uint ConvertToYear(uint unixtime)
-        {
-            uint remainder = unixtime % 31556926;
-            uint month_seconds = 2629743;
-            if (remainder < 7 * month_seconds)
-                return 1970 + unixtime / 31556926 - 1;
-            else
-                return 1970 + unixtime / 31556926;
-        }
+        
         public static bool GetCertifiers(byte[] countryCode)
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);

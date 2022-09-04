@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -22,10 +22,11 @@ RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.internal.json ./out/protocol.json
 COPY ./Bol.Api/config.internal.json ./out/config.json
 
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS runtime-base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-base
 
 # Install dependencies:
-RUN apt-get update && apt-get install -y \
+RUN apt-get update 
+RUN apt-get install -y \
     libleveldb-dev \
     sqlite3 \
     libsqlite3-dev \

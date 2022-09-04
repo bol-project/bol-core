@@ -14,7 +14,7 @@
       "SslCert": "",
       "SslCertPassword": "",
       "ExtraGasInvoke": "0",
-      "MaxConcurrentConnections": "10"
+      "MaxConcurrentConnections": "1000"
     },
     "UnlockWallet": {
       "Path": "wallet.json",

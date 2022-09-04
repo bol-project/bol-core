@@ -6,7 +6,7 @@ namespace Bol.Core.Dtos
         public int Size;
         public uint Height { get; set; }
         public uint Timestamp;
-        public int Transactions { get; set; }
+        public int TransactionCount { get; set; }
         public string Creator { get; set; }
     }
 }

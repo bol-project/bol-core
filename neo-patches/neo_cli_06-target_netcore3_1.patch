@@ -1,0 +1,13 @@
+diff --git a/neo-cli/neo-cli.csproj b/neo-cli/neo-cli.csproj
+index 018998f8cd05ae17f85effb9c478418b8174b2eb..f2034fd0e0eedce9e0808dc24f866e96d535cb92 100644
+--- a/neo-cli/neo-cli.csproj
++++ b/neo-cli/neo-cli.csproj
+@@ -5,7 +5,7 @@
+     <AssemblyTitle>Neo.CLI</AssemblyTitle>
+     <Version>2.12.2</Version>
+     <Authors>The Neo Project</Authors>
+-    <TargetFramework>netcoreapp2.1</TargetFramework>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
+     <AssemblyName>neo-cli</AssemblyName>
+     <OutputType>Exe</OutputType>
+     <PackageId>Neo.CLI</PackageId>
