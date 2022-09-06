@@ -22,7 +22,7 @@ namespace Bol.Coin.Tests.ContractTests
         }
 
         [Fact]
-        public async Task TestRegister()
+        public async Task Register_Should_CompleteSuccessfully()
         {
             await _service.Deploy();
             _emulator.Execute(_transactionGrabber);
@@ -31,6 +31,25 @@ namespace Bol.Coin.Tests.ContractTests
             var result = _emulator.Execute(_transactionGrabber);
             
             Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Register_ShouldFail_WhenPerformedTwice()
+        {
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.Register();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.Register();
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            Assert.False(result);
         }
     }
 }

@@ -51,16 +51,14 @@ namespace Bol.Api.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(CancellationToken token)
         {
-            //_bolService.Register();
-
-            await _coreBolService.Register(token);
-            return Ok();
+            var result = await _coreBolService.Register(token);
+            return Ok(result);
         }
 
         [HttpPost("claim")]
-        public ActionResult Claim()
+        public async Task<ActionResult> Claim(CancellationToken token)
         {
-            var result = _bolService.Claim();
+            var result = await _coreBolService.Claim(token);
             return Ok(result);
         }
 
@@ -71,18 +69,18 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("transferClaim")]
+        [HttpPost("transferClaim")]
         public async Task<ActionResult> TransferClaim(string address, string value, CancellationToken token)
         {
-            await _coreBolService.TransferClaim(_addressTransformer.ToScriptHash(address), BigInteger.Parse(value), token);
-            return Ok();
+            var result = await _coreBolService.TransferClaim(_addressTransformer.ToScriptHash(address), BigInteger.Parse(value), token);
+            return Ok(result);
         }
 
-        [HttpGet("transfer")]
+        [HttpPost("transfer")]
         public async Task<ActionResult> Transfer(string from, string to, string codeName, string value, CancellationToken token)
         {
-            await _coreBolService.Transfer(_addressTransformer.ToScriptHash(from), _addressTransformer.ToScriptHash(to), codeName, BigInteger.Parse(value), token);
-            return Ok();
+            var result = await _coreBolService.Transfer(_addressTransformer.ToScriptHash(from), _addressTransformer.ToScriptHash(to), codeName, BigInteger.Parse(value), token);
+            return Ok(result);
         }
 
         [HttpGet("decimals")]

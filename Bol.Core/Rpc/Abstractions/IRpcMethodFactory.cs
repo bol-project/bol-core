@@ -8,6 +8,6 @@ namespace Bol.Core.Rpc.Abstractions
     {
         Task<T> SendRawTransaction<T>(BolTransaction transaction, CancellationToken token = default);
         Task<T> TestRawTransaction<T>(BolTransaction transaction, CancellationToken token = default);
-        Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default);
+        Task<T> GetAccount<T>(string codeName, CancellationToken token = default);
     }
 }

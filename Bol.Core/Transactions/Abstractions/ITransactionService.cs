@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
-using Bol.Core.BolContract.Models;
 using Bol.Cryptography;
 
 namespace Bol.Core.Transactions

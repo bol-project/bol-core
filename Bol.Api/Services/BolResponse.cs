@@ -1,4 +1,4 @@
-namespace Bol.Core.Model
+namespace Bol.Api.Model
 {
     public class BolResponse
     {

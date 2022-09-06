@@ -39,9 +39,9 @@ namespace Bol.Core.Rpc
             return _rpcClient.InvokeAsync<T>("testrawtransaction", new[] { _bse16Encoder.Encode(unsignedTransaction) }, token);
         }
 
-        public Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default)
+        public Task<T> GetAccount<T>(string codeName, CancellationToken token = default)
         {
-            return _rpcClient.InvokeAsync<T>("getaccount", new[] { mainAddress }, token);
+            return _rpcClient.InvokeAsync<T>("getaccount", new[] { codeName }, token);
         }
     }
 }

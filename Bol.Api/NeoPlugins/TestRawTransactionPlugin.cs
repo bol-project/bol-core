@@ -15,17 +15,20 @@ using System.Net;
 using Bol.Api.Dtos;
 using System.Numerics;
 using System.Linq;
-using Bol.Core.BolContract.Models;
+using Bol.Api.Model;
+using Bol.Api.Mappers;
 
 namespace Bol.Api.NeoPlugins
 {
     public class TestRawTransactionPlugin : Plugin, IRpcPlugin
     {
         private readonly IJsonSerializer _json;
+        private readonly IAccountToAccountMapper _mapper;
 
-        public TestRawTransactionPlugin(IJsonSerializer json) : base()
+        public TestRawTransactionPlugin(IJsonSerializer json, IAccountToAccountMapper mapper) : base()
         {
             _json = json ?? throw new ArgumentNullException(nameof(json));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public override void Configure() { }
@@ -38,8 +41,9 @@ namespace Bol.Api.NeoPlugins
             var transaction = (InvocationTransaction)InvocationTransaction.DeserializeFrom(transactionHex.HexToBytes());
 
             var result = TestContract(transaction);
+            var bolAccount = _mapper.Map(result);
 
-            var json = _json.Serialize(result);
+            var json = _json.Serialize(bolAccount);
 
             return JObject.Parse(json);
         }
@@ -96,7 +100,7 @@ namespace Bol.Api.NeoPlugins
                 var message = parameters[1].ToString();
                 Console.WriteLine($"CONTRACT DEBUGGING: {transactionHash.ToString()} | {message}");
             }
-            if (op == "error")
+            else if (op == "error")
             {
                 var result = (List<ContractParameter>)parameters[1].Value;
                 var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Bol.Core.BolContract.Models
+namespace Bol.Api.Model
 {
     public class BolAccount
     {
@@ -29,11 +29,5 @@ namespace Bol.Core.BolContract.Models
 
         public string RegistrationHeight { get; set; }
         public string LastClaimHeight { get; set; }
-    }
-
-    public enum BolAccountType
-    {
-        B = 0,
-        C = 1
     }
 }

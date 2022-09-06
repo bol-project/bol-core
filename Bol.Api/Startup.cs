@@ -2,6 +2,7 @@ using System.Net.Http;
 using Akka.Actor;
 using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
+using Bol.Api.Mappers;
 using Bol.Core.Abstractions;
 using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
@@ -19,6 +20,8 @@ using Bol.Core.Transactions;
 using Bol.Cryptography.Abstractions;
 using Bol.Cryptography.Signers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,11 +122,20 @@ namespace Bol.Api
             services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
             services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
             services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
+            services.AddScoped<IAccountToAccountMapper, AccountToAccountMapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseExceptionHandler(c => c.Run(async context =>
+            {
+                var exception = context.Features
+                    .Get<IExceptionHandlerPathFeature>()
+                    .Error;
+                var response = new { error = exception.Message };
+                await context.Response.WriteAsJsonAsync(response);
+            }));
             app.UseRouting();
 
             app.UseMetricServer(url: "/health");
