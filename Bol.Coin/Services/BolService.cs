@@ -1010,7 +1010,7 @@ namespace Bol.Coin.Services
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
                     uint currentYear = 2022;
-                    while (currentYear <= 2033)
+                    while (currentYear <= 2032)
                     {
                         if(EndIntervalStamp > yearStamp[currentYear] && EndIntervalStamp <= yearStamp[currentYear+1] )
                         {
