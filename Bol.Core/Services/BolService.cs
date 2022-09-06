@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
-using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
 
@@ -43,7 +42,7 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
-        public Task Register(CancellationToken token = default)
+        public async Task<BolAccount> Register(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
@@ -63,10 +62,14 @@ namespace Bol.Core.Services
             var transaction = _transactionService.Create(mainAddress, context.Contract, "register", parameters);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
-            return _transactionService.Publish(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
-        public Task Claim(CancellationToken token = default)
+        public async Task<BolAccount> Claim(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
@@ -81,10 +84,14 @@ namespace Bol.Core.Services
             var transaction = _transactionService.Create(mainAddress, context.Contract, "claim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
-            return _transactionService.Publish(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
-        public Task TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default)
+        public async Task<BolAccount> TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
@@ -101,10 +108,14 @@ namespace Bol.Core.Services
             var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
-            return _transactionService.Publish(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
-        public Task Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default)
+        public async Task<BolAccount> Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
@@ -123,7 +134,11 @@ namespace Bol.Core.Services
             var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, remarks: new[] { Guid.NewGuid().ToString() });
             transaction = _transactionService.Sign(transaction, witness, keys);
 
-            return _transactionService.Publish(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
         public Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
