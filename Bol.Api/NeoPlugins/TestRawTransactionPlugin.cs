@@ -100,7 +100,7 @@ namespace Bol.Api.NeoPlugins
                 var message = parameters[1].ToString();
                 Console.WriteLine($"CONTRACT DEBUGGING: {transactionHash.ToString()} | {message}");
             }
-            if (op == "error")
+            else if (op == "error")
             {
                 var result = (List<ContractParameter>)parameters[1].Value;
                 var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
