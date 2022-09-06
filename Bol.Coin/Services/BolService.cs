@@ -164,6 +164,8 @@ namespace Bol.Coin.Services
             account.Countries = new byte[0];
 
             BolRepository.Save("accounts",account);
+            
+            Transferred(null, account.MainAddress , account.ClaimBalance);
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
@@ -236,7 +238,7 @@ namespace Bol.Coin.Services
             var account = BolRepository.Get("accounts",codeName);
             if (account.MainAddress == null)
             {
-                Runtime.Notify("error", BolResult.NotFound("Main Address is not a registerd Bol Account."));
+                Runtime.Notify("error", BolResult.NotFound("Main Address is not a registered Bol Account."));
                 return false;
             }
 
@@ -547,6 +549,10 @@ namespace Bol.Coin.Services
             BolRepository.Save("accounts", account);
             
             Transferred(account.MainAddress, address, value);
+
+            var result = BolRepository.Get("accounts", account.CodeName);
+
+            Runtime.Notify("transferClaim", BolResult.Ok(result));
             return true;
         }
 
@@ -632,6 +638,11 @@ namespace Bol.Coin.Services
             BolRepository.SetBols("CommercialAddress", to, toBalance + value);
             
             Transferred(from, to, value);
+
+            var result = BolRepository.Get("accounts", targetCodeName);
+
+            Runtime.Notify("transfer", BolResult.Ok(result));
+            
             return true;
         }
 
