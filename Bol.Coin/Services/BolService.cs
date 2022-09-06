@@ -114,9 +114,9 @@ namespace Bol.Coin.Services
             }
 
             var account = BolRepository.Get("accounts",codeName);
-            if (account.MainAddress != null)
+            if (account != null && account.CodeName != null)
             {
-                Runtime.Notify("error", BolResult.BadRequest("A Bol Account already exists for this address."));
+                Runtime.Notify("error", BolResult.BadRequest("A Bol Account already exists for this CodeName."));
                 return false;
             }
 
