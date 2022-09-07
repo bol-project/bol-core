@@ -507,6 +507,13 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
+
+            var claimTransferFee = BolRepository.GetClaimTransferFee();
+            if (value <= claimTransferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+                return false;
+            }
             
             var account = BolRepository.Get("accounts", codeName);
             if (account.MainAddress == null)
@@ -547,10 +554,12 @@ namespace Bol.Coin.Services
             }
             
             var addressBalance = BolRepository.GetBols("CommercialAddress", address);
+            var feeBucketAmount = BolRepository.GetFeeBucket();
 
             account.ClaimBalance = claimBalance - value;
-            BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
+            BolRepository.SetBols("CommercialAddress", address, addressBalance + value - claimTransferFee);
             BolRepository.Save("accounts", account);
+            BolRepository.SetFeeBucket(feeBucketAmount + claimTransferFee);
             
             Transferred(account.MainAddress, address, value);
 
@@ -603,6 +612,13 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
+
+            var transferFee = BolRepository.GetTransferFee();
+            if (value <= transferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+                return false;
+            }
             
             var targetAccount = BolRepository.Get("accounts", targetCodeName);
             if (targetAccount.MainAddress == null)
@@ -637,9 +653,11 @@ namespace Bol.Coin.Services
             }
 
             var toBalance = BolRepository.GetBols("CommercialAddress",to);
+            var feeBucketAmount = BolRepository.GetFeeBucket();
             
             BolRepository.SetBols("CommercialAddress", from, fromBalance - value);
-            BolRepository.SetBols("CommercialAddress", to, toBalance + value);
+            BolRepository.SetBols("CommercialAddress", to, toBalance + value - transferFee);
+            BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
             Transferred(from, to, value);
 
