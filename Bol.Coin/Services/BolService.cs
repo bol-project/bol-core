@@ -455,6 +455,10 @@ namespace Bol.Coin.Services
             BolRepository.SetYearStamp(yearStamp);
             
             BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
+            
+            BolRepository.SetFeeBucket(0);
+            BolRepository.SetTransferFee(10000);
+            BolRepository.SetClaimTransferFee(5000);
 
             BolRepository.SetContractDeployed();
 
