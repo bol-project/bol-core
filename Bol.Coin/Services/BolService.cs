@@ -561,7 +561,8 @@ namespace Bol.Coin.Services
             BolRepository.Save("accounts", account);
             BolRepository.SetFeeBucket(feeBucketAmount + claimTransferFee);
             
-            Transferred(account.MainAddress, address, value);
+            Transferred(account.MainAddress, address, value - claimTransferFee);
+            Transferred(account.MainAddress, Owner, claimTransferFee);
 
             var result = BolRepository.Get("accounts", account.CodeName);
 
@@ -660,6 +661,7 @@ namespace Bol.Coin.Services
             BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
             Transferred(from, to, value);
+            Transferred(from, Owner, transferFee);
 
             var result = BolRepository.Get("accounts", targetCodeName);
 
