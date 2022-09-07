@@ -1000,19 +1000,12 @@ namespace Bol.Coin.Services
             var popYear = BolRepository.GetPopYear();
             var yearStamp = BolRepository.GetYearStamp();
 
-            //adding a method to distribute the remaining amount of the multisign  address to each validator 
-
-            BigInteger firstIntClaim = 0;
-            firstIntClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
-
-             if(firstIntClaim == 0)
-                {
-                   // add new method
-                   // get balance of multisign  address
-                   // if balance > 0 transfer to each validator  amount = balance/number of validators 
-                   //  the transfer will be done without signatures  of multisign  address       
-                }
-
+            //adding a method to distribute the remaining amount of the fee bucket to each validator 
+            var firstInClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
+            if (firstInClaim == 0)
+            {
+                DistributeFees();   
+            }
 
             Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
@@ -1112,6 +1105,28 @@ namespace Bol.Coin.Services
             Runtime.Notify("getCertifiers", BolResult.Ok(certifiers));
 
             return true;
+        }
+
+        private static void DistributeFees()
+        {
+            var fees = BolRepository.GetFeeBucket();
+            var validators = Certifiers.GenesisCertifiers();
+            var amount = fees / validators.Length;
+
+            if (fees == 0 || amount == 0) return;
+
+            for (int i = 0; i < validators.Length; i++)
+            {
+                var validatorCodeName = validators[i].CodeName;
+                var validatorAccount = BolRepository.Get("accounts", validatorCodeName);
+                var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
+                var paymentAddressBalance = BolRepository.GetBols("CommercialAddress", validatorPaymentAddress);
+                BolRepository.SetBols("CommercialAddress", validatorPaymentAddress, paymentAddressBalance + amount);
+                Transferred(Owner, validatorPaymentAddress, amount);
+                fees -= amount;
+            }
+                
+            BolRepository.SetFeeBucket(fees);
         }
     }
 }
