@@ -622,7 +622,7 @@ namespace Bol.Coin.Services
             }
             
             var targetAccount = BolRepository.Get("accounts", targetCodeName);
-            if (targetAccount.MainAddress == null)
+            if (targetAccount == null || targetAccount.CodeName == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
                 return false;
