@@ -649,7 +649,7 @@ namespace Bol.Coin.Services
 
             if (fromBalance < value)
             {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that account balance."));
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that address balance."));
                 return false;
             }
 
