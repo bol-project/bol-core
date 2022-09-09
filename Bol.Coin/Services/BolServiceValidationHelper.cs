@@ -16,8 +16,7 @@ public class BolServiceValidationHelper
     private const string CommercialAddressCannotBeEmpty = "Commercial Address cannot be empty.";
     private const string CommercialAddressLengthMustBeBytes = "Commercial Address length must be 20 bytes.";
 
-    public static bool CanRegister(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress,
-        byte[] socialAddress)
+    public static bool CanRegister(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
     {
         if (AddressIsEmpty(address)) return false;
 
@@ -150,7 +149,7 @@ public class BolServiceValidationHelper
     {
         if (BolValidator.AddressEmpty(address))
         {
-            Runtime.Notify("error", BolResult.BadRequest(AddressCannotBeEmpty));
+            Runtime.Notify("error", BolResult.BadRequest(message));
             return true;
         }
 
@@ -161,7 +160,7 @@ public class BolServiceValidationHelper
     {
         if (BolValidator.AddressBadLength(address))
         {
-            Runtime.Notify("error", BolResult.BadRequest(AddressLengthMustBeBytes));
+            Runtime.Notify("error", BolResult.BadRequest(message));
             return true;
         }
 
