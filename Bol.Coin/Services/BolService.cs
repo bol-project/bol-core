@@ -22,21 +22,11 @@ namespace Bol.Coin.Services
 
         public static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] commercialAddresses)
         {
-            if (BolValidator.AddressEmpty(address))
+            if (!BolServiceValidationHelper.CanRegister(address, codeName, edi, blockChainAddress, socialAddress))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
                 return false;
             }
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressNotOwner(address))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
-                return false;
-            }
+
             var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress);
             if (!registerResult)
             {
@@ -67,51 +57,6 @@ namespace Bol.Coin.Services
 
         private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
         {
-            if (BolValidator.AddressEmpty(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.CodeNameEmpty(codeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
-                return false;
-            }
-            if (BolValidator.EdiEmpty(edi))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("EDI cannot be empty."));
-                return false;
-            }
-            if (BolValidator.EdiBadLength(edi))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("EDI length must be 32 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressEmpty(blockChainAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("BlockChain Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(blockChainAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("BlockChain Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressEmpty(socialAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Social Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(socialAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Social Address length must be 20 bytes."));
-                return false;
-            }
 
             var account = BolRepository.Get("accounts",codeName);
             if (account != null && account.CodeName != null)
