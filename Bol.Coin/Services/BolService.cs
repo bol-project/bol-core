@@ -163,20 +163,8 @@ namespace Bol.Coin.Services
 
         public static bool GetAccount(byte[] codeName)
         {
-            //if (BolValidator.AddressEmpty(mainAddress))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Main Address cannot be empty."));
-            //    return false;
-            //}
-            //if (BolValidator.AddressBadLength(mainAddress))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Main Address length must be 20 bytes."));
-            //    return false;
-            //}
-
-            if (BolValidator.CodeNameEmpty(codeName))
+            if (BolServiceValidationHelper.CodeNameIsEmpty(codeName))
             {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
 
