@@ -233,7 +233,7 @@ namespace Bol.Coin.Services
 
                 for (var j = 0; j < certifier.CommercialAddresses.Keys.Length; j++)
                 {
-                    var addCommercialResult = AddCommercial(certifier.CodeName, certifier.CommercialAddresses.Keys[j]);
+                    var addCommercialResult = AddCommercialAddress(certifier.CodeName, certifier.CommercialAddresses.Keys[j]);
                     if (!addCommercialResult)
                     {
                         return false;
