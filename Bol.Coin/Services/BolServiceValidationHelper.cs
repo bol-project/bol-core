@@ -110,7 +110,7 @@ public class BolServiceValidationHelper
 
         if (account.ClaimBalance < value + claimTransferFee)
         {
-            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
+            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols than claim balance."));
             return false;
         }
 
