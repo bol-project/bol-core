@@ -79,40 +79,25 @@ namespace Bol.Core.Tests.Services
             _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
         }
 
-        [Fact]
-        public void Generate_ShouldGenerateCodeName_WhenInputIsPapadopoulos()
+        [Theory]
+        [MemberData(nameof(TestDataGenerator.GetNaturalPersonFromDataGenerator), MemberType = typeof(TestDataGenerator))]
+        public void Generate_ShouldGenerateCodeName_WithNaturalPersonData(NaturalPerson papadopoulos, NaturalPerson smith, NaturalPerson zhou)
         {
-            var codeName = _service.Generate(papadopoulos);
+            var codeNamePapadopoulos = _service.Generate(papadopoulos);
+            var codeNameSmith = _service.Generate(smith);
+            var codeNameZhou = _service.Generate(zhou);
 
-            _codeNameValidator.ValidateAndThrow(codeName);
+            _codeNameValidator.ValidateAndThrow(codeNamePapadopoulos);
+            _codeNameValidator.ValidateAndThrow(codeNameSmith);
+            _codeNameValidator.ValidateAndThrow(codeNameZhou);
 
-            Assert.Equal("P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941", codeName);
+            Assert.Equal("P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941", codeNamePapadopoulos);
+            Assert.Equal("P<USA<SMITH<M<<<2006M<5rQv7Z7NyA3<1C85D", codeNameSmith);
+            Assert.Equal("P<CHN<ZHOU<L<<<1989F<hX8fV4smtv4<PFFCF", codeNameZhou);
 
-            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
-        }
-
-        [Fact]
-        public void Generate_ShouldGenerateCodeName_WhenInputIsSmith()
-        {
-            var codeName = _service.Generate(smith);
-
-            _codeNameValidator.ValidateAndThrow(codeName);
-
-            Assert.Equal("P<USA<SMITH<M<<<2006M<5rQv7Z7NyA3<1C85D", codeName);
-
-            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
-        }
-
-        [Fact]
-        public void Generate_ShouldGenerateCodeName_WhenInputIsZhou()
-        {
-            var codeName = _service.Generate(zhou);
-
-            _codeNameValidator.ValidateAndThrow(codeName);
-
-            Assert.Equal("P<CHN<ZHOU<L<<<1989F<hX8fV4smtv4<PFFCF", codeName);
-
-            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNamePapadopoulos), 2, 2));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameSmith), 2, 2));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameZhou), 2, 2));
         }
 
         private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)

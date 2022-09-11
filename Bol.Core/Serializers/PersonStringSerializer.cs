@@ -15,6 +15,27 @@ namespace Bol.Core.Serializers
             var parts = input?.Split(DIV);
             var birthDateParseResult = int.TryParse(parts[6].Substring(0, 4), out var birthDate);
 
+            ValidateCodanameAndThrow(parts, birthDateParseResult);
+
+            var basePerson = DeserializeBasePerson(parts);
+
+            return new CodenamePerson
+            {
+                CountryCode = basePerson.CountryCode,
+                Surname = basePerson.Surname,
+                FirstNameCharacter = parts[3],
+                MiddleName = basePerson.MiddleName,
+                ThirdName = basePerson.ThirdName,
+                YearOfBirth = birthDate,
+                Gender = basePerson.Gender,
+                Combination = basePerson.Combination,
+                ShortHash = parts[7].Substring(0, 11),
+                CheckSum = parts[8].Substring(1, 4)
+            };
+        }
+
+        internal void ValidateCodanameAndThrow(string[] parts, bool birthDateParseResult)
+        {
             if (parts == null ||
                 parts.Length != Constants.CODENAME_PARTS ||
                 parts[0] != Constants.PERSONAL_CODENAME_INITIAL ||
@@ -25,39 +46,23 @@ namespace Bol.Core.Serializers
             {
                 throw new ArgumentException(Constants.INVALID_CODENAME);
             }
-
-	        var basePerson = DeserializeBasePerson(parts);
-
-            return new CodenamePerson
-            {
-                CountryCode = basePerson.CountryCode,
-                Surname = basePerson.Surname,
-                FirstNameCharacter = parts[3],
-                MiddleName = basePerson.MiddleName,
-				ThirdName = basePerson.ThirdName,
-                YearOfBirth = birthDate,
-                Gender = basePerson.Gender,
-                Combination = basePerson.Combination,
-				ShortHash = parts[7].Substring(0, 11),
-				CheckSum = parts[8].Substring(1, 4)
-            };
         }
 
-	    internal BasePerson DeserializeBasePerson(string[] inputStrings)
-	    {
-		    var genderInitial = inputStrings[6].Substring(4, 1);
-		    var gender = ParseGender(genderInitial);
+        internal BasePerson DeserializeBasePerson(string[] inputStrings)
+        {
+            var genderInitial = inputStrings[6].Substring(4, 1);
+            var gender = ParseGender(genderInitial);
 
-			return new BasePerson
-		    {
-			    CountryCode = inputStrings[1],
-			    Surname = inputStrings[2],
-			    MiddleName = inputStrings[4],
-			    ThirdName = inputStrings[5],
-			    Gender = gender,
-			    Combination = inputStrings[8].Substring(0, 1)
+            return new BasePerson
+            {
+                CountryCode = inputStrings[1],
+                Surname = inputStrings[2],
+                MiddleName = inputStrings[4],
+                ThirdName = inputStrings[5],
+                Gender = gender,
+                Combination = inputStrings[8].Substring(0, 1)
             };
-	    }
+        }
 
         public string Serialize(NaturalPerson person)
         {
@@ -75,7 +80,7 @@ namespace Bol.Core.Serializers
             }
             else
             {
-	            result = result + $"{DIV}";
+                result = result + $"{DIV}";
             }
 
             if (person.ThirdName != null)
@@ -84,7 +89,7 @@ namespace Bol.Core.Serializers
             }
             else
             {
-	            result = result + $"{DIV}";
+                result = result + $"{DIV}";
             }
 
             result = result +
