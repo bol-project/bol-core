@@ -394,45 +394,8 @@ namespace Bol.Coin.Services
 
         public static bool Transfer(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
         {
-            if (BolValidator.AddressEmpty(from))
+            if (!BolServiceValidationHelper.CanTransferInitialValidation(from, to, targetCodeName, value))
             {
-                Runtime.Notify("error", BolResult.BadRequest("From Address cannot be empty."));
-                return false;
-            }
-
-            if (BolValidator.AddressBadLength(from))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("From Address length must be 20 bytes."));
-                return false;
-            }
-
-            if (BolValidator.AddressEmpty(to))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("To Address cannot be empty."));
-                return false;
-            }
-
-            if (BolValidator.AddressBadLength(to))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("To Address length must be 20 bytes."));
-                return false;
-            }
-
-            if (BolValidator.CodeNameEmpty(targetCodeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Target CodeName cannot be empty."));
-                return false;
-            }
-
-            if (BolValidator.AddressNotOwner(from))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
-                return false;
-            }
-
-            if (value <= 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
 

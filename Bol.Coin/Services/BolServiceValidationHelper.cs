@@ -116,6 +116,25 @@ public class BolServiceValidationHelper
 
         return true;
     }
+    
+    public static bool CanTransferInitialValidation(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
+    {
+        if (AddressIsEmpty(from, "From Address cannot be empty.")) return false;
+
+        if (AddressHasBadLenght(from, "From Address length must be 20 bytes.")) return false;
+
+        if (AddressIsEmpty(from, "To Address cannot be empty.")) return false;
+
+        if (AddressHasBadLenght(from, "To Address length must be 20 bytes.")) return false;
+
+        if (CodeNameIsEmpty(targetCodeName, "Target CodeName cannot be empty.")) return false;
+        
+        if (IsNotAddressOwner(from)) return false;
+        
+        if(IsNotPositiveTransferValue(value)) return false;
+
+        return true;
+    }
 
     public static bool SocialAddressHasBadLenght(byte[] socialAddress)
     {
