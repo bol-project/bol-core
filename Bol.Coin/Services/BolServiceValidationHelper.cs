@@ -80,7 +80,7 @@ public class BolServiceValidationHelper
 
         if (IsNotAddressOwner(address)) return false;
 
-        if (!IsPositiveTransferValue(value)) return false;
+        if (IsNotPositiveTransferValue(value)) return false;
 
         return true;
     }
@@ -227,14 +227,14 @@ public class BolServiceValidationHelper
         return false;
     }
 
-    public static bool IsPositiveTransferValue(BigInteger value)
+    public static bool IsNotPositiveTransferValue(BigInteger value)
     {
         if (value <= 0)
         {
             Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
