@@ -8,6 +8,7 @@ using FluentValidation;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -70,11 +71,11 @@ namespace Bol.Core.Tests.Services
             _hasher = new Sha256Hasher();
             _base58Encoder = new Base58Encoder(_hasher);
             _hex = new Base16Encoder(_hasher);
-             countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
+            countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
             _basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
             _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator);
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
-            _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher);
+            _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher, _hex);
             _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
         }
 
@@ -87,7 +88,7 @@ namespace Bol.Core.Tests.Services
 
             Assert.Equal("P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941", codeName);
 
-            Assert.True(new Sha256Hasher().CheckHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 4));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
         }
 
         [Fact]
@@ -99,7 +100,7 @@ namespace Bol.Core.Tests.Services
 
             Assert.Equal("P<USA<SMITH<M<<<2006M<5rQv7Z7NyA3<1C85D", codeName);
 
-            Assert.True(new Sha256Hasher().CheckHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 4));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
         }
 
         [Fact]
@@ -111,7 +112,18 @@ namespace Bol.Core.Tests.Services
 
             Assert.Equal("P<CHN<ZHOU<L<<<1989F<hX8fV4smtv4<PFFCF", codeName);
 
-            Assert.True(new Sha256Hasher().CheckHexChecksum(Encoding.UTF8.GetBytes(codeName), 2, 4));
+            Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeName), 2, 2));
+        }
+
+        private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)
+        {
+            var codeNameWithoutChecksum = codeName.Substring(0, codeName.Length - 4);
+
+            var hexDecode = _hex.Decode(codeName.Substring(codeName.Length - 4));
+
+            return Encoding.ASCII.GetBytes(codeNameWithoutChecksum)
+                                 .Concat(hexDecode)
+                                 .ToArray();
         }
     }
 }

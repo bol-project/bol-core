@@ -18,9 +18,9 @@ namespace Bol.Core.Serializers
             if (parts == null ||
                 parts.Length != Constants.CODENAME_PARTS ||
                 parts[0] != Constants.PERSONAL_CODENAME_INITIAL ||
-                parts[6].Length != Constants.BIRTHYEAR_GENDER_LENGTH ||
-                parts[7].Length != Constants.BDATE_NAME_NIN_BASE58_LENGTH ||
-                parts[8].Length != Constants.COMBINATION_CHECKSUM_LENGTH ||
+                parts[6].Length != Constants.CODENAME_BIRTHYEAR_GENDER_LENGTH ||
+                parts[7].Length != Constants.CODENAME_BDATE_NAME_NIN_BASE58_LENGTH ||
+                parts[8].Length != Constants.CODENAME_COMBINATION_CHECKSUM_LENGTH ||
                 !birthDateParseResult)
             {
                 throw new ArgumentException(Constants.INVALID_CODENAME);

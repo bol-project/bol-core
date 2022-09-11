@@ -15,8 +15,6 @@ namespace Bol.Cryptography
         byte[] AddChecksum(byte[] input, int cycles = 1, int bytes = 2);
 
         bool CheckChecksum(byte[] input, int cycles = 1, int bytes = 2);
-        byte[] AddHexChecksum(byte[] input, int cycles = 1, int bytes = 2);
-        bool CheckHexChecksum(byte[] input, int cycles = 1, int bytes = 2);
     }
 
     public interface ISha256Hasher : IHasher { }
