@@ -202,11 +202,11 @@ public class BolServiceValidationHelper
         return false;
     }
 
-    public static bool CodeNameIsEmpty(byte[] codeName)
+    public static bool CodeNameIsEmpty(byte[] codeName, string message = CodenameCannotBeEmpty)
     {
         if (BolValidator.CodeNameEmpty(codeName))
         {
-            Runtime.Notify("error", BolResult.BadRequest(CodenameCannotBeEmpty));
+            Runtime.Notify("error", BolResult.BadRequest(message));
             return true;
         }
 
