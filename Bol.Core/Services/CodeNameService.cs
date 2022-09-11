@@ -48,7 +48,7 @@ namespace Bol.Core.Services
 
             var shortHashString = _base58Encoder.Encode(shortHash);
 
-            codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCompinationIfEmpty(person.Combination)}";
+            codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCombinationIfEmpty(person.Combination)}";
 
             var codeNameBytes = _hasher.AddHexChecksum(Encoding.ASCII.GetBytes(codeName), 2, 2);
 
@@ -60,7 +60,7 @@ namespace Bol.Core.Services
             return nin.Substring(nin.Length - 4);
         }
 
-        private string ReplaceCompinationIfEmpty(string compination)
+        private string ReplaceCombinationIfEmpty(string compination)
         {
             return string.IsNullOrEmpty(compination) ? "1" : compination;
         }

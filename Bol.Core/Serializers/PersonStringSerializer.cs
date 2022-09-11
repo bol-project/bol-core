@@ -9,7 +9,6 @@ namespace Bol.Core.Serializers
     {
         public const char DIV = Constants.CODENAME_DIVIDER;
         public const string P = Constants.PERSONAL_CODENAME_INITIAL;
-        private const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPPAS<S<<1993MP<2BB6C323PP5D5D";
 
         public CodenamePerson Deserialize(string input)
         {
@@ -17,14 +16,14 @@ namespace Bol.Core.Serializers
             var birthDateParseResult = int.TryParse(parts[6].Substring(0, 4), out var birthDate);
 
             if (parts == null ||
-                parts.Length != 9 ||
-                parts[0] != P ||
-                parts[6].Length != 5 ||
-                parts[7].Length != 11 ||
-                parts[8].Length != 5 ||
+                parts.Length != Constants.CODENAME_PARTS ||
+                parts[0] != Constants.PERSONAL_CODENAME_INITIAL ||
+                parts[6].Length != Constants.BIRTHYEAR_GENDER_LENGTH ||
+                parts[7].Length != Constants.BDATE_NAME_NIN_BASE58_LENGTH ||
+                parts[8].Length != Constants.COMBINATION_CHECKSUM_LENGTH ||
                 !birthDateParseResult)
             {
-                throw new ArgumentException(INVALID_CODENAME);
+                throw new ArgumentException(Constants.INVALID_CODENAME);
             }
 
 	        var basePerson = DeserializeBasePerson(parts);
