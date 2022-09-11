@@ -1,3 +1,4 @@
+using System.Numerics;
 using Bol.Coin.Models;
 using Bol.Coin.Persistence;
 using Bol.Coin.Validators;
@@ -14,6 +15,7 @@ public class BolServiceValidationHelper
     private const string EdiCannotBeEmpty = "EDI cannot be empty.";
     private const string EdiLengthMustBeBytes = "EDI length must be 32 bytes.";
     private const string CommercialAddressCannotBeEmpty = "Commercial Address cannot be empty.";
+
     private const string CommercialAddressLengthMustBeBytes = "Commercial Address length must be 20 bytes.";
 
     public static bool CanRegister(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
@@ -62,6 +64,53 @@ public class BolServiceValidationHelper
         if (account.MainAddress == null)
         {
             Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool CanTransferClaimInitialValidation(byte[] codeName, byte[] address, BigInteger value)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+
+        if (AddressIsEmpty(address)) return false;
+
+        if (AddressHasBadLenght(address)) return false;
+
+        if (IsNotAddressOwner(address)) return false;
+
+        if (!IsPositiveTransferValue(value)) return false;
+
+        return true;
+    }
+
+    public static bool CanTransferClaimFinalValidation(byte[] codeName, BigInteger value, BigInteger claimTransferFee, out BolAccount account)
+    {
+        if (value <= claimTransferFee)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+            account = null;
+            return false;   
+        }
+
+        account = BolRepository.Get("accounts", codeName);
+        if (account.MainAddress == null)
+        {
+            // TODO: consider unifying this with "Code Name is not a registerd Bol Account."
+            Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
+            return false;
+        }
+
+        if (BolValidator.AddressNotOwner(account.MainAddress))
+        {
+            Runtime.Notify("error", BolResult.Unauthorized("Only the Main Address owner can perform this action."));
+            return false;
+        }
+
+        if (account.ClaimBalance < value + claimTransferFee)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
             return false;
         }
 
@@ -176,5 +225,16 @@ public class BolServiceValidationHelper
         }
 
         return false;
+    }
+
+    public static bool IsPositiveTransferValue(BigInteger value)
+    {
+        if (value <= 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
+            return false;
+        }
+
+        return true;
     }
 }

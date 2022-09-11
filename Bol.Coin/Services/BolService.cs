@@ -346,54 +346,14 @@ namespace Bol.Coin.Services
 
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
-            if (BolValidator.CodeNameEmpty(codeName))
+            if (!BolServiceValidationHelper.CanTransferClaimInitialValidation(codeName, address, value))
             {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressEmpty(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-                return false;
-            }
-
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
-
-            if (value <= 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
 
             var claimTransferFee = BolRepository.GetClaimTransferFee();
-            if (value <= claimTransferFee)
+            if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(codeName, value, claimTransferFee, out var account))
             {
-                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
-                return false;
-            }
-            
-            var account = BolRepository.Get("accounts", codeName);
-            if (account.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
-                return false;
-            }
-
-            if (BolValidator.AddressNotOwner(account.MainAddress))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Main Address owner can perform this action."));
-                return false;
-            }
-
-            var claimBalance = account.ClaimBalance;
-
-            if (claimBalance < value + claimTransferFee)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
                 return false;
             }
 
@@ -416,7 +376,8 @@ namespace Bol.Coin.Services
             
             var addressBalance = BolRepository.GetBols("CommercialAddress", address);
             var feeBucketAmount = BolRepository.GetFeeBucket();
-
+            var claimBalance = account.ClaimBalance;
+            
             account.ClaimBalance = claimBalance - value - claimTransferFee;
             BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
             BolRepository.Save("accounts", account);
