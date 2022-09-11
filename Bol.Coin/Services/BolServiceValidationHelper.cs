@@ -85,16 +85,8 @@ public class BolServiceValidationHelper
         return true;
     }
 
-    public static bool CanTransferClaimFinalValidation(byte[] codeName, BigInteger value, BigInteger claimTransferFee, out BolAccount account)
+    public static bool CanTransferClaimFinalValidation(BigInteger value, BigInteger claimTransferFee, BolAccount account)
     {
-        if (value <= claimTransferFee)
-        {
-            Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
-            account = null;
-            return false;   
-        }
-
-        account = BolRepository.Get("accounts", codeName);
         if (account.MainAddress == null)
         {
             // TODO: consider unifying this with "Code Name is not a registerd Bol Account."

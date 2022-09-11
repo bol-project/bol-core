@@ -352,7 +352,14 @@ namespace Bol.Coin.Services
             }
 
             var claimTransferFee = BolRepository.GetClaimTransferFee();
-            if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(codeName, value, claimTransferFee, out var account))
+            if (value <= claimTransferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+                return false;   
+            }
+            var account = BolRepository.Get("accounts", codeName);
+            
+            if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(value, claimTransferFee, account))
             {
                 return false;
             }
