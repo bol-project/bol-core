@@ -27,8 +27,20 @@ namespace Bol.Coin.Persistence
         public const byte POPULATION = 0xB7;
         public const byte TOTAL_SUPPLY = 0xB8;
 
+        /// <summary>
+        /// Key for setting or retrieving the fee to be subtracted from transfer transactions.
+        /// </summary>
         public const byte TRANSFER_FEE = 0xC0;
+        
+        /// <summary>
+        /// Key for setting or retrieving the fee to be subtracted from claim transfer transactions. 
+        /// </summary>
         public const byte CLAIM_TRANSFER_FEE = 0xC1;
+        
+        /// <summary>
+        /// Key for setting or retrieving the sum of fees that reside in the fee bucket
+        /// waiting to be distributed to blockchain validators. 
+        /// </summary>
         public const byte FEE_BUCKET = 0xC2;
 
         public static void Save(BolAccount account)
