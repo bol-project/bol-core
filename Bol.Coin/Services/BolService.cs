@@ -455,6 +455,10 @@ namespace Bol.Coin.Services
             BolRepository.SetYearStamp(yearStamp);
             
             BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
+            
+            BolRepository.SetFeeBucket(0);
+            BolRepository.SetTransferFee(10000);
+            BolRepository.SetClaimTransferFee(5000);
 
             BolRepository.SetContractDeployed();
 
@@ -503,6 +507,13 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
+
+            var claimTransferFee = BolRepository.GetClaimTransferFee();
+            if (value <= claimTransferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+                return false;
+            }
             
             var account = BolRepository.Get("accounts", codeName);
             if (account.MainAddress == null)
@@ -519,7 +530,7 @@ namespace Bol.Coin.Services
 
             var claimBalance = account.ClaimBalance;
 
-            if (claimBalance < value)
+            if (claimBalance < value + claimTransferFee)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that claim balance."));
                 return false;
@@ -543,12 +554,15 @@ namespace Bol.Coin.Services
             }
             
             var addressBalance = BolRepository.GetBols("CommercialAddress", address);
+            var feeBucketAmount = BolRepository.GetFeeBucket();
 
-            account.ClaimBalance = claimBalance - value;
+            account.ClaimBalance = claimBalance - value - claimTransferFee;
             BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
             BolRepository.Save("accounts", account);
+            BolRepository.SetFeeBucket(feeBucketAmount + claimTransferFee);
             
             Transferred(account.MainAddress, address, value);
+            Transferred(account.MainAddress, Owner, claimTransferFee);
 
             var result = BolRepository.Get("accounts", account.CodeName);
 
@@ -599,9 +613,16 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Cannot transfer a negative or zero value"));
                 return false;
             }
+
+            var transferFee = BolRepository.GetTransferFee();
+            if (value <= transferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
+                return false;
+            }
             
             var targetAccount = BolRepository.Get("accounts", targetCodeName);
-            if (targetAccount.MainAddress == null)
+            if (targetAccount == null || targetAccount.CodeName == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
                 return false;
@@ -626,18 +647,21 @@ namespace Bol.Coin.Services
 
             var fromBalance = BolRepository.GetBols("CommercialAddress",from);
 
-            if (fromBalance < value)
+            if (fromBalance < value + transferFee)
             {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that account balance."));
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that address balance."));
                 return false;
             }
 
             var toBalance = BolRepository.GetBols("CommercialAddress",to);
+            var feeBucketAmount = BolRepository.GetFeeBucket();
             
-            BolRepository.SetBols("CommercialAddress", from, fromBalance - value);
+            BolRepository.SetBols("CommercialAddress", from, fromBalance - value - transferFee);
             BolRepository.SetBols("CommercialAddress", to, toBalance + value);
+            BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
             Transferred(from, to, value);
+            Transferred(from, Owner, transferFee);
 
             var result = BolRepository.Get("accounts", targetCodeName);
 
@@ -978,6 +1002,13 @@ namespace Bol.Coin.Services
             var popYear = BolRepository.GetPopYear();
             var yearStamp = BolRepository.GetYearStamp();
 
+            //adding a method to distribute the remaining amount of the fee bucket to each validator 
+            var firstInClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
+            if (firstInClaim == 0)
+            {
+                DistributeFees();   
+            }
+
             Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
             BigInteger intervalDistribute = 0;
@@ -1076,6 +1107,28 @@ namespace Bol.Coin.Services
             Runtime.Notify("getCertifiers", BolResult.Ok(certifiers));
 
             return true;
+        }
+
+        private static void DistributeFees()
+        {
+            var fees = BolRepository.GetFeeBucket();
+            var validators = Certifiers.GenesisCertifiers();
+            var amount = fees / validators.Length;
+
+            if (fees == 0 || amount == 0) return;
+
+            for (int i = 0; i < validators.Length; i++)
+            {
+                var validatorCodeName = validators[i].CodeName;
+                var validatorAccount = BolRepository.Get("accounts", validatorCodeName);
+                var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
+                var paymentAddressBalance = BolRepository.GetBols("CommercialAddress", validatorPaymentAddress);
+                BolRepository.SetBols("CommercialAddress", validatorPaymentAddress, paymentAddressBalance + amount);
+                Transferred(Owner, validatorPaymentAddress, amount);
+                fees -= amount;
+            }
+                
+            BolRepository.SetFeeBucket(fees);
         }
     }
 }
