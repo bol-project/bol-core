@@ -43,7 +43,7 @@ namespace Bol.Coin.Services
 
             SetMandatoryCertifier(codeName);
 
-            var result = BolRepository.Get("accounts",codeName);
+            var result = BolRepository.GetAccount(codeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
 
@@ -52,7 +52,7 @@ namespace Bol.Coin.Services
 
         private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
         {
-            var account = BolRepository.Get("accounts",codeName);
+            var account = BolRepository.GetAccount(codeName);
             if (account != null && account.CodeName != null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("A Bol Account already exists for this CodeName."));
@@ -102,7 +102,7 @@ namespace Bol.Coin.Services
             account.MandatoryCertifier = new byte[0];
             account.Countries = new byte[0];
 
-            BolRepository.Save("accounts",account);
+            BolRepository.SaveAccount(account);
             
             Transferred(null, account.MainAddress , account.ClaimBalance);
 
@@ -118,7 +118,7 @@ namespace Bol.Coin.Services
 
             BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
 
-            var result = BolRepository.Get("accounts", account.CodeName);
+            var result = BolRepository.GetAccount( account.CodeName);
 
             Runtime.Notify("register", BolResult.Ok(result));
             return true;
@@ -126,7 +126,7 @@ namespace Bol.Coin.Services
 
         private static bool SetMandatoryCertifier(byte[] codeName)
         {
-            var account = BolRepository.Get("accounts",codeName);
+            var account = BolRepository.GetAccount(codeName);
             var country = account.CodeName.Range(4, 6);
 
             var countryCertifiers = BolRepository.GetCertifiers(country);
@@ -150,7 +150,7 @@ namespace Bol.Coin.Services
 
             var selectedIndex = Blockchain.GetHeight() % availableCertifiers.Length;
             account.MandatoryCertifier = availableCertifiers[selectedIndex];
-            BolRepository.Save("accounts",account);
+            BolRepository.SaveAccount(account);
 
             return true;
         }
@@ -162,7 +162,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var account = BolRepository.Get("accounts",codeName);
+            var account = BolRepository.GetAccount(codeName);
             if (account.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.NotFound("Main Address is not a registered Bol Account."));
@@ -176,7 +176,7 @@ namespace Bol.Coin.Services
 
         public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
-            var account = BolRepository.Get("accounts",codeName);
+            var account = BolRepository.GetAccount(codeName);
 
             if (!BolServiceValidationHelper.CanAddCommercialAddress(codeName, commercialAddress, account))
             {
@@ -184,11 +184,10 @@ namespace Bol.Coin.Services
             }
 
             account.CommercialAddresses[commercialAddress] = 0;
-            BolRepository.SetBols("CommercialAddress",commercialAddress, 0);
 
-            BolRepository.Save("accounts",account);
+            BolRepository.SaveAccount(account);
 
-            var result = BolRepository.Get("accounts",account.CodeName);
+            var result = BolRepository.GetAccount(account.CodeName);
 
             Runtime.Notify("addCommercialAddress", BolResult.Ok(result));
             return true;
@@ -272,7 +271,7 @@ namespace Bol.Coin.Services
 
         public static BigInteger CirculatingSupply()
         {
-            return BolRepository.GetBols();
+            return BolRepository.GetCirculatingSupply();
         }
 
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
@@ -282,13 +281,13 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var claimTransferFee = BolRepository.GetClaimTransferFee();
+            var claimTransferFee = BolRepository.GetOperationsFee();
             if (value <= claimTransferFee)
             {
                 Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
                 return false;   
             }
-            var account = BolRepository.Get("accounts", codeName);
+            var account = BolRepository.GetAccount( codeName);
             
             if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(value, claimTransferFee, account))
             {
@@ -311,20 +310,20 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Commercial Address does not belong to Account."));
                 return false;
             }
-            
-            var addressBalance = BolRepository.GetBols("CommercialAddress", address);
+
+            var addressBalance = account.CommercialAddresses[address];
             var feeBucketAmount = BolRepository.GetFeeBucket();
             var claimBalance = account.ClaimBalance;
             
             account.ClaimBalance = claimBalance - value - claimTransferFee;
-            BolRepository.SetBols("CommercialAddress", address, addressBalance + value);
-            BolRepository.Save("accounts", account);
+            account.CommercialAddresses[address] = addressBalance + value;
+            BolRepository.SaveAccount( account);
             BolRepository.SetFeeBucket(feeBucketAmount + claimTransferFee);
             
             Transferred(account.MainAddress, address, value);
-            Transferred(account.MainAddress, Owner, claimTransferFee);
+            Transferred(account.MainAddress, Constants.Owner, claimTransferFee);
 
-            var result = BolRepository.Get("accounts", account.CodeName);
+            var result = BolRepository.GetAccount( account.CodeName);
 
             Runtime.Notify("transferClaim", BolResult.Ok(result));
             return true;
@@ -344,7 +343,7 @@ namespace Bol.Coin.Services
                 return false;
             }
             
-            var targetAccount = BolRepository.Get("accounts", targetCodeName);
+            var targetAccount = BolRepository.GetAccount( targetCodeName);
             if (targetAccount == null || targetAccount.CodeName == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
@@ -395,7 +394,7 @@ namespace Bol.Coin.Services
             Transferred(from, to, value);
             Transferred(from, Constants.Owner, transferFee);
 
-            var result = BolRepository.Get("accounts", targetCodeName);
+            var result = BolRepository.GetAccount( targetCodeName);
 
             Runtime.Notify("transfer", BolResult.Ok(result));
             
@@ -414,7 +413,7 @@ namespace Bol.Coin.Services
             //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
             //    return false;
             //}
-            var bolAccount = BolRepository.Get("accounts", codeName);
+            var bolAccount = BolRepository.GetAccount( codeName);
 
             if (BolValidator.CodeNameEmpty(codeName))
             {
@@ -445,7 +444,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var bolAccount = BolRepository.Get("accounts",codeName);
+            var bolAccount = BolRepository.GetAccount(codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -477,7 +476,7 @@ namespace Bol.Coin.Services
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
 
-            BolRepository.Save("accounts",bolAccount);
+            BolRepository.SaveAccount(bolAccount);
 
             Runtime.Notify("registerAsCertifier", BolResult.Ok());
 
@@ -489,7 +488,7 @@ namespace Bol.Coin.Services
             //if (BolValidator.AddressEmpty(address)) return BolResult.BadRequest("Address cannot be empty.");
             //if (BolValidator.AddressBadLength(address)) return BolResult.BadRequest("Address length must be 20 bytes.");
             //if (BolValidator.AddressNotOwner(address)) return BolResult.Unauthorized("Only the Address owner can perform this action.");
-            var bolAccount = BolRepository.Get("accounts", codeName);
+            var bolAccount = BolRepository.GetAccount( codeName);
 
             if (BolValidator.CodeNameEmpty(codeName)) return BolResult.BadRequest("CodeName cannot be empty."); 
             if (bolAccount.MainAddress == null) return BolResult.BadRequest("Address is not a registerd Bol Account.");
@@ -502,7 +501,7 @@ namespace Bol.Coin.Services
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
-            BolRepository.Save("accounts", bolAccount);
+            BolRepository.SaveAccount( bolAccount);
 
             return BolResult.Ok();
         }
@@ -536,14 +535,14 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var certifierBolAccount = BolRepository.Get(certifier);
+            var certifierBolAccount = BolRepository.GetAccount(certifier);
             if (certifierBolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a registerd Bol Account."));
                 return false;
             }
 
-            var bolAccount = BolRepository.Get(address);
+            var bolAccount = BolRepository.GetAccount(address);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -570,7 +569,7 @@ namespace Bol.Coin.Services
                 bolAccount.AccountStatus = Constants.AccountStatusOpen;
             }
 
-            BolRepository.Save(bolAccount);
+            BolRepository.SaveAccount(bolAccount);
 
             Runtime.Notify("certify", BolResult.Ok(bolAccount));
 
@@ -606,14 +605,14 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var certifierBolAccount = BolRepository.Get(certifier);
+            var certifierBolAccount = BolRepository.GetAccount(certifier);
             if (certifierBolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a registerd Bol Account."));
                 return false;
             }
 
-            var bolAccount = BolRepository.Get(address);
+            var bolAccount = BolRepository.GetAccount(address);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -640,7 +639,7 @@ namespace Bol.Coin.Services
                 bolAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
             }
 
-            BolRepository.Save(bolAccount);
+            BolRepository.SaveAccount(bolAccount);
 
             Runtime.Notify("unCertify", BolResult.Ok(bolAccount));
 
@@ -670,7 +669,8 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            var bolAccount = BolRepository.Get("accounts",codeName);
+
+            var bolAccount = BolRepository.GetAccount(codeName);
             if (bolAccount.MainAddress == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
@@ -792,7 +792,6 @@ namespace Bol.Coin.Services
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
                     BolRepository.SetRegisteredAtBlock(i, intervalTotal);
                     var intervalBirths = intervalTime * Bps;
-                    BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
                     var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
                     BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
@@ -806,16 +805,16 @@ namespace Bol.Coin.Services
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
-            BolRepository.Save("accounts",bolAccount);
+            BolRepository.SaveAccount(bolAccount);
 
             Runtime.Notify("debug", 21);
-            var circulatingSupply = BolRepository.GetBols() + cpp;
-            BolRepository.SetBols(circulatingSupply);
+            var circulatingSupply = BolRepository.GetCirculatingSupply() + cpp;
+            BolRepository.SetCirculatingSupply(circulatingSupply);
 
             Runtime.Notify("debug", 22);
             Transferred(null, bolAccount.MainAddress , cpp);
 
-            var result = BolRepository.Get("accounts",bolAccount.CodeName);
+            var result = BolRepository.GetAccount(bolAccount.CodeName);
 
             Runtime.Notify("claim", BolResult.Ok(result));
 
@@ -838,14 +837,15 @@ namespace Bol.Coin.Services
 
             if (fees == 0 || amount == 0) return;
 
-            for (int i = 0; i < validators.Length; i++)
+            foreach (var validator in validators)
             {
-                var validatorCodeName = validators[i].CodeName;
-                var validatorAccount = BolRepository.Get("accounts", validatorCodeName);
+                var validatorCodeName = validator.CodeName;
+                var validatorAccount = BolRepository.GetAccount( validatorCodeName);
                 var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
-                var paymentAddressBalance = BolRepository.GetBols("CommercialAddress", validatorPaymentAddress);
-                BolRepository.SetBols("CommercialAddress", validatorPaymentAddress, paymentAddressBalance + amount);
-                Transferred(Owner, validatorPaymentAddress, amount);
+                var paymentAddressBalance = validatorAccount.CommercialAddresses[validatorPaymentAddress];
+                validatorAccount.CommercialAddresses[validatorPaymentAddress] = paymentAddressBalance + amount;
+                BolRepository.SaveAccount(validatorAccount);
+                Transferred(Constants.Owner, validatorPaymentAddress, amount);
                 fees -= amount;
             }
                 
