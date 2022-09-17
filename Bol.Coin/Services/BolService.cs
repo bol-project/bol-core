@@ -12,11 +12,6 @@ namespace Bol.Coin.Services
 {
     public class BolService
     {
-        public static string Name() => "Bonus of Life";
-        public static string Symbol() => "BoL";
-        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address
-        public static byte Decimals() => 8;
-
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
 
@@ -243,83 +238,19 @@ namespace Bol.Coin.Services
                 RegisterAsCertifier(certifier.CodeName, certifier.Countries, 0);
             }
 
-            BolRepository.SetBols(0);
-            BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
+            BolRepository.SetCirculatingSupply(0);
+            BolRepository.SetCertificationFee(Constants.CertificationFee);
 
-            // The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
-            // World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
-            // All data correspond to July 1 of each year
- 
-            var bpsYear = new Map<uint, BigInteger>();
-
-            bpsYear[2022] = 424332170;
-            bpsYear[2023] = 424082805;
-            bpsYear[2024] = 425890833;
-            bpsYear[2025] = 426608730;
-            bpsYear[2026] = 427223938;
-            bpsYear[2027] = 426972273;
-            bpsYear[2028] = 428953596;
-            bpsYear[2029] = 429874248;
-            bpsYear[2030] = 430700536;
-            bpsYear[2031] = 430293855;
-            bpsYear[2032] = 432722815;
-            bpsYear[2033] = 433549813;
-
-            var dpsYear = new Map<uint, BigInteger>();
-
-            dpsYear[2022] = 212656072;
-            dpsYear[2023] = 192038779;
-            dpsYear[2024] = 193185613;
-            dpsYear[2025] = 196299975;
-            dpsYear[2026] = 199443455;
-            dpsYear[2027] = 202121623;
-            dpsYear[2028] = 206010807;
-            dpsYear[2029] = 209422815;
-            dpsYear[2030] = 212889047;
-            dpsYear[2031] = 215889642;
-            dpsYear[2032] = 220189761;
-            dpsYear[2033] = 223967735;
-
-            var popYear = new Map<uint, BigInteger>();
-
-            popYear[2022] = 796761887400000000;
-            popYear[2023] = 803768884700000000;
-            popYear[2024] = 811107464300000000;
-            popYear[2025] = 818408655000000000;
-            popYear[2026] = 825632180500000000;
-            popYear[2027] = 832779362800000000;
-            popYear[2028] = 839850268300000000;
-            popYear[2029] = 846842093700000000;
-            popYear[2030] = 853753020200000000;
-            popYear[2031] = 860577855400000000;
-            popYear[2032] = 867319455700000000;
-            popYear[2033] = 873975760200000000;
-
-            var yearStamp = new Map<uint, BigInteger>(); //yearStamp correspond to July 1 (00:00:00 GMT+0000) of each year
-
-            yearStamp[2022] = 1656633600;
-            yearStamp[2023] = 1688169600;
-            yearStamp[2024] = 1719792000;
-            yearStamp[2025] = 1751328000;
-            yearStamp[2026] = 1782864000;
-            yearStamp[2027] = 1814400000;
-            yearStamp[2028] = 1846022400;
-            yearStamp[2029] = 1877558400;
-            yearStamp[2030] = 1909094400;
-            yearStamp[2031] = 1940630400;
-            yearStamp[2032] = 1972252800;
-            yearStamp[2033] = 2003788800;
-
-            BolRepository.SetBpsYear(bpsYear);
-            BolRepository.SetDpsYear(dpsYear);
-            BolRepository.SetPopYear(popYear);
-            BolRepository.SetYearStamp(yearStamp);
+            BolRepository.SetBpsYear(Constants.BpsPerYear());
+            BolRepository.SetDpsYear(Constants.DpsPerYear());
+            BolRepository.SetPopYear(Constants.PopulationPerYear());
+            BolRepository.SetYearStamp(Constants.TimestampPerYear());
             
-            BolRepository.SetTotalSupplyAtBlock(0, 787496573200000000);
+            BolRepository.SetTotalSupplyAtBlock(0, Constants.PopulationAtGenesis);
             
             BolRepository.SetFeeBucket(0);
-            BolRepository.SetTransferFee(10000);
-            BolRepository.SetClaimTransferFee(5000);
+            BolRepository.SetTransferFee(Constants.TransferFee);
+            BolRepository.SetOperationsFee(Constants.OperationsFee);
 
             BolRepository.SetContractDeployed();
 
