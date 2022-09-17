@@ -6,7 +6,7 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Bol.Coin.Services;
 
-public class BolServiceValidationHelper
+public static class BolServiceValidationHelper
 {
     private const string AddressCannotBeEmpty = "Address cannot be empty.";
     private const string AddressLengthMustBeBytes = "Address length must be 20 bytes.";
@@ -52,12 +52,6 @@ public class BolServiceValidationHelper
         if (AddressIsEmpty(commercialAddress, CommercialAddressCannotBeEmpty)) return false;
         
         if(AddressHasBadLenght(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
-
-        if (BolRepository.AddressExists(commercialAddress))
-        {
-            Runtime.Notify("error", BolResult.Unauthorized("Commercial Address has already been registered."));
-            return false;
-        }
 
         if(IsNotAddressOwner(account.MainAddress)) return false;
 
