@@ -402,17 +402,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static BigInteger GetBalance(byte[] address)
-        {
-            if (BolValidator.AddressEmpty(address)) return new BigInteger(0);
-            if (BolValidator.AddressBadLength(address)) return new BigInteger(0);
-
-            var account = BolRepository.Get(address);
-            if (account.MainAddress == null) return new BigInteger(0);
-
-            return account.ClaimBalance;
-        }
-
         public static bool RegisterAsCertifier(byte[] codeName, byte[] countries)
         {
             //if (BolValidator.AddressEmpty(address))

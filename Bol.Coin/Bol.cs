@@ -53,14 +53,8 @@ namespace Neo.SmartContract
                 }
                 if (operation == "balanceOf")
                 {
-                    if (args.Length != 1)
-                    {
-                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
-                        return false;
-                    }
-                    var account = (byte[])args[0];
-
-                    return BolService.GetBalance(account);
+                    Runtime.Notify("error", BolResult.BadRequest("Function not supported"));
+                    return false;
                 }
                 if (operation == "decimals") return Constants.Decimals;
                 if (operation == "register")
