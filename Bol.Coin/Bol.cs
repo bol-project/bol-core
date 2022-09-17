@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Bol.Coin;
 using Bol.Coin.Models;
 using Bol.Coin.Services;
 using Neo.SmartContract.Framework.Services.Neo;
@@ -20,8 +21,8 @@ namespace Neo.SmartContract
                 if (operation == "deploy") return BolService.Deploy();
                 if (operation == "totalSupply") return BolService.CirculatingSupply();
                 if (operation == "circulatingSupply") return BolService.CirculatingSupply();
-                if (operation == "name") return BolService.Name();
-                if (operation == "symbol") return BolService.Symbol();
+                if (operation == "name") return Constants.Name;
+                if (operation == "symbol") return Constants.Symbol;
                 if (operation == "transferClaim")
                 {
                     if (args.Length != 3)
@@ -61,7 +62,7 @@ namespace Neo.SmartContract
 
                     return BolService.GetBalance(account);
                 }
-                if (operation == "decimals") return BolService.Decimals();
+                if (operation == "decimals") return Constants.Decimals;
                 if (operation == "register")
                 {
                     if (args.Length != 6)
