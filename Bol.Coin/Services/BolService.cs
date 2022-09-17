@@ -204,12 +204,6 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            //if (BolValidator.AddressNotOwner(Owner))
-            //{
-            //    Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
-            //    return false;
-            //}
-
             BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
@@ -403,16 +397,6 @@ namespace Bol.Coin.Services
 
         public static bool RegisterAsCertifier(byte[] codeName, byte[] countries)
         {
-            //if (BolValidator.AddressEmpty(address))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-            //    return false;
-            //}
-            //if (BolValidator.AddressBadLength(address))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-            //    return false;
-            //}
             var bolAccount = BolRepository.GetAccount( codeName);
 
             if (BolValidator.CodeNameEmpty(codeName))
@@ -653,22 +637,6 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
                 return false;
             }
-            //if (BolValidator.AddressEmpty(address))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-            //    return false;
-            //}
-            //if (BolValidator.AddressBadLength(address))
-            //{
-            //    Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-            //    return false;
-            //}
-            //if (BolValidator.AddressNotOwner(address))
-            //{
-            //    Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
-            //    return false;
-            //}
-
 
             var bolAccount = BolRepository.GetAccount(codeName);
             if (bolAccount.MainAddress == null)
