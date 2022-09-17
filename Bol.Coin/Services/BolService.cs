@@ -330,7 +330,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool Transfer(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
+        public static bool Transfer(byte[] from, byte[] senderCodeName, byte[] to, byte[] targetCodeName, BigInteger value)
         {
             if (!BolServiceValidationHelper.CanTransferInitialValidation(from, to, targetCodeName, value))
             {
@@ -368,7 +368,14 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var fromBalance = BolRepository.GetBols("CommercialAddress",from);
+            var senderAccount = BolRepository.GetAccount(senderCodeName);
+            if (senderAccount == null || senderAccount.CodeName == null)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Sender Account is not a registered Bol Account."));
+                return false;
+            }
+
+            var fromBalance = senderAccount.CommercialAddresses[from];
 
             if (fromBalance < value + transferFee)
             {
@@ -376,11 +383,13 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var toBalance = BolRepository.GetBols("CommercialAddress",to);
+            var toBalance = targetAccount.CommercialAddresses[to];
             var feeBucketAmount = BolRepository.GetFeeBucket();
-            
-            BolRepository.SetBols("CommercialAddress", from, fromBalance - value - transferFee);
-            BolRepository.SetBols("CommercialAddress", to, toBalance + value);
+
+            senderAccount.CommercialAddresses[from] = fromBalance - value - transferFee;
+            targetAccount.CommercialAddresses[to] = toBalance + value;
+            BolRepository.SaveAccount(senderAccount);
+            BolRepository.SaveAccount(targetAccount);
             BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
             Transferred(from, to, value);

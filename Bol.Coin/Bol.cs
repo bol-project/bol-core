@@ -37,17 +37,18 @@ namespace Neo.SmartContract
                 }
                 if (operation == "transfer")
                 {
-                    if (args.Length != 4)
+                    if (args.Length != 5)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
                     var from = (byte[])args[0];
-                    var to = (byte[])args[1];
-                    var targetCodeName = (byte[])args[2];
-                    var value = (BigInteger)args[3];
+                    var senderCodeName = (byte[])args[1]; 
+                    var to = (byte[])args[2];
+                    var targetCodeName = (byte[])args[3];
+                    var value = (BigInteger)args[4];
 
-                    return BolService.Transfer(from, to, targetCodeName, value);
+                    return BolService.Transfer(from, senderCodeName, to, targetCodeName, value);
                 }
                 if (operation == "balanceOf")
                 {
