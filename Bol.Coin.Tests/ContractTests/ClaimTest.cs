@@ -125,6 +125,8 @@ namespace Bol.Coin.Tests.ContractTests
 
             await _service.TransferClaim(addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"), BigInteger.Parse("100000000"));
             _emulator.Execute(_transactionGrabber);
+            
+            var beforeTransfer = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
             await _service.Transfer(
                 addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
@@ -132,6 +134,12 @@ namespace Bol.Coin.Tests.ContractTests
                 "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
                 BigInteger.Parse("100000000"));
             var result = _emulator.Execute(_transactionGrabber);
+            
+            var afterTransfer = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
+            BigInteger.Parse(afterTransfer.Account.TotalBalance)
+                .Should()
+                .Be(BigInteger.Parse(beforeTransfer.Account.TotalBalance) - 100000000);
             
             Assert.True(result);
         }
