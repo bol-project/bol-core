@@ -27,6 +27,22 @@ namespace Bol.Coin.Persistence
         public const byte POPULATION = 0xB7;
         public const byte TOTAL_SUPPLY = 0xB8;
 
+        /// <summary>
+        /// Key for setting or retrieving the fee to be subtracted from transfer transactions.
+        /// </summary>
+        public const byte TRANSFER_FEE = 0xC0;
+        
+        /// <summary>
+        /// Key for setting or retrieving the fee to be subtracted from claim transfer transactions. 
+        /// </summary>
+        public const byte CLAIM_TRANSFER_FEE = 0xC1;
+        
+        /// <summary>
+        /// Key for setting or retrieving the sum of fees that reside in the fee bucket
+        /// waiting to be distributed to blockchain validators. 
+        /// </summary>
+        public const byte FEE_BUCKET = 0xC2;
+
         public static void Save(BolAccount account)
         {
             var bytes = account.Serialize();
@@ -333,6 +349,42 @@ namespace Bol.Coin.Persistence
             return BolStorage.GetAsBigInteger(key);
         }
 
+        public static BigInteger GetTransferFee()
+        {
+            var key = TransferFeeKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetTransferFee(BigInteger fee)
+        {
+            var key = TransferFeeKey();
+            BolStorage.Put(key, fee);
+        }
+
+        public static BigInteger GetClaimTransferFee()
+        {
+            var key = ClaimTransferFeeKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetClaimTransferFee(BigInteger fee)
+        {
+            var key = ClaimTransferFeeKey();
+            BolStorage.Put(key, fee);
+        }
+
+        public static BigInteger GetFeeBucket()
+        {
+            var key = FeeBucketKey();
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        public static void SetFeeBucket(BigInteger fee)
+        {
+            var key = FeeBucketKey();
+            BolStorage.Put(key, fee);
+        }
+
         internal static byte[] BolKey()
         {
             return new byte[] { BOL };
@@ -401,6 +453,21 @@ namespace Bol.Coin.Persistence
         internal static byte[] ClaimIntervalKey()
         {
             return new byte[] { CLAIM_INTERVAL };
+        }
+
+        internal static byte[] TransferFeeKey()
+        {
+            return new byte[] { TRANSFER_FEE };
+        }
+
+        internal static byte[] ClaimTransferFeeKey()
+        {
+            return new byte[] { CLAIM_TRANSFER_FEE };
+        }
+
+        internal static byte[] FeeBucketKey()
+        {
+            return new byte[] { FEE_BUCKET };
         }
 
         internal static byte[] TotalDistributeAtBlockKey(BigInteger blockHeight)
