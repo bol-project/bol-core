@@ -7,10 +7,10 @@ using Bol.Coin.Tests.Utils;
 using Bol.Core.Services;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Neo.Emulation;
 using Xunit;
-
 
 namespace Bol.Coin.Tests.ContractTests
 {
@@ -43,12 +43,21 @@ namespace Bol.Coin.Tests.ContractTests
             await _service.Register();
             _emulator.Execute(_transactionGrabber);
 
+            var registerNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+
             _emulator.blockchain.AddMockBlocks(100);
 
             await _service.Claim();
+            
             var result = _emulator.Execute(_transactionGrabber);
 
-            Assert.True(result);
+            var claimNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+
+            double.Parse(claimNotification.Account.ClaimBalance)
+                .Should()
+                .BeGreaterThan(double.Parse(registerNotification.Account.ClaimBalance));
+            
+            result.Should().BeTrue();
         }
 
         [Fact]
