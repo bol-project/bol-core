@@ -197,8 +197,7 @@ namespace Bol.Coin.Services
         {
             Runtime.Notify("debug", Constants.Owner.Reverse());
 
-            var isDeployed = BolRepository.IsContractDeployed();
-            if (isDeployed)
+            if (BolRepository.IsContractDeployed())
             {
                 Runtime.Notify("error", BolResult.BadRequest("Bol Contract is already deployed."));
                 return false;
