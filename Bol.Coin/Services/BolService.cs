@@ -66,13 +66,13 @@ namespace Bol.Coin.Services
                 .Concat(new byte[] { 0x00 })
                 .AsBigInteger();
 
-            if (Constants.B_ADDRESS_START <= addressPrefix && addressPrefix <= Constants.B_ADDRESS_END)
+            if (Constants.BAddressStart <= addressPrefix && addressPrefix <= Constants.BAddressEnd)
             {
-                accountType = Constants.B_ACCOUNT_TYPE;
+                accountType = Constants.AccountTypeB;
             }
-            else if (Constants.C_ADDRESS_START <= addressPrefix && addressPrefix <= Constants.C_ADDRESS_END)
+            else if (Constants.CAddressStart <= addressPrefix && addressPrefix <= Constants.CAddressEnd)
             {
-                accountType = Constants.C_ACCOUNT_TYPE;
+                accountType = Constants.AccountTypeC;
             }
             else
             {
@@ -83,14 +83,14 @@ namespace Bol.Coin.Services
             uint currentHeight = BlockChainService.GetCurrentHeight();
 
             account = new BolAccount();
-            account.AccountStatus = Constants.ACCOUNT_STATUS_PENDING_CERTIFICATIONS;
+            account.AccountStatus = Constants.AccountStatusPendingCertifications;
             account.AccountType = accountType;
             account.CodeName = codeName;
             account.Edi = edi;
             account.MainAddress = address;
             account.BlockChainAddress = blockChainAddress;
             account.SocialAddress = socialAddress;
-            account.ClaimBalance = 1 * Constants.FACTOR;
+            account.ClaimBalance = 1 * Constants.Factor;
             account.TotalBalance = 0;
             account.RegistrationHeight = currentHeight;
             account.LastClaimHeight = currentHeight;
@@ -130,7 +130,7 @@ namespace Bol.Coin.Services
             var country = account.CodeName.Range(4, 6);
 
             var countryCertifiers = BolRepository.GetCertifiers(country);
-            var allCountriesCertifiers = BolRepository.GetCertifiers(Constants.ALL_COUNTRIES);
+            var allCountriesCertifiers = BolRepository.GetCertifiers(Constants.AllCountriesCode);
 
             var availableCertifiers = new byte[countryCertifiers.Keys.Length + allCountriesCertifiers.Keys.Length][];
             for (int i = 0; i < countryCertifiers.Keys.Length; i++)
@@ -196,7 +196,7 @@ namespace Bol.Coin.Services
 
         public static bool Deploy()
         {
-            Runtime.Notify("debug", Owner.Reverse());
+            Runtime.Notify("debug", Constants.Owner.Reverse());
 
             var isDeployed = BolRepository.IsContractDeployed();
             if (isDeployed)
@@ -211,7 +211,7 @@ namespace Bol.Coin.Services
             //    return false;
             //}
 
-            BolRepository.SetClaimInterval(Constants.CLAIM_INTERVAL);
+            BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
             for (var i = 0; i < certifiers.Length; i++)
@@ -260,13 +260,13 @@ namespace Bol.Coin.Services
 
         public static bool SetCertifierFee(BigInteger fee)
         {
-            if (BolValidator.AddressNotOwner(Owner))
+            if (BolValidator.AddressNotOwner(Constants.Owner))
             {
                 Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
                 return false;
             }
 
-            BolRepository.SetCertifierFee(Constants.CERTIFIER_FEE);
+            BolRepository.SetCertificationFee(Constants.CertificationFee);
             return true;
         }
 
@@ -384,7 +384,7 @@ namespace Bol.Coin.Services
             BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
             Transferred(from, to, value);
-            Transferred(from, Owner, transferFee);
+            Transferred(from, Constants.Owner, transferFee);
 
             var result = BolRepository.Get("accounts", targetCodeName);
 
@@ -436,7 +436,7 @@ namespace Bol.Coin.Services
                 return false;
             }
             
-            return RegisterAsCertifier(codeName, countries, Constants.COLLATERAL_BOL);
+            return RegisterAsCertifier(codeName, countries, Constants.CertifierCollateral);
         }
 
         private static bool RegisterAsCertifier(byte[] codeName, byte[] countries, BigInteger collateral)
@@ -475,7 +475,7 @@ namespace Bol.Coin.Services
             {
                 var countryCode = countries.Range(i, 6);
                 var certifiers = BolRepository.GetCertifiers(countryCode);
-                certifiers[bolAccount.CodeName] = Constants.CERTIFIER_FEE;
+                certifiers[bolAccount.CodeName] = Constants.CertificationFee;
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
 
@@ -569,7 +569,7 @@ namespace Bol.Coin.Services
 
             if (bolAccount.Certifiers.HasKey(bolAccount.MandatoryCertifier))
             {
-                bolAccount.AccountStatus = Constants.ACCOUNT_STATUS_OPEN;
+                bolAccount.AccountStatus = Constants.AccountStatusOpen;
             }
 
             BolRepository.Save(bolAccount);
@@ -639,7 +639,7 @@ namespace Bol.Coin.Services
 
             if (!bolAccount.Certifiers.HasKey(bolAccount.MandatoryCertifier))
             {
-                bolAccount.AccountStatus = Constants.ACCOUNT_STATUS_PENDING_CERTIFICATIONS;
+                bolAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
             }
 
             BolRepository.Save(bolAccount);
@@ -684,7 +684,7 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
                 return false;
             }
-            if (bolAccount.AccountType != Constants.B_ACCOUNT_TYPE)
+            if (bolAccount.AccountType != Constants.AccountTypeB)
             {
                 Runtime.Notify("error", BolResult.Forbidden("You need a B Type Account in order to Claim Bol."));
                 return false;
