@@ -163,9 +163,9 @@ namespace Bol.Coin.Services
             }
 
             var account = BolRepository.GetAccount(codeName);
-            if (account.MainAddress == null)
+            if (account.CodeName == null || account.CodeName.Length == 0)
             {
-                Runtime.Notify("error", BolResult.NotFound("Main Address is not a registered Bol Account."));
+                Runtime.Notify("error", BolResult.NotFound("CodeName is not a registered Bol Account."));
                 return false;
             }
 
