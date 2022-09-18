@@ -17,7 +17,7 @@ public static class ContractNotificationSerializer
         var operationStatus = cleanParts[1].TrimEnd(',').Split(',');
         var accountParts = cleanParts[2].Split(",");
 
-        var response = new ContractNotification
+        var notification = new ContractNotification
         {
             Operation = operation,
             StatusCode = Int32.Parse(operationStatus.First()),
@@ -46,6 +46,6 @@ public static class ContractNotificationSerializer
             }
         };
 
-        return response;
+        return notification;
     }
 }
