@@ -360,7 +360,9 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            var senderAccount = BolRepository.GetAccount(senderCodeName);
+            var senderAccount = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName) 
+                ? targetAccount
+                : BolRepository.GetAccount(senderCodeName);
             if (senderAccount == null || senderAccount.CodeName == null)
             {
                 Runtime.Notify("error", BolResult.BadRequest("Sender Account is not a registered Bol Account."));
