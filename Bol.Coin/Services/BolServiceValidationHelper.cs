@@ -22,7 +22,7 @@ public static class BolServiceValidationHelper
     {
         if (AddressIsEmpty(address)) return false;
 
-        if (AddressHasBadLenght(address)) return false;
+        if (AddressHasBadLength(address)) return false;
 
         if (IsNotAddressOwner(address)) return false;
 
@@ -38,7 +38,7 @@ public static class BolServiceValidationHelper
 
         if (SocialAddressIsEmpty(socialAddress)) return false;
 
-        if (SocialAddressHasBadLenght(socialAddress)) return false;
+        if (SocialAddressHasBadLength(socialAddress)) return false;
 
         return true;
     }
@@ -51,7 +51,7 @@ public static class BolServiceValidationHelper
 
         if (AddressIsEmpty(commercialAddress, CommercialAddressCannotBeEmpty)) return false;
         
-        if(AddressHasBadLenght(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
+        if(AddressHasBadLength(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
 
         if(IsNotAddressOwner(account.MainAddress)) return false;
 
@@ -70,9 +70,8 @@ public static class BolServiceValidationHelper
 
         if (AddressIsEmpty(address)) return false;
 
-        if (AddressHasBadLenght(address)) return false;
-
         if (IsNotAddressOwner(address)) return false;
+        if (AddressHasBadLength(address)) return false;
 
         if (IsNotPositiveTransferValue(value)) return false;
 
@@ -107,22 +106,22 @@ public static class BolServiceValidationHelper
     {
         if (AddressIsEmpty(from, "From Address cannot be empty.")) return false;
 
-        if (AddressHasBadLenght(from, "From Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(from, "From Address length must be 20 bytes.")) return false;
 
         if (AddressIsEmpty(from, "To Address cannot be empty.")) return false;
 
-        if (AddressHasBadLenght(from, "To Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(from, "To Address length must be 20 bytes.")) return false;
 
         if (CodeNameIsEmpty(targetCodeName, "Target CodeName cannot be empty.")) return false;
         
         if (IsNotAddressOwner(from)) return false;
         
-        if(IsNotPositiveTransferValue(value)) return false;
+        if (IsNotPositiveTransferValue(value)) return false;
 
         return true;
     }
 
-    public static bool SocialAddressHasBadLenght(byte[] socialAddress)
+    public static bool SocialAddressHasBadLength(byte[] socialAddress)
     {
         if (BolValidator.AddressBadLength(socialAddress))
         {
@@ -210,7 +209,7 @@ public static class BolServiceValidationHelper
         return false;
     }
 
-    public static bool AddressHasBadLenght(byte[] address, string message = AddressLengthMustBeBytes)
+    public static bool AddressHasBadLength(byte[] address, string message = AddressLengthMustBeBytes)
     {
         if (BolValidator.AddressBadLength(address))
         {

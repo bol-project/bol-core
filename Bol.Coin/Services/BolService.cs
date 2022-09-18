@@ -280,7 +280,7 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
                 return false;   
             }
-            var account = BolRepository.GetAccount( codeName);
+            var account = BolRepository.GetAccount(codeName);
             
             if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(value, claimTransferFee, account))
             {
@@ -667,7 +667,7 @@ namespace Bol.Coin.Services
                 return false;
             }
             */
-            Runtime.Notify("debug", 0);
+            Runtime.Notify("debug", 1);
 
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
