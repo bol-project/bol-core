@@ -11,6 +11,6 @@ public class ContractNotification
     public string Operation { get; set; }
     public int StatusCode { get; set; }
 
-    public bool IsComplete { get; set; }
+    public string Message { get; set; }
     public BolAccount Account { get; set; }
 }

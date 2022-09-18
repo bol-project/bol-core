@@ -21,7 +21,7 @@ public static class ContractNotificationSerializer
         {
             Operation = operation,
             StatusCode = Int32.Parse(operationStatus.First()),
-            IsComplete = bool.Parse(operationStatus.Last()),
+            Message = operationStatus.Last(),
             Account = new BolAccount
             {
                 AccountStatus = Enum.Parse<AccountStatus>(accountParts[0]),

@@ -17,7 +17,7 @@ public class ContractNotificationSerializerTests
         
         result.Operation.Should().Be("register");
         result.StatusCode.Should().Be(200);
-        result.IsComplete.Should().Be(false);
+        result.Message.Should().Be("False");
         
         //Account Assertions
         var account = result.Account;
