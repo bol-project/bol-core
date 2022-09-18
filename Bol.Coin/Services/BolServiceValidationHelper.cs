@@ -47,14 +47,10 @@ public static class BolServiceValidationHelper
     {
         if (CodeNameIsEmpty(codeName)) return false;
         
-        if (IsNotAddressOwner(account.MainAddress)) return false;
-
         if (AddressIsEmpty(commercialAddress, CommercialAddressCannotBeEmpty)) return false;
         
         if(AddressHasBadLength(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
-
-        if(IsNotAddressOwner(account.MainAddress)) return false;
-
+        
         if (account.MainAddress == null)
         {
             Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
@@ -70,7 +66,6 @@ public static class BolServiceValidationHelper
 
         if (AddressIsEmpty(address)) return false;
 
-        if (IsNotAddressOwner(address)) return false;
         if (AddressHasBadLength(address)) return false;
 
         if (IsNotPositiveTransferValue(value)) return false;
