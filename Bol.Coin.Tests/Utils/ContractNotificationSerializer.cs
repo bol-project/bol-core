@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bol.Core.Model;
 
@@ -34,7 +35,7 @@ public static class ContractNotificationSerializer
                 CommercialAddresses = null, // TODO parse this
                 ClaimBalance = accountParts[8],
                 TotalBalance = accountParts[9],
-                CommercialBalances = null,
+                CommercialBalances = ParseCommercialBalances(accountParts[7]), //TODO Revisit this
                 Certifications = 0,
                 Certifiers = null, // TODO parse this
                 MandatoryCertifier = accountParts[12],
@@ -47,5 +48,35 @@ public static class ContractNotificationSerializer
         };
 
         return notification;
+    }
+
+    private static Dictionary<string, string> ParseCommercialBalances(string value)
+    {
+        var result = new Dictionary<string, string>();
+        
+        var accountsAndBalances = value
+            .Trim(':')
+            .TrimStart('{')
+            .TrimEnd('}')
+            .Split()
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .ToArray();
+
+        // The format of each string triplet is:
+        //          ------ account -----        ------ balance-----
+        // AHjJPohVY7EhDUpiE4xYHiFydQaySveFGM : 0
+        // That is why we choose the first and the third element
+        for (var i = 0; i < accountsAndBalances.Length ; i += 3)
+        {
+            var account = accountsAndBalances[i];
+            
+            var balance = accountsAndBalances[i + 2] == "Null" 
+                ? "0" 
+                : accountsAndBalances[i + 2];
+            
+            result.Add(account, balance);
+        }
+        
+        return result;
     }
 }
