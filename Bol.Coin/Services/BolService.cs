@@ -21,8 +21,8 @@ namespace Bol.Coin.Services
             {
                 return false;
             }
-
-            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress);
+            var currentHeight = BlockChainService.GetCurrentHeight();
+            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, currentHeight);
             if (!registerResult)
             {
                 return false;
@@ -50,7 +50,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
+        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, uint currentHeight)
         {
             var account = BolRepository.GetAccount(codeName);
             if (account != null && account.CodeName != null)
@@ -79,9 +79,7 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.BadRequest("Address is not in the legal B or C Address ranges."));
                 return false;
             }
-
-            uint currentHeight = BlockChainService.GetCurrentHeight();
-
+            
             account = new BolAccount();
             account.AccountStatus = Constants.AccountStatusPendingCertifications;
             account.AccountType = accountType;
@@ -212,7 +210,7 @@ namespace Bol.Coin.Services
 
                 Runtime.Notify("debug", certifier);
 
-                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress);
+                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, 1);
                 if (!result)
                 {
                     return false;
