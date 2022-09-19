@@ -42,7 +42,7 @@ namespace Bol.Coin.Persistence
             pstathas.BlockChainAddress = PSTATHAS_BLOCKCHAIN_ADDRESS;
             pstathas.SocialAddress = PSTATHAS_SOCIAL_ADDRESS;
             pstathas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            pstathas.Countries = Constants.ALL_COUNTRIES;
+            pstathas.Countries = Constants.AllCountriesCode;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_1] = 0;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_2] = 0;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_3] = 0;
@@ -54,7 +54,7 @@ namespace Bol.Coin.Persistence
             cchomenidis.BlockChainAddress = CCHOMENIDIS_BLOCKCHAIN_ADDRESS;
             cchomenidis.SocialAddress = CCHOMENIDIS_SOCIAL_ADDRESS;
             cchomenidis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            cchomenidis.Countries = Constants.ALL_COUNTRIES;
+            cchomenidis.Countries = Constants.AllCountriesCode;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_1] = 0;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_2] = 0;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_3] = 0;
@@ -66,7 +66,7 @@ namespace Bol.Coin.Persistence
             ftokas.BlockChainAddress = FTOKAS_BLOCKCHAIN_ADDRESS;
             ftokas.SocialAddress = FTOKAS_SOCIAL_ADDRESS;
             ftokas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            ftokas.Countries = Constants.ALL_COUNTRIES;
+            ftokas.Countries = Constants.AllCountriesCode;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_1] = 0;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_2] = 0;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_3] = 0;

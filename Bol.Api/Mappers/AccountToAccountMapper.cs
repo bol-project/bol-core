@@ -34,7 +34,7 @@ namespace Bol.Api.Mappers
                 BlockChainAddress = ConvertToAddress(account.BlockChainAddress),
                 SocialAddress = ConvertToAddress(account.SocialAddress),
                 CommercialAddresses = new HashSet<string>(account.CommercialAddresses.Keys.Select(ConvertToAddress)),
-                CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(HexToNumber(pair.Value))),
+                CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(pair.Value)),
                 ClaimBalance = ConvertToDecimal(account.ClaimBalance),
                 RegistrationHeight = int.Parse(account.RegistrationHeight),
                 LastClaimHeight = int.Parse(account.LastClaimHeight),
