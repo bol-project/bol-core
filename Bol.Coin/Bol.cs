@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Bol.Coin;
 using Bol.Coin.Models;
 using Bol.Coin.Services;
 using Neo.SmartContract.Framework.Services.Neo;
@@ -20,8 +21,8 @@ namespace Neo.SmartContract
                 if (operation == "deploy") return BolService.Deploy();
                 if (operation == "totalSupply") return BolService.CirculatingSupply();
                 if (operation == "circulatingSupply") return BolService.CirculatingSupply();
-                if (operation == "name") return BolService.Name();
-                if (operation == "symbol") return BolService.Symbol();
+                if (operation == "name") return Constants.Name;
+                if (operation == "symbol") return Constants.Symbol;
                 if (operation == "transferClaim")
                 {
                     if (args.Length != 3)
@@ -37,30 +38,25 @@ namespace Neo.SmartContract
                 }
                 if (operation == "transfer")
                 {
-                    if (args.Length != 4)
+                    if (args.Length != 5)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
                     var from = (byte[])args[0];
-                    var to = (byte[])args[1];
-                    var targetCodeName = (byte[])args[2];
-                    var value = (BigInteger)args[3];
+                    var senderCodeName = (byte[])args[1]; 
+                    var to = (byte[])args[2];
+                    var targetCodeName = (byte[])args[3];
+                    var value = (BigInteger)args[4];
 
-                    return BolService.Transfer(from, to, targetCodeName, value);
+                    return BolService.Transfer(from, senderCodeName, to, targetCodeName, value);
                 }
                 if (operation == "balanceOf")
                 {
-                    if (args.Length != 1)
-                    {
-                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
-                        return false;
-                    }
-                    var account = (byte[])args[0];
-
-                    return BolService.GetBalance(account);
+                    Runtime.Notify("error", BolResult.BadRequest("Function not supported"));
+                    return false;
                 }
-                if (operation == "decimals") return BolService.Decimals();
+                if (operation == "decimals") return Constants.Decimals;
                 if (operation == "register")
                 {
                     if (args.Length != 6)

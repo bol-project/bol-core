@@ -6,222 +6,279 @@ namespace Bol.Coin.Persistence
 {
     public static class BolRepository
     {
-        public const byte BOL = 0x00;
+        /// <summary>
+        /// Key for setting or retrieving the BoL coins in circulation.
+        /// </summary>
+        public const byte CirculatingSupply = 0x00;
 
-        public const byte CERTIFIERS = 0x04;
-        public const byte CERTIFIER_FEE = 0x05;
+        /// <summary>
+        /// Prefix for creating the key that sets or retrieves BoL Accounts by CodeName.
+        /// </summary>
+        public const byte Account = 0x01;
 
-        public const byte TOTAL_REGISTERED_PERSONS = 0x08;
-        public const byte TOTAL_REGISTERED_COMPANIES = 0x09;
-        public const byte TOTAL_CERTIFIERS = 0x0A;
+        /// <summary>
+        /// Prefix for setting or retrieving Certifier CodeNames by Country Code.
+        /// </summary>
+        public const byte Certifiers = 0x04;
+        
+        /// <summary>
+        /// Key for setting or retrieving the required fee for Certifications.
+        /// </summary>
+        public const byte CertificationFee = 0x05;
 
-        public const byte DEPLOY = 0xFF;
+        /// <summary>
+        /// Key for setting or retrieving the total number of registered people in BoL.
+        /// </summary>
+        public const byte TotalRegisteredPersons = 0x08;
+        
+        /// <summary>
+        /// Key for setting or retrieving the total number of registered companies in BoL.
+        /// </summary>
+        public const byte TotalRegisteredCompanies = 0x09;
+        
+        /// <summary>
+        /// Key for setting of retrieving the value that designates if the smart contract is deployed.
+        /// </summary>
+        public const byte Deploy = 0xFF;
 
-        public const byte DPSYEAR = 0xB0;
-        public const byte POPYEAR = 0xB1;
-        public const byte YEARSTAMP = 0xB2;
-        public const byte CLAIM_INTERVAL= 0xB3;
-        public const byte TOTAL_DISTRIBUTE = 0xB4;
-        public const byte BPSYEAR = 0xB5;
-        public const byte NEW_BOL = 0xB6;
-        public const byte POPULATION = 0xB7;
-        public const byte TOTAL_SUPPLY = 0xB8;
+        /// <summary>
+        /// Key for setting or retrieving the year to deaths per second Map.
+        /// </summary>
+        public const byte DpsYear = 0xB0;
+        
+        /// <summary>
+        /// Key for setting or retrieving the year to population Map.
+        /// </summary>
+        public const byte PopYear = 0xB1;
+        
+        /// <summary>
+        /// Key for setting or retrieving the year to timestamp Map.
+        /// </summary>
+        public const byte YearStamp = 0xB2;
+        
+        /// <summary>
+        /// Key for setting or retrieving the value of the BoL claim interval.
+        /// </summary>
+        public const byte ClaimInterval= 0xB3;
+        
+        /// <summary>
+        /// Key for setting or retrieving the claim distribution per person for a specific interval.
+        /// </summary>
+        public const byte TotalDistribute = 0xB4;
+        
+        /// <summary>
+        /// Key for setting or retrieving the year to births per second Map.
+        /// </summary>
+        public const byte BpsYear = 0xB5;
+        
+        /// <summary>
+        /// Key for setting or retrieving earth's population at block.
+        /// </summary>
+        public const byte Population = 0xB7;
+        
+        /// <summary>
+        /// Key for setting or retrieving the total supply of BoL coins at block.
+        /// </summary>
+        public const byte TotalSupply = 0xB8;
 
         /// <summary>
         /// Key for setting or retrieving the fee to be subtracted from transfer transactions.
         /// </summary>
-        public const byte TRANSFER_FEE = 0xC0;
+        public const byte TransferFee = 0xC0;
         
         /// <summary>
         /// Key for setting or retrieving the fee to be subtracted from claim transfer transactions. 
         /// </summary>
-        public const byte CLAIM_TRANSFER_FEE = 0xC1;
+        public const byte OperationsFee = 0xC1;
         
         /// <summary>
         /// Key for setting or retrieving the sum of fees that reside in the fee bucket
         /// waiting to be distributed to blockchain validators. 
         /// </summary>
-        public const byte FEE_BUCKET = 0xC2;
+        public const byte FeeBucket = 0xC2;
 
-        public static void Save(BolAccount account)
+        /// <summary>
+        /// Saves a BoL Account to the contract storage using the CodeName as key, replacing any existing entry.
+        /// </summary>
+        /// <param name="account"></param>
+        public static void SaveAccount(BolAccount account)
         {
+            var key = KeyHelper.GenerateKey(Account, account.CodeName);
             var bytes = account.Serialize();
-            BolStorage.Put(account.CodeName, bytes);
-        }
-        // Save map storage
-        public static void Save(string storageMap, BolAccount account)
-        {
-            var bytes = account.Serialize();
-            BolStorage.Put(storageMap, account.CodeName, bytes);
+            BolStorage.Put(key, bytes);
         }
 
-        public static BolAccount Get(byte[] codeName)
+        /// <summary>
+        /// Retrieves a BoL Account from the contract storage using the CodeName as key.
+        /// TotalBalance is calculated upon retrieval by the sum of all commercial and claim balances.
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
+        public static BolAccount GetAccount(byte[] codeName)
         {
-            var bytes = BolStorage.Get(codeName);
-            if (bytes == null) return new BolAccount();
+            var key = KeyHelper.GenerateKey(Account, codeName);
+            var bytes = BolStorage.Get(key);
+            if (bytes == null || bytes.Length == 0) return new BolAccount();
 
             var account = (BolAccount)bytes.Deserialize();
 
             account.TotalBalance = 0;
-            var addresses = account.CommercialAddresses.Keys;
-            foreach (var commAddress in addresses)
+            var balances = account.CommercialAddresses.Values;
+            foreach (var balance in balances)
             {
-                var bols = GetBols("CommercialAddress", commAddress);
-                account.CommercialAddresses[commAddress] = bols;
-                account.TotalBalance += bols;
-            }
-            account.TotalBalance += account.ClaimBalance;
-
-            return account;
-        }
-        // Get map storage
-        public static BolAccount Get(string storageMap, byte[] codeName)
-        {
-            var bytes = BolStorage.Get(storageMap,codeName);
-            if (bytes == null) return new BolAccount();
-
-            var account = (BolAccount)bytes.Deserialize();
-
-            account.TotalBalance = 0;
-            var addresses = account.CommercialAddresses.Keys;
-            foreach (var commAddress in addresses)
-            {
-                var bols = GetBols("CommercialAddress", commAddress);
-                account.CommercialAddresses[commAddress] = bols;
-                account.TotalBalance += bols;
+                account.TotalBalance += balance;
             }
             account.TotalBalance += account.ClaimBalance;
 
             return account;
         }
 
+        /// <summary>
+        /// Retrieves the number of registered BoL Accounts of type Person.
+        /// </summary>
+        /// <returns></returns>
         public static BigInteger GetTotalRegisteredPersons()
         {
-            var key = TotalRegisteredPersonsKey();
+            var key = KeyHelper.GenerateKey(TotalRegisteredPersons);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Increases by one the number of registered BoL Accounts of type Person.
+        /// </summary>
         public static void AddRegisteredPerson()
         {
-            var key = TotalRegisteredPersonsKey();
+            var key = KeyHelper.GenerateKey(TotalRegisteredPersons);
             var currentTotal = BolStorage.GetAsBigInteger(key);
             BolStorage.Put(key, currentTotal + 1);
         }
 
+        /// <summary>
+        /// Retrieves the number of registered BoL Accounts of type Company.
+        /// </summary>
+        /// <returns></returns>
         public static BigInteger GetTotalRegisteredCompanies()
         {
-            var key = TotalRegisteredCompaniesKey();
+            var key = KeyHelper.GenerateKey(TotalRegisteredCompanies);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Increases by one the number of registered BoL Accounts of type Company.
+        /// </summary>
         public static void AddRegisteredCompany()
         {
-            var key = TotalRegisteredCompaniesKey();
+            var key = KeyHelper.GenerateKey(TotalRegisteredCompanies);
             var currentTotal = BolStorage.GetAsBigInteger(key);
             BolStorage.Put(key, currentTotal + 1);
         }
 
-        public static void AddBols(BigInteger amount)
+        /// <summary>
+        /// Sets the number of BoL coins in circulation.
+        /// New BoL are added in circulation when a Claim transaction is executed in a new interval.
+        /// </summary>
+        /// <param name="amount"></param>
+        public static void SetCirculatingSupply(BigInteger amount)
         {
-            var key = BolKey();
-            var currentAmmountBytes = BolStorage.Get(key);
-
-            var currentAmount = BolStorage.GetAsBigInteger(key);
-            var newAmount = currentAmount + amount;
-            BolStorage.Put(key, newAmount);
-        }
-
-        public static void RemoveBols(BigInteger amount)
-        {
-            var key = BolKey();
-            var currentAmount = BolStorage.GetAsBigInteger(key);
-
-            var newAmount = currentAmount - amount;
-            BolStorage.Put(key, newAmount);
-        }
-
-        public static void SetBols(BigInteger amount)
-        {
-            var key = BolKey();
+            var key = KeyHelper.GenerateKey(CirculatingSupply);
             BolStorage.Put(key, amount);
         }
-
-        public static void SetBols(byte[] address, BigInteger amount)
+        
+        /// <summary>
+        /// Retrieves the number of BoL coins in circulation.
+        /// New BoL are added in circulation when a Claim transaction is executed in a new interval.
+        /// </summary>
+        /// <returns></returns>
+        public static BigInteger GetCirculatingSupply()
         {
-            var key = BolKey(address);
-            BolStorage.Put(key, amount);
-        }
-
-        //set bols for the CommercialAddress using storage map
-        public static void SetBols(string storageMap, byte[] address, BigInteger amount)
-        {
-            var key = BolKey(address);
-            BolStorage.Put(storageMap,key, amount);
-        }
-        public static BigInteger GetBols()
-        {
-            var key = BolKey();
+            var key = KeyHelper.GenerateKey(CirculatingSupply);
             return BolStorage.GetAsBigInteger(key);
         }
 
-        public static BigInteger GetBols(byte[] address)
+        /// <summary>
+        /// Returns true if a BoL Account with the given CodeName exists in storage.
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
+        public static bool AccountExists(byte[] codeName)
         {
-            var key = BolKey(address);
-            return BolStorage.GetAsBigInteger(key);
-        }
-        //Get bols for the CommercialAddress using storage map
-        public static BigInteger GetBols(string storageMap, byte[] address)
-        {
-            var key = BolKey(address);
-            return BolStorage.GetAsBigInteger(storageMap,key);
-        }
-
-        public static bool AddressExists(byte[] address)
-        {
-            var key = BolKey(address);
+            var key = KeyHelper.GenerateKey(Account, codeName);
             return BolStorage.KeyExists(key);
         }
 
+        /// <summary>
+        /// Sets the number of registered people at a specific block.
+        /// Only exists at Interval blocks.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <param name="total"></param>
         public static void SetRegisteredAtBlock(BigInteger blockHeight, BigInteger total)
         {
-            var key = TotalRegisteredPerBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalRegisteredPersons, blockHeight);
             BolStorage.Put(key, total);
         }
 
+        /// <summary>
+        /// Retrieves the total number of registered people at a specific block.
+        /// Only exists at Interval blocks.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <returns></returns>
         public static BigInteger GetRegisteredAtBlock(BigInteger blockHeight)
         {
-            var key = TotalRegisteredPerBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalRegisteredPersons, blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Returns true if the Smart Contract's Deploy function has been executed.
+        /// </summary>
+        /// <returns></returns>
         public static bool IsContractDeployed()
         {
-            var key = DeployKey();
+            var key = KeyHelper.GenerateKey(Deploy);
             var deployed = BolStorage.GetAsBigInteger(key);
             return deployed == 1;
         }
 
+        /// <summary>
+        /// Sets the Deploy flag to true to indicate that the Contract's Deploy function has been executed.
+        /// </summary>
         public static void SetContractDeployed()
         {
-            var key = DeployKey();
+            var key = KeyHelper.GenerateKey(Deploy);
             BolStorage.Put(key, 1);
         }
 
-        public static BigInteger GetCertifierFee()
+        /// <summary>
+        /// Retrieves the required fee for BoL certifications.
+        /// </summary>
+        /// <returns></returns>
+        public static BigInteger GetCertificationFee()
         {
-            var key = CertifierFeeKey();
+            var key = KeyHelper.GenerateKey(CertificationFee);
             return BolStorage.GetAsBigInteger(key);
         }
 
-        public static void SetCertifierFee(BigInteger fee)
+        /// <summary>
+        /// Sets the required fee for BoL certifications.
+        /// </summary>
+        /// <param name="fee"></param>
+        public static void SetCertificationFee(BigInteger fee)
         {
-            var key = CertifierFeeKey();
+            var key = KeyHelper.GenerateKey(CertificationFee);
             BolStorage.Put(key, fee);
         }
 
+        /// <summary>
+        /// Retrieves a dictionary of Certifiers by CountryCode.
+        /// Each key in the dictionary is a Certifier CodeName, and each value is the required certification fee.
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <returns></returns>
         public static Map<byte[], BigInteger> GetCertifiers(byte[] countryCode)
         {
-            var key = CertifiersKey(countryCode);
+            var key = KeyHelper.GenerateKey(Certifiers, countryCode);
             var result = BolStorage.Get(key);
             if (result == null || result.Length == 0)
             {
@@ -231,263 +288,248 @@ namespace Bol.Coin.Persistence
             return certifiers;
         }
 
+        /// <summary>
+        /// Sets a dictionary of Certifiers by CountryCode.
+        /// Each key in the dictionary is a Certifier CodeName, and each value is the required certification fee.
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="certifiers"></param>
         public static void SetCertifiers(byte[] countryCode, Map<byte[], BigInteger> certifiers)
         {
-            var key = CertifiersKey(countryCode);
+            var key = KeyHelper.GenerateKey(Certifiers, countryCode);
             BolStorage.Put(key, certifiers.Serialize());
         }
 
+        /// <summary>
+        /// Sets a dictionary that maps a year to the value of Births Per Second for that year. 
+        /// </summary>
+        /// <param name="bpsYear"></param>
         public static void SetBpsYear(Map<uint, BigInteger> bpsYear)
         {
-            var key = BpsYearKey();
+            var key = KeyHelper.GenerateKey(BpsYear);
             BolStorage.Put(key, bpsYear.Serialize());
         }
 
+        /// <summary>
+        /// Retrieves a Dictionary that maps a year to the value of Births Per Second for that year.
+        /// </summary>
+        /// <returns></returns>
         public static Map<uint, BigInteger> GetBpsYear()
         {
-            var key = BpsYearKey();
+            var key = KeyHelper.GenerateKey(BpsYear);
             var result = BolStorage.Get(key);
             return (Map<uint, BigInteger>)result.Deserialize();
         }
 
+        /// <summary>
+        /// Sets a dictionary that maps a year to the value of Deaths Per Second for that year. 
+        /// </summary>
+        /// <param name="dpsYear"></param>
         public static void SetDpsYear(Map<uint, BigInteger> dpsYear)
         {
-            var key = DpsYearKey();
+            var key = KeyHelper.GenerateKey(DpsYear);
             BolStorage.Put(key, dpsYear.Serialize());
         }
 
+        /// <summary>
+        /// Retrieves a Dictionary that maps a year to the value of Deaths Per Second for that year.
+        /// </summary>
+        /// <returns></returns>
         public static Map<uint, BigInteger> GetDpsYear()
         {
-            var key = DpsYearKey();
+            var key = KeyHelper.GenerateKey(DpsYear);
             var result = BolStorage.Get(key);
             return (Map<uint, BigInteger>)result.Deserialize();
         }
 
+        /// <summary>
+        /// Sets a dictionary that maps a year to the value of Population for that year. 
+        /// </summary>
+        /// <param name="popYear"></param>
         public static void SetPopYear(Map<uint, BigInteger> popYear)
         {
-            var key = PopYearKey();
+            var key = KeyHelper.GenerateKey(PopYear);
             BolStorage.Put(key, popYear.Serialize());
         }
 
+        /// <summary>
+        /// Retrieves a Dictionary that maps a year to the value of Population for that year.
+        /// </summary>
+        /// <returns></returns>
         public static Map<uint, BigInteger> GetPopYear()
         {
-            var key = PopYearKey();
+            var key = KeyHelper.GenerateKey(PopYear);
             var result = BolStorage.Get(key);
             return (Map<uint, BigInteger>)result.Deserialize();
         }
 
+        /// <summary>
+        /// Sets a dictionary that maps a year to the timestamp that this year starts.
+        /// </summary>
+        /// <param name="yearStamp"></param>
         public static void SetYearStamp(Map<uint, BigInteger> yearStamp)
         {
-            var key = YearStampKey();
+            var key = KeyHelper.GenerateKey(YearStamp);
             BolStorage.Put(key, yearStamp.Serialize());
         }
 
+        /// <summary>
+        /// Retrieves a dictionary that maps a year to the timestamp that this year starts.
+        /// </summary>
+        /// <returns></returns>
         public static Map<uint, BigInteger> GetYearStamp()
         {
-            var key = YearStampKey();
+            var key = KeyHelper.GenerateKey(YearStamp);
             var result = BolStorage.Get(key);
             return (Map<uint, BigInteger>)result.Deserialize();
         }
 
+        /// <summary>
+        /// Sets the number of blocks that are part of a BoL claim interval.
+        /// </summary>
+        /// <param name="interval"></param>
         public static void SetClaimInterval(BigInteger interval)
         {
-            var key = ClaimIntervalKey();
+            var key = KeyHelper.GenerateKey(ClaimInterval);
             BolStorage.Put(key, interval);
         }
 
+        /// <summary>
+        /// Retrieves the number of blocks that are part of a BoL claim interval.
+        /// </summary>
+        /// <returns></returns>
         public static BigInteger GetClaimInterval()
         {
-            var key = ClaimIntervalKey();
+            var key = KeyHelper.GenerateKey(ClaimInterval);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Sets the claim distribution per person that corresponds to a specific BoL claim interval.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <param name="total"></param>
         public static void SetDistributeAtBlock(BigInteger blockHeight, BigInteger total)
         {
-            var key = TotalDistributeAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalDistribute, blockHeight);
             BolStorage.Put(key, total);
         }
 
+        /// <summary>
+        /// Retrieves the claim distribution per person that corresponds to a specific BoL claim interval.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <returns></returns>
         public static BigInteger GetDistributeAtBlock(BigInteger blockHeight)
         {
-            var key = TotalDistributeAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalDistribute, blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 
-        public static void SetNewBolAtBlock(BigInteger blockHeight, BigInteger total)
-        {
-            var key = NewBolAtBlockKey(blockHeight);
-            BolStorage.Put(key, total);
-        }
-
-        public static BigInteger GetNewBolAtBlock(BigInteger blockHeight)
-        {
-            var key = NewBolAtBlockKey(blockHeight);
-            return BolStorage.GetAsBigInteger(key);
-        }
-
+        /// <summary>
+        /// Sets the earth population at a specific block's timestamp.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <param name="total"></param>
         public static void SetPopulationAtBlock(BigInteger blockHeight, BigInteger total)
         {
-            var key = PopulationAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(Population, blockHeight);
             BolStorage.Put(key, total);
         }
 
+        /// <summary>
+        /// Retrieves the earth's population at a specific block's timestamp.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <returns></returns>
         public static BigInteger GetPopulationAtBlock(BigInteger blockHeight)
         {
-            var key = PopulationAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(Population, blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Sets the total number of BoL coins that can be claimed or that are already in circulation,
+        /// at a specific block's timestamp.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <param name="total"></param>
         public static void SetTotalSupplyAtBlock(BigInteger blockHeight, BigInteger total)
         {
-            var key = TotalSupplyAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalSupply, blockHeight);
             BolStorage.Put(key, total);
         }
 
+        /// <summary>
+        /// Retrieves the total number of BoL coins that can be claimed or that are already in circulation,
+        /// at a specific block's timestamp.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <returns></returns>
         public static BigInteger GetTotalSupplyAtBlock(BigInteger blockHeight)
         {
-            var key = TotalSupplyAtBlockKey(blockHeight);
+            var key = KeyHelper.GenerateKey(TotalSupply, blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Retrieves the required fee for Transfer transactions.
+        /// </summary>
+        /// <returns></returns>
         public static BigInteger GetTransferFee()
         {
-            var key = TransferFeeKey();
+            var key = KeyHelper.GenerateKey(TransferFee);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Sets the required fee for Transfer transactions.
+        /// </summary>
+        /// <param name="fee"></param>
         public static void SetTransferFee(BigInteger fee)
         {
-            var key = TransferFeeKey();
+            var key = KeyHelper.GenerateKey(TransferFee);
             BolStorage.Put(key, fee);
         }
 
-        public static BigInteger GetClaimTransferFee()
+        /// <summary>
+        /// Retrieves the required fee for Operational transactions.
+        /// </summary>
+        /// <returns></returns>
+        public static BigInteger GetOperationsFee()
         {
-            var key = ClaimTransferFeeKey();
+            var key = KeyHelper.GenerateKey(OperationsFee);
             return BolStorage.GetAsBigInteger(key);
         }
 
-        public static void SetClaimTransferFee(BigInteger fee)
+        /// <summary>
+        /// Sets the required fee for Operational transactions.
+        /// </summary>
+        /// <param name="fee"></param>
+        public static void SetOperationsFee(BigInteger fee)
         {
-            var key = ClaimTransferFeeKey();
+            var key = KeyHelper.GenerateKey(OperationsFee);
             BolStorage.Put(key, fee);
         }
 
+        /// <summary>
+        /// Returns the sum of fees that reside in the Fee Bucket waiting to be distributed.
+        /// </summary>
+        /// <returns></returns>
         public static BigInteger GetFeeBucket()
         {
-            var key = FeeBucketKey();
+            var key = KeyHelper.GenerateKey(FeeBucket);
             return BolStorage.GetAsBigInteger(key);
         }
 
+        /// <summary>
+        /// Sets the sum of fees that reside in the Fee Bucket waiting to be distributed.
+        /// </summary>
+        /// <param name="fee"></param>
         public static void SetFeeBucket(BigInteger fee)
         {
-            var key = FeeBucketKey();
+            var key = KeyHelper.GenerateKey(FeeBucket);
             BolStorage.Put(key, fee);
-        }
-
-        internal static byte[] BolKey()
-        {
-            return new byte[] { BOL };
-        }
-
-        internal static byte[] BolKey(byte[] address)
-        {
-            return new byte[] { BOL }.Concat(address);
-        }
-
-        internal static byte[] TotalRegisteredPersonsKey()
-        {
-            return TOTAL_REGISTERED_PERSONS.AsByteArray();
-        }
-
-        internal static byte[] TotalRegisteredCompaniesKey()
-        {
-            return TOTAL_REGISTERED_COMPANIES.AsByteArray();
-        }
-
-        internal static byte[] TotalCertifiersKey()
-        {
-            return TOTAL_CERTIFIERS.AsByteArray();
-        }
-
-        internal static byte[] TotalRegisteredPerBlockKey(BigInteger blockHeight)
-        {
-            return new byte[] { TOTAL_REGISTERED_PERSONS }.Concat(blockHeight.AsByteArray());
-        }
-
-        internal static byte[] DeployKey()
-        {
-            return new byte[] { DEPLOY };
-        }
-
-        internal static byte[] CertifierFeeKey()
-        {
-            return new byte[] { CERTIFIER_FEE };
-        }
-
-        internal static byte[] CertifiersKey(byte[] countryCode)
-        {
-            return new byte[] { CERTIFIERS }.Concat(countryCode);
-        }
-
-        internal static byte[] BpsYearKey()
-        {
-            return new byte[] { BPSYEAR };
-        }
-
-        internal static byte[] DpsYearKey()
-        {
-            return new byte[] { DPSYEAR };
-        }
-
-        internal static byte[] PopYearKey()
-        {
-            return new byte[] { POPYEAR };
-        }
-
-        internal static byte[] YearStampKey()
-        {
-            return new byte[] { YEARSTAMP };
-        }
-
-        internal static byte[] ClaimIntervalKey()
-        {
-            return new byte[] { CLAIM_INTERVAL };
-        }
-
-        internal static byte[] TransferFeeKey()
-        {
-            return new byte[] { TRANSFER_FEE };
-        }
-
-        internal static byte[] ClaimTransferFeeKey()
-        {
-            return new byte[] { CLAIM_TRANSFER_FEE };
-        }
-
-        internal static byte[] FeeBucketKey()
-        {
-            return new byte[] { FEE_BUCKET };
-        }
-
-        internal static byte[] TotalDistributeAtBlockKey(BigInteger blockHeight)
-        {
-            return new byte[] { TOTAL_DISTRIBUTE }.Concat(blockHeight.AsByteArray());
-        }
-
-        internal static byte[] NewBolAtBlockKey(BigInteger blockHeight)
-        {
-            return new byte[] { NEW_BOL }.Concat(blockHeight.AsByteArray());
-        }
-
-        internal static byte[] PopulationAtBlockKey(BigInteger blockHeight)
-        {
-            return new byte[] { POPULATION }.Concat(blockHeight.AsByteArray());
-        }
-
-        internal static byte[] TotalSupplyAtBlockKey(BigInteger blockHeight)
-        {
-            return new byte[] { TOTAL_SUPPLY }.Concat(blockHeight.AsByteArray());
         }
     }
 }
