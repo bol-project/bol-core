@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
+using Bol.Core.Model;
 using Bol.Core.Services;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
@@ -109,6 +111,51 @@ namespace Bol.Coin.Tests.ContractTests
             await _service.Claim();
             var result = _emulator.Execute(_transactionGrabber);
 
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Claim_ShouldDistributeFees_WhenClaimerIsBlockchainValidator()
+        {
+            var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
+            var sha256 = new Sha256Hasher();
+            var addressTransformer = new AddressTransformer(new Base58Encoder(sha256), new Base16Encoder(sha256), protocolConfig);
+            
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.Register();
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.Claim();
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(100);
+
+            await _service.TransferClaim(addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"), BigInteger.Parse("100000000"));
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(100);
+
+
+            var blockchainValidatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1985MP<LsDDs8n8snS5BCA", "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+            var blockChainValidatorService = BolServiceFactory.Create(_transactionGrabber, blockchainValidatorContext);
+            
+            await blockChainValidatorService.Claim();
+            var result = _emulator.Execute(_transactionGrabber);
+
+            var claimNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+
+            var balances = claimNotification.Account
+                .CommercialBalances
+                .Values
+                .Select(BigInteger.Parse)
+                .ToArray();
+            Assert.Contains(balances, b => b > 0);
             Assert.True(result);
         }
     }
