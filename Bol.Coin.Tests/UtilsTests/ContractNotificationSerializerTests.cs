@@ -44,12 +44,12 @@ public class ContractNotificationSerializerTests
         account.MainAddress.Should().Be("ANVyn3x4GAEypqaU5R2BS9hYeyS7oFJmi6");
         account.BlockChainAddress.Should().Be("APjUt8YCs1wydpxBL3XxC6oCFRsWb9TyCs");
         account.SocialAddress.Should().Be("ATyxNR4qQSGDwToRQQCkgeAuSBRsfaphXD");
-        account.CommercialAddresses.Should().BeNull(); // TODO implement this field at Serializer
         account.ClaimBalance.Should().Be("100000000");
         account.TotalBalance.Should().Be("100000000");
 
         account.CommercialBalances.Should().BeEquivalentTo(expectedCommercialBalances);
-
+        account.CommercialAddresses.Should().BeEquivalentTo(expectedCommercialBalances.Keys);
+        
         account.Certifications.Should().Be(0);
         account.Certifiers.Should().BeNull();
         account.MandatoryCertifier.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");

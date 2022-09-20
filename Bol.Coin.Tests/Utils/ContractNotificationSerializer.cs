@@ -18,6 +18,8 @@ public static class ContractNotificationSerializer
         var operationStatus = cleanParts[1].TrimEnd(',').Split(',');
         var accountParts = cleanParts[2].Split(",");
 
+        var commercialBalances = ParseCommercialBalances(accountParts[7]);
+        
         var notification = new ContractNotification
         {
             Operation = operation,
@@ -32,10 +34,10 @@ public static class ContractNotificationSerializer
                 MainAddress = accountParts[4],
                 BlockChainAddress = accountParts[5],
                 SocialAddress = accountParts[6],
-                CommercialAddresses = null, // TODO parse this
+                CommercialAddresses = commercialBalances.Keys.ToHashSet(),
                 ClaimBalance = accountParts[8],
                 TotalBalance = accountParts[9],
-                CommercialBalances = ParseCommercialBalances(accountParts[7]), //TODO Revisit this
+                CommercialBalances = commercialBalances,
                 Certifications = 0,
                 Certifiers = null, // TODO parse this
                 MandatoryCertifier = accountParts[12],
