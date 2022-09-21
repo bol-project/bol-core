@@ -171,6 +171,17 @@ namespace Neo.SmartContract
                     var countryCode = (byte[])args[0];
                     return BolService.GetCertifiers(countryCode);
                 }
+                if (operation == "whitelist")
+                {
+                    if (args.Length != 2)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    var mainAddress = (byte[])args[1];
+                    return BolService.Whitelist(codeName, mainAddress);
+                }
             }
             return false;
         }
