@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Bol.Core.Abstractions;
@@ -40,16 +40,6 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
         [InlineData("ABCEF*56789")]
         [InlineData("1A2B3%)D5E6")]
         public void Validator_ShouldHaveError_WhenNin_HasSpecialCharacters(string nin)
-        {
-            _validator.ShouldHaveValidationErrorFor(p => p.Nin, nin);
-        }
-
-        [Theory]
-        [InlineData("A23BC427")]
-        [InlineData("A56789")]
-        [InlineData("1A2B3323424D5E6")]
-        [InlineData("A2B4EF33C427")]
-        public void Validator_ShouldHaveError_WhenNin_HasNotCorrectLength(string nin)
         {
             _validator.ShouldHaveValidationErrorFor(p => p.Nin, nin);
         }

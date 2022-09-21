@@ -1,4 +1,4 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using FluentValidation;
 using System;
@@ -45,9 +45,7 @@ namespace Bol.Core.Validators
                 .NotEmpty()
                 .WithMessage("National Identification Number (NIN) cannot be empty.")
                 .Length(edm => ninService.GetLength(edm.BirthCountryCode))
-                .WithMessage(edm => $"National Identification Number (NIN) does not match length for country {edm.BirthCountryCode}.")
-                .Must((edm, nin) => ninService.HasAllowedCharacters(nin, edm.BirthCountryCode))
-                .WithMessage(edm => $"National Identification Number (NIN) does not match specification for country {edm.BirthCountryCode}.");
+                .WithMessage(edm => $"National Identification Number (NIN) does not match length for country {edm.BirthCountryCode}.");
 
             RuleFor(edm => edm.CodeName)
                 .NotEmpty()
