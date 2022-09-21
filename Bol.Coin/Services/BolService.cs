@@ -265,6 +265,11 @@ namespace Bol.Coin.Services
             return BolRepository.GetCirculatingSupply();
         }
 
+        public static BigInteger GlobalSupply(BigInteger blockHeight)
+        {
+            return BolRepository.GetTotalSupplyAtBlock(blockHeight);
+        }
+
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
             if (!BolServiceValidationHelper.CanTransferClaimInitialValidation(codeName, address, value))
