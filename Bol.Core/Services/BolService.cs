@@ -199,6 +199,29 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
+        public Task Whitelist(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                address.GetBytes()
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"Whitelist {addressString} by {context.CodeName}";
+            var remarks = new[] { "whitelist", context.CodeName, addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "whitelist", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+
+            return _transactionService.Publish(transaction, token);
+        }
+
         private ISignatureScript CreateMainAddress(BolContext context)
         {
             return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);

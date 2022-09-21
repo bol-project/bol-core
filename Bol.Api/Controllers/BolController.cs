@@ -83,6 +83,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("whitelist")]
+        public async Task<ActionResult> Whitelist(string address, CancellationToken token)
+        {
+            await _coreBolService.Whitelist(_addressTransformer.ToScriptHash(address), token);
+            return Ok();
+        }
+
         [HttpGet("decimals")]
         public ActionResult Decimals()
         {
