@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
@@ -37,20 +38,38 @@ namespace Bol.Core.Services
             var codeName = _stringSerializer.Serialize(person);
 
             var nameToHash = person.FirstName;
-            var birthdayToHash = person.Birthdate.ToString(CultureInfo.InvariantCulture);
-            var ninToHash = person.Nin.Substring(0, person.Nin.Length - 2);
 
-            var shortHashBytes = Encoding.ASCII.GetBytes(nameToHash + birthdayToHash + ninToHash);
+            var birthdayToHash = person.Birthdate.ToString(Constants.CODENAME_BIRTHDATE_FORMAT, CultureInfo.InvariantCulture);
 
-            var shortHash = _hasher.Hash(shortHashBytes, 8);
+            var ninToHash = GetLastFourNinDigits(person.Nin);
+
+            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
+
+            var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
 
             var shortHashString = _base58Encoder.Encode(shortHash);
 
-            codeName = $"{codeName}{shortHashString}";
+            codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCombinationIfEmpty(person.Combination)}";
 
-            var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName));
+            var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName), 2, Constants.CODENAME_CHECKSUM_BYTES);
 
-            return Encoding.ASCII.GetString(codeNameBytes);
+            var hexEncodeChecksum = _hex.Encode(codeNameBytes.Skip(codeNameBytes.Length - Constants.CODENAME_CHECKSUM_BYTES).ToArray());
+
+            var codeNameWithoutChecksum = codeNameBytes
+                .SkipLastN(Constants.CODENAME_CHECKSUM_BYTES)
+                .ToArray();
+
+            return Encoding.ASCII.GetString(codeNameWithoutChecksum) + hexEncodeChecksum;
+        }
+
+        private string GetLastFourNinDigits(string nin)
+        {
+            return nin.Substring(nin.Length - 4);
+        }
+
+        private string ReplaceCombinationIfEmpty(string compination)
+        {
+            return string.IsNullOrEmpty(compination) ? "1" : compination;
         }
     }
 }

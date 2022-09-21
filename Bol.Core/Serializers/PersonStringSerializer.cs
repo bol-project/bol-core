@@ -1,4 +1,4 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using System;
 using System.Linq;
@@ -9,24 +9,15 @@ namespace Bol.Core.Serializers
     {
         public const char DIV = Constants.CODENAME_DIVIDER;
         public const string P = Constants.PERSONAL_CODENAME_INITIAL;
-        private const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPPAS<S<<1993MP<2BB6C323PP5D5D";
 
         public CodenamePerson Deserialize(string input)
         {
             var parts = input?.Split(DIV);
             var birthDateParseResult = int.TryParse(parts[6].Substring(0, 4), out var birthDate);
 
-            if (parts == null ||
-                parts.Length != 8 ||
-                parts[0] != P ||
-                parts[6].Length != 6 ||
-                parts[7].Length != 15 ||
-                !birthDateParseResult)
-            {
-                throw new ArgumentException(INVALID_CODENAME);
-            }
+            ValidateCodanameAndThrow(parts, birthDateParseResult);
 
-	        var basePerson = DeserializeBasePerson(parts);
+            var basePerson = DeserializeBasePerson(parts);
 
             return new CodenamePerson
             {
@@ -34,31 +25,44 @@ namespace Bol.Core.Serializers
                 Surname = basePerson.Surname,
                 FirstNameCharacter = parts[3],
                 MiddleName = basePerson.MiddleName,
-				ThirdName = basePerson.ThirdName,
+                ThirdName = basePerson.ThirdName,
                 YearOfBirth = birthDate,
                 Gender = basePerson.Gender,
                 Combination = basePerson.Combination,
-				ShortHash = parts[7].Substring(0, 11),
-				CheckSum = parts[7].Substring(10, 4)
+                ShortHash = parts[7].Substring(0, 11),
+                CheckSum = parts[8].Substring(1, 4)
             };
         }
 
-	    internal BasePerson DeserializeBasePerson(string[] inputStrings)
-	    {
-		    var genderInitial = inputStrings[6].Substring(4, 1);
-		    var gender = ParseGender(genderInitial);
+        internal void ValidateCodanameAndThrow(string[] parts, bool birthDateParseResult)
+        {
+            if (parts == null ||
+                parts.Length != Constants.CODENAME_PARTS ||
+                parts[0] != Constants.PERSONAL_CODENAME_INITIAL ||
+                parts[6].Length != Constants.CODENAME_BIRTHYEAR_GENDER_LENGTH ||
+                parts[7].Length != Constants.CODENAME_BDATE_NAME_NIN_BASE58_LENGTH ||
+                parts[8].Length != Constants.CODENAME_COMBINATION_CHECKSUM_LENGTH ||
+                !birthDateParseResult)
+            {
+                throw new ArgumentException(Constants.INVALID_CODENAME);
+            }
+        }
 
-			return new BasePerson
-		    {
-			    CountryCode = inputStrings[1],
-			    Surname = inputStrings[2],
-			    MiddleName = inputStrings[4],
-			    ThirdName = inputStrings[5],
-			    Gender = gender,
-			    Combination = inputStrings[6].Substring(5, 1)
-		    };
+        internal BasePerson DeserializeBasePerson(string[] inputStrings)
+        {
+            var genderInitial = inputStrings[6].Substring(4, 1);
+            var gender = ParseGender(genderInitial);
 
-	    }
+            return new BasePerson
+            {
+                CountryCode = inputStrings[1],
+                Surname = inputStrings[2],
+                MiddleName = inputStrings[4],
+                ThirdName = inputStrings[5],
+                Gender = gender,
+                Combination = inputStrings[8].Substring(0, 1)
+            };
+        }
 
         public string Serialize(NaturalPerson person)
         {
@@ -76,7 +80,7 @@ namespace Bol.Core.Serializers
             }
             else
             {
-	            result = result + $"{DIV}";
+                result = result + $"{DIV}";
             }
 
             if (person.ThirdName != null)
@@ -85,13 +89,12 @@ namespace Bol.Core.Serializers
             }
             else
             {
-	            result = result + $"{DIV}";
+                result = result + $"{DIV}";
             }
 
             result = result +
                      $"{DIV}{birthYear}" +
-                     $"{gender}" +
-                     $"{person.Combination}{DIV}";
+                     $"{gender}{DIV}";
 
             return result;
         }
@@ -113,6 +116,7 @@ namespace Bol.Core.Serializers
                 default:
                     throw new ArgumentException("Gender must be either M, F or U");
             }
+
             return gender;
         }
     }
