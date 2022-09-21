@@ -242,6 +242,7 @@ namespace Bol.Coin.Services
             BolRepository.SetFeeBucket(0);
             BolRepository.SetTransferFee(Constants.TransferFee);
             BolRepository.SetOperationsFee(Constants.OperationsFee);
+            BolRepository.InitWhitelist();
 
             BolRepository.SetContractDeployed();
 
