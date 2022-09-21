@@ -711,7 +711,10 @@ namespace Bol.Coin.Services
             var firstInClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
             if (firstInClaim == 0)
             {
-                DistributeFees();   
+                DistributeFees();
+                
+                //refresh account data after fee distribution
+                bolAccount = BolRepository.GetAccount(codeName);
             }
 
             Runtime.Notify("debug", 4);
