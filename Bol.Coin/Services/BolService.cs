@@ -21,6 +21,14 @@ namespace Bol.Coin.Services
             {
                 return false;
             }
+            
+            var isWhitelisted = BolRepository.IsWhitelisted(address);
+            if (!isWhitelisted)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Main Address is not Whitelisted."));
+                return false;
+            }
+            
             var currentHeight = BlockChainService.GetCurrentHeight();
             var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, votingAddress, currentHeight);
             if (!registerResult)
@@ -42,6 +50,8 @@ namespace Bol.Coin.Services
             }
 
             SetMandatoryCertifier(codeName);
+            
+            BolRepository.RemoveFromWhitelist(address);
 
             var result = BolRepository.GetAccount(codeName);
 
