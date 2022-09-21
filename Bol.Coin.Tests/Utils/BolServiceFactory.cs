@@ -19,6 +19,26 @@ namespace Bol.Coin.Tests.Utils
 {
     public static class BolServiceFactory
     {
+        public static BolService Create(TransactionGrabber grabber, BolContext context)
+        {
+            var sha256 = new Sha256Hasher();
+            var base16 = new Base16Encoder(sha256);
+            var ripemd160 = new RipeMD160Hasher();
+
+            var signatureScriptFactory = new SignatureScriptFactory(base16, sha256, ripemd160);
+            var scriptHashFactory = new ScriptHashFactory(base16);
+            var transactionSerializer = new TransactionSerializer();
+            var transactionSigner = new TransactionSigner(transactionSerializer, new ECCurveSigner());
+            var transactionNotarizer = new TransactionNotarizer(transactionSigner);
+            
+            var rpcMethodFactory = new FakeRpcMethodFactory(grabber);
+            var transactionService = new TransactionService(signatureScriptFactory, scriptHashFactory, transactionNotarizer, rpcMethodFactory);
+
+            var contextAccessor = new FakeContextAccessor(context);
+            
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16);
+        }
+        
         public static BolService Create(TransactionGrabber grabber)
         {
             var walletJson = File.ReadAllText("wallet.json");
