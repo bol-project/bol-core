@@ -10,6 +10,7 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] PSTATHAS_MAIN_ADDRESS = "BBBBfoqNsW21HvGkQUxCeUyd3HKEQXJSTg".ToScriptHash();
         public static readonly byte[] PSTATHAS_BLOCKCHAIN_ADDRESS = "BDvVnvCnG9DJY5wGvi9huCi4qhwSGV2oND".ToScriptHash();
         public static readonly byte[] PSTATHAS_SOCIAL_ADDRESS = "BA7nRCswUPtLUqYV2CcV1vF729TxtUFYGJ".ToScriptHash();
+        public static readonly byte[] PSTATHAS_VOTING_ADDRESS = "BDvVnvCnG9DJY5wGvi9huCi4qhwSGV2oND".ToScriptHash();
         public static readonly byte[] PSTATHAS_COMMERCIAL_ADDRESS_1 = "B4mZUZQF1T5Ddshn64cxuk9icE6FP5PqBW".ToScriptHash();
         public static readonly byte[] PSTATHAS_COMMERCIAL_ADDRESS_2 = "BJnDMsb4viAPLCsXEUTb8D3cXbuQeXC2Cc".ToScriptHash();
         public static readonly byte[] PSTATHAS_COMMERCIAL_ADDRESS_3 = "B8orwWRDjtTZ9evj84WkSk5okzA4EuZFKP".ToScriptHash();
@@ -19,6 +20,7 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] CCHOMENIDIS_MAIN_ADDRESS = "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5".ToScriptHash();
         public static readonly byte[] CCHOMENIDIS_BLOCKCHAIN_ADDRESS = "BSiLCBnzsor9XxFcKXe9ybWWkRyUjAREbj".ToScriptHash();
         public static readonly byte[] CCHOMENIDIS_SOCIAL_ADDRESS = "BNd8JQA58P7zpG8fDs795cw8RtRRPa38a4".ToScriptHash();
+        public static readonly byte[] CCHOMENIDIS_VOTING_ADDRESS = "BSiLCBnzsor9XxFcKXe9ybWWkRyUjAREbj".ToScriptHash();
         public static readonly byte[] CCHOMENIDIS_COMMERCIAL_ADDRESS_1 = "BQLDQNWYtBXisR1E6otGYF4SQNMz3cKdAt".ToScriptHash();
         public static readonly byte[] CCHOMENIDIS_COMMERCIAL_ADDRESS_2 = "B9MvpN95Yi4MsN9Ne3GuEfWCSfzFyDV2Fp".ToScriptHash();
         public static readonly byte[] CCHOMENIDIS_COMMERCIAL_ADDRESS_3 = "BCzHfGWygem2pcDr1bBZungZ12ugGKoxR9".ToScriptHash();
@@ -28,6 +30,7 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] FTOKAS_MAIN_ADDRESS = "BBBcoeSckeTXpvwob4jznZ2QC72BTEUyHM".ToScriptHash();
         public static readonly byte[] FTOKAS_BLOCKCHAIN_ADDRESS = "B9h5Zp7SsP2HqUT2QmtRWpXgwBH4AFMQZJ".ToScriptHash();
         public static readonly byte[] FTOKAS_SOCIAL_ADDRESS = "BNBVqZcFPYq4pLVUf5PA1AQqLFSxf46rs1".ToScriptHash();
+        public static readonly byte[] FTOKAS_VOTING_ADDRESS = "B9h5Zp7SsP2HqUT2QmtRWpXgwBH4AFMQZJ".ToScriptHash();
         public static readonly byte[] FTOKAS_COMMERCIAL_ADDRESS_1 = "B6DzXUG7sFYghEGcvBg2M7ZVvAFM5DproL".ToScriptHash();
         public static readonly byte[] FTOKAS_COMMERCIAL_ADDRESS_2 = "BQ19RY3QFh9XKJG8AiJnmv7V9bPqMyJ442".ToScriptHash();
         public static readonly byte[] FTOKAS_COMMERCIAL_ADDRESS_3 = "BThsYC4tWtJwmqvS2bnPXvRfXkxyhy4RxT".ToScriptHash();
@@ -41,6 +44,7 @@ namespace Bol.Coin.Persistence
             pstathas.MainAddress = PSTATHAS_MAIN_ADDRESS;
             pstathas.BlockChainAddress = PSTATHAS_BLOCKCHAIN_ADDRESS;
             pstathas.SocialAddress = PSTATHAS_SOCIAL_ADDRESS;
+            pstathas.VotingAddress = PSTATHAS_VOTING_ADDRESS;
             pstathas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
             pstathas.Countries = Constants.AllCountriesCode;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_1] = 0;
@@ -53,6 +57,7 @@ namespace Bol.Coin.Persistence
             cchomenidis.MainAddress = CCHOMENIDIS_MAIN_ADDRESS;
             cchomenidis.BlockChainAddress = CCHOMENIDIS_BLOCKCHAIN_ADDRESS;
             cchomenidis.SocialAddress = CCHOMENIDIS_SOCIAL_ADDRESS;
+            cchomenidis.VotingAddress = CCHOMENIDIS_VOTING_ADDRESS;
             cchomenidis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
             cchomenidis.Countries = Constants.AllCountriesCode;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_1] = 0;
@@ -65,6 +70,7 @@ namespace Bol.Coin.Persistence
             ftokas.MainAddress = FTOKAS_MAIN_ADDRESS;
             ftokas.BlockChainAddress = FTOKAS_BLOCKCHAIN_ADDRESS;
             ftokas.SocialAddress = FTOKAS_SOCIAL_ADDRESS;
+            ftokas.VotingAddress = FTOKAS_VOTING_ADDRESS;
             ftokas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
             ftokas.Countries = Constants.AllCountriesCode;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_1] = 0;

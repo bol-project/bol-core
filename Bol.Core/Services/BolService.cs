@@ -53,6 +53,7 @@ namespace Bol.Core.Services
                  _hex.Decode(context.Edi),
                  context.BlockChainAddress.Key.GetBytes(),
                  context.SocialAddress.Key.GetBytes(),
+                 context.VotingAddress.Key.GetBytes(),
                  context.CommercialAddresses.SelectMany(pair => pair.Key.GetBytes()).ToArray()
              };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };

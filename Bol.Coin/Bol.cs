@@ -68,7 +68,7 @@ namespace Neo.SmartContract
                 if (operation == "decimals") return Constants.Decimals;
                 if (operation == "register")
                 {
-                    if (args.Length != 6)
+                    if (args.Length != 7)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
@@ -78,9 +78,10 @@ namespace Neo.SmartContract
                     var edi = (byte[])args[2];
                     var blockChainAddress = (byte[])args[3];
                     var socialAddress = (byte[])args[4];
-                    var commercialAddresses = (byte[])args[5];
+                    var votingAddress = (byte[])args[5];
+                    var commercialAddresses = (byte[])args[6];
 
-                    return BolService.RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, commercialAddresses);
+                    return BolService.RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, votingAddress, commercialAddresses);
                 }
                 if (operation == "registerCertifier")
                 {

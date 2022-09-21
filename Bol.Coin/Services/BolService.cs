@@ -15,14 +15,14 @@ namespace Bol.Coin.Services
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
 
-        public static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] commercialAddresses)
+        public static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] votingAddress, byte[] commercialAddresses)
         {
             if (!BolServiceValidationHelper.CanRegister(address, codeName, edi, blockChainAddress, socialAddress))
             {
                 return false;
             }
             var currentHeight = BlockChainService.GetCurrentHeight();
-            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, currentHeight);
+            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, votingAddress, currentHeight);
             if (!registerResult)
             {
                 return false;
@@ -50,7 +50,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, uint currentHeight)
+        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] votingAddress, uint currentHeight)
         {
             var account = BolRepository.GetAccount(codeName);
             if (account != null && account.CodeName != null)
@@ -88,6 +88,7 @@ namespace Bol.Coin.Services
             account.MainAddress = address;
             account.BlockChainAddress = blockChainAddress;
             account.SocialAddress = socialAddress;
+            account.VotingAddress = votingAddress;
             account.ClaimBalance = 1 * Constants.Factor;
             account.TotalBalance = 0;
             account.RegistrationHeight = currentHeight;
@@ -210,7 +211,7 @@ namespace Bol.Coin.Services
 
                 Runtime.Notify("debug", certifier);
 
-                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, 1);
+                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1);
                 if (!result)
                 {
                     return false;

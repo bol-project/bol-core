@@ -33,6 +33,7 @@ namespace Bol.Api.Mappers
                 MainAddress = ConvertToAddress(account.MainAddress),
                 BlockChainAddress = ConvertToAddress(account.BlockChainAddress),
                 SocialAddress = ConvertToAddress(account.SocialAddress),
+                VotingAddress = ConvertToAddress(account.VotingAddress),
                 CommercialAddresses = new HashSet<string>(account.CommercialAddresses.Keys.Select(ConvertToAddress)),
                 CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(pair.Value)),
                 ClaimBalance = ConvertToDecimal(account.ClaimBalance),

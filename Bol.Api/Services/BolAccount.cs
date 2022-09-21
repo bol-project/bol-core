@@ -13,6 +13,7 @@ namespace Bol.Api.Model
         public string MainAddress { get; set; }
         public string BlockChainAddress { get; set; }
         public string SocialAddress { get; set; }
+        public string VotingAddress { get; set; }
 
         public Dictionary<string, string> CommercialAddresses { get; set; }
 
