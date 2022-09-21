@@ -23,6 +23,7 @@ namespace Bol.Coin.Tests.Utils
         {
             var sha256 = new Sha256Hasher();
             var base16 = new Base16Encoder(sha256);
+            var base58 = new Base58Encoder(sha256);
             var ripemd160 = new RipeMD160Hasher();
 
             var signatureScriptFactory = new SignatureScriptFactory(base16, sha256, ripemd160);
@@ -36,7 +37,10 @@ namespace Bol.Coin.Tests.Utils
 
             var contextAccessor = new FakeContextAccessor(context);
             
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16);
+            var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
+            var addressTransformer = new AddressTransformer(base58, base16, protocolConfig);
+            
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, addressTransformer);
         }
         
         public static BolService Create(TransactionGrabber grabber)
@@ -74,7 +78,7 @@ namespace Bol.Coin.Tests.Utils
             var rpcMethodFactory = new FakeRpcMethodFactory(grabber);
             var transactionService = new TransactionService(signatureScriptFactory, scriptHashFactory, transactionNotarizer, rpcMethodFactory);
 
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16);
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, addressTransformer);
         }
     }
 }

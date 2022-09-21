@@ -9,6 +9,8 @@ public static class ContractNotificationSerializer
 {
     public static ContractNotification Deserialize(string text)
     {
+        if (text.Contains("error")) throw new Exception(text);
+        
         var parts = text.Split('[').TakeLast(3);
 
         var cleanParts = parts
@@ -18,7 +20,7 @@ public static class ContractNotificationSerializer
         var operationStatus = cleanParts[1].TrimEnd(',').Split(',');
         var accountParts = cleanParts[2].Split(",");
 
-        var commercialBalances = ParseCommercialBalances(accountParts[7]);
+        var commercialBalances = ParseCommercialBalances(accountParts[8]);
         
         var notification = new ContractNotification
         {
@@ -35,17 +37,17 @@ public static class ContractNotificationSerializer
                 BlockChainAddress = accountParts[5],
                 SocialAddress = accountParts[6],
                 CommercialAddresses = commercialBalances.Keys.ToHashSet(),
-                ClaimBalance = accountParts[8],
-                TotalBalance = accountParts[9],
+                ClaimBalance = accountParts[9],
+                TotalBalance = accountParts[10],
                 CommercialBalances = commercialBalances,
                 Certifications = 0,
                 Certifiers = null, // TODO parse this
-                MandatoryCertifier = accountParts[12],
-                IsCertifier = bool.TryParse(accountParts[13], out var isCertifier) && isCertifier,
-                Collateral = accountParts[14] == "Null" ? null : accountParts[14],
-                Countries = accountParts[15] == "Null" ? null : accountParts[15],
-                RegistrationHeight = int.Parse(accountParts[16]),
-                LastClaimHeight = int.Parse(accountParts[17])
+                MandatoryCertifier = accountParts[13],
+                IsCertifier = bool.TryParse(accountParts[14], out var isCertifier) && isCertifier,
+                Collateral = accountParts[15] == "Null" ? null : accountParts[15],
+                Countries = accountParts[16] == "Null" ? null : accountParts[16],
+                RegistrationHeight = int.Parse(accountParts[17]),
+                LastClaimHeight = int.Parse(accountParts[18])
             }
         };
 
