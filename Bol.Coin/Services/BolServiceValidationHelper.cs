@@ -103,9 +103,9 @@ public static class BolServiceValidationHelper
 
         if (AddressHasBadLength(from, "From Address length must be 20 bytes.")) return false;
 
-        if (AddressIsEmpty(from, "To Address cannot be empty.")) return false;
+        if (AddressIsEmpty(to, "To Address cannot be empty.")) return false;
 
-        if (AddressHasBadLength(from, "To Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(to, "To Address length must be 20 bytes.")) return false;
 
         if (CodeNameIsEmpty(targetCodeName, "Target CodeName cannot be empty.")) return false;
         
