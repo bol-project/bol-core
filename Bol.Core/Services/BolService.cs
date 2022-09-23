@@ -217,7 +217,7 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
-        public Task Whitelist(IScriptHash address, CancellationToken token = default)
+        public async Task<bool> Whitelist(IScriptHash address, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
@@ -236,8 +236,12 @@ namespace Bol.Core.Services
 
             var transaction = _transactionService.Create(witness, context.Contract, "whitelist", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
 
-            return _transactionService.Publish(transaction, token);
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
         public async Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default)

@@ -86,8 +86,8 @@ namespace Bol.Api.Controllers
         [HttpPost("whitelist")]
         public async Task<ActionResult> Whitelist(string address, CancellationToken token)
         {
-            await _coreBolService.Whitelist(_addressTransformer.ToScriptHash(address), token);
-            return Ok();
+            var result = await _coreBolService.Whitelist(_addressTransformer.ToScriptHash(address), token);
+            return Ok(result);
         }
 
         [HttpGet("whitelist")]
