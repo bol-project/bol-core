@@ -15,6 +15,7 @@ namespace Bol.Core.Abstractions
         Task<BolAccount> TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default);
         Task<BolAccount> Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default);
         Task Whitelist(IScriptHash address, CancellationToken token = default);
+        Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default);
         Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
         Task Certify(IScriptHash address, CancellationToken token = default);
     }

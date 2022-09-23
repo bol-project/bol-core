@@ -240,6 +240,28 @@ namespace Bol.Core.Services
             return _transactionService.Publish(transaction, token);
         }
 
+        public async Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                address.GetBytes()
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"IsWhitelisted {addressString}";
+            var remarks = new[] { "isWhitelisted", addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "isWhitelisted", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
+        }
+
         private ISignatureScript CreateMainAddress(BolContext context)
         {
             return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);
