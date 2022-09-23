@@ -818,45 +818,24 @@ namespace Bol.Coin.Services
 
         public static bool Whitelist(byte[] codeName, byte[] address)
         {
-            if (BolValidator.CodeNameEmpty(codeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
-                return false;
-            }
-            
-            if (BolValidator.AddressEmpty(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-                return false;
-            }
-            
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
-            }
+            if (!BolServiceValidationHelper.IsWhitelistInputValid(codeName, address)) return false;
             
             var account = BolRepository.GetAccount(codeName);
-            
-            if (account.CodeName == null || account.CodeName.Length == 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
-                return false;
-            }
 
-            if (account.IsCertifier == 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName is not a Bol Certifier."));
-                return false;
-            }
-
-            if (BolValidator.AddressNotOwner(account.VotingAddress))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Whitelisting requires a signature from Certifier Voting Address."));
-                return false;
-            }
+            if (!BolServiceValidationHelper.IsWhiteListValid(account)) return false;
             
             BolRepository.AddToWhitelist(address);
+
+            return true;
+        }
+
+        public static bool IsWhitelisted(byte[] address)
+        {
+            if (!BolRepository.IsWhitelisted(address))
+            {
+                Runtime.Notify("error", BolResult.NotFound("Address is not whitelisted."));
+                return false;
+            }
 
             return true;
         }
