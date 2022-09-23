@@ -23,6 +23,15 @@ namespace Neo.SmartContract
                 if (operation == "circulatingSupply") return BolService.CirculatingSupply();
                 if (operation == "name") return Constants.Name;
                 if (operation == "symbol") return Constants.Symbol;
+                if (operation == "globalSupply")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    return BolService.GlobalSupply((BigInteger)args[0]);
+                }
                 if (operation == "transferClaim")
                 {
                     if (args.Length != 3)
@@ -59,7 +68,7 @@ namespace Neo.SmartContract
                 if (operation == "decimals") return Constants.Decimals;
                 if (operation == "register")
                 {
-                    if (args.Length != 6)
+                    if (args.Length != 7)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
@@ -69,9 +78,10 @@ namespace Neo.SmartContract
                     var edi = (byte[])args[2];
                     var blockChainAddress = (byte[])args[3];
                     var socialAddress = (byte[])args[4];
-                    var commercialAddresses = (byte[])args[5];
+                    var votingAddress = (byte[])args[5];
+                    var commercialAddresses = (byte[])args[6];
 
-                    return BolService.RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, commercialAddresses);
+                    return BolService.RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, votingAddress, commercialAddresses);
                 }
                 if (operation == "registerCertifier")
                 {
@@ -160,6 +170,27 @@ namespace Neo.SmartContract
                     }
                     var countryCode = (byte[])args[0];
                     return BolService.GetCertifiers(countryCode);
+                }
+                if (operation == "whitelist")
+                {
+                    if (args.Length != 2)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    var mainAddress = (byte[])args[1];
+                    return BolService.Whitelist(codeName, mainAddress);
+                }
+                if (operation == "isWhitelisted")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var mainAddress = (byte[])args[0];
+                    return BolService.IsWhitelisted(mainAddress);
                 }
             }
             return false;

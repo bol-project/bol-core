@@ -103,15 +103,49 @@ public static class BolServiceValidationHelper
 
         if (AddressHasBadLength(from, "From Address length must be 20 bytes.")) return false;
 
-        if (AddressIsEmpty(from, "To Address cannot be empty.")) return false;
+        if (AddressIsEmpty(to, "To Address cannot be empty.")) return false;
 
-        if (AddressHasBadLength(from, "To Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(to, "To Address length must be 20 bytes.")) return false;
 
         if (CodeNameIsEmpty(targetCodeName, "Target CodeName cannot be empty.")) return false;
         
         if (IsNotAddressOwner(from)) return false;
         
         if (IsNotPositiveTransferValue(value)) return false;
+
+        return true;
+    }
+    
+    public static bool IsWhitelistInputValid(byte[] codeName, byte[] address)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        if (AddressIsEmpty(address)) return false;
+
+        if (AddressHasBadLength(address)) return false;
+
+        return true;
+    }
+
+    public static bool IsWhiteListValid(BolAccount account)
+    {
+        if (account.CodeName == null || account.CodeName.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
+            return false;
+        }
+
+        if (account.IsCertifier == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a Bol Certifier."));
+            return false;
+        }
+
+        if (BolValidator.AddressNotOwner(account.VotingAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Whitelisting requires a signature from Certifier Voting Address."));
+            return false;
+        }
 
         return true;
     }

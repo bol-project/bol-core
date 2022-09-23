@@ -18,13 +18,15 @@ namespace Bol.Core.Services
         private readonly ITransactionService _transactionService;
         private readonly ISignatureScriptFactory _signatureScriptFactory;
         private readonly IBase16Encoder _hex;
+        private readonly IAddressTransformer _addressTransformer;
 
-        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex)
+        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IAddressTransformer addressTransformer)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
             _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
             _hex = hex ?? throw new ArgumentNullException(nameof(hex));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
         public Task Deploy(CancellationToken token = default)
@@ -53,13 +55,18 @@ namespace Bol.Core.Services
                  _hex.Decode(context.Edi),
                  context.BlockChainAddress.Key.GetBytes(),
                  context.SocialAddress.Key.GetBytes(),
+                 context.VotingAddress.Key.GetBytes(),
                  context.CommercialAddresses.SelectMany(pair => pair.Key.GetBytes()).ToArray()
              };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
             var mainAddress = CreateMainAddress(context);
 
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "register", parameters);
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Registration of {context.CodeName}/{mainAddressString}";
+            var remarks = new[] { "register", context.CodeName, mainAddressString };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "register", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);
@@ -81,7 +88,10 @@ namespace Bol.Core.Services
 
             var mainAddress = CreateMainAddress(context);
 
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "claim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            var description = $"Distribution Claim by {context.CodeName}";
+            var remarks = new[] { "claim", context.CodeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "claim", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);
@@ -105,7 +115,11 @@ namespace Bol.Core.Services
 
             var mainAddress = CreateMainAddress(context);
 
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            var targetAddressString = _addressTransformer.ToAddress(address);
+            var description = $"Transfer Claim from {context.CodeName} to {context.CodeName}/{targetAddressString}";
+            var remarks = new[] { "transferClaim", context.CodeName, targetAddressString, value.ToString(), Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);
@@ -132,7 +146,12 @@ namespace Bol.Core.Services
 
             var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
 
-            var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, remarks: new[] { Guid.NewGuid().ToString() });
+            var fromAddressString = _addressTransformer.ToAddress(from);
+            var targetAddressString = _addressTransformer.ToAddress(to);
+            var description = $"Transfer from {context.CodeName}/{fromAddressString} to {codeName}/{targetAddressString}";
+            var remarks = new[] { "transfer", context.CodeName, fromAddressString, codeName, targetAddressString, value.ToString(), Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, witness, keys);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);
@@ -196,6 +215,55 @@ namespace Bol.Core.Services
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
             return _transactionService.Publish(transaction, token);
+        }
+
+        public async Task<bool> Whitelist(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                address.GetBytes()
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"Whitelist {addressString} by {context.CodeName}";
+            var remarks = new[] { "whitelist", context.CodeName, addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "whitelist", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                address.GetBytes()
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"IsWhitelisted {addressString}";
+            var remarks = new[] { "isWhitelisted", addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "isWhitelisted", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
         }
 
         private ISignatureScript CreateMainAddress(BolContext context)

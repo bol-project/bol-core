@@ -13,6 +13,7 @@ namespace Bol.Core.Model
         public string MainAddress { get; set; }
         public string BlockChainAddress { get; set; }
         public string SocialAddress { get; set; }
+        public string VotingAddress { get; set; }
         public ISet<string> CommercialAddresses { get; set; }
 
         public string ClaimBalance { get; set; }

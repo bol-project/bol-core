@@ -15,14 +15,22 @@ namespace Bol.Coin.Services
         [DisplayName("transfer")]
         public static event Action<byte[], byte[], BigInteger> Transferred;
 
-        public static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] commercialAddresses)
+        public static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] votingAddress, byte[] commercialAddresses)
         {
             if (!BolServiceValidationHelper.CanRegister(address, codeName, edi, blockChainAddress, socialAddress))
             {
                 return false;
             }
+            
+            var isWhitelisted = BolRepository.IsWhitelisted(address);
+            if (!isWhitelisted)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Main Address is not Whitelisted."));
+                return false;
+            }
+            
             var currentHeight = BlockChainService.GetCurrentHeight();
-            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, currentHeight);
+            var registerResult = RegisterAccount(address, codeName, edi, blockChainAddress, socialAddress, votingAddress, currentHeight);
             if (!registerResult)
             {
                 return false;
@@ -42,6 +50,8 @@ namespace Bol.Coin.Services
             }
 
             SetMandatoryCertifier(codeName);
+            
+            BolRepository.RemoveFromWhitelist(address);
 
             var result = BolRepository.GetAccount(codeName);
 
@@ -50,7 +60,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, uint currentHeight)
+        private static bool RegisterAccount(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress, byte[] votingAddress, uint currentHeight)
         {
             var account = BolRepository.GetAccount(codeName);
             if (account != null && account.CodeName != null)
@@ -88,6 +98,7 @@ namespace Bol.Coin.Services
             account.MainAddress = address;
             account.BlockChainAddress = blockChainAddress;
             account.SocialAddress = socialAddress;
+            account.VotingAddress = votingAddress;
             account.ClaimBalance = 1 * Constants.Factor;
             account.TotalBalance = 0;
             account.RegistrationHeight = currentHeight;
@@ -210,7 +221,7 @@ namespace Bol.Coin.Services
 
                 Runtime.Notify("debug", certifier);
 
-                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, 1);
+                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1);
                 if (!result)
                 {
                     return false;
@@ -241,6 +252,7 @@ namespace Bol.Coin.Services
             BolRepository.SetFeeBucket(0);
             BolRepository.SetTransferFee(Constants.TransferFee);
             BolRepository.SetOperationsFee(Constants.OperationsFee);
+            BolRepository.InitWhitelist();
 
             BolRepository.SetContractDeployed();
 
@@ -263,6 +275,11 @@ namespace Bol.Coin.Services
         public static BigInteger CirculatingSupply()
         {
             return BolRepository.GetCirculatingSupply();
+        }
+
+        public static BigInteger GlobalSupply(BigInteger blockHeight)
+        {
+            return BolRepository.GetTotalSupplyAtBlock(blockHeight);
         }
 
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
@@ -694,7 +711,10 @@ namespace Bol.Coin.Services
             var firstInClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
             if (firstInClaim == 0)
             {
-                DistributeFees();   
+                DistributeFees();
+                
+                //refresh account data after fee distribution
+                bolAccount = BolRepository.GetAccount(codeName);
             }
 
             Runtime.Notify("debug", 4);
@@ -792,6 +812,34 @@ namespace Bol.Coin.Services
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);
             Runtime.Notify("getCertifiers", BolResult.Ok(certifiers));
+
+            return true;
+        }
+
+        public static bool Whitelist(byte[] codeName, byte[] address)
+        {
+            if (!BolServiceValidationHelper.IsWhitelistInputValid(codeName, address)) return false;
+            
+            var account = BolRepository.GetAccount(codeName);
+
+            if (!BolServiceValidationHelper.IsWhiteListValid(account)) return false;
+            
+            BolRepository.AddToWhitelist(address);
+            
+            Runtime.Notify("whitelist", BolResult.Ok());
+
+            return true;
+        }
+
+        public static bool IsWhitelisted(byte[] address)
+        {
+            if (!BolRepository.IsWhitelisted(address))
+            {
+                Runtime.Notify("error", BolResult.NotFound("Address is not whitelisted."));
+                return false;
+            }
+            
+            Runtime.Notify("isWhitelisted", BolResult.Ok());
 
             return true;
         }

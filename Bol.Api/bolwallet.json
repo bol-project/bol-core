@@ -89,6 +89,24 @@
             "extra": null
         },
         {
+          "address": "BSizM5YtXQVgzdta6NYkhaUvMKRBmkzyFK",
+          "label": "voting",
+          "isDefault": false,
+          "lock": false,
+          "key": "6PYWX7xRL82bepofik7BJPEiG3KHw8nMTKzoaCaR4TEugNLMEEWsZjRQ4g",
+          "contract": {
+            "script": "2103d1c942e7a2bc7fb341789a712545d784996106b5d72a8917f9d06d198633abc1ac",
+            "parameters": [
+              {
+                "name": "signature",
+                "type": "Signature"
+              }
+            ],
+            "deployed": false
+          },
+          "extra": null
+        },
+        {
             "address": "BGfALdfQpoByaL5bTEsPetiUhBwm2S7jCh",
             "label": "social",
             "isDefault": false,
@@ -258,24 +276,6 @@
             "key": "6PYUveiaDLnhTmzK4rw3QdXi3WdH7cvWtQ3p81pvhX6tP6Cr3xVQgJHeuW",
             "contract": {
                 "script": "210301f6cb1d3418ef805f1c6879bff0979e108da8a4cbd1547ed1c247fd0a036b08ac",
-                "parameters": [
-                    {
-                        "name": "signature",
-                        "type": "Signature"
-                    }
-                ],
-                "deployed": false
-            },
-            "extra": null
-        },
-        {
-            "address": "BSizM5YtXQVgzdta6NYkhaUvMKRBmkzyFK",
-            "label": "commercial",
-            "isDefault": false,
-            "lock": false,
-            "key": "6PYWX7xRL82bepofik7BJPEiG3KHw8nMTKzoaCaR4TEugNLMEEWsZjRQ4g",
-            "contract": {
-                "script": "2103d1c942e7a2bc7fb341789a712545d784996106b5d72a8917f9d06d198633abc1ac",
                 "parameters": [
                     {
                         "name": "signature",

@@ -17,6 +17,11 @@ namespace Bol.Coin.Persistence
         public const byte Account = 0x01;
 
         /// <summary>
+        /// Key for setting or retrieving the Map with Whitelisted MainAddresses for registration.
+        /// </summary>
+        public const byte Whitelist = 0x02;
+
+        /// <summary>
         /// Prefix for setting or retrieving Certifier CodeNames by Country Code.
         /// </summary>
         public const byte Certifiers = 0x04;
@@ -530,6 +535,55 @@ namespace Bol.Coin.Persistence
         {
             var key = KeyHelper.GenerateKey(FeeBucket);
             BolStorage.Put(key, fee);
+        }
+
+        /// <summary>
+        /// Initialise an empty whitelist map
+        /// </summary>
+        public static void InitWhitelist()
+        {
+            var key = KeyHelper.GenerateKey(Whitelist);
+            var whitelist = new Map<byte[], BigInteger>();
+            BolStorage.Put(key, whitelist.Serialize());
+        }
+        
+        /// <summary>
+        /// Returns true if the provided address is one of the whitelisted main addresses.
+        /// </summary>
+        /// <param name="mainAddress"></param>
+        /// <returns></returns>
+        public static bool IsWhitelisted(byte[] mainAddress)
+        {
+            var key = KeyHelper.GenerateKey(Whitelist);
+            var result = BolStorage.Get(key);
+            var whitelist = (Map<byte[], BigInteger>)result.Deserialize();
+            return whitelist.HasKey(mainAddress);
+        }
+
+        /// <summary>
+        /// Adds a provided address to the whitelisted main addresses for registration.
+        /// </summary>
+        /// <param name="whitelist"></param>
+        public static void AddToWhitelist(byte[] mainAddress)
+        {
+            var key = KeyHelper.GenerateKey(Whitelist);
+            var result = BolStorage.Get(key);
+            var whitelist = (Map<byte[], BigInteger>)result.Deserialize();
+            whitelist[mainAddress] = 1;
+            BolStorage.Put(key, whitelist.Serialize());
+        }
+
+        /// <summary>
+        /// Removes a provided address from the whitelisted main addresses for registration.
+        /// </summary>
+        /// <param name="whitelist"></param>
+        public static void RemoveFromWhitelist(byte[] mainAddress)
+        {
+            var key = KeyHelper.GenerateKey(Whitelist);
+            var result = BolStorage.Get(key);
+            var whitelist = (Map<byte[], BigInteger>)result.Deserialize();
+            whitelist.Remove(mainAddress);
+            BolStorage.Put(key, whitelist.Serialize());
         }
     }
 }

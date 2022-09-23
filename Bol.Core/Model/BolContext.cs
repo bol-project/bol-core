@@ -15,6 +15,7 @@ namespace Bol.Core.Model
         public IScriptHash MainAddress { get; private set; }
         public KeyValuePair<IScriptHash, IKeyPair> BlockChainAddress { get; private set; }
         public KeyValuePair<IScriptHash, IKeyPair> SocialAddress { get; private set; }
+        public KeyValuePair<IScriptHash, IKeyPair> VotingAddress { get; private set; }
         public IDictionary<IScriptHash, IKeyPair> CommercialAddresses { get; private set; }
 
         public BolContext(
@@ -26,6 +27,7 @@ namespace Bol.Core.Model
             IScriptHash mainAddress,
             KeyValuePair<IScriptHash, IKeyPair> blockChainAddress,
             KeyValuePair<IScriptHash, IKeyPair> socialAddress,
+            KeyValuePair<IScriptHash, IKeyPair> votingAddress,
             IDictionary<IScriptHash, IKeyPair> commercialAddresses)
         {
             Contract = contract ?? throw new ArgumentNullException(nameof(contract));
@@ -36,6 +38,7 @@ namespace Bol.Core.Model
             MainAddress = mainAddress ?? throw new ArgumentNullException(nameof(mainAddress));
             BlockChainAddress = blockChainAddress;
             SocialAddress = socialAddress;
+            VotingAddress = votingAddress;
             CommercialAddresses = commercialAddresses ?? throw new ArgumentNullException(nameof(commercialAddresses));
         }
     }

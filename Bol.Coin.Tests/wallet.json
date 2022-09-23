@@ -89,6 +89,24 @@
             "extra": null
         },
         {
+          "address": "BCQgrM8nHNsjGhEMNtCbAMLmWSPQ1BmjTe",
+          "label": "voting",
+          "isDefault": false,
+          "lock": false,
+          "key": "6PYLJaXdqy71N7uDRHs694RNaCvSiwhaNd8ZnX1qsP98skVCRQmyek4HHm",
+          "contract": {
+            "script": "2103828c5fe6c61350e849438dfc9e21583eef1f06a24272d210563ee36cb6e806eeac",
+            "parameters": [
+              {
+                "name": "signature",
+                "type": "Signature"
+              }
+            ],
+            "deployed": false
+          },
+          "extra": null
+        },
+        {
             "address": "BGfALdfQpoByaL5bTEsPetiUhBwm2S7jCh",
             "label": "social",
             "isDefault": false,

@@ -55,19 +55,22 @@ namespace Bol.Core.Accessors
 
             var blockchainAddressAccount = accounts.Where(account => account.Label == "blockchain").Single();
             var socialAddressAccount = accounts.Where(account => account.Label == "social").Single();
+            var votingAddressAccount = accounts.Where(account => account.Label == "voting").Single();
             var commercialAddressAccounts = accounts.Where(account => account.Label == "commercial");
 
             var codeNameKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, n, r, p));
             var privateKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, password, n, r, p));
             var blockchainKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, n, r, p));
             var socialKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, n, r, p));
+            var votingKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(votingAddressAccount.Key, password, n, r, p));
 
-            Task.WaitAll(codeNameKey, privateKey, blockchainKey, socialKey);
+            Task.WaitAll(codeNameKey, privateKey, blockchainKey, socialKey, votingKey);
 
             var codeNameAccountKeyPair = _keyPairFactory.Create(codeNameKey.Result);
             var privateAccountKeyPair = _keyPairFactory.Create(privateKey.Result);
             var blockChainAddressAccountKeyPair = _keyPairFactory.Create(blockchainKey.Result);
             var socialAddressAccountKeyPair = _keyPairFactory.Create(socialKey.Result);
+            var votingAddressAccountKeyPair = _keyPairFactory.Create(votingKey.Result);
 
             var comm = commercialAddressAccounts.AsParallel()
                 .Select(account => (account.Address, account.Key))
@@ -85,6 +88,7 @@ namespace Bol.Core.Accessors
                 _addressTransformer.ToScriptHash(mainAddressAccount.Address),
                 new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(blockchainAddressAccount.Address), blockChainAddressAccountKeyPair),
                 new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(socialAddressAccount.Address), socialAddressAccountKeyPair),
+                new KeyValuePair<IScriptHash, IKeyPair>(_addressTransformer.ToScriptHash(votingAddressAccount.Address), votingAddressAccountKeyPair),
                 comm
             );
         }

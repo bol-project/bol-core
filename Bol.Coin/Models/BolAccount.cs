@@ -16,6 +16,7 @@ namespace Bol.Coin.Models
         public byte[] MainAddress;
         public byte[] BlockChainAddress;
         public byte[] SocialAddress;
+        public byte[] VotingAddress;
 
         public Map<byte[], BigInteger> CommercialAddresses;
 

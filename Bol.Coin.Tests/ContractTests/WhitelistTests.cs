@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
@@ -5,15 +6,15 @@ using Bol.Coin.Tests.Utils;
 using Bol.Core.Services;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Neo.Emulation;
 using Xunit;
 
-namespace Bol.Coin.Tests.ContractTests
-{
+namespace Bol.Coin.Tests.ContractTests;
 
-    public class RegisterTest
-    {
+public class WhitelistTests
+{
         private readonly Emulator _emulator;
         private readonly BolService _service;
         private readonly TransactionGrabber _transactionGrabber;
@@ -21,11 +22,14 @@ namespace Bol.Coin.Tests.ContractTests
         private readonly BolService _validatorService;
         private string _notifyOutput;
 
-        public RegisterTest()
+        public WhitelistTests()
         {
-            _emulator = EmulatorUtils.Create((string notifyOutput) => _notifyOutput = notifyOutput);
+            _emulator = EmulatorUtils.Create((string notifyOutput) =>
+            {
+                _notifyOutput = notifyOutput;
+                Console.WriteLine(notifyOutput);
+            });
             _transactionGrabber = new TransactionGrabber();
-            _service = BolServiceFactory.Create(_transactionGrabber);
             
             var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
             var sha256 = new Sha256Hasher();
@@ -38,7 +42,24 @@ namespace Bol.Coin.Tests.ContractTests
         }
 
         [Fact]
-        public async Task Register_Should_CompleteSuccessfully()
+        public async Task IsWhiteListed_ShouldReturnTrue_WhenAddressIsWhitelisted()
+        {
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            await _validatorService.Whitelist(_addressTransformer.ToScriptHash("BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91"));
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _service.IsWhitelisted(_addressTransformer.ToScriptHash("BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91"));
+            var result = _emulator.Execute(_transactionGrabber);
+
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IsWhiteListed_ShouldReturnFalse_WhenAddressIsRegistered()
         {
             await _service.Deploy();
             _emulator.Execute(_transactionGrabber);
@@ -49,45 +70,11 @@ namespace Bol.Coin.Tests.ContractTests
             _emulator.blockchain.AddMockBlocks(1);
 
             await _service.Register();
+            _emulator.Execute(_transactionGrabber);
+
+            await _service.IsWhitelisted(_addressTransformer.ToScriptHash("BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91"));
             var result = _emulator.Execute(_transactionGrabber);
             
-            Assert.True(result);
+            result.Should().BeFalse();
         }
-
-        [Fact]
-        public async Task Register_ShouldFail_WhenAddressNotWhitelisted()
-        {
-            await _service.Deploy();
-            _emulator.Execute(_transactionGrabber);
-
-            _emulator.blockchain.AddMockBlocks(1);
-
-            await _service.Register();
-            var result = _emulator.Execute(_transactionGrabber);
-            
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task Register_ShouldFail_WhenPerformedTwice()
-        {
-            await _service.Deploy();
-            _emulator.Execute(_transactionGrabber);
-
-            await _validatorService.Whitelist(_addressTransformer.ToScriptHash("BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91"));
-            _emulator.Execute(_transactionGrabber);
-
-            _emulator.blockchain.AddMockBlocks(100);
-
-            await _service.Register();
-            _emulator.Execute(_transactionGrabber);
-
-            _emulator.blockchain.AddMockBlocks(100);
-
-            await _service.Register();
-            var result = _emulator.Execute(_transactionGrabber);
-            
-            Assert.False(result);
-        }
-    }
 }
