@@ -115,6 +115,40 @@ public static class BolServiceValidationHelper
 
         return true;
     }
+    
+    public static bool IsWhitelistInputValid(byte[] codeName, byte[] address)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        if (AddressIsEmpty(address)) return false;
+
+        if (AddressHasBadLength(address)) return false;
+
+        return true;
+    }
+
+    public static bool IsWhiteListValid(BolAccount account)
+    {
+        if (account.CodeName == null || account.CodeName.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
+            return false;
+        }
+
+        if (account.IsCertifier == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a Bol Certifier."));
+            return false;
+        }
+
+        if (BolValidator.AddressNotOwner(account.VotingAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Whitelisting requires a signature from Certifier Voting Address."));
+            return false;
+        }
+
+        return true;
+    }
 
     public static bool SocialAddressHasBadLength(byte[] socialAddress)
     {
