@@ -825,6 +825,8 @@ namespace Bol.Coin.Services
             if (!BolServiceValidationHelper.IsWhiteListValid(account)) return false;
             
             BolRepository.AddToWhitelist(address);
+            
+            Runtime.Notify("whitelist", BolResult.Ok());
 
             return true;
         }
@@ -836,6 +838,8 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.NotFound("Address is not whitelisted."));
                 return false;
             }
+            
+            Runtime.Notify("isWhitelisted", BolResult.Ok());
 
             return true;
         }
