@@ -41,6 +41,9 @@ namespace Bol.Api.NeoPlugins
             var transaction = (InvocationTransaction)InvocationTransaction.DeserializeFrom(transactionHex.HexToBytes());
 
             var result = TestContract(transaction);
+
+            if (result == null) return true;
+            
             var bolAccount = _mapper.Map(result);
 
             var json = _json.Serialize(bolAccount);
