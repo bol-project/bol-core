@@ -505,72 +505,39 @@ namespace Bol.Coin.Services
             return BolResult.Ok();
         }
 
-        public static bool Certify(byte[] certifier, byte[] address)
+        public static bool Certify(byte[] certifier, byte[] receiver)
         {
-            if (BolValidator.AddressEmpty(certifier))
+            if (!BolServiceValidationHelper.IsCertifyInputValid(certifier, receiver)) return false;
+
+            var certifierAccount = BolRepository.GetAccount(certifier);
+            var receiverAccount = BolRepository.GetAccount(receiver);
+
+            if (!BolServiceValidationHelper.IsCertifyValid(certifierAccount, receiverAccount)) return false;
+            
+            var currentTimestamp = Blockchain.GetBlock(Blockchain.GetHeight()).Timestamp;
+            var previousTimestamp = Blockchain.GetBlock((uint)receiverAccount.LastCertificationHeight).Timestamp;
+            var interval = currentTimestamp - previousTimestamp;
+
+            receiverAccount.Certifications = receiverAccount.Certifications + 1;
+            receiverAccount.Certifiers[certifierAccount.CodeName] = Blockchain.GetHeight();
+
+            if (receiverAccount.MandatoryCertifier1 == null || receiverAccount.MandatoryCertifier1.Length == 0
+                || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier1, certifier)
+                || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier2, certifier)
+                || interval > 2592000)
             {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address cannot be empty."));
-                return false;
+                receiverAccount = SetMandatoryCertifiers(receiverAccount);
             }
-            if (BolValidator.AddressBadLength(certifier))
+            else
             {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressEmpty(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
+                receiverAccount.AccountStatus = Constants.AccountStatusOpen;
             }
 
-            if (BolValidator.AddressNotOwner(certifier))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Certifier Address owner can perform this action."));
-                return false;
-            }
+            receiverAccount.LastCertificationHeight = Blockchain.GetHeight();
 
-            var certifierBolAccount = BolRepository.GetAccount(certifier);
-            if (certifierBolAccount.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a registerd Bol Account."));
-                return false;
-            }
+            BolRepository.SaveAccount(receiverAccount);
 
-            var bolAccount = BolRepository.GetAccount(address);
-            if (bolAccount.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
-                return false;
-            }
-
-            if (certifierBolAccount.IsCertifier == 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a Bol Certifier."));
-                return false;
-            }
-
-            if (bolAccount.Certifiers.HasKey(certifierBolAccount.CodeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address has already been certified by certifier."));
-                return false;
-            }
-
-            bolAccount.Certifications = bolAccount.Certifications + 1;
-            bolAccount.Certifiers[certifierBolAccount.CodeName] = 1;
-
-            if (bolAccount.Certifiers.HasKey(bolAccount.MandatoryCertifier))
-            {
-                bolAccount.AccountStatus = Constants.AccountStatusOpen;
-            }
-
-            BolRepository.SaveAccount(bolAccount);
-
-            Runtime.Notify("certify", BolResult.Ok(bolAccount));
+            Runtime.Notify("certify", BolResult.Ok(receiverAccount));
 
             return true;
         }
