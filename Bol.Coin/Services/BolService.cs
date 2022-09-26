@@ -740,7 +740,14 @@ namespace Bol.Coin.Services
 
             var allCertifiers = new Map<byte[], bool>();
 
-            foreach (var certifier in globalCertifiers.Keys.Concat(nationalCertifiers.Keys))
+            foreach (var certifier in globalCertifiers.Keys)
+            {
+                if (account.Certifiers.HasKey(certifier)) continue;
+                
+                allCertifiers[certifier] = true;
+            }
+
+            foreach (var certifier in nationalCertifiers.Keys)
             {
                 if (account.Certifiers.HasKey(certifier)) continue;
                 
