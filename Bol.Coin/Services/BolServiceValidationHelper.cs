@@ -150,6 +150,17 @@ public static class BolServiceValidationHelper
         return true;
     }
 
+    public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
+    {
+        if (account.CodeName == null || account.CodeName.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest(message));
+            return true;
+        }
+
+        return false;
+    }
+
     public static bool SocialAddressHasBadLength(byte[] socialAddress)
     {
         if (BolValidator.AddressBadLength(socialAddress))
