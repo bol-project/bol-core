@@ -108,7 +108,8 @@ namespace Bol.Coin.Services
             account.Collateral = 0;
             account.Certifiers = new Map<byte[], BigInteger>();
             account.CommercialAddresses = new Map<byte[], BigInteger>();
-            account.MandatoryCertifier = new byte[0];
+            account.MandatoryCertifier1 = new byte[0];
+            account.MandatoryCertifier2 = new byte[0];
             account.Countries = new byte[0];
 
             BolRepository.SaveAccount(account);
