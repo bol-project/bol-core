@@ -25,7 +25,9 @@ namespace Bol.Coin.Models
 
         public BigInteger Certifications;
         public Map<byte[], BigInteger> Certifiers;
-        public byte[] MandatoryCertifier;
+        public byte[] MandatoryCertifier1;
+        public byte[] MandatoryCertifier2;
+        public BigInteger LastCertificationHeight;
 
         public BigInteger IsCertifier;
         public BigInteger Collateral;
