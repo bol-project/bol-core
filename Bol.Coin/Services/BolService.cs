@@ -494,6 +494,7 @@ namespace Bol.Coin.Services
                 || interval > 2592000)
             {
                 receiverAccount = SetMandatoryCertifiers(receiverAccount);
+                if (receiverAccount == null) return false;
             }
             else
             {
