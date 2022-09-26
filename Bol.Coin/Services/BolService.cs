@@ -735,19 +735,22 @@ namespace Bol.Coin.Services
         {
             var country = account.CodeName.Range(4, 6);
 
-            var countryCertifiers = BolRepository.GetCertifiers(country);
-            var allCountriesCertifiers = BolRepository.GetCertifiers(Constants.AllCountriesCode);
+            var nationalCertifiers = BolRepository.GetCertifiers(country);
+            var globalCertifiers = BolRepository.GetCertifiers(Constants.AllCountriesCode);
 
-            if (countryCertifiers.Keys.Length == 0 && allCountriesCertifiers.Keys.Length == 0) 
+            var allCertifiers = new Map<byte[], bool>();
+
+            foreach (var certifier in globalCertifiers.Keys.Concat(nationalCertifiers.Keys))
             {
-                Runtime.Notify("error", BolResult.Fail("500", "No available certifiers could be found."));
-                return null;
+                if (account.Certifiers.HasKey(certifier)) continue;
+                
+                allCertifiers[certifier] = true;
             }
-
-            foreach (var certifier in account.Certifiers.Keys)
+            
+            if (allCertifiers.Keys.Length < 2) 
             {
-                if (countryCertifiers.HasKey(certifier)) countryCertifiers.Remove(certifier);
-                if (allCountriesCertifiers.HasKey(certifier)) allCountriesCertifiers.Remove(certifier);
+                Runtime.Notify("error", BolResult.Fail("500", "Not enough available certifiers could be found."));
+                return null;
             }
 
             var lastCertificationBlockHash = Blockchain.GetBlock((uint)account.LastCertificationHeight).Hash;
@@ -755,11 +758,12 @@ namespace Bol.Coin.Services
             var n1 = hash.Take(4).AsBigInteger();
             var n2 = hash.Last(4).AsBigInteger();
 
-            var index1 = n1 % countryCertifiers.Keys.Length;
-            var index2 = n2 % allCountriesCertifiers.Keys.Length;
+            var index1 = n1 % allCertifiers.Keys.Length;
+            account.MandatoryCertifier1 = allCertifiers.Keys[(uint)index1];
+            allCertifiers.Remove(account.MandatoryCertifier1);
             
-            account.MandatoryCertifier1 = countryCertifiers.Keys[(uint)index1];
-            account.MandatoryCertifier2 = allCountriesCertifiers.Keys[(uint)index2];
+            var index2 = n2 % allCertifiers.Keys.Length;
+            account.MandatoryCertifier2 = allCertifiers.Keys[(uint)index2];
             
             return account;
         }
