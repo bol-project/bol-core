@@ -186,6 +186,33 @@ public static class BolServiceValidationHelper
         return true;
     }
 
+    public static bool IsUnCertifyValid(BolAccount certifier, BolAccount receiver)
+    {
+        if (AccountNotExists(certifier, "Certifier is not a registered Bol Account.")) return false;
+
+        if (AccountNotExists(receiver, "Certification receiver is not a registered Bol Account.")) return false;
+
+        if (certifier.IsCertifier != 1)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certifier is not a registered Bol Certifier."));
+            return false;
+        }
+
+        if (IsNotAddressOwner(certifier.VotingAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Only the Voting Address of a registered Bol Certifier can perform this action."));
+            return false;
+        }
+
+        if (!receiver.Certifiers.HasKey(certifier.CodeName))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certification receiver has not been certified by certifier."));
+            return false;
+        }
+
+        return true;
+    }
+
     public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
     {
         if (account.CodeName == null || account.CodeName.Length == 0)
