@@ -39,9 +39,7 @@ namespace Bol.Coin.Services
             for (var i = 0; i < commercialAddresses.Length; i += 20)
             {
                 var commercialAddress = commercialAddresses.Range(i, 20);
-
-                Runtime.Notify("debug", commercialAddress);
-
+                
                 var addCommercialResult = AddCommercialAddress(codeName, commercialAddress);
                 if (!addCommercialResult)
                 {
