@@ -48,8 +48,6 @@ namespace Bol.Coin.Services
                     return false;
                 }
             }
-
-            SetMandatoryCertifier(codeName);
             
             BolRepository.RemoveFromWhitelist(address);
 
