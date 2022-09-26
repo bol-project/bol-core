@@ -542,72 +542,26 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool UnCertify(byte[] certifier, byte[] address)
+        public static bool UnCertify(byte[] certifier, byte[] receiver)
         {
-            if (BolValidator.AddressEmpty(certifier))
+            if (!BolServiceValidationHelper.IsCertifyInputValid(certifier, receiver)) return false;
+
+            var certifierAccount = BolRepository.GetAccount(certifier);
+            var receiverAccount = BolRepository.GetAccount(receiver);
+            
+            if (!BolServiceValidationHelper.IsUnCertifyValid(certifierAccount, receiverAccount)) return false;
+            
+            receiverAccount.Certifications = receiverAccount.Certifications - 1;
+            receiverAccount.Certifiers.Remove(certifierAccount.CodeName);
+
+            if (!receiverAccount.Certifiers.HasKey(receiverAccount.MandatoryCertifier1) && !receiverAccount.Certifiers.HasKey(receiverAccount.MandatoryCertifier2))
             {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(certifier))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address length must be 20 bytes."));
-                return false;
-            }
-            if (BolValidator.AddressEmpty(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address cannot be empty."));
-                return false;
-            }
-            if (BolValidator.AddressBadLength(address))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address length must be 20 bytes."));
-                return false;
+                receiverAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
             }
 
-            if (BolValidator.AddressNotOwner(certifier))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Certifier Address owner can perform this action."));
-                return false;
-            }
+            BolRepository.SaveAccount(receiverAccount);
 
-            var certifierBolAccount = BolRepository.GetAccount(certifier);
-            if (certifierBolAccount.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a registerd Bol Account."));
-                return false;
-            }
-
-            var bolAccount = BolRepository.GetAccount(address);
-            if (bolAccount.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
-                return false;
-            }
-
-            if (certifierBolAccount.IsCertifier == 0)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Certifier Address is not a Bol Certifier."));
-                return false;
-            }
-
-            if (!bolAccount.Certifiers.HasKey(certifierBolAccount.CodeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address has not been certified by certifier."));
-                return false;
-            }
-
-            bolAccount.Certifications = bolAccount.Certifications - 1;
-            bolAccount.Certifiers.Remove(certifierBolAccount.CodeName);
-
-            if (!bolAccount.Certifiers.HasKey(bolAccount.MandatoryCertifier))
-            {
-                bolAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
-            }
-
-            BolRepository.SaveAccount(bolAccount);
-
-            Runtime.Notify("unCertify", BolResult.Ok(bolAccount));
+            Runtime.Notify("unCertify", BolResult.Ok(receiverAccount));
 
             return true;
         }
