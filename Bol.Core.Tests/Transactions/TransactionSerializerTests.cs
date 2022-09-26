@@ -4,7 +4,6 @@ using Bol.Core.Transactions;
 using Bol.Cryptography;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
-using Bol.Cryptography.Keys;
 using Bol.Cryptography.Signers;
 using Xunit;
 using System.Linq;

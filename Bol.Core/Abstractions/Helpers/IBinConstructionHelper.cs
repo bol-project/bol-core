@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bol.Core.Abstractions.Helpers
+﻿namespace Bol.Core.Abstractions.Helpers
 {
     internal interface IBinConstructionHelper
     {

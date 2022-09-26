@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Bol.Core.Model;
-using YamlDotNet.Core;
 
 namespace Bol.Core.Tests
 {

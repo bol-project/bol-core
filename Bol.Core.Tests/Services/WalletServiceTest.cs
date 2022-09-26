@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using Bol.Core.Services;
-using System.Text;
 using Bol.Core.Abstractions;
 using Moq;
 using Bol.Cryptography;

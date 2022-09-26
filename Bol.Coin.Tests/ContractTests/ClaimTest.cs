@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
-using Bol.Core.Model;
 using Bol.Core.Services;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;

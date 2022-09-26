@@ -9,7 +9,6 @@ using Bol.Core.Services;
 using Bol.Core.Transactions;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
-using Bol.Cryptography.Keys;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
 using Bol.Cryptography.Neo.Keys;

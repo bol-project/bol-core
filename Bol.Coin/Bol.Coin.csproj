@@ -11,7 +11,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet build ../neo-debugger-tools/NEO-Compiler/NEO-Compiler.csproj" />
     <Exec Command="dotnet ../neo-debugger-tools/NEO-Compiler/bin/Debug/net6.0/NEO-Compiler.dll  `pwd`/bin/Debug/net6.0/Bol.Coin.dll" />
-    <Exec Command="python ReplaceHashandABI.py" />
+    <Exec Command="python3 ReplaceHashandABI.py" />
   </Target>
 
 </Project>

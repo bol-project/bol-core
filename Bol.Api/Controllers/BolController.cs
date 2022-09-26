@@ -1,18 +1,13 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address.Abstractions;
 using Bol.Api.Dtos;
 using Bol.Core.Abstractions;
-using Bol.Core.Model.Wallet;
 using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
-using Neo.Wallets;
 using IBolService = Bol.Api.Services.IBolService;
-using Neo;
 using Bol.Address;
 
 namespace Bol.Api.Controllers

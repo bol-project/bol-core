@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bol.Core.Model
+﻿namespace Bol.Core.Model
 {
 	public class BasePerson
 	{
