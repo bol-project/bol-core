@@ -114,9 +114,9 @@ namespace Neo.SmartContract
                         return false;
                     }
                     var certifier = (byte[])args[0];
-                    var address = (byte[])args[1];
+                    var receiver = (byte[])args[1];
 
-                    return BolService.Certify(certifier, address);
+                    return BolService.Certify(certifier, receiver);
                 }
                 if (operation == "unCertify")
                 {
@@ -126,9 +126,9 @@ namespace Neo.SmartContract
                         return false;
                     }
                     var certifier = (byte[])args[0];
-                    var address = (byte[])args[1];
+                    var receiver = (byte[])args[1];
 
-                    return BolService.UnCertify(certifier, address);
+                    return BolService.UnCertify(certifier, receiver);
                 }
                 if (operation == "claim")
                 {
