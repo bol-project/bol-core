@@ -132,37 +132,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static bool SetMandatoryCertifier(byte[] codeName)
-        {
-            var account = BolRepository.GetAccount(codeName);
-            var country = account.CodeName.Range(4, 6);
-
-            var countryCertifiers = BolRepository.GetCertifiers(country);
-            var allCountriesCertifiers = BolRepository.GetCertifiers(Constants.AllCountriesCode);
-
-            var availableCertifiers = new byte[countryCertifiers.Keys.Length + allCountriesCertifiers.Keys.Length][];
-            for (int i = 0; i < countryCertifiers.Keys.Length; i++)
-            {
-                availableCertifiers[i] = countryCertifiers.Keys[i];
-            }
-            for (int i = 0; i < allCountriesCertifiers.Keys.Length; i++)
-            {
-                availableCertifiers[i + countryCertifiers.Keys.Length] = allCountriesCertifiers.Keys[i];
-            }
-
-            if (availableCertifiers.Length == 0)
-            {
-                Runtime.Notify("error", BolResult.Fail("500", "No available certifiers could be found."));
-                return false;
-            }
-
-            var selectedIndex = Blockchain.GetHeight() % availableCertifiers.Length;
-            account.MandatoryCertifier = availableCertifiers[selectedIndex];
-            BolRepository.SaveAccount(account);
-
-            return true;
-        }
-
         public static bool GetAccount(byte[] codeName)
         {
             if (BolServiceValidationHelper.CodeNameIsEmpty(codeName))
@@ -762,6 +731,39 @@ namespace Bol.Coin.Services
             Runtime.Notify("isWhitelisted", BolResult.Ok());
 
             return true;
+        }
+
+        private static BolAccount SetMandatoryCertifiers(BolAccount account)
+        {
+            var country = account.CodeName.Range(4, 6);
+
+            var countryCertifiers = BolRepository.GetCertifiers(country);
+            var allCountriesCertifiers = BolRepository.GetCertifiers(Constants.AllCountriesCode);
+
+            if (countryCertifiers.Keys.Length == 0 && allCountriesCertifiers.Keys.Length == 0) 
+            {
+                Runtime.Notify("error", BolResult.Fail("500", "No available certifiers could be found."));
+                return null;
+            }
+
+            foreach (var certifier in account.Certifiers.Keys)
+            {
+                if (countryCertifiers.HasKey(certifier)) countryCertifiers.Remove(certifier);
+                if (allCountriesCertifiers.HasKey(certifier)) allCountriesCertifiers.Remove(certifier);
+            }
+
+            var lastCertificationBlockHash = Blockchain.GetBlock((uint)account.LastCertificationHeight).Hash;
+            var hash = Neo.SmartContract.Bol.Sha256Hash(account.CodeName.Concat(lastCertificationBlockHash));
+            var n1 = hash.Take(4).AsBigInteger();
+            var n2 = hash.Last(4).AsBigInteger();
+
+            var index1 = n1 % countryCertifiers.Keys.Length;
+            var index2 = n2 % allCountriesCertifiers.Keys.Length;
+            
+            account.MandatoryCertifier1 = countryCertifiers.Keys[(uint)index1];
+            account.MandatoryCertifier2 = allCountriesCertifiers.Keys[(uint)index2];
+            
+            return account;
         }
 
         private static void DistributeFees()
