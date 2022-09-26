@@ -536,48 +536,15 @@ namespace Bol.Coin.Services
 
         public static bool Claim(byte[] codeName)
         {
-            if (BolValidator.CodeNameEmpty(codeName))
-            {
-                Runtime.Notify("error", BolResult.BadRequest("CodeName cannot be empty."));
-                return false;
-            }
+            if (!BolServiceValidationHelper.IsClaimInputValid(codeName)) return false;
 
             var bolAccount = BolRepository.GetAccount(codeName);
-            if (bolAccount.MainAddress == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Address is not a registerd Bol Account."));
-                return false;
-            }
 
-            if (BolValidator.AddressNotOwner(bolAccount.MainAddress))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Address owner can perform this action."));
-                return false;
-            }
-            if (bolAccount.AccountType != Constants.AccountTypeB)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("You need a B Type Account in order to Claim Bol."));
-                return false;
-            }
-            /* TESTING PURPOSES 
-            if (bolAccount.AccountStatus != Constants.ACCOUNT_STATUS_OPEN)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("Account is locked."));
-                return false;
-            }
-
-            if (bolAccount.Certifications < 2)
-            {
-                Runtime.Notify("error", BolResult.Forbidden("Account does not have enough certifications to perform this action."));
-                return false;
-            }
-            */
-            Runtime.Notify("debug", 1);
+            if (!BolServiceValidationHelper.IsClaimValid(bolAccount)) return false;
 
             var previousHeight = (uint)bolAccount.LastClaimHeight;
             var currentHeight = BlockChainService.GetCurrentHeight();
 
-            Runtime.Notify("debug", 2);
             uint claimInterval = (uint)BolRepository.GetClaimInterval();
 
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
@@ -589,7 +556,6 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            Runtime.Notify("debug", 3);
             var bpsYear = BolRepository.GetBpsYear();
             var dpsYear = BolRepository.GetDpsYear();
             var popYear = BolRepository.GetPopYear();
@@ -605,35 +571,28 @@ namespace Bol.Coin.Services
                 bolAccount = BolRepository.GetAccount(codeName);
             }
 
-            Runtime.Notify("debug", 4);
             BigInteger cpp = 0;
             BigInteger intervalDistribute = 0;
             for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
             {
-                Runtime.Notify("debug", 5);
                 intervalDistribute = BolRepository.GetDistributeAtBlock(i);
                 if(intervalDistribute > 0)
                 {
-                    Runtime.Notify("debug", 6);
                     cpp += intervalDistribute;
                 }
                 else
                 {
-                    Runtime.Notify("debug", 7);
                     var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
                     uint pointer = i;
                     while (intervalTotal == 0 && pointer > claimInterval)
                     {
-                        Runtime.Notify("debug", 8);
                         pointer -= claimInterval;
                         intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
                     }
 
                     var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
-                    Runtime.Notify("debug", 9);
                     
                     var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
-                    Runtime.Notify("debug", 10);
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
                     uint currentYear = 2022;
@@ -674,19 +633,15 @@ namespace Bol.Coin.Services
                     cpp += intervalDistribute;
                 }                    
             }
-
-            Runtime.Notify("debug", 20);
-
+            
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
 
             BolRepository.SaveAccount(bolAccount);
 
-            Runtime.Notify("debug", 21);
             var circulatingSupply = BolRepository.GetCirculatingSupply() + cpp;
             BolRepository.SetCirculatingSupply(circulatingSupply);
 
-            Runtime.Notify("debug", 22);
             Transferred(null, bolAccount.MainAddress , cpp);
 
             var result = BolRepository.GetAccount(bolAccount.CodeName);

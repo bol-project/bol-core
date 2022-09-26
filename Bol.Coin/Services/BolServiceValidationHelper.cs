@@ -213,6 +213,41 @@ public static class BolServiceValidationHelper
         return true;
     }
 
+    public static bool IsClaimInputValid(byte[] codeName)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        return true;
+    }
+
+    public static bool IsClaimValid(BolAccount account)
+    {
+        if (AccountNotExists(account)) return false;
+
+        if (IsNotAddressOwner(account.MainAddress)) return false;
+        
+        
+        if (account.AccountType != Constants.AccountTypeB)
+        {
+            Runtime.Notify("error", BolResult.Forbidden("You need to be a physical Person in order to Claim Bol."));
+            return false;
+        } 
+        
+        if (account.AccountStatus != Constants.AccountStatusOpen)
+        {
+            Runtime.Notify("error", BolResult.Forbidden("Bol Account has not been certified by a mandatory Bol Certifier."));
+            return false;
+        }
+
+        if (account.Certifications < 2)
+        {
+            Runtime.Notify("error", BolResult.Forbidden("Bol Account does not have enough certifications to perform this action."));
+            return false;
+        }
+        
+        return true;
+    }
+
     public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
     {
         if (account.CodeName == null || account.CodeName.Length == 0)
