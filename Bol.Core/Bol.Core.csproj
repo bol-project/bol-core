@@ -34,8 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
-    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" />
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" PrivateAssets="all"/>
   </ItemGroup>
 
 </Project>
