@@ -15,8 +15,8 @@ public static class BolServiceValidationHelper
     private const string EdiCannotBeEmpty = "EDI cannot be empty.";
     private const string EdiLengthMustBeBytes = "EDI length must be 32 bytes.";
     private const string CommercialAddressCannotBeEmpty = "Commercial Address cannot be empty.";
-
     private const string CommercialAddressLengthMustBeBytes = "Commercial Address length must be 20 bytes.";
+    private const string CodeNameNotRegistered = "CodeName is not a registered Bol Account.";
 
     public static bool CanRegister(byte[] address, byte[] codeName, byte[] edi, byte[] blockChainAddress, byte[] socialAddress)
     {
