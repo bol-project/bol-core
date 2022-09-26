@@ -9,6 +9,8 @@ using Bol.Cryptography.Signers;
 using Xunit;
 using System.Linq;
 using Bol.Cryptography.BouncyCastle;
+using Bol.Cryptography.Neo.Hashers;
+using Bol.Cryptography.Neo.Keys;
 
 namespace Bol.Core.Tests.Transactions
 {

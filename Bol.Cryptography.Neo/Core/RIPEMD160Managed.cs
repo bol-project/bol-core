@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
 
-namespace Bol.Neo.Cryptography
+namespace Bol.Cryptography.Neo.Core
 {
     [ComVisible(true)]
     public class RIPEMD160Managed : HashAlgorithm

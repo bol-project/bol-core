@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 
-namespace Bol.Neo.Cryptography.ECC
+namespace Bol.Cryptography.Neo.Core.ECC
 {
     public class ECCurve
     {

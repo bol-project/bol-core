@@ -16,6 +16,9 @@ using Microsoft.Extensions.Options;
 using Bol.Address.Model.Configuration;
 using Bol.Core.Model;
 using System.Threading.Tasks;
+using Bol.Cryptography.Neo.Encoders;
+using Bol.Cryptography.Neo.Hashers;
+using Bol.Cryptography.Neo.Keys;
 
 namespace Bol.Core.Tests.Services
 {
