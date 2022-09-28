@@ -5,11 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Bol.Neo
+namespace Bol.Cryptography.Neo
 {
     public static class Helper
     {

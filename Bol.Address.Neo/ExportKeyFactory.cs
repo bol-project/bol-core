@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bol.Address.Abstractions;
 using Bol.Cryptography;
-using Bol.Neo;
-using Bol.Neo.Cryptography;
+using Bol.Cryptography.Neo;
+using Bol.Cryptography.Neo.Core;
 
 
 namespace Bol.Address.Neo

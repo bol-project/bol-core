@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-namespace Bol.Neo.Cryptography
+namespace Bol.Cryptography.Neo.Core
 {
     public static class Base58
     {

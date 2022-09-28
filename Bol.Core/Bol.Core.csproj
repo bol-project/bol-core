@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Bol.Core</PackageId>
     <LangVersion>8.0</LangVersion>
-    <Version>0.0.1</Version>
+    <Version>0.0.1-alpha.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -29,12 +30,18 @@
     <PackageReference Include="FluentValidation" Version="7.6.104" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.23" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="YamlDotNet" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" />
-    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" />
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" PrivateAssets="all"/>
   </ItemGroup>
 
 </Project>

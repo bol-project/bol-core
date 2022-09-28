@@ -1,6 +1,5 @@
 using System.Numerics;
 using Bol.Coin.Models;
-using Bol.Coin.Persistence;
 using Bol.Coin.Validators;
 using Neo.SmartContract.Framework.Services.Neo;
 

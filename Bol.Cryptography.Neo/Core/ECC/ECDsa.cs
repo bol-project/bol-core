@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace Bol.Neo.Cryptography.ECC
+namespace Bol.Cryptography.Neo.Core.ECC
 {
     public class ECDsa
     {

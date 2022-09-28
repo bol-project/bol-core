@@ -1,6 +1,7 @@
-using Bol.Neo.Cryptography;
+using Bol.Cryptography.Encoders;
+using Bol.Cryptography.Neo.Core;
 
-namespace Bol.Cryptography.Encoders
+namespace Bol.Cryptography.Neo.Encoders
 {
     public class Base58Encoder : BaseEncoder, IBase58Encoder
     {

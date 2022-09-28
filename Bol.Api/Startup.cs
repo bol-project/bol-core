@@ -18,11 +18,13 @@ using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Bol.Core.Transactions;
 using Bol.Cryptography.Abstractions;
+using Bol.Cryptography.Neo.Encoders;
+using Bol.Cryptography.Neo.Hashers;
+using Bol.Cryptography.Neo.Keys;
 using Bol.Cryptography.Signers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -84,10 +86,10 @@ namespace Bol.Api
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
             services.AddScoped<Cryptography.IBase64Encoder, Cryptography.Encoders.Base64Encoder>();
-            services.AddScoped<Cryptography.IBase58Encoder, Cryptography.Encoders.Base58Encoder>();
+            services.AddScoped<Cryptography.IBase58Encoder, Base58Encoder>();
             services.AddScoped<Cryptography.ISha256Hasher, Cryptography.Hashers.Sha256Hasher>();
-            services.AddScoped<Cryptography.IRipeMD160Hasher, Cryptography.Hashers.RipeMD160Hasher>();
-            services.AddScoped<Cryptography.IKeyPairFactory, Cryptography.Keys.KeyPairFactory>();
+            services.AddScoped<Cryptography.IRipeMD160Hasher, RipeMD160Hasher>();
+            services.AddScoped<Cryptography.IKeyPairFactory, KeyPairFactory>();
 
             //BOL Address
             services.AddScoped<Address.Abstractions.IExportKeyFactory, Address.Neo.ExportKeyFactory>();

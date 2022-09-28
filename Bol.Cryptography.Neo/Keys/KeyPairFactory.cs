@@ -1,7 +1,8 @@
 using System;
-using Bol.Neo.Cryptography.ECC;
+using Bol.Cryptography.Keys;
+using Bol.Cryptography.Neo.Core.ECC;
 
-namespace Bol.Cryptography.Keys
+namespace Bol.Cryptography.Neo.Keys
 {
     public class KeyPairFactory : IKeyPairFactory
     {

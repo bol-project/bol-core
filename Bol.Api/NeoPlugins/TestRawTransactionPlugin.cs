@@ -5,8 +5,6 @@ using Neo.IO.Json;
 using Neo.Network.P2P.Payloads;
 using Neo.Plugins;
 using Neo;
-using IBolService = Bol.Api.Services.IBolService;
-using Bol.Api.Services;
 using Neo.SmartContract;
 using Neo.VM;
 using System.Collections.Generic;

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Bol.Cryptography.Neo.Encoders;
 using Xunit;
 
 namespace Bol.Core.Tests.Services
