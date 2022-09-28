@@ -42,7 +42,9 @@ namespace Bol.Api.Mappers
                 IsCertifier = account.IsCertifier == "1",
                 Collateral = ConvertToDecimal(account.Collateral),
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
-                MandatoryCertifier = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier))
+                MandatoryCertifier1 = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier1)),
+                MandatoryCertifier2 = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier2)),
+                LastCertificationHeight = int.Parse(account.LastCertificationHeight)
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;

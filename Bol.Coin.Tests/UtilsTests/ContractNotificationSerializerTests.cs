@@ -52,7 +52,9 @@ public class ContractNotificationSerializerTests
         
         account.Certifications.Should().Be(0);
         account.Certifiers.Should().BeNull();
-        account.MandatoryCertifier.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
+        account.MandatoryCertifier1.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
+        account.MandatoryCertifier2.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
+        account.LastCertificationHeight.Should().Be(200);
         account.IsCertifier.Should().Be(false);
         account.Collateral.Should().BeNull();
         account.RegistrationHeight.Should().Be(101);

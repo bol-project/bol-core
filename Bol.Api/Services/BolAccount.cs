@@ -22,7 +22,9 @@ namespace Bol.Api.Model
 
         public string Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
-        public string MandatoryCertifier { get; set; }
+        public string MandatoryCertifier1 { get; set; }
+        public string MandatoryCertifier2 { get; set; }
+        public string LastCertificationHeight { get; set; }
 
         public string IsCertifier { get; set; }
         public string Collateral { get; set; }

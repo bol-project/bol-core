@@ -42,12 +42,14 @@ public static class ContractNotificationSerializer
                 CommercialBalances = commercialBalances,
                 Certifications = 0,
                 Certifiers = null, // TODO parse this
-                MandatoryCertifier = accountParts[13],
-                IsCertifier = bool.TryParse(accountParts[14], out var isCertifier) && isCertifier,
-                Collateral = accountParts[15] == "Null" ? null : accountParts[15],
-                Countries = accountParts[16] == "Null" ? null : accountParts[16],
-                RegistrationHeight = int.Parse(accountParts[17]),
-                LastClaimHeight = int.Parse(accountParts[18])
+                MandatoryCertifier1 = accountParts[13] == "Null" ? null : accountParts[13],
+                MandatoryCertifier2 = accountParts[14] == "Null" ? null : accountParts[14],
+                LastCertificationHeight = accountParts[15] != "False" ? int.Parse(accountParts[15]) : 0,
+                IsCertifier = bool.TryParse(accountParts[16], out var isCertifier) && isCertifier,
+                Collateral = accountParts[17] == "Null" ? null : accountParts[17],
+                Countries = accountParts[18] == "Null" ? null : accountParts[18],
+                RegistrationHeight = int.Parse(accountParts[19]),
+                LastClaimHeight = int.Parse(accountParts[20])
             }
         };
 
