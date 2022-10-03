@@ -713,20 +713,20 @@ namespace Bol.Coin.Services
                 Runtime.Notify("error", BolResult.Fail("500", "Not enough available certifiers could be found."));
                 return false;
             }
-
+            
             var lastCertificationBlockHash = Blockchain.GetBlock((uint)account.LastCertificationHeight).Hash;
             var hash = Neo.SmartContract.Bol.Sha256Hash(account.CodeName.Concat(lastCertificationBlockHash));
-            var n1 = hash.Take(4).AsBigInteger();
-            var n2 = hash.Last(4).AsBigInteger();
+            var n1 = hash.Take(4).Concat(new byte[] { 0x00 }).ToBigInteger();
+            var n2 = hash.Last(4).Concat(new byte[] { 0x00 }).ToBigInteger();
 
             var index1 = n1 % allCertifiers.Keys.Length;
-            account.MandatoryCertifier1 = allCertifiers.Keys[(uint)index1];
+            account.MandatoryCertifier1 = allCertifiers.Keys[(int)index1];
             allCertifiers.Remove(account.MandatoryCertifier1);
             
             var index2 = n2 % allCertifiers.Keys.Length;
-            account.MandatoryCertifier2 = allCertifiers.Keys[(uint)index2];
+            account.MandatoryCertifier2 = allCertifiers.Keys[(int)index2];
             
-            return account;
+            return true;
         }
 
         private static void DistributeFees()
