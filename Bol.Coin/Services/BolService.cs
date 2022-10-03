@@ -491,8 +491,8 @@ namespace Bol.Coin.Services
             receiverAccount.LastCertificationHeight = Blockchain.GetHeight();
 
             if (receiverAccount.MandatoryCertifier1 == null || receiverAccount.MandatoryCertifier1.Length == 0
-                || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier1, certifier)
-                || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier2, certifier)
+                || (!ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier1, certifier)
+                && !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier2, certifier))
                 || interval > 2592000)
             {
                 if(!SetMandatoryCertifiers(receiverAccount)) return false;
