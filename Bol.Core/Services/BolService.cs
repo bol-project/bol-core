@@ -198,23 +198,30 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public Task Certify(IScriptHash address, CancellationToken token = default)
+        public async Task<BolAccount> Certify(string codeName, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
            {
-                context.MainAddress.GetBytes(),
-                address.GetBytes()
+               Encoding.ASCII.GetBytes(context.CodeName),
+               Encoding.ASCII.GetBytes(codeName)
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+            var keys = new[] { context.VotingAddress.Value };
 
-            var mainAddress = CreateMainAddress(context);
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+            
+            var description = $"Certify {codeName} by {context.CodeName}";
+            var remarks = new[] { "certify", context.CodeName, codeName };
 
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "certify", parameters);
-            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+            var transaction = _transactionService.Create(witness, context.Contract, "certify", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
 
-            return _transactionService.Publish(transaction, token);
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
         public async Task<bool> Whitelist(IScriptHash address, CancellationToken token = default)

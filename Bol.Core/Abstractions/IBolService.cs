@@ -17,6 +17,6 @@ namespace Bol.Core.Abstractions
         Task<bool> Whitelist(IScriptHash address, CancellationToken token = default);
         Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default);
         Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
-        Task Certify(IScriptHash address, CancellationToken token = default);
+        Task<BolAccount> Certify(string codeName, CancellationToken token = default);
     }
 }
