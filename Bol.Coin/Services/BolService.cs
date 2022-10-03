@@ -488,6 +488,7 @@ namespace Bol.Coin.Services
 
             receiverAccount.Certifications = receiverAccount.Certifications + 1;
             receiverAccount.Certifiers[certifierAccount.CodeName] = Blockchain.GetHeight();
+            receiverAccount.LastCertificationHeight = Blockchain.GetHeight();
 
             if (receiverAccount.MandatoryCertifier1 == null || receiverAccount.MandatoryCertifier1.Length == 0
                 || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier1, certifier)
@@ -500,9 +501,6 @@ namespace Bol.Coin.Services
             {
                 receiverAccount.AccountStatus = Constants.AccountStatusOpen;
             }
-
-            receiverAccount.LastCertificationHeight = Blockchain.GetHeight();
-
             BolRepository.SaveAccount(receiverAccount);
 
             Runtime.Notify("certify", BolResult.Ok(receiverAccount));
