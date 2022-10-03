@@ -494,8 +494,7 @@ namespace Bol.Coin.Services
                 || !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier2, certifier)
                 || interval > 2592000)
             {
-                receiverAccount = SetMandatoryCertifiers(receiverAccount);
-                if (receiverAccount == null) return false;
+                if(!SetMandatoryCertifiers(receiverAccount)) return false;
             }
             else
             {
@@ -688,7 +687,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static BolAccount SetMandatoryCertifiers(BolAccount account)
+        private static bool SetMandatoryCertifiers(BolAccount account)
         {
             var country = account.CodeName.Range(4, 6);
 
@@ -714,7 +713,7 @@ namespace Bol.Coin.Services
             if (allCertifiers.Keys.Length < 2) 
             {
                 Runtime.Notify("error", BolResult.Fail("500", "Not enough available certifiers could be found."));
-                return null;
+                return false;
             }
 
             var lastCertificationBlockHash = Blockchain.GetBlock((uint)account.LastCertificationHeight).Hash;
