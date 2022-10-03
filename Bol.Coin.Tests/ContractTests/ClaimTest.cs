@@ -53,13 +53,30 @@ namespace Bol.Coin.Tests.ContractTests
             await _validatorService.Whitelist(_addressTransformer.ToScriptHash("BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91"));
             _emulator.Execute(_transactionGrabber);
 
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(10);
 
             await _service.Register();
             _emulator.Execute(_transactionGrabber);
 
             var registerNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+            
+            await _validatorService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
+            var certifyResult = _emulator.Execute(_transactionGrabber);
+            
+            var certifyNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
+            var mandatoryCertifier1 = certifyNotification.Account.MandatoryCertifier1;
+            var mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier1, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+            var mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+            
+            await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
+            certifyResult = _emulator.Execute(_transactionGrabber);
+            certifyNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
             _emulator.blockchain.AddMockBlocks(100);
 
             await _service.Claim();
@@ -68,9 +85,9 @@ namespace Bol.Coin.Tests.ContractTests
 
             var claimNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
-            double.Parse(claimNotification.Account.ClaimBalance)
+            BigInteger.Parse(claimNotification.Account.ClaimBalance)
                 .Should()
-                .BeGreaterThan(double.Parse(registerNotification.Account.ClaimBalance));
+                .BeGreaterThan(BigInteger.Parse(registerNotification.Account.ClaimBalance));
             
             result.Should().BeTrue();
         }
