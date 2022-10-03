@@ -106,6 +106,7 @@ namespace Bol.Coin.Services
             account.CommercialAddresses = new Map<byte[], BigInteger>();
             account.MandatoryCertifier1 = new byte[0];
             account.MandatoryCertifier2 = new byte[0];
+            account.LastCertificationHeight = 1;
             account.Countries = new byte[0];
 
             BolRepository.SaveAccount(account);
