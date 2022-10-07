@@ -204,6 +204,14 @@ namespace Bol.Coin.Services
                 }
 
                 RegisterAsCertifier(certifier.CodeName, certifier.Countries, 0);
+                var certifierAccount = BolRepository.GetAccount(certifier.CodeName);
+                certifierAccount.Certifications = certifiers.Length;
+                foreach (var genesisCertifier in certifiers)
+                {
+                    certifierAccount.Certifiers[genesisCertifier.CodeName] = 1;
+                }
+                certifierAccount.AccountStatus = Constants.AccountStatusOpen;
+                BolRepository.SaveAccount(certifierAccount);
             }
 
             BolRepository.SetCirculatingSupply(0);
