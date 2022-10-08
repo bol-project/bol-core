@@ -28,6 +28,7 @@ namespace Bol.Api.Model
 
         public string IsCertifier { get; set; }
         public string Collateral { get; set; }
+        public string CertificationFee { get; set; }
         public string Countries { get; set; }
 
         public string RegistrationHeight { get; set; }

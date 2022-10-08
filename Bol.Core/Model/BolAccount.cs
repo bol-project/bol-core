@@ -28,6 +28,7 @@ namespace Bol.Core.Model
 
         public bool IsCertifier { get; set; }
         public string Collateral { get; set; }
+        public string CertificationFee { get; set; }
         public string Countries { get; set; }
 
         public int RegistrationHeight { get; set; }

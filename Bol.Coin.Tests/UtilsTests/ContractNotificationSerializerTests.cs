@@ -57,6 +57,7 @@ public class ContractNotificationSerializerTests
         account.LastCertificationHeight.Should().Be(200);
         account.IsCertifier.Should().Be(false);
         account.Collateral.Should().BeNull();
+        account.CertificationFee.Should().BeNull();
         account.RegistrationHeight.Should().Be(101);
         account.LastClaimHeight.Should().Be(101);
     }
