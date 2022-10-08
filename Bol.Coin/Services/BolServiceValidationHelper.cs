@@ -306,6 +306,27 @@ public static class BolServiceValidationHelper
         return true;
     }
     
+    public static bool IsUnRegisterCertifierValid(BolAccount account)
+    {
+        if (AccountNotExists(account)) return false;
+
+        if (IsNotAddressOwner(account.MainAddress)) return false;
+        
+        if (account.IsCertifier != 1)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Bol Account is not a Bol Certifier."));
+            return false;
+        }
+
+        if (account.AccountStatus != Constants.AccountStatusOpen)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Bol Account is not open."));
+            return false;
+        }
+
+        return true;
+    }
+
     public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
     {
         if (account.CodeName == null || account.CodeName.Length == 0)
