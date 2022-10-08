@@ -31,6 +31,7 @@ namespace Bol.Coin.Models
 
         public BigInteger IsCertifier;
         public BigInteger Collateral;
+        public BigInteger CertificationFee;
         public byte[] Countries;
 
         public BigInteger RegistrationHeight;
