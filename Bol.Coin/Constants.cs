@@ -21,6 +21,11 @@ namespace Bol.Coin
         public static readonly BigInteger CertificationFee = Factor / 1000;
 
         /// <summary>
+        /// The number of certifications required for an account to become a Bol Certifier.
+        /// </summary>
+        public static readonly BigInteger CertifierRequiredCertifications = 4;
+
+        /// <summary>
         /// A flag that represents a Person type Account.
         /// </summary>
         public const byte AccountTypeB = 0x01;
