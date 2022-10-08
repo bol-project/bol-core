@@ -248,6 +248,64 @@ public static class BolServiceValidationHelper
         return true;
     }
 
+    public static bool IsRegisterCertifierInputValid(byte[] codeName, byte[] countries, BigInteger fee)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        if (countries.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.Unauthorized("Certifiable countries cannot be empty."));
+            return false;
+        }
+
+        if (fee <= 0)
+        {
+            Runtime.Notify("error", BolResult.Unauthorized("Certification fee must be a positive integer."));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsRegisterCertifierValid(BolAccount account, BigInteger fee, BigInteger maxFee)
+    {
+        if (AccountNotExists(account)) return false;
+
+        if (IsNotAddressOwner(account.MainAddress)) return false;
+        
+        if (account.IsCertifier == 1)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Bol Account is already a Bol Certifier."));
+            return false;
+        }
+
+        if (account.AccountStatus != Constants.AccountStatusOpen)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Bol Account is not open."));
+            return false;
+        }
+
+        if (account.Certifications < Constants.CertifierRequiredCertifications)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Bol Account does not have enough certifications to become a Bol Certifier."));
+            return false;
+        }
+
+        if (account.CommercialAddresses[account.CommercialAddresses.Keys[0]] < Constants.CertifierCollateral)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Account does not have enough Bols to become a certifier."));
+            return false;
+        }
+
+        if (fee > maxFee)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certification fee cannot be higher than the designated max certification fee."));
+            return false;
+        }
+
+        return true;
+    }
+    
     public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
     {
         if (account.CodeName == null || account.CodeName.Length == 0)
