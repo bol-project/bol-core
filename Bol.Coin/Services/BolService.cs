@@ -224,7 +224,7 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool SetCertifierFee(BigInteger fee)
+        public static bool SetMaxCertificationFee(BigInteger fee)
         {
             if (BolValidator.AddressNotOwner(Constants.Owner))
             {
@@ -232,7 +232,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            BolRepository.SetCertificationFee(Constants.CertificationFee);
+            BolRepository.SetMaxCertificationFee(Constants.CertificationFee);
             return true;
         }
 
