@@ -204,7 +204,7 @@ namespace Bol.Coin.Services
             }
 
             BolRepository.SetCirculatingSupply(0);
-            BolRepository.SetMaxCertificationFee(Constants.CertificationFee);
+            BolRepository.SetMaxCertificationFee(Constants.MaxCertificationFee);
 
             BolRepository.SetBpsYear(Constants.BpsPerYear());
             BolRepository.SetDpsYear(Constants.DpsPerYear());
@@ -232,7 +232,7 @@ namespace Bol.Coin.Services
                 return false;
             }
 
-            BolRepository.SetMaxCertificationFee(Constants.CertificationFee);
+            BolRepository.SetMaxCertificationFee(Constants.MaxCertificationFee);
             return true;
         }
 
