@@ -85,15 +85,16 @@ namespace Neo.SmartContract
                 }
                 if (operation == "registerCertifier")
                 {
-                    if (args.Length != 2)
+                    if (args.Length != 3)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
                     var codeName = (byte[])args[0];
                     var countries = (byte[])args[1];
+                    var fee = (BigInteger)args[2];
 
-                    return BolService.RegisterAsCertifier(codeName, countries);
+                    return BolService.RegisterAsCertifier(codeName, countries, fee);
                 }
                 if (operation == "unregisterCertifier")
                 {
