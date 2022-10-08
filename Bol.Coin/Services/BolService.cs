@@ -171,8 +171,6 @@ namespace Bol.Coin.Services
 
         public static bool Deploy()
         {
-            Runtime.Notify("debug", Constants.Owner.Reverse());
-
             if (BolRepository.IsContractDeployed())
             {
                 Runtime.Notify("error", BolResult.BadRequest("Bol Contract is already deployed."));
@@ -182,29 +180,20 @@ namespace Bol.Coin.Services
             BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
-            for (var i = 0; i < certifiers.Length; i++)
+            var fee = BolRepository.GetMaxCertificationFee();
+            foreach (var certifier in certifiers)
             {
-                var certifier = certifiers[i];
-
-                Runtime.Notify("debug", certifier);
-
-                var result = RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1);
-                if (!result)
+                if (!RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1)) return false;
+                
+                foreach (var commercialAddress in certifier.CommercialAddresses.Keys)
                 {
-                    return false;
+                    if (!AddCommercialAddress(certifier.CodeName, commercialAddress)) return false;
                 }
 
-                for (var j = 0; j < certifier.CommercialAddresses.Keys.Length; j++)
-                {
-                    var addCommercialResult = AddCommercialAddress(certifier.CodeName, certifier.CommercialAddresses.Keys[j]);
-                    if (!addCommercialResult)
-                    {
-                        return false;
-                    }
-                }
-
-                RegisterAsCertifier(certifier.CodeName, certifier.Countries, 0);
                 var certifierAccount = BolRepository.GetAccount(certifier.CodeName);
+                
+                if (!RegisterAsCertifier(certifierAccount, certifier.Countries, fee, 0)) return false;
+                
                 certifierAccount.Certifications = certifiers.Length;
                 foreach (var genesisCertifier in certifiers)
                 {
@@ -215,7 +204,7 @@ namespace Bol.Coin.Services
             }
 
             BolRepository.SetCirculatingSupply(0);
-            BolRepository.SetCertificationFee(Constants.CertificationFee);
+            BolRepository.SetMaxCertificationFee(Constants.CertificationFee);
 
             BolRepository.SetBpsYear(Constants.BpsPerYear());
             BolRepository.SetDpsYear(Constants.DpsPerYear());
