@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".content\country_code.json">
+    <EmbeddedResource Include="content\country_code.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
