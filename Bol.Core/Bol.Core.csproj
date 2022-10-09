@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Bol.Core</PackageId>
+    <PackageId>BolChain.Core</PackageId>
     <LangVersion>8.0</LangVersion>
-    <Version>0.0.1-alpha.1</Version>
+    <Version>0.0.1-alpha.5</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -24,6 +24,9 @@
     <EmbeddedResource Include="content\country_code.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="content\nin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -38,10 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" PrivateAssets="all"/>
-    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" PrivateAssets="all"/>
-    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" PrivateAssets="all"/>
-    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
