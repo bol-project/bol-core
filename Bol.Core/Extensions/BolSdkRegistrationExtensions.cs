@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Resources;
 using Bol.Address;
 using Bol.Address.Abstractions;
 using Bol.Address.Neo;
@@ -79,7 +80,7 @@ namespace Bol.Core.Extensions
                 
             if (stream is null)
             {
-                return null;
+                throw new MissingManifestResourceException(nameof(filePath));
             }
 
             using var reader = new StreamReader(stream);
