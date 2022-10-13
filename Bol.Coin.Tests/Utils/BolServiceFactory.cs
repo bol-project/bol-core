@@ -4,7 +4,6 @@ using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
 using Bol.Core.Accessors;
 using Bol.Core.Model;
-using Bol.Core.Model.Wallet;
 using Bol.Core.Services;
 using Bol.Core.Transactions;
 using Bol.Cryptography.Encoders;

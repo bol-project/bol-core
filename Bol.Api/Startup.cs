@@ -11,7 +11,6 @@ using Bol.Core.Helpers;
 using Bol.Core.Mappers;
 using Bol.Core.Model;
 using Bol.Core.Model.Responses;
-using Bol.Core.Model.Wallet;
 using Bol.Core.Rpc;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Serializers;

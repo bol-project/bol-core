@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 
-namespace Bol.Core.Model.Wallet
+namespace Bol.Core.Model
 {
     public class BolWallet
     {      
         public string Name { get; set; }
         public string Version { get; set; }
         public SCrypt Scrypt { get; set; }
-        public List<Account> accounts { get; set; }
+        public IEnumerable<Account> accounts { get; set; }
     }
 
     public class Account
@@ -24,11 +24,11 @@ namespace Bol.Core.Model.Wallet
     public class Contract
     {
         public string Script { get; set; }
-        public IList<Parameters> Parameters { get; set; }
+        public IEnumerable<Parameter> Parameters { get; set; }
         public bool Deployed { get; set; }
     }
 
-    public class Parameters
+    public class Parameter
     {
          public string Name { get; set; }
          public string Type { get; set; }

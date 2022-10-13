@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Bol.Core.Model.Wallet;
+using Bol.Core.Model;
 
 namespace Bol.Core.Abstractions
 {
