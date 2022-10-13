@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-namespace Bol.Neo.Cryptography.ECC
+namespace Bol.Cryptography.Neo.Core.ECC
 {
     internal class ECFieldElement : IComparable<ECFieldElement>, IEquatable<ECFieldElement>
     {

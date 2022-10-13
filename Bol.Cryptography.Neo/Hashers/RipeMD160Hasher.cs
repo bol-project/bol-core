@@ -1,6 +1,7 @@
-using Bol.Neo.Cryptography;
+using Bol.Cryptography.Hashers;
+using Bol.Cryptography.Neo.Core;
 
-namespace Bol.Cryptography.Hashers
+namespace Bol.Cryptography.Neo.Hashers
 {
     public class RipeMD160Hasher : BaseHasher, IRipeMD160Hasher
     {

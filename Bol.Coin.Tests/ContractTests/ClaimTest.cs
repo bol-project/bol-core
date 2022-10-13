@@ -2,6 +2,10 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Bol.Coin.Tests.Utils;
+using Bol.Core.Services;
+using Bol.Cryptography.Encoders;
+using Bol.Cryptography.Hashers;
+using Bol.Cryptography.Neo.Encoders;
 using FluentAssertions;
 using Xunit;
 

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Bol.Neo.Cryptography.ECC;
+using Bol.Cryptography.Neo.Core.ECC;
 
-namespace Bol.Cryptography.Keys
+namespace Bol.Cryptography.Neo.Keys
 {
     public class PublicKey : IPublicKey
     {

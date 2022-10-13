@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Bol.Core.Abstractions;
-using Bol.Core.Model;
+﻿using Bol.Core.Model;
 using Bol.Core.Validators;
 using FluentValidation;
 using FluentValidation.TestHelper;

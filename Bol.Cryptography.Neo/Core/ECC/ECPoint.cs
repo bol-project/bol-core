@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 
-namespace Bol.Neo.Cryptography.ECC
+namespace Bol.Cryptography.Neo.Core.ECC
 {
     public class ECPoint : IComparable<ECPoint>, IEquatable<ECPoint>
     {

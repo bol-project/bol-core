@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
-namespace Bol.Neo.Cryptography
+namespace Bol.Cryptography.Neo.Core
 {
     public static class Helper
     {

@@ -15,7 +15,7 @@ namespace Bol.Core.Tests.Services
 
         public CountryCodeServiceTests()
         {
-            var section = File.ReadAllText(AppContext.BaseDirectory + ".content/country_code.json");
+            var section = File.ReadAllText(AppContext.BaseDirectory + "content/country_code.json");
             var countries = JsonConvert.DeserializeObject<List<Country>>(section);
             var options = Options.Create(countries);
             _service = new CountryCodeService(options);
