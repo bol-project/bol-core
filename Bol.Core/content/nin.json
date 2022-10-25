@@ -5,7 +5,7 @@
         "InternationalName": "Afghan Identity Card (e-Tazkira)",
         "LocalName": "Tazkira",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -14,7 +14,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -23,7 +23,7 @@
         "InternationalName": "Personal Number",
         "LocalName": "Numri Personal",
         "Format": "A11111111A",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[A-Z]{1}[0-9]{8][A-Z]{1}}$"
     },
     {
@@ -41,7 +41,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -50,7 +50,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -59,7 +59,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -68,7 +68,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -77,7 +77,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -86,7 +86,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -95,7 +95,7 @@
         "InternationalName": "National Identity Document)",
         "LocalName": "DNI - Documento Nacional de Identidad",
         "Format": "11111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[0-9]{8}$"
     },
     {
@@ -104,7 +104,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -113,7 +113,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -122,7 +122,7 @@
         "InternationalName": "National Identity Document)",
         "LocalName": "Tax File Number (TFN)",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -131,7 +131,7 @@
         "InternationalName": "Sector-Specific Personal Identifier (ssPIN)",
         "LocalName": "CCR-ID Austrian Identity Card",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -140,7 +140,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -149,7 +149,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -158,7 +158,7 @@
         "InternationalName": " Identification Card (with a personal number)",
         "LocalName": "بطاقة الهوية Arabic",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -167,7 +167,7 @@
         "InternationalName": "National Identity Card",
         "LocalName": "Bengali : জাতীয় পরিচয়পত্র",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -176,7 +176,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -194,7 +194,7 @@
         "InternationalName": "National Register Number",
         "LocalName": "Rijksregisternummer",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -203,7 +203,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -212,7 +212,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -221,7 +221,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -230,7 +230,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -239,7 +239,7 @@
         "InternationalName": "Identity Card",
         "LocalName": "Cedula de Identidad",
         "Format": "1111111A1A1",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{7}[A-Z]{1}[0-9]{1][A-Z]{1}[0-9]{1}$"
     },
     {
@@ -248,7 +248,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -257,7 +257,7 @@
         "InternationalName": "Unique Master Citizen Number",
         "LocalName": "Jedinstveni matični broj građana",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -266,7 +266,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -275,7 +275,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -284,7 +284,7 @@
         "InternationalName": "Civilian Identity Registr",
         "LocalName": "Cadastro de Pessoas Físicas (CPF)",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -293,7 +293,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -302,7 +302,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -311,7 +311,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -320,7 +320,7 @@
         "InternationalName": "Uniform Civil Number",
         "LocalName": "Единен граждански номер (ЕГН)",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -329,7 +329,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -338,7 +338,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -347,13 +347,14 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
         "Country": "Cameroon",
         "CountryCode": "CMR",
         "InternationalName": "National Identity Number",
+        "LocalName": "",
         "Format": "11111111111111111",
         "Digits": "17",
         "Regex": "^[0-9]17}$"
@@ -364,7 +365,7 @@
         "InternationalName": "Social Insurance Number",
         "LocalName": "Social Insurance number (SIN)",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -373,7 +374,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -382,7 +383,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -391,7 +392,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -400,7 +401,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -409,7 +410,7 @@
         "InternationalName": "National Identification Number",
         "LocalName": " Rol Único Nacional (RUN)",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -427,7 +428,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -436,7 +437,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -445,7 +446,7 @@
         "InternationalName": "ID card",
         "LocalName": " Número Único de Identificación Personal (NUIP ) ",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -454,7 +455,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -463,7 +464,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -472,7 +473,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -481,7 +482,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -490,7 +491,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -499,7 +500,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -508,7 +509,7 @@
         "InternationalName": "Personal Identification Number",
         "LocalName": "Osobni identifikacijski broj (OIB)",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -517,7 +518,7 @@
         "InternationalName": "Identity card",
         "LocalName": "Carnet de identidad",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -526,7 +527,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -535,7 +536,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -544,7 +545,7 @@
         "InternationalName": "Birth Number",
         "LocalName": "Rodné číslo (RČ)",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -553,7 +554,7 @@
         "InternationalName": "Personal Identification Number",
         "LocalName": "CPR, Det Centrale Personregisteer",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -562,7 +563,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -571,7 +572,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -580,7 +581,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -589,7 +590,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -598,7 +599,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -607,7 +608,7 @@
         "InternationalName": "Unique ID Number",
         "LocalName": "Numero Unico de Identidad",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -616,7 +617,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -625,7 +626,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -634,7 +635,7 @@
         "InternationalName": "Personal Identification Code",
         "LocalName": "Isikukood (IK)",
         "Format": "A1111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[A-Z]{1}[0-9]{10}$"
     },
     {
@@ -643,7 +644,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -652,7 +653,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -661,7 +662,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -670,7 +671,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -679,7 +680,7 @@
         "InternationalName": "Personal Identity Code",
         "LocalName": "Henkilötunnus (HETU)",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -697,7 +698,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -706,7 +707,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -715,7 +716,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -724,7 +725,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -733,7 +734,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -742,7 +743,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -751,14 +752,16 @@
         "InternationalName": "Tax Identification Number",
         "LocalName": "Steuer-ID  (Steueridentifikationsnummer, ID-Nr.)",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
         "Country": "Ghana",
         "CountryCode": "GHA",
+        "InternationalName": "",
+        "LocalName": "",
         "Format": "AAA1111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[A-Z]{3}[0-9]{10}$"
     },
     {
@@ -767,7 +770,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -776,7 +779,7 @@
         "InternationalName": "AMKA",
         "LocalName": "AMKA",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -785,7 +788,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -794,7 +797,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -803,7 +806,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -812,7 +815,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -821,7 +824,7 @@
         "InternationalName": "National Identity Document",
         "LocalName": "Documento Personal de Identificación",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -830,7 +833,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -839,7 +842,7 @@
         "InternationalName": "National Identity Document",
         "LocalName": "Guyana national identity card",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -848,7 +851,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -857,7 +860,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -866,7 +869,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -875,7 +878,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -884,14 +887,16 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
         "Country": "Honduras",
         "CountryCode": "HND",
+        "InternationalName": "",
+        "LocalName": "",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -900,7 +905,7 @@
         "InternationalName": "Identity card",
         "LocalName": "香港身份證    -Hēunggóng sānfánjing (HKID)",
         "Format": "A1111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[A-Z]{1}[0-9]{7}$"
     },
     {
@@ -909,7 +914,7 @@
         "InternationalName": "Personal Identification Number",
         "LocalName": "Személyi azonosító szám",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -918,7 +923,7 @@
         "InternationalName": "Personal Identification Number",
         "LocalName": "National Identification numberring (kennitala)",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -927,7 +932,7 @@
         "InternationalName": "Unique Identification Number",
         "LocalName": "Aadhaar",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -945,7 +950,7 @@
         "InternationalName": "Iran ID",
         "LocalName": "کارتممی",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -954,7 +959,7 @@
         "InternationalName": "Iraq National Card",
         "LocalName": "البطاقة الوطنية / كارتى نيشتيمانى",
         "Format": "111111111A",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{9}[A-Z]{1}$"
     },
     {
@@ -963,7 +968,7 @@
         "InternationalName": "Personal Public Service Number",
         "LocalName": "Uimhir Phearsanta Seirbhιse Poiblí ή Uimh PSP",
         "Format": "11111111A",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{8}[A-Z]{1}$"
     },
     {
@@ -972,7 +977,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -981,7 +986,7 @@
         "InternationalName": "Identity Number",
         "LocalName": "מספר זהות Mispar Zehut",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -999,7 +1004,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1008,7 +1013,7 @@
         "InternationalName": "My Number",
         "LocalName": "マイナンバーmai Namba",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -1017,7 +1022,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1026,7 +1031,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1035,14 +1040,16 @@
         "InternationalName": "Individual Identification Number",
         "LocalName": " ЖСН ,  Жеке сәйкестендіру номері қысқ",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
         "Country": "Kenya",
         "CountryCode": "KEN",
+        "InternationalName": "",
+        "LocalName": "",
         "Format": "11111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[0-9]{8}$"
     },
     {
@@ -1051,7 +1058,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1060,7 +1067,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1069,7 +1076,7 @@
         "InternationalName": "Resident registration number",
         "LocalName": "주민등록번호",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1078,7 +1085,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1087,7 +1094,7 @@
         "InternationalName": "Kuwait Civil Number",
         "LocalName": "الرقم المدني‎",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -1096,7 +1103,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1105,7 +1112,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1114,7 +1121,7 @@
         "InternationalName": "Personal Code",
         "LocalName": "Personas kods",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1123,7 +1130,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1132,7 +1139,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1141,7 +1148,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1150,7 +1157,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1159,7 +1166,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1168,7 +1175,7 @@
         "InternationalName": "Personal Code",
         "LocalName": "Asmens kodas",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1177,7 +1184,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1186,7 +1193,7 @@
         "InternationalName": "Macau Resident Identity Card",
         "LocalName": "澳門居民身份證",
         "Format": "11111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[0-9]{8}$"
     },
     {
@@ -1195,7 +1202,7 @@
         "InternationalName": "Unique Master Citizen Number",
         "LocalName": "Единствен матичен број на граѓанинот, acronym ЕМБГ",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1204,7 +1211,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1213,7 +1220,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1222,7 +1229,7 @@
         "InternationalName": "Identity Card Number",
         "LocalName": "National Registration Identity Card Number (NRIC No)",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -1231,7 +1238,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1240,7 +1247,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1249,7 +1256,7 @@
         "InternationalName": "Identity Card",
         "LocalName": "Tal -identita",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1258,7 +1265,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1267,7 +1274,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1276,7 +1283,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1285,7 +1292,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1294,7 +1301,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1304,7 +1311,7 @@
         "LocalName": "CURP - Clave Única de Registro de Población",
         "Format": "AAAA111111AAAAAA11",
         "Digits": "18",
-        "Regex": "^[A-Z]{4}[0-9]{6}[0-9]{2}[A-Z]{6}[0-9]{2}$"
+        "Regex": "^[A-Z]{4}[0-9]{6}[A-Z]{6}[0-9]{2}$"
     },
     {
         "Country": "Micronesia, Federated States of",
@@ -1312,7 +1319,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1321,7 +1328,7 @@
         "InternationalName": "Personal Code",
         "LocalName": "IDNP - Numarul de Identificare",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1330,7 +1337,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1339,7 +1346,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1348,7 +1355,7 @@
         "InternationalName": "Unique Master Citizen Number",
         "LocalName": "Jedinstveni matični broj građana",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1357,7 +1364,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1366,7 +1373,7 @@
         "InternationalName": "National carde",
         "LocalName": "بطاقة التعريف الوطنية",
         "Format": "AA1111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[A-Z]{2}[0-9]{7}$"
     },
     {
@@ -1375,7 +1382,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1384,7 +1391,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1393,7 +1400,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1402,15 +1409,16 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
         "Country": "Nepal",
         "CountryCode": "NPL",
         "InternationalName": "Citizenship No",
+        "LocalName": "",
         "Format": "111111",
-        "Digits": "6",
+        "Digits": 6,
         "Regex": "^[0-9]{6}$"
     },
     {
@@ -1419,7 +1427,7 @@
         "InternationalName": "Citizen Service Number",
         "LocalName": " Burgerserv Icenummer -BSN  ",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -1428,7 +1436,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1437,7 +1445,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1446,7 +1454,7 @@
         "InternationalName": "National Health Index (NHI) number",
         "LocalName": "National Health Index (NHI) number",
         "Format": "AAA1111",
-        "Digits": "7",
+        "Digits": 7,
         "Regex": "^[A-Z]{3}[0-9]{4]$"
     },
     {
@@ -1464,7 +1472,7 @@
         "InternationalName": "National Identification Number",
         "LocalName": "National Identification Number (NIN)",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1473,8 +1481,8 @@
         "InternationalName": "National Identification Number",
         "LocalName": "National Identification Number (NIN)",
         "Format": "11111111111",
-        "Digits": "11",
-        "Regex": "^[0-9]{1}[A-Z]{1}[0-9]{9]$"
+        "Digits": 11,
+        "Regex": "^[0-9]{11}$"
     },
     {
         "Country": "Niue",
@@ -1482,7 +1490,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1491,7 +1499,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1500,7 +1508,7 @@
         "InternationalName": "Unique Master Citizen Number",
         "LocalName": "Единствен матичен број на граѓанинот, acronym ЕМБГ",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1509,7 +1517,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1518,7 +1526,7 @@
         "InternationalName": "National Identification Number - birth number",
         "LocalName": "fødselsnumme",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1527,7 +1535,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1536,7 +1544,7 @@
         "InternationalName": "National Tax Number (commonly known as NTN)",
         "LocalName": "National Database and Registration Authority (NADRA)",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1545,7 +1553,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1554,7 +1562,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1563,7 +1571,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1572,7 +1580,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1581,7 +1589,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1590,7 +1598,7 @@
         "InternationalName": "National identity Card",
         "LocalName": "Documento Nacional de Identidad (DNI)",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
@@ -1599,7 +1607,7 @@
         "InternationalName": "Natinal ID card",
         "LocalName": " Pambansang Pagkakakilanlan",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -1608,7 +1616,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1617,7 +1625,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1626,7 +1634,7 @@
         "InternationalName": "Public Electronic Census System",
         "LocalName": "Powszechny Elektroniczny System Ewidencji Ludności - PESEL",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1635,7 +1643,7 @@
         "InternationalName": "Citizen Card",
         "LocalName": "Cartão de cidadão",
         "Format": "11111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[0-9]{8}$"
     },
     {
@@ -1644,7 +1652,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1653,7 +1661,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1662,7 +1670,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1671,7 +1679,7 @@
         "InternationalName": "Personal Numerical Code",
         "LocalName": "Cod Numeric Personal, CNP",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1680,7 +1688,7 @@
         "InternationalName": "Individual insurance account number (SNILS)",
         "LocalName": "страховой номер индивидуального лицевого счета СНИЛС",
         "Format": "11111111111",
-        "Digits": "11",
+        "Digits": 11,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -1698,7 +1706,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1707,7 +1715,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1716,7 +1724,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1725,7 +1733,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1734,7 +1742,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1743,7 +1751,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1752,7 +1760,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1761,7 +1769,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1770,7 +1778,7 @@
         "InternationalName": "",
         "LocalName": "Codice ISS",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1779,7 +1787,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1788,14 +1796,16 @@
         "InternationalName": "National ID Card",
         "LocalName": "Biṭāgat Al-hawiyya Al-waṭaniyya بطاقة الهوية الوطنية",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
         "Country": "Senegal",
         "CountryCode": "SEN",
+        "InternationalName": "",
+        "LocalName": "",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1804,7 +1814,7 @@
         "InternationalName": "Personal identification number",
         "LocalName": "Јединствени матични број грађана",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1813,7 +1823,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1822,7 +1832,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1831,7 +1841,7 @@
         "InternationalName": "National Registration Identity Card (NRIC)",
         "LocalName": "身份证",
         "Format": "A1111111A",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[A-Z]{1}[0-9]{7}[A-Z]{1]$"
     },
     {
@@ -1840,7 +1850,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1849,7 +1859,7 @@
         "InternationalName": "Citizen's Identification Card Number",
         "LocalName": "Rodné číslo (RČ",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -1858,7 +1868,7 @@
         "InternationalName": "Unique Master Citizen Number",
         "LocalName": "Enotna matična številka občana (EMŠO)",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1867,7 +1877,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1876,7 +1886,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1885,7 +1895,7 @@
         "InternationalName": "National Identification Number",
         "LocalName": "person identification",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -1894,7 +1904,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1903,7 +1913,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1912,7 +1922,7 @@
         "InternationalName": "National Identity Document",
         "LocalName": "Documento Nacional de Identidad(DNI)",
         "Format": "11111111A",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{8}[A-Z]{1}$"
     },
     {
@@ -1921,7 +1931,7 @@
         "InternationalName": "National Identity Document",
         "LocalName": "ජාතික හැඳුනුම්පත தேசிய அடையாள அட்டை",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -1930,7 +1940,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1939,7 +1949,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1948,7 +1958,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1957,7 +1967,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1966,7 +1976,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1975,7 +1985,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1984,7 +1994,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -1993,15 +2003,16 @@
         "InternationalName": "Personal Identity Number",
         "LocalName": "Personnummer",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
         "Country": "Switzerland",
         "CountryCode": "CHE",
+        "InternationalName": "",
         "LocalName": "Anonymous Thirteen-Digit Number",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -2010,7 +2021,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2019,7 +2030,7 @@
         "InternationalName": "National Identification Number",
         "LocalName": "身份證---國家註冊號碼\r\n",
         "Format": "A111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[A-Z]{1}[0-9]{9}$"
     },
     {
@@ -2028,7 +2039,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2046,7 +2057,7 @@
         "InternationalName": "Identification Number",
         "LocalName": "หมายเลขประจำตัวประชาชน",
         "Format": "1111111111111",
-        "Digits": "13",
+        "Digits": 13,
         "Regex": "^[0-9]{13}$"
     },
     {
@@ -2055,7 +2066,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2064,7 +2075,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2073,7 +2084,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2082,7 +2093,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2091,7 +2102,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2100,7 +2111,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2109,7 +2120,7 @@
         "InternationalName": "Turkish Identification Number",
         "LocalName": "Türkiye Cumhuriyeti Kimlik Numarası",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{11}$"
     },
     {
@@ -2118,7 +2129,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2127,7 +2138,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2136,13 +2147,14 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
         "Country": "Uganda",
         "CountryCode": "UGA",
         "InternationalName": "National ID card",
+        "LocalName": "",
         "Format": "AA11111111AA1A",
         "Digits": "14",
         "Regex": "^[A-Z]{2}[0-9]{8}[A-Z]{2}[0-9]{1}[A-Z]{1}$"
@@ -2153,7 +2165,7 @@
         "InternationalName": "Individual Identification Numbe",
         "LocalName": "Індивідуальний ідентифікаційний номер",
         "Format": "1111111111",
-        "Digits": "10",
+        "Digits": 10,
         "Regex": "^[0-9]{10}$"
     },
     {
@@ -2171,7 +2183,7 @@
         "InternationalName": "National Insurrance Number (NIS)",
         "LocalName": "National Insurrance Number (NIS)",
         "Format": "AA111111A",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[A-Z]{2}[0-9]{6}[A-Z]{1}$"
     },
     {
@@ -2180,14 +2192,16 @@
         "InternationalName": "Social Security number (SSN)",
         "LocalName": "Social Security number (SSN)",
         "Format": "111111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[0-9]{9}$"
     },
     {
         "Country": "Uruguay",
         "CountryCode": "URY",
+        "InternationalName": "",
+        "LocalName": "",
         "Format": "11111111",
-        "Digits": "8",
+        "Digits": 8,
         "Regex": "^[0-9]{8}$"
     },
     {
@@ -2196,7 +2210,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2205,7 +2219,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2214,7 +2228,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2223,7 +2237,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2232,7 +2246,7 @@
         "InternationalName": "ID card",
         "LocalName": "Cédula de Identidad",
         "Format": "A11111111",
-        "Digits": "9",
+        "Digits": 9,
         "Regex": "^[A-Z]{1}[0-9]{8}$"
     },
     {
@@ -2241,7 +2255,7 @@
         "InternationalName": "ID card",
         "LocalName": "Thé cun cước công dân",
         "Format": "111111111111",
-        "Digits": "12",
+        "Digits": 12,
         "Regex": "^[0-9]{12}$"
     },
     {
@@ -2250,7 +2264,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2259,7 +2273,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2268,7 +2282,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2277,7 +2291,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2286,7 +2300,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     },
     {
@@ -2295,7 +2309,7 @@
         "InternationalName": "",
         "LocalName": "",
         "Format": "",
-        "Digits": "0",
+        "Digits": 0,
         "Regex": ""
     }
 ]
