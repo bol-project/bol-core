@@ -659,8 +659,14 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        private static bool SetMandatoryCertifiers(BolAccount account)
+        public static bool SelectMandatoryCertifiers(byte[] codeName)
         {
+            if (!BolServiceValidationHelper.IsSelectMandatoryCertifiersInputValid(codeName)) return false;
+
+            var account = BolRepository.GetAccount(codeName);
+
+            if (!BolServiceValidationHelper.IsSelectMandatoryCertifiersValid(account)) return false;
+            
             var country = account.CodeName.Range(4, 6);
 
             var nationalCertifiers = BolRepository.GetCertifiers(country);
@@ -682,23 +688,33 @@ namespace Bol.Coin.Services
                 allCertifiers[certifier] = true;
             }
             
-            if (allCertifiers.Keys.Length < 2) 
+            if (allCertifiers.Keys.Length < 3) 
             {
                 Runtime.Notify("error", BolResult.Fail("500", "Not enough available certifiers could be found."));
                 return false;
             }
             
-            var lastCertificationBlockHash = Blockchain.GetBlock((uint)account.LastCertificationHeight).Hash;
-            var hash = Neo.SmartContract.Bol.Sha256Hash(account.CodeName.Concat(lastCertificationBlockHash));
+            var selectionBlockHash = Blockchain.GetBlock((uint)account.LastCertifierSelectionHeight).Hash;
+            var hash = Neo.SmartContract.Bol.Sha256Hash(account.CodeName.Concat(selectionBlockHash));
             var n1 = hash.Take(4).Concat(new byte[] { 0x00 }).ToBigInteger();
             var n2 = hash.Last(4).Concat(new byte[] { 0x00 }).ToBigInteger();
+            var n3 = hash.Range(4,8).Concat(new byte[] { 0x00 }).ToBigInteger();
 
+            var currentHeight = Blockchain.GetHeight();
+                
             var index1 = n1 % allCertifiers.Keys.Length;
-            account.MandatoryCertifier1 = allCertifiers.Keys[(int)index1];
-            allCertifiers.Remove(account.MandatoryCertifier1);
+            var mandatory1 = allCertifiers.Keys[(int)index1];
+            account.MandatoryCertifiers[mandatory1] = currentHeight;
+            allCertifiers.Remove(mandatory1);
             
             var index2 = n2 % allCertifiers.Keys.Length;
-            account.MandatoryCertifier2 = allCertifiers.Keys[(int)index2];
+            var mandatory2 = allCertifiers.Keys[(int)index2];
+            account.MandatoryCertifiers[mandatory2] = currentHeight;
+            allCertifiers.Remove(mandatory2);
+            
+            var index3 = n3 % allCertifiers.Keys.Length;
+            var mandatory3 = allCertifiers.Keys[(int)index3];
+            account.MandatoryCertifiers[mandatory3] = currentHeight;
             
             return true;
         }
