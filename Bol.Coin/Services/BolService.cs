@@ -453,26 +453,28 @@ namespace Bol.Coin.Services
             var receiverAccount = BolRepository.GetAccount(receiver);
 
             if (!BolServiceValidationHelper.IsCertifyValid(certifierAccount, receiverAccount)) return false;
+
+            var currentHeight = Blockchain.GetHeight();
+
+            receiverAccount.Certifications += 1;
+            receiverAccount.Certifiers[certifierAccount.CodeName] = currentHeight;
+            receiverAccount.LastCertificationHeight = currentHeight;
+            receiverAccount.LastCertifierSelectionHeight = currentHeight + 1;
+            receiverAccount.MandatoryCertifiers = new Map<byte[], BigInteger>();
+
+            if (receiverAccount.AccountStatus == Constants.AccountStatusPendingCertifications &&
+                receiverAccount.Certifications >= 2)
+            {
+                if (receiverAccount.AccountType == Constants.AccountTypeB)
+                {
+                    receiverAccount.AccountStatus = Constants.AccountStatusPendingFees;
+                }
+                else
+                {
+                    receiverAccount.AccountStatus = Constants.AccountStatusOpen;
+                }
+            }
             
-            var currentTimestamp = Blockchain.GetBlock(Blockchain.GetHeight()).Timestamp;
-            var previousTimestamp = Blockchain.GetBlock((uint)receiverAccount.LastCertificationHeight).Timestamp;
-            var interval = currentTimestamp - previousTimestamp;
-
-            receiverAccount.Certifications = receiverAccount.Certifications + 1;
-            receiverAccount.Certifiers[certifierAccount.CodeName] = Blockchain.GetHeight();
-            receiverAccount.LastCertificationHeight = Blockchain.GetHeight();
-
-            if (receiverAccount.MandatoryCertifier1 == null || receiverAccount.MandatoryCertifier1.Length == 0
-                || (!ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier1, certifier)
-                && !ArraysHelper.ArraysEqual(receiverAccount.MandatoryCertifier2, certifier))
-                || interval > 2592000)
-            {
-                if(!SetMandatoryCertifiers(receiverAccount)) return false;
-            }
-            else
-            {
-                receiverAccount.AccountStatus = Constants.AccountStatusOpen;
-            }
             BolRepository.SaveAccount(receiverAccount);
 
             Runtime.Notify("certify", BolResult.Ok(receiverAccount));
@@ -492,7 +494,7 @@ namespace Bol.Coin.Services
             receiverAccount.Certifications = receiverAccount.Certifications - 1;
             receiverAccount.Certifiers.Remove(certifierAccount.CodeName);
 
-            if (!receiverAccount.Certifiers.HasKey(receiverAccount.MandatoryCertifier1) && !receiverAccount.Certifiers.HasKey(receiverAccount.MandatoryCertifier2))
+            if (receiverAccount.Certifications < 2)
             {
                 receiverAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
             }
