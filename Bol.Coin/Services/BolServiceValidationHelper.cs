@@ -182,6 +182,18 @@ public static class BolServiceValidationHelper
             return false;
         }
 
+        if (!receiver.MandatoryCertifiers.HasKey(certifier.CodeName))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certifier has not been selected for certification receiver."));
+            return false;
+        }
+
+        if (receiver.LastCertificationHeight >= receiver.LastCertifierSelectionHeight)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Only one certification per Certifier Selection is allowed."));
+            return false;
+        }
+
         return true;
     }
 
@@ -323,6 +335,28 @@ public static class BolServiceValidationHelper
             return false;
         }
 
+        return true;
+    }
+
+    public static bool IsSelectMandatoryCertifiersInputValid(byte[] codeName)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        return true;
+    }
+
+    public static bool IsSelectMandatoryCertifiersValid(BolAccount account)
+    {
+        if (AccountNotExists(account)) return false;
+
+        if (IsNotAddressOwner(account.MainAddress)) return false;
+
+        if (account.MandatoryCertifiers.Keys.Length > 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certifiers have already been selected for this certification round."));
+            return false;
+        }
+        
         return true;
     }
 
