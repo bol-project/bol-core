@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BolChain.Core</PackageId>
-    <LangVersion>latest</LangVersion>
-    <Version>0.0.1-alpha.5</Version>
+    <LangVersion>8.0</LangVersion>
+    <Version>0.0.1-alpha.6</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
