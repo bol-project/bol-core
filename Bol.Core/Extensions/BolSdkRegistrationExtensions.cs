@@ -20,6 +20,7 @@ using Bol.Cryptography.Neo.Keys;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using YamlDotNet.Serialization;
 
 namespace Bol.Core.Extensions
 {
@@ -33,17 +34,25 @@ namespace Bol.Core.Extensions
             services.AddSingleton<IBase16Encoder, Base16Encoder>();
             services.AddSingleton<IBase58Encoder, Base58Encoder>();
             services.AddSingleton<IRipeMD160Hasher, RipeMD160Hasher>();
+            services.AddSingleton<ISerializer, Serializer>();
+            services.AddSingleton<IDeserializer, Deserializer>();
+            services.AddSingleton<IYamlSeralizer, YamlSerializer>();
+            services.AddSingleton<IRegexHelper, RegexHelper>();
 
             // Services
             services.AddScoped<ICountryCodeService, CountryCodeService>();
             services.AddScoped<ICodeNameService, CodeNameService>();
             services.AddScoped<INinService, NinService>();
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IEncryptedDigitalIdentityService, EncryptedDigitalIdentityService>();
 
             // Validators
             services.AddTransient<IValidator<NaturalPerson>, NaturalPersonValidator>();
             services.AddTransient<IValidator<BasePerson>, BasePersonValidator>();
             services.AddTransient<IValidator<CodenamePerson>, CodenamePersonValidator>();
+            services.AddTransient<ICodeNameValidator, CodeNameValidator>();
+            services.AddTransient<IEncryptedDigitalMatrixValidator, EncryptedDigitalMatrixValidator>();
+            services.AddTransient<IHashTableValidator, HashTableValidator>();
 
             // Other
             services.AddScoped<IAddressTransformer, AddressTransformer>();
