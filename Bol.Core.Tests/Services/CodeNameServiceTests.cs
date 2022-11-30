@@ -26,45 +26,6 @@ namespace Bol.Core.Tests.Services
         private readonly CodeNameValidator _codeNameValidator;
         private readonly CodeNameService _service;
 
-        NaturalPerson papadopoulos = new NaturalPerson
-        {
-            FirstName = "GIANNIS",
-            Surname = "PAPADOPOULOS",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "GRC",
-            Gender = Gender.Male,
-            Birthdate = new DateTime(1963, 06, 23),
-            Nin = "23066301512",
-            Combination = "1"
-        };
-
-        NaturalPerson smith = new NaturalPerson
-        {
-            FirstName = "MICHAEL",
-            Surname = "SMITH",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "USA",
-            Gender = Gender.Male,
-            Birthdate = new DateTime(2006, 10, 28),
-            Nin = "295632657",
-            Combination = "1"
-        };
-
-        NaturalPerson zhou = new NaturalPerson
-        {
-            FirstName = "LIMING",
-            Surname = "ZHOU",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "CHN",
-            Gender = Gender.Female,
-            Birthdate = new DateTime(1989, 02, 27),
-            Nin = "568756198902275281",
-            Combination = "P"
-        };
-
         List<Country> countries;
         List<NinSpecification> ninSpecifications;
 
