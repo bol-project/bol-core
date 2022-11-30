@@ -66,6 +66,7 @@ namespace Bol.Core.Tests.Services
         };
 
         List<Country> countries;
+        List<NinSpecification> ninSpecifications;
 
         public CodeNameServiceTests()
         {
@@ -74,7 +75,8 @@ namespace Bol.Core.Tests.Services
             _hex = new Base16Encoder(_hasher);
             countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
             _basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
-            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator);
+            ninSpecifications = new List<NinSpecification> { new NinSpecification { CountryCode = "GRC", Digits = 11 }, new NinSpecification { CountryCode = "USA", Digits = 9 }, new NinSpecification { CountryCode = "CHN", Digits = 18 } };
+            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator, new NinService(Options.Create(ninSpecifications)));
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
             _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher, _hex);
             _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
