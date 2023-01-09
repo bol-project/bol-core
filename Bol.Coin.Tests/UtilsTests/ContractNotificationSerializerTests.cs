@@ -50,15 +50,16 @@ public class ContractNotificationSerializerTests
         account.CommercialBalances.Should().BeEquivalentTo(expectedCommercialBalances);
         account.CommercialAddresses.Should().BeEquivalentTo(expectedCommercialBalances.Keys);
         
-        account.Certifications.Should().Be(0);
-        account.Certifiers.Should().BeNull();
-        account.MandatoryCertifier1.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
-        account.MandatoryCertifier2.Should().Be("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
-        account.LastCertificationHeight.Should().Be(200);
+        account.Certifications.Should().Be(1);
+        account.Certifiers.Should().ContainKey("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
+        account.MandatoryCertifiers.Should().HaveCount(3);
+        account.LastCertificationHeight.Should().Be(12);
         account.IsCertifier.Should().Be(false);
         account.Collateral.Should().BeNull();
         account.CertificationFee.Should().BeNull();
-        account.RegistrationHeight.Should().Be(101);
-        account.LastClaimHeight.Should().Be(101);
+        account.RegistrationHeight.Should().Be(10);
+        account.LastClaimHeight.Should().Be(10);
+        account.LastCertifierSelectionHeight.Should().Be(13);
+        account.LastCertificationHeight.Should().Be(12);
     }
 }
