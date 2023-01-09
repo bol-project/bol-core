@@ -745,5 +745,25 @@ namespace Bol.Coin.Services
                 
             BolRepository.SetFeeBucket(fees);
         }
+
+        private static void PayCertificationFees(BolAccount account)
+        {
+            foreach (var certifier in account.Certifiers.Keys)
+            {
+                var certifierAccount = BolRepository.GetAccount(certifier);
+                var certificationFee = certifierAccount.CertificationFee;
+                var certifierPaymentAddress = certifierAccount.CommercialAddresses.Keys[0];
+                var paymentAddressBalance = certifierAccount.CommercialAddresses[certifierPaymentAddress];
+                certifierAccount.CommercialAddresses[certifierPaymentAddress] = paymentAddressBalance + certificationFee;
+
+                account.ClaimBalance -= certificationFee;
+                
+                BolRepository.SaveAccount(certifierAccount);
+                BolRepository.SaveAccount(account);
+            }
+            account.AccountStatus = Constants.AccountStatusOpen;
+            
+            BolRepository.SaveAccount(account);
+        }
     }
 }
