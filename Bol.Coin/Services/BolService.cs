@@ -512,6 +512,14 @@ namespace Bol.Coin.Services
 
             var bolAccount = BolRepository.GetAccount(codeName);
 
+            if (bolAccount.AccountStatus == Constants.AccountStatusPendingFees)
+            {
+                PayCertificationFees(bolAccount);
+                
+                //refresh account data after fee payment
+                bolAccount = BolRepository.GetAccount(codeName);
+            }
+
             if (!BolServiceValidationHelper.IsClaimValid(bolAccount)) return false;
 
             var previousHeight = (uint)bolAccount.LastClaimHeight;
