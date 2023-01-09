@@ -85,6 +85,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("selectMandatoryCertifiers")]
+        public async Task<ActionResult> SelectMandatoryCertifiers(CancellationToken token)
+        {
+            var result = await _coreBolService.SelectMandatoryCertifiers(token);
+            return Ok(result);
+        }
+
         [HttpGet("whitelist")]
         public async Task<ActionResult> IsWhitelisted(string address, CancellationToken token)
         {
