@@ -193,6 +193,16 @@ namespace Neo.SmartContract
                     var mainAddress = (byte[])args[0];
                     return BolService.IsWhitelisted(mainAddress);
                 }
+                if (operation == "selectMandatoryCertifiers")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    return BolService.SelectMandatoryCertifiers(codeName);
+                }
             }
             return false;
         }
