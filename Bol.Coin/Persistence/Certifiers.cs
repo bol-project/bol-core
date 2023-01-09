@@ -60,6 +60,7 @@ namespace Bol.Coin.Persistence
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_1] = 0;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_2] = 0;
             pstathas.CommercialAddresses[PSTATHAS_COMMERCIAL_ADDRESS_3] = 0;
+            pstathas.CertificationFee = Constants.MaxCertificationFee;
 
             var cchomenidis = new BolAccount();
             cchomenidis.CodeName = CCHOMENIDIS_CODENAME;
@@ -73,6 +74,7 @@ namespace Bol.Coin.Persistence
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_1] = 0;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_2] = 0;
             cchomenidis.CommercialAddresses[CCHOMENIDIS_COMMERCIAL_ADDRESS_3] = 0;
+            cchomenidis.CertificationFee = Constants.MaxCertificationFee;
 
             var ftokas = new BolAccount();
             ftokas.CodeName = FTOKAS_CODENAME;
@@ -86,6 +88,7 @@ namespace Bol.Coin.Persistence
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_1] = 0;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_2] = 0;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_3] = 0;
+            ftokas.CertificationFee = Constants.MaxCertificationFee;
 
             var nchomenidis = new BolAccount();
             nchomenidis.CodeName = NCHOMENIDIS_CODENAME;
