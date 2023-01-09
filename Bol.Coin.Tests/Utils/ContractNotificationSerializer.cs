@@ -20,7 +20,7 @@ public static class ContractNotificationSerializer
         var operationStatus = cleanParts[1].TrimEnd(',').Split(',');
         var accountParts = cleanParts[2].Split(",");
 
-        var commercialBalances = ParseCommercialBalances(accountParts[8]);
+        var commercialBalances = ParseDictionary(accountParts[8]);
         
         var notification = new ContractNotification
         {
@@ -42,10 +42,10 @@ public static class ContractNotificationSerializer
                 TotalBalance = accountParts[10],
                 CommercialBalances = commercialBalances,
                 Certifications = accountParts[11] != "Null" ? int.Parse(accountParts[11]) : 0,
-                Certifiers = null, // TODO parse this
-                MandatoryCertifier1 = accountParts[13] == "Null" ? null : accountParts[13],
-                MandatoryCertifier2 = accountParts[14] == "Null" ? null : accountParts[14],
-                LastCertificationHeight = accountParts[15] != "Null" ? int.Parse(accountParts[15]) : 0,
+                Certifiers = ParseDictionary(accountParts[12]),
+                MandatoryCertifiers = ParseDictionary(accountParts[13]),
+                LastCertificationHeight = accountParts[14] != "Null" ? int.Parse(accountParts[14]) : 0,
+                LastCertifierSelectionHeight = accountParts[15] != "Null" ? int.Parse(accountParts[15]) : 0,
                 IsCertifier = bool.TryParse(accountParts[16], out var isCertifier) && isCertifier,
                 Collateral = accountParts[17] == "Null" ? null : accountParts[17],
                 CertificationFee = accountParts[18] == "Null" ? null : accountParts[18],
@@ -58,11 +58,11 @@ public static class ContractNotificationSerializer
         return notification;
     }
 
-    private static Dictionary<string, string> ParseCommercialBalances(string value)
+    private static Dictionary<string, string> ParseDictionary(string dictionary)
     {
         var result = new Dictionary<string, string>();
         
-        var accountsAndBalances = value
+        var keyValuePairs = dictionary
             .Trim(':')
             .TrimStart('{')
             .TrimEnd('}')
@@ -74,15 +74,15 @@ public static class ContractNotificationSerializer
         //          ------ account -----        ------ balance-----
         // AHjJPohVY7EhDUpiE4xYHiFydQaySveFGM : 0
         // That is why we choose the first and the third element
-        for (var i = 0; i < accountsAndBalances.Length ; i += 3)
+        for (var i = 0; i < keyValuePairs.Length ; i += 3)
         {
-            var account = accountsAndBalances[i];
+            var key = keyValuePairs[i];
             
-            var balance = accountsAndBalances[i + 2] == "Null" 
+            var value = keyValuePairs[i + 2] == "Null" 
                 ? "0" 
-                : accountsAndBalances[i + 2];
+                : keyValuePairs[i + 2];
             
-            result.Add(account, balance);
+            result.Add(key, value);
         }
         
         return result;
