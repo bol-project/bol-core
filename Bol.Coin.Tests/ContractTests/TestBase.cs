@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
@@ -43,21 +44,34 @@ public abstract class TestBase
     protected async Task<ContractNotification> AddCertifications()
     {
         _emulator.blockchain.AddMockBlocks(1);
-            
-        await _validatorService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
-        var certifyResult = _emulator.Execute(_transactionGrabber);
-            
-        var certifyNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
-        var mandatoryCertifier1 = certifyNotification.Account.MandatoryCertifier1;
-        var mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier1, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+        await _service.SelectMandatoryCertifiers();
+        var selectionResult = _emulator.Execute(_transactionGrabber);
+        var selectionNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+        
+        var mandatoryCertifier = selectionNotification.Account.MandatoryCertifiers.First().Key;
+        var mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
         var mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
             
         _emulator.blockchain.AddMockBlocks(1);
             
         await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
         _emulator.Execute(_transactionGrabber);
+        
+        _emulator.blockchain.AddMockBlocks(1);
+
+        await _service.SelectMandatoryCertifiers();
+        selectionResult = _emulator.Execute(_transactionGrabber);
+        selectionNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+        
+        mandatoryCertifier = selectionNotification.Account.MandatoryCertifiers.First().Key;
+        mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+        mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
             
+        _emulator.blockchain.AddMockBlocks(1);
+            
+        await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
+        _emulator.Execute(_transactionGrabber);
         return ContractNotificationSerializer.Deserialize(_notifyOutput);
     }
 
