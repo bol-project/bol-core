@@ -20,9 +20,9 @@ namespace Bol.Core.Model
 
         public int Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
-        public string MandatoryCertifier1 { get; set; }
-        public string MandatoryCertifier2 { get; set; }
+        public Dictionary<string, string> MandatoryCertifiers { get; set; }
         public int LastCertificationHeight { get; set; }
+        public int LastCertifierSelectionHeight { get; set; }
 
         public bool IsCertifier { get; set; }
         public string Collateral { get; set; }

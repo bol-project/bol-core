@@ -44,9 +44,10 @@ namespace Bol.Api.Mappers
                 CertificationFee = ConvertToDecimal(account.CertificationFee),
                 Countries = account.Countries,
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
-                MandatoryCertifier1 = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier1)),
-                MandatoryCertifier2 = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier2)),
-                LastCertificationHeight = int.Parse(account.LastCertificationHeight)
+                Certifiers = account.Certifiers,
+                MandatoryCertifiers = account.MandatoryCertifiers,
+                LastCertificationHeight = int.Parse(account.LastCertificationHeight),
+                LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight)
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;
