@@ -35,6 +35,16 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] FTOKAS_COMMERCIAL_ADDRESS_2 = "BQ19RY3QFh9XKJG8AiJnmv7V9bPqMyJ442".ToScriptHash();
         public static readonly byte[] FTOKAS_COMMERCIAL_ADDRESS_3 = "BThsYC4tWtJwmqvS2bnPXvRfXkxyhy4RxT".ToScriptHash();
 
+        public static readonly byte[] NCHOMENIDIS_CODENAME = "503c4752433c43484f4d454e494449533c4e3c3c3c313938334d3c6361384658546f774275453c3142393431".HexToBytes();
+        public static readonly byte[] NCHOMENIDIS_EDI = "b941ecf7e79905ab53c85085affcec24a94c2765f9ccf96d960d04d8fa64c874".HexToBytes();
+        public static readonly byte[] NCHOMENIDIS_MAIN_ADDRESS = "BBBCkyanLKwoYfiP5wrBThEULh59kGTbTD".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_BLOCKCHAIN_ADDRESS = "BEmCZXo6mkAbf3oq8mXin8R2t5o5AGrCaS".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_SOCIAL_ADDRESS = "BGXvyJfczykA8t87PVCugYxvrdxcvuDaBS".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_VOTING_ADDRESS = "BQemXtvrXVi768dSdhur9oBfixnokkwPut".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_COMMERCIAL_ADDRESS_1 = "BQNsNmcdBWxh6jTsAi54Kb9JfAzMxkkpN6".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_COMMERCIAL_ADDRESS_2 = "BRcGg7P2v79J9P2BnjDRH1ZBizh5w4WZGS".ToScriptHash();
+        public static readonly byte[] NCHOMENIDIS_COMMERCIAL_ADDRESS_3 = "BP5YopB5BwzAVtrbHmGJiZgG4VWBe3kgTh".ToScriptHash();
+
 
         public static BolAccount[] GenesisCertifiers()
         {
@@ -77,7 +87,21 @@ namespace Bol.Coin.Persistence
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_2] = 0;
             ftokas.CommercialAddresses[FTOKAS_COMMERCIAL_ADDRESS_3] = 0;
 
-            return new[] { pstathas, cchomenidis, ftokas };
+            var nchomenidis = new BolAccount();
+            nchomenidis.CodeName = NCHOMENIDIS_CODENAME;
+            nchomenidis.Edi = NCHOMENIDIS_EDI;
+            nchomenidis.MainAddress = NCHOMENIDIS_MAIN_ADDRESS;
+            nchomenidis.BlockChainAddress = NCHOMENIDIS_BLOCKCHAIN_ADDRESS;
+            nchomenidis.SocialAddress = NCHOMENIDIS_SOCIAL_ADDRESS;
+            nchomenidis.VotingAddress = NCHOMENIDIS_VOTING_ADDRESS;
+            nchomenidis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            nchomenidis.Countries = Constants.AllCountriesCode;
+            nchomenidis.CommercialAddresses[NCHOMENIDIS_COMMERCIAL_ADDRESS_1] = 0;
+            nchomenidis.CommercialAddresses[NCHOMENIDIS_COMMERCIAL_ADDRESS_2] = 0;
+            nchomenidis.CommercialAddresses[NCHOMENIDIS_COMMERCIAL_ADDRESS_3] = 0;
+            nchomenidis.CertificationFee = Constants.MaxCertificationFee;
+
+            return new[] { pstathas, cchomenidis, ftokas, nchomenidis };
         }
     }
 }
