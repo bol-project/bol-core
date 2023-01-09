@@ -716,6 +716,10 @@ namespace Bol.Coin.Services
             var mandatory3 = allCertifiers.Keys[(int)index3];
             account.MandatoryCertifiers[mandatory3] = currentHeight;
             
+            BolRepository.SaveAccount(account);
+            
+            Runtime.Notify("selectMandatoryCertifiers", BolResult.Ok(account));
+            
             return true;
         }
 
