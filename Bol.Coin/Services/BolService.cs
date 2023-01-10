@@ -596,6 +596,11 @@ namespace Bol.Coin.Services
             return true;
         }
 
+        /// <summary>
+        /// https://gitlab.com/bolchain/bol-internal/bol-docs/-/blob/master/5-%20Certifier%20Selection.md
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
         public static bool SelectMandatoryCertifiers(byte[] codeName)
         {
             if (!BolServiceValidationHelper.IsSelectMandatoryCertifiersInputValid(codeName)) return false;
