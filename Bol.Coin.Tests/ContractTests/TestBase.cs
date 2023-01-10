@@ -72,6 +72,12 @@ public abstract class TestBase
             
         await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
         _emulator.Execute(_transactionGrabber);
+        
+        _emulator.blockchain.AddMockBlocks(1);
+
+        await _service.PayCertificationFees();
+        _emulator.Execute(_transactionGrabber);
+        
         return ContractNotificationSerializer.Deserialize(_notifyOutput);
     }
 
