@@ -18,7 +18,7 @@ namespace Bol.Coin
         /// <summary>
         /// A fee in Bols that a Person or Company needs to pay in order to be certified in the BoL Blockchain.
         /// </summary>
-        public static readonly BigInteger MaxCertificationFee = Factor / 10;
+        public static readonly BigInteger MaxCertificationFee = 5000000;
 
         /// <summary>
         /// The number of certifications required for an account to become a Bol Certifier.
