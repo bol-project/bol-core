@@ -21,6 +21,7 @@ namespace Bol.Core.Model
         public int Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
         public Dictionary<string, string> MandatoryCertifiers { get; set; }
+        public Dictionary<string, string> CertificationRequests { get; set; }
         public int LastCertificationHeight { get; set; }
         public int LastCertifierSelectionHeight { get; set; }
 

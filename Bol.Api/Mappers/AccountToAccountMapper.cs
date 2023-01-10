@@ -46,6 +46,7 @@ namespace Bol.Api.Mappers
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
                 Certifiers = account.Certifiers,
                 MandatoryCertifiers = account.MandatoryCertifiers,
+                CertificationRequests = account.CertificationRequests,
                 LastCertificationHeight = int.Parse(account.LastCertificationHeight),
                 LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight)
             };

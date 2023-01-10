@@ -53,6 +53,7 @@ public class ContractNotificationSerializerTests
         account.Certifications.Should().Be(1);
         account.Certifiers.Should().ContainKey("P<GRC<TOKAS<T<<<1985M<gR2sdEhFT4lBCA");
         account.MandatoryCertifiers.Should().HaveCount(3);
+        account.CertificationRequests.Should().HaveCount(1);
         account.LastCertificationHeight.Should().Be(12);
         account.IsCertifier.Should().Be(false);
         account.Collateral.Should().BeNull();

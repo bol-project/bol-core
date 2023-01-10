@@ -23,6 +23,7 @@ namespace Bol.Api.Model
         public string Certifications { get; set; }
         public Dictionary<string, string> Certifiers { get; set; }
         public Dictionary<string, string> MandatoryCertifiers { get; set; }
+        public Dictionary<string, string> CertificationRequests { get; set; }
         public string LastCertificationHeight { get; set; }
         public string LastCertifierSelectionHeight { get; set; }
 
