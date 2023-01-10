@@ -19,5 +19,6 @@ namespace Bol.Core.Abstractions
         Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
         Task<BolAccount> Certify(string codeName, CancellationToken token = default);
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
+        Task<BolAccount> PayCertificationFees(CancellationToken token = default);
     }
 }

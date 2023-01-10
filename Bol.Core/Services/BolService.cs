@@ -298,6 +298,31 @@ namespace Bol.Core.Services
             return result;
         }
 
+        public async Task<BolAccount> PayCertificationFees(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+            
+            var description = $"payCertificationFees by {context.CodeName}";
+            var remarks = new[] { "payCertificationFees", context.CodeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "payCertificationFees", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
         private ISignatureScript CreateMainAddress(BolContext context)
         {
             return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);

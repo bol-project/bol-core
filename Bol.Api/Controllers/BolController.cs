@@ -92,6 +92,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("payCertificationFees")]
+        public async Task<ActionResult> PayCertificationFees(CancellationToken token)
+        {
+            var result = await _coreBolService.PayCertificationFees(token);
+            return Ok(result);
+        }
+
         [HttpGet("whitelist")]
         public async Task<ActionResult> IsWhitelisted(string address, CancellationToken token)
         {
