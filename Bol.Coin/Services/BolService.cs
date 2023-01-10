@@ -180,7 +180,6 @@ namespace Bol.Coin.Services
             BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
-            var fee = BolRepository.GetMaxCertificationFee();
             foreach (var certifier in certifiers)
             {
                 if (!RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1)) return false;
@@ -192,7 +191,7 @@ namespace Bol.Coin.Services
 
                 var certifierAccount = BolRepository.GetAccount(certifier.CodeName);
                 
-                if (!RegisterAsCertifier(certifierAccount, certifier.Countries, fee, 0)) return false;
+                if (!RegisterAsCertifier(certifierAccount, certifier.Countries, Constants.MaxCertificationFee, 0)) return false;
                 
                 certifierAccount.Certifications = certifiers.Length;
                 foreach (var genesisCertifier in certifiers)
