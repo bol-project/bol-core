@@ -105,6 +105,7 @@ namespace Bol.Coin.Services
             account.Certifiers = new Map<byte[], BigInteger>();
             account.CommercialAddresses = new Map<byte[], BigInteger>();
             account.MandatoryCertifiers = new Map<byte[], BigInteger>();
+            account.CertificationRequests = new Map<byte[], BigInteger>();
             account.LastCertificationHeight = 1;
             account.LastCertifierSelectionHeight = currentHeight + 1;
             account.Countries = new byte[0];
@@ -396,6 +397,7 @@ namespace Bol.Coin.Services
             receiverAccount.LastCertificationHeight = currentHeight;
             receiverAccount.LastCertifierSelectionHeight = currentHeight + 1;
             receiverAccount.MandatoryCertifiers = new Map<byte[], BigInteger>();
+            receiverAccount.CertificationRequests = new Map<byte[], BigInteger>();
 
             if (receiverAccount.AccountStatus == Constants.AccountStatusPendingCertifications &&
                 receiverAccount.Certifications >= 2)
@@ -688,6 +690,23 @@ namespace Bol.Coin.Services
             account = BolRepository.GetAccount(codeName);
             Runtime.Notify("payCertificationFees", BolResult.Ok(account));
 
+            return true;
+        }
+
+        public static bool RequestCertification(byte[] codeName, byte[] certifierCodeName)
+        {
+            if (!BolServiceValidationHelper.IsRequestCertificationInputValid(codeName, certifierCodeName)) return false;
+
+            var account = BolRepository.GetAccount(codeName);
+            var certifierAccount = BolRepository.GetAccount(certifierCodeName);
+
+            if (!BolServiceValidationHelper.IsRequestCertificationValid(account, certifierAccount)) return false;
+
+            account.CertificationRequests[certifierCodeName] = account.LastCertifierSelectionHeight;
+            BolRepository.SaveAccount(account);
+            
+            Runtime.Notify("requestCertification", BolResult.Ok(account));
+            
             return true;
         }
 

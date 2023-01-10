@@ -213,6 +213,17 @@ namespace Neo.SmartContract
                     var codeName = (byte[])args[0];
                     return BolService.PayCertificationFees(codeName);
                 }
+                if (operation == "requestCertification")
+                {
+                    if (args.Length != 2)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    var certifierCodeName = (byte[])args[1];
+                    return BolService.RequestCertification(codeName, certifierCodeName);
+                }
             }
             return false;
         }

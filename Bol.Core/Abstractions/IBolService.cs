@@ -20,5 +20,6 @@ namespace Bol.Core.Abstractions
         Task<BolAccount> Certify(string codeName, CancellationToken token = default);
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
         Task<BolAccount> PayCertificationFees(CancellationToken token = default);
+        Task<BolAccount> RequestCertification(string codeName, CancellationToken token = default);
     }
 }
