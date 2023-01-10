@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Abstractions;
 using Bol.Core.Abstractions;
-using Bol.Core.Model.Wallet;
+using Bol.Core.Model;
 using Bol.Cryptography;
 
 namespace Bol.Core.Services
 {
     public class WalletService : IWalletService
     {
+        private static readonly SCrypt s_defaultScript = new SCrypt{ N = 16384, R = 8, P = 8,};
+        
         private readonly IAddressService _addressService;
         private readonly IKeyPairFactory _keyPairFactory;
         private readonly ISha256Hasher _sha256Hasher;
@@ -42,130 +44,97 @@ namespace Bol.Core.Services
 
         public async Task<BolWallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
-            var accounts = new List<Account>();
-
-            var _scrypt = new SCrypt
-            {
-                N = 16384,
-                R = 8,
-                P = 8,
-            };
-
-            //codename
-            var codeNamePrivateKey = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
-            var CodeNamekeyPair = _keyPairFactory.Create(codeNamePrivateKey);
-            var codeNameSignatureScript = _signatureScriptFactory.Create(CodeNamekeyPair.PublicKey);
-
-            var _accountCodeName = CreateAccount(codeNameSignatureScript, codeNamePrivateKey, walletPassword, _scrypt);
-            _accountCodeName.Label = "codename";
-            var _extraCodeName = new Extra
-            {
-                codename = codeName,
-                edi = edi
-            };
-            _accountCodeName.Extra = _extraCodeName;
-            accounts.Add(_accountCodeName);
-
-            //private
-            var privateKeyPair = _keyPairFactory.Create(_base16Encoder.Decode(privateKey));
-            //Get Bol Address
+            var privateKeyPair = privateKey == null
+                ? _keyPairFactory.Create()
+                : _keyPairFactory.Create(_base16Encoder.Decode(privateKey));
+            
+            var codeNameKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName)));
+            
             var bolAddress = await _addressService.GenerateAddressBAsync(codeName, privateKeyPair, token);
             var nonce = BitConverter.GetBytes(bolAddress.Nonce);
+            
+            var extendedKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce)));
+            
+            var mainScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedKeyPair.PublicKey }, 2);
+            var mainAccount = CreateAccount(walletPassword, "main", mainScript, multiSig: true);
+            mainAccount.IsDefault = true;
+            
+            var codeNameAccount = CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey);
+            codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
+            
+            var privateKeyAccount = CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey);
+            privateKeyAccount.Extra = new Extra { nonce = bolAddress.Nonce.ToString() };
+            
+            var blockchainAccount = CreateAccount(walletPassword, "blockchain");
+            var socialAccount = CreateAccount(walletPassword, "social");
+            var votingAccount = CreateAccount(walletPassword, "voting");
 
-            var extendedPrivateKey = _sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce));
-            var extendedKeyPair = _keyPairFactory.Create(extendedPrivateKey);
-            var extendedSignatureScript = _signatureScriptFactory.Create(extendedKeyPair.PublicKey);
+            var commercialAccounts = Enumerable.Range(0, 12)
+                .Select(_ => CreateAccount(walletPassword, "commercial"));
 
-            var _accountprivate = CreateAccount(extendedSignatureScript, extendedPrivateKey, walletPassword, _scrypt);
-            _accountprivate.Label = "private";
-            var _extraPrivate = new Extra
-            {
-                nonce = bolAddress.Nonce.ToString()
-            };
-            _accountprivate.Extra = _extraPrivate;
-            accounts.Add(_accountprivate);
-
-            //multisig
-            var multisigList = new[] { CodeNamekeyPair.PublicKey, extendedKeyPair.PublicKey };
-
-            var multisigSignatureScript = _signatureScriptFactory.Create(multisigList, 2);
-            var _accountMultisig = CreateAccount(multisigSignatureScript, null, walletPassword, _scrypt);
-            _accountMultisig.Label = "main";
-            _accountMultisig.IsDefault = true;
-            accounts.Add(_accountMultisig);
-
-            // blockchain
-            var blockchainkeyPair = _keyPairFactory.Create();
-            var blockchainSignatureScript = _signatureScriptFactory.Create(blockchainkeyPair.PublicKey);
-            var _accountBlockchain = CreateAccount(blockchainSignatureScript, blockchainkeyPair.PrivateKey, walletPassword, _scrypt);
-            _accountBlockchain.Label = "blockchain";
-            accounts.Add(_accountBlockchain);
-
-            // social
-            var socialkeyPair = _keyPairFactory.Create();
-            var socialSignatureScript = _signatureScriptFactory.Create(socialkeyPair.PublicKey);
-            var _accountSocial = CreateAccount(socialSignatureScript, socialkeyPair.PrivateKey, walletPassword, _scrypt);
-            _accountSocial.Label = "social";
-            accounts.Add(_accountSocial);
-
-            //commercial
-            for (var i = 0; i < 9; i++)
-            {
-                var commercialkeyPair = _keyPairFactory.Create();
-                var commercialSignatureScript = _signatureScriptFactory.Create(commercialkeyPair.PublicKey);
-                var _commercialSocial = CreateAccount(commercialSignatureScript, commercialkeyPair.PrivateKey, walletPassword, _scrypt);
-                _commercialSocial.Label = "commercial";
-                accounts.Add(_commercialSocial);
-            }
-
-            //Create Bol Wallet
             var bolWallet = new BolWallet
             {
                 Name = codeName,
                 Version = "1.0",
-                Scrypt = _scrypt,
-                accounts = accounts
+                Scrypt = s_defaultScript,
+                accounts = new[]
+                    {
+                        mainAccount, 
+                        codeNameAccount, 
+                        privateKeyAccount, 
+                        blockchainAccount, 
+                        socialAccount,
+                        votingAccount
+                    }
+                    .Concat(commercialAccounts)
+                    .ToArray()
             };
 
             return bolWallet;
         }
 
-        private Account CreateAccount(ISignatureScript signatureScript, byte[] privateKey, string password, SCrypt scrypt)
+        private Account CreateAccount(string password, string label, ISignatureScript signatureScript = null, byte[] privateKey = null, bool multiSig = false)
         {
-            var key = "";
-            var parametersList = new List<Parameters>();
-            if (privateKey == null) // multisig
-            {
-                key = null;
-                parametersList = new List<Parameters>() {
-                    new Parameters() { Type = "Signature", Name = "parameter0"} ,
-                     new Parameters() { Type = "Signature", Name = "parameter1"} ,
-                };
-            }
-            else  //all the others
-            {
-                key = _exportKeyFactory.Export(privateKey, signatureScript.ToScriptHash(), password, scrypt.N, scrypt.R, scrypt.P);
-                parametersList = new List<Parameters>() {
-                    new Parameters() { Type = "Signature", Name = "signature"} ,
-                };
-            }
-            var _contract = new Contract
+            var keyPair = privateKey == null 
+                ? _keyPairFactory.Create() 
+                : _keyPairFactory.Create(privateKey);
+            
+            signatureScript ??= _signatureScriptFactory.Create(keyPair.PublicKey);
+            
+            var encryptedKey = multiSig 
+                ? null 
+                : _exportKeyFactory.Export(keyPair.PrivateKey, signatureScript.ToScriptHash(), password, s_defaultScript.N, s_defaultScript.R, s_defaultScript.P);
+            
+            var contract = new Contract
             {
                 Script = signatureScript.ToHexString(),
-                Parameters = parametersList,
+                Parameters = AccountParameters(multiSig),
                 Deployed = false
             };
-            var _accounts = new Account
+            
+            var account = new Account
             {
                 Address = _addressTransformer.ToAddress(signatureScript.ToScriptHash()),
-                Label = "",
+                Label = label,
                 IsDefault = false,
                 Lock = false,
-                Key = key,
-                Contract = _contract,
+                Key = encryptedKey,
+                Contract = contract,
                 Extra = null
             };
-            return _accounts;
+            
+            return account;
+        }
+
+        private IEnumerable<Parameter> AccountParameters(bool multiSig)
+        {
+            return multiSig
+                ? new[]
+                {
+                    new Parameter() { Type = "Signature", Name = "parameter0" },
+                    new Parameter() { Type = "Signature", Name = "parameter1" },
+                }
+                : new[] { new Parameter() { Type = "Signature", Name = "signature" } };
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Bol.Coin.Persistence
         /// <summary>
         /// Key for setting or retrieving the required fee for Certifications.
         /// </summary>
-        public const byte CertificationFee = 0x05;
+        public const byte MaxCertificationFee = 0x05;
 
         /// <summary>
         /// Key for setting or retrieving the total number of registered people in BoL.
@@ -259,9 +259,9 @@ namespace Bol.Coin.Persistence
         /// Retrieves the required fee for BoL certifications.
         /// </summary>
         /// <returns></returns>
-        public static BigInteger GetCertificationFee()
+        public static BigInteger GetMaxCertificationFee()
         {
-            var key = KeyHelper.GenerateKey(CertificationFee);
+            var key = KeyHelper.GenerateKey(MaxCertificationFee);
             return BolStorage.GetAsBigInteger(key);
         }
 
@@ -269,9 +269,9 @@ namespace Bol.Coin.Persistence
         /// Sets the required fee for BoL certifications.
         /// </summary>
         /// <param name="fee"></param>
-        public static void SetCertificationFee(BigInteger fee)
+        public static void SetMaxCertificationFee(BigInteger fee)
         {
-            var key = KeyHelper.GenerateKey(CertificationFee);
+            var key = KeyHelper.GenerateKey(MaxCertificationFee);
             BolStorage.Put(key, fee);
         }
 

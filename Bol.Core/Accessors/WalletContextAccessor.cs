@@ -6,7 +6,6 @@ using Bol.Address;
 using Bol.Address.Abstractions;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
-using Bol.Core.Model.Wallet;
 using Bol.Cryptography;
 using Microsoft.Extensions.Options;
 

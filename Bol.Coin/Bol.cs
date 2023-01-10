@@ -85,15 +85,16 @@ namespace Neo.SmartContract
                 }
                 if (operation == "registerCertifier")
                 {
-                    if (args.Length != 2)
+                    if (args.Length != 3)
                     {
                         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
                         return false;
                     }
                     var codeName = (byte[])args[0];
                     var countries = (byte[])args[1];
+                    var fee = (BigInteger)args[2];
 
-                    return BolService.RegisterAsCertifier(codeName, countries);
+                    return BolService.RegisterAsCertifier(codeName, countries, fee);
                 }
                 if (operation == "unregisterCertifier")
                 {
@@ -114,9 +115,9 @@ namespace Neo.SmartContract
                         return false;
                     }
                     var certifier = (byte[])args[0];
-                    var address = (byte[])args[1];
+                    var receiver = (byte[])args[1];
 
-                    return BolService.Certify(certifier, address);
+                    return BolService.Certify(certifier, receiver);
                 }
                 if (operation == "unCertify")
                 {
@@ -126,9 +127,9 @@ namespace Neo.SmartContract
                         return false;
                     }
                     var certifier = (byte[])args[0];
-                    var address = (byte[])args[1];
+                    var receiver = (byte[])args[1];
 
-                    return BolService.UnCertify(certifier, address);
+                    return BolService.UnCertify(certifier, receiver);
                 }
                 if (operation == "claim")
                 {
@@ -191,6 +192,37 @@ namespace Neo.SmartContract
                     }
                     var mainAddress = (byte[])args[0];
                     return BolService.IsWhitelisted(mainAddress);
+                }
+                if (operation == "selectMandatoryCertifiers")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    return BolService.SelectMandatoryCertifiers(codeName);
+                }
+                if (operation == "payCertificationFees")
+                {
+                    if (args.Length != 1)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    return BolService.PayCertificationFees(codeName);
+                }
+                if (operation == "requestCertification")
+                {
+                    if (args.Length != 2)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var codeName = (byte[])args[0];
+                    var certifierCodeName = (byte[])args[1];
+                    return BolService.RequestCertification(codeName, certifierCodeName);
                 }
             }
             return false;

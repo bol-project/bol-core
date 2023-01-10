@@ -14,35 +14,9 @@ using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests;
 
-public class WhitelistTests
+public class WhitelistTests : TestBase
 {
-        private readonly Emulator _emulator;
-        private readonly BolService _service;
-        private readonly TransactionGrabber _transactionGrabber;
-        private readonly AddressTransformer _addressTransformer;
-        private readonly BolService _validatorService;
-        private string _notifyOutput;
-
-        public WhitelistTests()
-        {
-            _emulator = EmulatorUtils.Create((string notifyOutput) =>
-            {
-                _notifyOutput = notifyOutput;
-                Console.WriteLine(notifyOutput);
-            });
-            _transactionGrabber = new TransactionGrabber();
-            
-            var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
-            var sha256 = new Sha256Hasher();
-            _addressTransformer = new AddressTransformer(new Base58Encoder(sha256), new Base16Encoder(sha256), protocolConfig);
-            
-            _service = BolServiceFactory.Create(_transactionGrabber);
-
-            var blockchainValidatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1985MP<LsDDs8n8snS5BCA", "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
-            _validatorService = BolServiceFactory.Create(_transactionGrabber, blockchainValidatorContext);
-        }
-
-        [Fact]
+    [Fact]
         public async Task IsWhiteListed_ShouldReturnTrue_WhenAddressIsWhitelisted()
         {
             await _service.Deploy();

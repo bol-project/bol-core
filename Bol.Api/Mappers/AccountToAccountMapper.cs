@@ -41,8 +41,14 @@ namespace Bol.Api.Mappers
                 LastClaimHeight = int.Parse(account.LastClaimHeight),
                 IsCertifier = account.IsCertifier == "1",
                 Collateral = ConvertToDecimal(account.Collateral),
+                CertificationFee = ConvertToDecimal(account.CertificationFee),
+                Countries = account.Countries,
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
-                MandatoryCertifier = Encoding.ASCII.GetString(_hex.Decode(account.MandatoryCertifier))
+                Certifiers = account.Certifiers,
+                MandatoryCertifiers = account.MandatoryCertifiers,
+                CertificationRequests = account.CertificationRequests,
+                LastCertificationHeight = int.Parse(account.LastCertificationHeight),
+                LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight)
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;
