@@ -54,6 +54,11 @@ public abstract class TestBase
         var mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
             
         _emulator.blockchain.AddMockBlocks(1);
+
+        await _service.RequestCertification(mandatoryCertifier);
+        _emulator.Execute(_transactionGrabber);
+        
+        _emulator.blockchain.AddMockBlocks(1);
             
         await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
         _emulator.Execute(_transactionGrabber);
@@ -68,6 +73,11 @@ public abstract class TestBase
         mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
         mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
             
+        _emulator.blockchain.AddMockBlocks(1);
+
+        await _service.RequestCertification(mandatoryCertifier);
+        _emulator.Execute(_transactionGrabber);
+        
         _emulator.blockchain.AddMockBlocks(1);
             
         await mandatoryCertifierService.Certify("P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA");
