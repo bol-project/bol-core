@@ -30,7 +30,7 @@ public static class BolServiceValidationHelper
 
         if (EdiIsEmpty(edi)) return false;
 
-        if (EdiHasBadLenght(edi)) return false;
+        if (EdiHasBadLength(edi)) return false;
 
         if (BlockChainAddressIsEmpty(blockChainAddress)) return false;
 
@@ -214,6 +214,12 @@ public static class BolServiceValidationHelper
         if (!receiver.MandatoryCertifiers.HasKey(certifier.CodeName))
         {
             Runtime.Notify("error", BolResult.BadRequest("Certifier has not been selected for certification receiver."));
+            return false;
+        }
+
+        if (!receiver.CertificationRequests.HasKey(certifier.CodeName))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certification has not been requested from Certifier."));
             return false;
         }
 
@@ -534,7 +540,7 @@ public static class BolServiceValidationHelper
         return false;
     }
 
-    public static bool EdiHasBadLenght(byte[] edi)
+    public static bool EdiHasBadLength(byte[] edi)
     {
         if (BolValidator.EdiBadLength(edi))
         {
