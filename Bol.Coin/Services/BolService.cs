@@ -511,14 +511,6 @@ namespace Bol.Coin.Services
 
             var bolAccount = BolRepository.GetAccount(codeName);
 
-            if (bolAccount.AccountStatus == Constants.AccountStatusPendingFees)
-            {
-                PayCertificationFees(bolAccount);
-                
-                //refresh account data after fee payment
-                bolAccount = BolRepository.GetAccount(codeName);
-            }
-
             if (!BolServiceValidationHelper.IsClaimValid(bolAccount)) return false;
 
             var previousHeight = (uint)bolAccount.LastClaimHeight;
@@ -730,6 +722,39 @@ namespace Bol.Coin.Services
             return true;
         }
 
+        public static bool PayCertificationFees(byte[] codeName)
+        {
+            if (!BolServiceValidationHelper.IsPayCertificationFeesInputValid(codeName)) return false;
+
+            var account = BolRepository.GetAccount(codeName);
+
+            if (!BolServiceValidationHelper.IsPayCertificationFeesValid(account)) return false;
+            
+            foreach (var certifier in account.Certifiers.Keys)
+            {
+                var certifierAccount = BolRepository.GetAccount(certifier);
+                var certificationFee = certifierAccount.CertificationFee;
+                var certifierPaymentAddress = certifierAccount.CommercialAddresses.Keys[0];
+                var paymentAddressBalance = certifierAccount.CommercialAddresses[certifierPaymentAddress];
+                
+                certifierAccount.CommercialAddresses[certifierPaymentAddress] = paymentAddressBalance + certificationFee;
+                account.ClaimBalance -= certificationFee;
+                
+                BolRepository.SaveAccount(certifierAccount);
+                BolRepository.SaveAccount(account);
+                
+                Transferred(account.MainAddress, certifierPaymentAddress , certificationFee);
+            }
+            
+            account.AccountStatus = Constants.AccountStatusOpen;
+            BolRepository.SaveAccount(account);
+            
+            account = BolRepository.GetAccount(codeName);
+            Runtime.Notify("payCertificationFees", BolResult.Ok(account));
+
+            return true;
+        }
+
         private static void DistributeFees()
         {
             var fees = BolRepository.GetFeeBucket();
@@ -751,26 +776,6 @@ namespace Bol.Coin.Services
             }
                 
             BolRepository.SetFeeBucket(fees);
-        }
-
-        private static void PayCertificationFees(BolAccount account)
-        {
-            foreach (var certifier in account.Certifiers.Keys)
-            {
-                var certifierAccount = BolRepository.GetAccount(certifier);
-                var certificationFee = certifierAccount.CertificationFee;
-                var certifierPaymentAddress = certifierAccount.CommercialAddresses.Keys[0];
-                var paymentAddressBalance = certifierAccount.CommercialAddresses[certifierPaymentAddress];
-                certifierAccount.CommercialAddresses[certifierPaymentAddress] = paymentAddressBalance + certificationFee;
-
-                account.ClaimBalance -= certificationFee;
-                
-                BolRepository.SaveAccount(certifierAccount);
-                BolRepository.SaveAccount(account);
-            }
-            account.AccountStatus = Constants.AccountStatusOpen;
-            
-            BolRepository.SaveAccount(account);
         }
     }
 }

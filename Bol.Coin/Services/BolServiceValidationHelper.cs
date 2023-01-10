@@ -360,6 +360,34 @@ public static class BolServiceValidationHelper
         return true;
     }
 
+    public static bool IsPayCertificationFeesInputValid(byte[] codeName)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        return true;
+    }
+
+    public static bool IsPayCertificationFeesValid(BolAccount account)
+    {
+        if (AccountNotExists(account)) return false;
+
+        if (IsNotAddressOwner(account.MainAddress)) return false;
+
+        if (account.AccountStatus != Constants.AccountStatusPendingFees)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Certification fees can only be paid in Pending Fees account status."));
+            return false;
+        }
+
+        if (account.Certifiers.Keys.Length < 2)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("At least 2 certifications are needed in order to pay fees."));
+            return false;
+        }
+        
+        return true;
+    }
+
     public static bool AccountNotExists(BolAccount account, string message = CodeNameNotRegistered)
     {
         if (account.CodeName == null || account.CodeName.Length == 0)
