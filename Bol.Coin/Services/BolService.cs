@@ -247,40 +247,12 @@ namespace Bol.Coin.Services
 
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
-            if (!BolServiceValidationHelper.CanTransferClaimInitialValidation(codeName, address, value))
-            {
-                return false;
-            }
+            if (!BolServiceValidationHelper.IsTransferClaimInputValid(codeName, address, value)) return false;
 
             var claimTransferFee = BolRepository.GetOperationsFee();
-            if (value <= claimTransferFee)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
-                return false;   
-            }
             var account = BolRepository.GetAccount(codeName);
             
-            if (!BolServiceValidationHelper.CanTransferClaimFinalValidation(value, claimTransferFee, account))
-            {
-                return false;
-            }
-
-            var commercialAddresses = account.CommercialAddresses.Keys;
-            var addressExists = false;
-            for (int i = 0; i < commercialAddresses.Length; i++)
-            {
-                if (ArraysHelper.ArraysEqual(address, commercialAddresses[i]))
-                {
-                    addressExists = true;
-                    break;
-                }
-            }
-
-            if (!addressExists)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Commercial Address does not belong to Account."));
-                return false;
-            }
+            if (!BolServiceValidationHelper.IsTransferClaimValid(value, claimTransferFee, account, address)) return false;
 
             var addressBalance = account.CommercialAddresses[address];
             var feeBucketAmount = BolRepository.GetFeeBucket();
@@ -300,74 +272,38 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool Transfer(byte[] from, byte[] senderCodeName, byte[] to, byte[] targetCodeName, BigInteger value)
+        public static bool Transfer(byte[] senderAddress, byte[] senderCodeName, byte[] targetAddress, byte[] targetCodeName, BigInteger value)
         {
-            if (!BolServiceValidationHelper.CanTransferInitialValidation(from, to, targetCodeName, value))
-            {
+            if (!BolServiceValidationHelper.IsTransferInputValid(senderCodeName, senderAddress, targetCodeName, targetAddress, value))
                 return false;
-            }
 
             var transferFee = BolRepository.GetTransferFee();
-            if (value <= transferFee)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("The amount to be transferred cannot cover the fee."));
-                return false;
-            }
-            
+
             var targetAccount = BolRepository.GetAccount( targetCodeName);
-            if (targetAccount == null || targetAccount.CodeName == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
-                return false;
-            }
-
-            var targetCommercialAddresses = targetAccount.CommercialAddresses.Keys;
-            var addressExists = false;
-            for (int i = 0; i < targetCommercialAddresses.Length; i++)
-            {
-                if (ArraysHelper.ArraysEqual(to, targetCommercialAddresses[i]))
-                {
-                    addressExists = true;
-                    break;
-                }
-            }
-
-            if (!addressExists)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Target Address does not belong to Target Account."));
-                return false;
-            }
 
             var senderAccount = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName) 
                 ? targetAccount
                 : BolRepository.GetAccount(senderCodeName);
-            if (senderAccount == null || senderAccount.CodeName == null)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Sender Account is not a registered Bol Account."));
+
+            if (!BolServiceValidationHelper.IsTransferValid(value, transferFee, senderAccount, senderAddress,
+                    targetAccount, targetAddress))
                 return false;
-            }
 
-            var fromBalance = senderAccount.CommercialAddresses[from];
+            var fromBalance = senderAccount.CommercialAddresses[senderAddress];
 
-            if (fromBalance < value + transferFee)
-            {
-                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that address balance."));
-                return false;
-            }
-
-            var toBalance = targetAccount.CommercialAddresses[to];
+            var toBalance = targetAccount.CommercialAddresses[targetAddress];
             var feeBucketAmount = BolRepository.GetFeeBucket();
 
-            senderAccount.CommercialAddresses[from] = fromBalance - value - transferFee;
-            targetAccount.CommercialAddresses[to] = toBalance + value;
+            senderAccount.CommercialAddresses[senderAddress] = fromBalance - value - transferFee;
+            targetAccount.CommercialAddresses[targetAddress] = toBalance + value;
             BolRepository.SaveAccount(senderAccount);
             BolRepository.SaveAccount(targetAccount);
             BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
             
-            Transferred(from, to, value);
-            Transferred(from, Constants.Owner, transferFee);
+            Transferred(senderAddress, targetAddress, value);
+            Transferred(senderAddress, Constants.Owner, transferFee);
 
-            var result = BolRepository.GetAccount( targetCodeName);
+            var result = BolRepository.GetAccount(senderCodeName);
 
             Runtime.Notify("transfer", BolResult.Ok(result));
             

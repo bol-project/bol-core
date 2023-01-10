@@ -1,4 +1,5 @@
 using System.Numerics;
+using Bol.Coin.Helpers;
 using Bol.Coin.Models;
 using Bol.Coin.Validators;
 using Neo.SmartContract.Framework.Services.Neo;
@@ -59,7 +60,7 @@ public static class BolServiceValidationHelper
         return true;
     }
 
-    public static bool CanTransferClaimInitialValidation(byte[] codeName, byte[] address, BigInteger value)
+    public static bool IsTransferClaimInputValid(byte[] codeName, byte[] address, BigInteger value)
     {
         if (CodeNameIsEmpty(codeName)) return false;
 
@@ -72,14 +73,11 @@ public static class BolServiceValidationHelper
         return true;
     }
 
-    public static bool CanTransferClaimFinalValidation(BigInteger value, BigInteger claimTransferFee, BolAccount account)
+    public static bool IsTransferClaimValid(BigInteger value, BigInteger claimTransferFee, BolAccount account, byte[] address)
     {
-        if (account.MainAddress == null)
-        {
-            // TODO: consider unifying this with "Code Name is not a registerd Bol Account."
-            Runtime.Notify("error", BolResult.BadRequest("Target Account is not a registered Bol Account."));
-            return false;
-        }
+        if (AccountNotExists(account, "Target Account is not a registered Bol Account.")) return false;
+        
+        if (AccountNotOpen(account)) return false;
 
         if (BolValidator.AddressNotOwner(account.MainAddress))
         {
@@ -93,24 +91,51 @@ public static class BolServiceValidationHelper
             return false;
         }
 
+        if (CommercialAddressNotPresent(account, address)) return false;
+
         return true;
     }
     
-    public static bool CanTransferInitialValidation(byte[] from, byte[] to, byte[] targetCodeName, BigInteger value)
+    public static bool IsTransferInputValid(byte[] senderCodeName, byte[] senderAddress, byte[] targetCodeName, byte[] targetAddress, BigInteger value)
     {
-        if (AddressIsEmpty(from, "From Address cannot be empty.")) return false;
+        if (AddressIsEmpty(senderAddress, "Sender Address cannot be empty.")) return false;
 
-        if (AddressHasBadLength(from, "From Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(senderAddress, "Sender Address length must be 20 bytes.")) return false;
 
-        if (AddressIsEmpty(to, "To Address cannot be empty.")) return false;
+        if (AddressIsEmpty(targetAddress, "Target Address cannot be empty.")) return false;
 
-        if (AddressHasBadLength(to, "To Address length must be 20 bytes.")) return false;
+        if (AddressHasBadLength(targetAddress, "Target Address length must be 20 bytes.")) return false;
+        
+        if (CodeNameIsEmpty(senderCodeName, "Sender CodeName cannot be empty.")) return false;
 
         if (CodeNameIsEmpty(targetCodeName, "Target CodeName cannot be empty.")) return false;
         
-        if (IsNotAddressOwner(from)) return false;
+        if (IsNotAddressOwner(senderAddress)) return false;
         
         if (IsNotPositiveTransferValue(value)) return false;
+
+        return true;
+    }
+
+    public static bool IsTransferValid(BigInteger value, BigInteger transferFee, BolAccount senderAccount, byte[] senderAddress, BolAccount targetAccount, byte[] targetAddress)
+    {
+        if (AccountNotExists(senderAccount, "Sender Account is not a registered Bol Account.")) return false;
+        
+        if (AccountNotExists(targetAccount, "Target Account is not a registered Bol Account.")) return false;
+        
+        if (AccountNotOpen(senderAccount)) return false;
+
+        if (CommercialAddressNotPresent(senderAccount, senderAddress)) return false;
+
+        if (CommercialAddressNotPresent(targetAccount, targetAddress)) return false;
+        
+        var fromBalance = senderAccount.CommercialAddresses[senderAddress];
+
+        if (fromBalance < value + transferFee)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that address balance."));
+            return false;
+        }
 
         return true;
     }
@@ -128,6 +153,8 @@ public static class BolServiceValidationHelper
 
     public static bool IsWhiteListValid(BolAccount account)
     {
+        if (AccountNotOpen(account)) return false;
+        
         if (account.CodeName == null || account.CodeName.Length == 0)
         {
             Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
@@ -163,6 +190,8 @@ public static class BolServiceValidationHelper
         if (AccountNotExists(certifier, "Certifier is not a registered Bol Account.")) return false;
 
         if (AccountNotExists(receiver, "Certification receiver is not a registered Bol Account.")) return false;
+
+        if (AccountNotOpen(certifier)) return false;
 
         if (certifier.IsCertifier != 1)
         {
@@ -203,6 +232,8 @@ public static class BolServiceValidationHelper
 
         if (AccountNotExists(receiver, "Certification receiver is not a registered Bol Account.")) return false;
 
+        if (AccountNotOpen(certifier)) return false;
+
         if (certifier.IsCertifier != 1)
         {
             Runtime.Notify("error", BolResult.BadRequest("Certifier is not a registered Bol Certifier."));
@@ -235,18 +266,13 @@ public static class BolServiceValidationHelper
     {
         if (AccountNotExists(account)) return false;
 
+        if (AccountNotOpen(account)) return false;
+
         if (IsNotAddressOwner(account.MainAddress)) return false;
-        
-        
+
         if (account.AccountType != Constants.AccountTypeB)
         {
             Runtime.Notify("error", BolResult.Forbidden("You need to be a physical Person in order to Claim Bol."));
-            return false;
-        } 
-        
-        if (account.AccountStatus != Constants.AccountStatusOpen)
-        {
-            Runtime.Notify("error", BolResult.Forbidden("Bol Account has not been certified by a mandatory Bol Certifier."));
             return false;
         }
 
@@ -393,6 +419,39 @@ public static class BolServiceValidationHelper
         if (account.CodeName == null || account.CodeName.Length == 0)
         {
             Runtime.Notify("error", BolResult.BadRequest(message));
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool AccountNotOpen(BolAccount account, string message = "Bol Account is not in Open status.")
+    {
+        if (account.AccountStatus != Constants.AccountStatusOpen)
+        {
+            Runtime.Notify("error", BolResult.Forbidden(message));
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool CommercialAddressNotPresent(BolAccount account, byte[] address)
+    {
+        var commercialAddresses = account.CommercialAddresses.Keys;
+        var addressExists = false;
+        foreach (var commercial in commercialAddresses)
+        {
+            if (ArraysHelper.ArraysEqual(address, commercial))
+            {
+                addressExists = true;
+                break;
+            }
+        }
+
+        if (!addressExists)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Commercial Address does not belong to Account."));
             return true;
         }
 
