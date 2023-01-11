@@ -106,6 +106,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("certify")]
+        public async Task<ActionResult> Certify(string codeName, CancellationToken token)
+        {
+            var result = await _coreBolService.Certify(codeName, token);
+            return Ok(result);
+        }
+
         [HttpGet("whitelist")]
         public async Task<ActionResult> IsWhitelisted(string address, CancellationToken token)
         {
