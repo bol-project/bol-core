@@ -41,14 +41,14 @@ namespace Bol.Api.Mappers
                 LastClaimHeight = int.Parse(account.LastClaimHeight),
                 IsCertifier = account.IsCertifier == "1",
                 Collateral = ConvertToDecimal(account.Collateral),
-                CertificationFee = ConvertToDecimal(account.CertificationFee),
-                Countries = account.Countries,
+                CertificationFee = ConvertToDecimal(HexToNumber(account.CertificationFee)),
+                Countries = Encoding.ASCII.GetString(_hex.Decode(account.Countries)),
                 Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
-                Certifiers = account.Certifiers,
-                MandatoryCertifiers = account.MandatoryCertifiers,
-                CertificationRequests = account.CertificationRequests,
+                Certifiers = account.Certifiers.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
+                MandatoryCertifiers = account.MandatoryCertifiers.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
+                CertificationRequests = account.CertificationRequests.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
                 LastCertificationHeight = int.Parse(account.LastCertificationHeight),
-                LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight)
+                LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight),
                 LastClaim = ConvertToDecimal(account.LastClaim)
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
