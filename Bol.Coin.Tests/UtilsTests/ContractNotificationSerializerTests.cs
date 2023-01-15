@@ -62,5 +62,6 @@ public class ContractNotificationSerializerTests
         account.LastClaimHeight.Should().Be(10);
         account.LastCertifierSelectionHeight.Should().Be(13);
         account.LastCertificationHeight.Should().Be(12);
+        account.LastClaim.Should().Be("1000");
     }
 }

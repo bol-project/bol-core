@@ -32,6 +32,7 @@ namespace Bol.Core.Model
 
         public int RegistrationHeight { get; set; }
         public int LastClaimHeight { get; set; }
+        public string LastClaim { get; set; }
     }
 
     public enum AccountStatus

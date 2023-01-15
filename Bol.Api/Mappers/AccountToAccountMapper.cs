@@ -49,6 +49,7 @@ namespace Bol.Api.Mappers
                 CertificationRequests = account.CertificationRequests,
                 LastCertificationHeight = int.Parse(account.LastCertificationHeight),
                 LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight)
+                LastClaim = ConvertToDecimal(account.LastClaim)
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;

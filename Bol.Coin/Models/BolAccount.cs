@@ -37,5 +37,6 @@ namespace Bol.Coin.Models
 
         public BigInteger RegistrationHeight;
         public BigInteger LastClaimHeight;
+        public BigInteger LastClaim;
     }
 }

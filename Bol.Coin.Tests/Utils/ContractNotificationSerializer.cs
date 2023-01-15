@@ -52,7 +52,8 @@ public static class ContractNotificationSerializer
                 CertificationFee = accountParts[19] is ("Null" or "False") ? null : accountParts[19],
                 Countries = accountParts[20] == "Null" ? null : accountParts[20],
                 RegistrationHeight = int.Parse(accountParts[21]),
-                LastClaimHeight = int.Parse(accountParts[22])
+                LastClaimHeight = int.Parse(accountParts[22]),
+                LastClaim = accountParts[23]
             }
         };
 

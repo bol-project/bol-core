@@ -34,5 +34,6 @@ namespace Bol.Api.Model
 
         public string RegistrationHeight { get; set; }
         public string LastClaimHeight { get; set; }
+        public string LastClaim { get; set; }
     }
 }
