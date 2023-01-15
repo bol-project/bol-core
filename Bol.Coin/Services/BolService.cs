@@ -546,6 +546,7 @@ namespace Bol.Coin.Services
             
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
+            bolAccount.LastClaim = cpp;
 
             BolRepository.SaveAccount(bolAccount);
 
