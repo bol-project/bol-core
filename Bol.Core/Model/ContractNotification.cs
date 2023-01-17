@@ -1,6 +1,4 @@
-using Bol.Core.Model;
-
-namespace Bol.Coin.Tests.Utils;
+namespace Bol.Core.Model;
 
 /// <summary>
 /// This is the structure of every contract notification after each operation.
