@@ -22,34 +22,53 @@ namespace Bol.Api.Mappers
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
-        public BolAccount Map(Bol.Api.Model.BolAccount account)
+        public BolAccount Map(BolAccount account)
         {
             var bolAccount = new BolAccount
             {
-                AccountStatus = (AccountStatus)int.Parse(account.AccountStatus),
-                AccountType = (AccountType)int.Parse(account.AccountType),
+                AccountStatus = account.AccountStatus,
+                AccountType = account.AccountType,
                 CodeName = Encoding.ASCII.GetString(_hex.Decode(account.CodeName)),
                 Edi = account.Edi,
                 MainAddress = ConvertToAddress(account.MainAddress),
                 BlockChainAddress = ConvertToAddress(account.BlockChainAddress),
                 SocialAddress = ConvertToAddress(account.SocialAddress),
                 VotingAddress = ConvertToAddress(account.VotingAddress),
-                CommercialAddresses = new HashSet<string>(account.CommercialAddresses.Keys.Select(ConvertToAddress)),
-                CommercialBalances = account.CommercialAddresses.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(pair.Value)),
+                CommercialAddresses = new HashSet<string>(account.CommercialAddresses.Select(ConvertToAddress)),
+                CommercialBalances = account.CommercialBalances.ToDictionary(pair => ConvertToAddress(pair.Key), pair => ConvertToDecimal(pair.Value)),
                 ClaimBalance = ConvertToDecimal(account.ClaimBalance),
-                RegistrationHeight = int.Parse(account.RegistrationHeight),
-                LastClaimHeight = int.Parse(account.LastClaimHeight),
-                IsCertifier = account.IsCertifier == "1",
+                RegistrationHeight = account.RegistrationHeight,
+                LastClaimHeight = account.LastClaimHeight,
+                IsCertifier = account.IsCertifier,
                 Collateral = ConvertToDecimal(account.Collateral),
                 CertificationFee = ConvertToDecimal(HexToNumber(account.CertificationFee)),
                 Countries = Encoding.ASCII.GetString(_hex.Decode(account.Countries)),
-                Certifications = string.IsNullOrWhiteSpace(account.Certifications) ? 0 : int.Parse(account.Certifications),
+                Certifications = account.Certifications,
                 Certifiers = account.Certifiers.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
                 MandatoryCertifiers = account.MandatoryCertifiers.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
                 CertificationRequests = account.CertificationRequests.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
-                LastCertificationHeight = int.Parse(account.LastCertificationHeight),
-                LastCertifierSelectionHeight = int.Parse(account.LastCertifierSelectionHeight),
-                LastClaim = ConvertToDecimal(account.LastClaim)
+                LastCertificationHeight = account.LastCertificationHeight,
+                LastCertifierSelectionHeight = account.LastCertifierSelectionHeight,
+                LastClaim = ConvertToDecimal(account.LastClaim),
+                TransactionsCount = account.TransactionsCount,
+                Transactions = account.Transactions.ToDictionary(pair => pair.Key, pair => new BolTransactionEntry
+                {
+                    TransactionHash = pair.Value.TransactionHash,
+                    TransactionType = pair.Value.TransactionType,
+                    SenderCodeName = !string.IsNullOrWhiteSpace(pair.Value.SenderCodeName) 
+                        ? Encoding.ASCII.GetString(_hex.Decode(pair.Value.SenderCodeName))
+                        : null,
+                    SenderAddress = !string.IsNullOrWhiteSpace(pair.Value.SenderAddress)
+                        ? ConvertToAddress(pair.Value.SenderAddress)
+                        : null,
+                    ReceiverCodeName = !string.IsNullOrWhiteSpace(pair.Value.ReceiverCodeName)
+                        ? Encoding.ASCII.GetString(_hex.Decode(pair.Value.ReceiverCodeName))
+                        : null,
+                    ReceiverAddress = !string.IsNullOrWhiteSpace(pair.Value.ReceiverAddress)
+                        ? ConvertToAddress(pair.Value.ReceiverAddress)
+                        : null,
+                    Amount = ConvertToDecimal(pair.Value.Amount)
+                })
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
             return bolAccount;
@@ -82,6 +101,6 @@ namespace Bol.Api.Mappers
 
     public interface IAccountToAccountMapper
     {
-        BolAccount Map(Bol.Api.Model.BolAccount account);
+        BolAccount Map(BolAccount account);
     }
 }
