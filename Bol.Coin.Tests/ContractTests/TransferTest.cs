@@ -1,15 +1,7 @@
-using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Bol.Address;
-using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
-using Bol.Core.Services;
-using Bol.Cryptography.Encoders;
-using Bol.Cryptography.Hashers;
-using Bol.Cryptography.Neo.Encoders;
-using Microsoft.Extensions.Options;
-using Neo.Emulation;
+using Bol.Core.Helpers;
 using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests;
@@ -55,6 +47,8 @@ public class TransferTest : TestBase
             "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
             BigInteger.Parse("10000000"));
         var result = _emulator.Execute(_transactionGrabber);
+
+        var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
         Assert.True(result);
     }
