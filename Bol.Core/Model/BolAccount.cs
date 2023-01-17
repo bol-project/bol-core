@@ -33,6 +33,19 @@ namespace Bol.Core.Model
         public int RegistrationHeight { get; set; }
         public int LastClaimHeight { get; set; }
         public string LastClaim { get; set; }
+        public int TransactionsCount { get; set; }
+        public Dictionary<string,BolTransactionEntry> Transactions { get; set; }
+    }
+
+    public class BolTransactionEntry
+    {
+        public string TransactionHash { get; set; }
+        public BolTransactionType TransactionType { get; set; }
+        public string SenderCodeName { get; set; }
+        public string SenderAddress { get; set; }
+        public string ReceiverCodeName { get; set; }
+        public string ReceiverAddress { get; set; }
+        public string Amount { get; set; }
     }
 
     public enum AccountStatus
@@ -47,5 +60,13 @@ namespace Bol.Core.Model
     {
         Birth = 1,
         Company = 2
+    }
+
+    public enum BolTransactionType
+    {
+        Claim = 1,
+        ClaimTransfer = 2,
+        Transfer = 3,
+        Fees = 4
     }
 }

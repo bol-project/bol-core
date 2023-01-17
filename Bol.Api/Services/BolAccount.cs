@@ -35,5 +35,18 @@ namespace Bol.Api.Model
         public string RegistrationHeight { get; set; }
         public string LastClaimHeight { get; set; }
         public string LastClaim { get; set; }
+        public string TransactionsCount { get; set; }
+        public Dictionary<string,BolTransactionEntry> Transactions { get; set; }
+    }
+
+    public class BolTransactionEntry
+    {
+        public string TransactionHash { get; set; }
+        public string TransactionType { get; set; }
+        public string SenderCodeName { get; set; }
+        public string SenderAddress { get; set; }
+        public string ReceiverCodeName { get; set; }
+        public string ReceiverAddress { get; set; }
+        public string Amount { get; set; }
     }
 }
