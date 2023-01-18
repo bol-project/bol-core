@@ -710,6 +710,11 @@ namespace Bol.Coin.Services
                 
                 certifierAccount.CommercialAddresses[certifierPaymentAddress] = paymentAddressBalance + certificationFee;
                 account.ClaimBalance -= certificationFee;
+
+                AddTransactionEntry(account, Constants.TransactionTypeTransfer, account.CodeName, account.MainAddress,
+                    certifierAccount.CodeName, certifierPaymentAddress, certificationFee);
+                AddTransactionEntry(certifierAccount, Constants.TransactionTypeTransfer, account.CodeName, account.MainAddress,
+                    certifierAccount.CodeName, certifierPaymentAddress, certificationFee);
                 
                 BolRepository.SaveAccount(certifierAccount);
                 BolRepository.SaveAccount(account);
