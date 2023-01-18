@@ -20,6 +20,11 @@ public static class ContractNotificationSerializer
 
         var accountParts = (result[1] as List<object>)[2] as List<object>;
 
+        if (accountParts == null)
+        {
+            return new ContractNotification { Operation = result[0].ToString(), Message = (result[1] as List<object>)[1].ToString()};
+        }
+
         var notification = new ContractNotification
         {
             Operation = result[0].ToString(),
