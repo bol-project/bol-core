@@ -652,6 +652,11 @@ namespace Bol.Coin.Services
                 
                 allCertifiers[certifier] = true;
             }
+
+            if (allCertifiers.HasKey(account.CodeName))
+            {
+                allCertifiers.Remove(account.CodeName);
+            }
             
             if (allCertifiers.Keys.Length < 3) 
             {
