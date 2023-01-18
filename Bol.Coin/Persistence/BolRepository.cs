@@ -85,6 +85,11 @@ namespace Bol.Coin.Persistence
         /// Key for setting or retrieving the total supply of BoL coins at block.
         /// </summary>
         public const byte TotalSupply = 0xB8;
+        
+        /// <summary>
+        /// Key for setting or retrieving the number of new BoL coins at block.
+        /// </summary>
+        public const byte NewBol = 0xB9;
 
         /// <summary>
         /// Key for setting or retrieving the fee to be subtracted from transfer transactions.
@@ -232,6 +237,30 @@ namespace Bol.Coin.Persistence
         public static BigInteger GetRegisteredAtBlock(BigInteger blockHeight)
         {
             var key = KeyHelper.GenerateKey(TotalRegisteredPersons, blockHeight);
+            return BolStorage.GetAsBigInteger(key);
+        }
+
+        /// <summary>
+        /// Sets the number of new Bol coins produced at a specific block.
+        /// Only exists at Interval blocks.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <param name="bol"></param>
+        public static void SetNewBolAtBlock(BigInteger blockHeight, BigInteger bol)
+        {
+            var key = KeyHelper.GenerateKey(NewBol, blockHeight);
+            BolStorage.Put(key, bol);
+        }
+
+        /// <summary>
+        /// Retrieves the total number of new Bol coins produced at a specific block.
+        /// Only exists at Interval blocks.
+        /// </summary>
+        /// <param name="blockHeight"></param>
+        /// <returns></returns>
+        public static BigInteger GetNewBolAtBlock(BigInteger blockHeight)
+        {
+            var key = KeyHelper.GenerateKey(NewBol, blockHeight);
             return BolStorage.GetAsBigInteger(key);
         }
 

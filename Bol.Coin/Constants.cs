@@ -35,6 +35,13 @@ namespace Bol.Coin
         /// </summary>
         public const byte AccountTypeC = 0x02;
 
+        public const byte TransactionTypeClaim = 0x01;
+        public const byte TransactionTypeClaimTransfer = 0x02;
+        public const byte TransactionTypeTransfer = 0x03;
+        public const byte TransactionTypeFees = 0x04;
+
+        public const int TransactionCountLimit = 50;
+
         /// <summary>
         /// Start of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
         /// </summary>

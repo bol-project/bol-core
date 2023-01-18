@@ -7,6 +7,7 @@ using Neo.SmartContract.Framework.Services.Neo;
 using System;
 using System.ComponentModel;
 using System.Numerics;
+using Neo.SmartContract.Framework.Services.System;
 
 namespace Bol.Coin.Services
 {
@@ -109,7 +110,11 @@ namespace Bol.Coin.Services
             account.LastCertificationHeight = 1;
             account.LastCertifierSelectionHeight = currentHeight + 1;
             account.Countries = new byte[0];
-
+            account.LastClaim = 0;
+            account.Transactions = new Map<int, BolTransactionEntry>();
+            account.TransactionsCount = 0;
+            
+            AddTransactionEntry(account, Constants.TransactionTypeClaim, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
             BolRepository.SaveAccount(account);
             
             Transferred(null, account.MainAddress , account.ClaimBalance);
@@ -261,7 +266,11 @@ namespace Bol.Coin.Services
             
             account.ClaimBalance = claimBalance - value - claimTransferFee;
             account.CommercialAddresses[address] = addressBalance + value;
-            BolRepository.SaveAccount( account);
+            
+            AddTransactionEntry(account, Constants.TransactionTypeClaimTransfer, account.CodeName, account.MainAddress, account.CodeName, address, value);
+            AddTransactionEntry(account, Constants.TransactionTypeFees, account.CodeName, account.MainAddress, null, Constants.Owner, claimTransferFee);
+
+            BolRepository.SaveAccount(account);
             BolRepository.SetFeeBucket(feeBucketAmount + claimTransferFee);
             
             Transferred(account.MainAddress, address, value);
@@ -282,7 +291,8 @@ namespace Bol.Coin.Services
 
             var targetAccount = BolRepository.GetAccount( targetCodeName);
 
-            var senderAccount = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName) 
+            var internalTransfer = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName); 
+            var senderAccount =  internalTransfer
                 ? targetAccount
                 : BolRepository.GetAccount(senderCodeName);
 
@@ -297,6 +307,15 @@ namespace Bol.Coin.Services
 
             senderAccount.CommercialAddresses[senderAddress] = fromBalance - value - transferFee;
             targetAccount.CommercialAddresses[targetAddress] = toBalance + value;
+            
+            AddTransactionEntry(senderAccount, Constants.TransactionTypeTransfer, senderCodeName, senderAddress, targetCodeName, targetAddress, value);
+            AddTransactionEntry(senderAccount, Constants.TransactionTypeFees, senderCodeName, senderAddress, null, Constants.Owner, transferFee);
+
+            if (!internalTransfer)
+            {
+                AddTransactionEntry(targetAccount, Constants.TransactionTypeTransfer, senderCodeName, senderAddress, targetCodeName, targetAddress, value);
+            }
+            
             BolRepository.SaveAccount(senderAccount);
             BolRepository.SaveAccount(targetAccount);
             BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
@@ -535,6 +554,7 @@ namespace Bol.Coin.Services
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
                     BolRepository.SetRegisteredAtBlock(i, intervalTotal);
                     var intervalBirths = intervalTime * Bps;
+                    BolRepository.SetNewBolAtBlock(i, intervalBirths);
                     BolRepository.SetPopulationAtBlock(i, Pop);
                     var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
                     BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
@@ -545,6 +565,9 @@ namespace Bol.Coin.Services
             
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
+            bolAccount.LastClaim = cpp;
+            
+            AddTransactionEntry(bolAccount, Constants.TransactionTypeClaim, null, null, bolAccount.CodeName, bolAccount.MainAddress, cpp);
 
             BolRepository.SaveAccount(bolAccount);
 
@@ -629,6 +652,11 @@ namespace Bol.Coin.Services
                 
                 allCertifiers[certifier] = true;
             }
+
+            if (allCertifiers.HasKey(account.CodeName))
+            {
+                allCertifiers.Remove(account.CodeName);
+            }
             
             if (allCertifiers.Keys.Length < 3) 
             {
@@ -682,6 +710,11 @@ namespace Bol.Coin.Services
                 
                 certifierAccount.CommercialAddresses[certifierPaymentAddress] = paymentAddressBalance + certificationFee;
                 account.ClaimBalance -= certificationFee;
+
+                AddTransactionEntry(account, Constants.TransactionTypeTransfer, account.CodeName, account.MainAddress,
+                    certifierAccount.CodeName, certifierPaymentAddress, certificationFee);
+                AddTransactionEntry(certifierAccount, Constants.TransactionTypeTransfer, account.CodeName, account.MainAddress,
+                    certifierAccount.CodeName, certifierPaymentAddress, certificationFee);
                 
                 BolRepository.SaveAccount(certifierAccount);
                 BolRepository.SaveAccount(account);
@@ -730,12 +763,35 @@ namespace Bol.Coin.Services
                 var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
                 var paymentAddressBalance = validatorAccount.CommercialAddresses[validatorPaymentAddress];
                 validatorAccount.CommercialAddresses[validatorPaymentAddress] = paymentAddressBalance + amount;
+                
+                AddTransactionEntry(validatorAccount, Constants.TransactionTypeFees, null, Constants.Owner, validatorCodeName, validatorPaymentAddress, amount);
+                
                 BolRepository.SaveAccount(validatorAccount);
                 Transferred(Constants.Owner, validatorPaymentAddress, amount);
                 fees -= amount;
             }
                 
             BolRepository.SetFeeBucket(fees);
+        }
+
+        private static void AddTransactionEntry(BolAccount account, byte transactionType, byte[] senderCodeName, byte[] senderAddress, byte[] receiverCodeName, byte[] receiverAddress, BigInteger amount)
+        {
+            var transaction = new BolTransactionEntry();
+            transaction.TransactionHash = ExecutionEngine.CallingScriptHash;
+            transaction.TransactionType = transactionType;
+            transaction.SenderCodeName = senderCodeName;
+            transaction.SenderAddress = senderAddress;
+            transaction.ReceiverCodeName = receiverCodeName;
+            transaction.ReceiverAddress = receiverAddress;
+            transaction.Amount = amount;
+
+            account.TransactionsCount += 1;
+            account.Transactions[account.TransactionsCount] = transaction;
+            
+            if (account.Transactions.HasKey(account.TransactionsCount - Constants.TransactionCountLimit))
+            {
+                account.Transactions.Remove(account.TransactionsCount - Constants.TransactionCountLimit);
+            }
         }
     }
 }

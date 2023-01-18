@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bol.Api.Mappers;
 using Bol.Core.Model;
+using Bol.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using IBolService = Bol.Api.Services.IBolService;
@@ -37,11 +38,12 @@ namespace Bol.Api.BackgroundServices
                 var json = scope.ServiceProvider.GetService<IJsonSerializer>();
                 var bolConfig = scope.ServiceProvider.GetService<IOptions<BolConfig>>();
                 var mapper = scope.ServiceProvider.GetService<IAccountToAccountMapper>();
+                var hex = scope.ServiceProvider.GetService<IBase16Encoder>();
 
                 //Base constructor of neo plugin automatically registers itself
                 new LogPlugin(_logger);
                 new GetAccountPlugin(bolService, json, mapper);
-                new TestRawTransactionPlugin(json, mapper);
+                new TestRawTransactionPlugin(json, mapper, hex);
                 new GetBolHashPlugin(bolConfig);
 
                 var mainService = new MainService();

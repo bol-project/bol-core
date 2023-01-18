@@ -2,6 +2,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Bol.Coin.Tests.Utils;
+using Bol.Core.Helpers;
 using FluentAssertions;
 using Xunit;
 
