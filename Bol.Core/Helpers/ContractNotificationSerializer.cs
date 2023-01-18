@@ -15,75 +15,89 @@ public static class ContractNotificationSerializer
 
         if (text.Contains("error") || text.Contains("6572726f72"))
         {
-            return new ContractNotification { Operation = "error", Message = (result[1] as List<object>)[1].ToString()};
+            return new ContractNotification
+            {
+                Operation = "error", Message = (result?[1] as List<object>)?[1]?.ToString()
+            };
         }
 
-        var accountParts = (result[1] as List<object>)[2] as List<object>;
+        var accountParts = (result?[1] as List<object>)?[2] as List<object>;
 
         if (accountParts == null)
         {
-            return new ContractNotification { Operation = result[0].ToString(), Message = (result[1] as List<object>)[1].ToString()};
+            return new ContractNotification
+            {
+                Operation = result?[0]?.ToString(), Message = (result?[1] as List<object>)?[1]?.ToString()
+            };
         }
+
+        var account = new BolAccount();
+
+        account.AccountStatus = (AccountStatus)Enum.Parse(typeof(AccountStatus), accountParts[0]?.ToString() ?? "");
+        account.AccountType = (AccountType)Enum.Parse(typeof(AccountType), accountParts[1]?.ToString() ?? "");
+        account.CodeName = accountParts[2]?.ToString() ?? "";
+        account.Edi = accountParts[3]?.ToString() ?? "";
+        account.MainAddress = accountParts[4]?.ToString() ?? "";
+        account.BlockChainAddress = accountParts[5]?.ToString() ?? "";
+        account.SocialAddress = accountParts[6]?.ToString() ?? "";
+        account.VotingAddress = accountParts[7]?.ToString() ?? "";
+        account.CommercialAddresses = new HashSet<string>((accountParts[8] as Dictionary<string, object>).Keys);
+        account.ClaimBalance = accountParts[9]?.ToString() ?? "";
+        account.TotalBalance = accountParts[10]?.ToString() ?? "";
+        account.CommercialBalances = (accountParts[8] as Dictionary<string, object>)
+            .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0");
+        account.Certifications = accountParts[11] != null ? ParseInt(accountParts[11]?.ToString()) : 0;
+        account.Certifiers = (accountParts[12] as Dictionary<string, object>)
+            .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0");
+        account.MandatoryCertifiers = (accountParts[13] as Dictionary<string, object>)
+            .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0");
+        account.CertificationRequests = (accountParts[14] as Dictionary<string, object>)
+            .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0");
+        account.LastCertificationHeight = accountParts[15] != null ? ParseInt(accountParts[15]?.ToString()) : 0;
+        account.LastCertifierSelectionHeight =
+            accountParts[16] != null ? ParseInt(accountParts[16]?.ToString()) : 0;
+        account.IsCertifier = bool.TryParse(accountParts[17]?.ToString() ?? "", out var isCertifier) && isCertifier;
+        account.Collateral = accountParts[18] == null ? null : accountParts[18]?.ToString() ?? "";
+        account.CertificationFee = accountParts[19] is (null or false) ? null : accountParts[19]?.ToString() ?? "";
+        account.Countries = accountParts[20] == null ? null : accountParts[20]?.ToString() ?? "";
+        account.RegistrationHeight = ParseInt(accountParts[21]?.ToString());
+        account.LastClaimHeight = ParseInt(accountParts[22]?.ToString());
+        account.LastClaim = accountParts[23]?.ToString() ?? "";
+        account.TransactionsCount = ParseInt(accountParts[24]?.ToString());
+        account.Transactions = accountParts[25] is null
+            ? null
+            : (accountParts[25] as Dictionary<string, object>)
+            .ToDictionary(pair => pair.Key, pair =>
+            {
+                var entry = pair.Value as List<object>;
+                return new BolTransactionEntry
+                {
+                    TransactionHash = entry[0].ToString(),
+                    TransactionType =
+                        (BolTransactionType)Enum.Parse(typeof(BolTransactionType), entry[1]?.ToString() ?? "1"),
+                    SenderCodeName = entry[2]?.ToString(),
+                    SenderAddress = entry[3]?.ToString(),
+                    ReceiverCodeName = entry[4]?.ToString(),
+                    ReceiverAddress = entry[5]?.ToString(),
+                    Amount = entry[6]?.ToString()
+                };
+            });
 
         var notification = new ContractNotification
         {
             Operation = result[0].ToString(),
-            StatusCode = Int32.Parse((result[1] as List<object>)[0].ToString()),
-            Message = (result[1] as List<object>)[1].ToString(),
-            Account = new BolAccount
-            {
-                AccountStatus = (AccountStatus) Enum.Parse(typeof(AccountStatus), accountParts[0]?.ToString() ?? ""),
-                AccountType = (AccountType) Enum.Parse(typeof(AccountType),accountParts[1]?.ToString() ?? ""),
-                CodeName = accountParts[2]?.ToString() ?? "",
-                Edi = accountParts[3]?.ToString() ?? "",
-                MainAddress = accountParts[4]?.ToString() ?? "",
-                BlockChainAddress = accountParts[5]?.ToString() ?? "",
-                SocialAddress = accountParts[6]?.ToString() ?? "",
-                VotingAddress = accountParts[7]?.ToString() ?? "",
-                CommercialAddresses = new HashSet<string>((accountParts[8] as Dictionary<string, object>).Keys),
-                ClaimBalance = accountParts[9]?.ToString() ?? "",
-                TotalBalance = accountParts[10]?.ToString() ?? "",
-                CommercialBalances = (accountParts[8] as Dictionary<string, object>)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0"),
-                Certifications = accountParts[11] != null ? int.Parse(accountParts[11]?.ToString() ?? "") : 0,
-                Certifiers = (accountParts[12] as Dictionary<string, object>)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0"),
-                MandatoryCertifiers = (accountParts[13] as Dictionary<string, object>)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0"),
-                CertificationRequests = (accountParts[14] as Dictionary<string, object>)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value?.ToString() ?? "0"),
-                LastCertificationHeight = accountParts[15] != null ? int.Parse(accountParts[15]?.ToString() ?? "") : 0,
-                LastCertifierSelectionHeight =
-                    accountParts[16] != null ? int.Parse(accountParts[16]?.ToString() ?? "") : 0,
-                IsCertifier = bool.TryParse(accountParts[17]?.ToString() ?? "", out var isCertifier) && isCertifier,
-                Collateral = accountParts[18] == null ? null : accountParts[18]?.ToString() ?? "",
-                CertificationFee = accountParts[19] is (null or false) ? null : accountParts[19]?.ToString() ?? "",
-                Countries = accountParts[20] == null ? null : accountParts[20]?.ToString() ?? "",
-                RegistrationHeight = int.Parse(accountParts[21]?.ToString() ?? ""),
-                LastClaimHeight = int.Parse(accountParts[22]?.ToString() ?? ""),
-                LastClaim = accountParts[23]?.ToString() ?? "",
-                TransactionsCount = int.Parse(accountParts[24]?.ToString() ?? "0"),
-                Transactions = accountParts[25] is null
-                    ? null
-                    : (accountParts[25] as Dictionary<string, object>)
-                    .ToDictionary(pair => pair.Key, pair =>
-                    {
-                        var entry = pair.Value as List<object>;
-                        return new BolTransactionEntry
-                        {
-                            TransactionHash = entry[0].ToString(),
-                            TransactionType = (BolTransactionType) Enum.Parse(typeof(BolTransactionType), entry[1]?.ToString() ?? "1"),
-                            SenderCodeName = entry[2]?.ToString(),
-                            SenderAddress = entry[3]?.ToString(),
-                            ReceiverCodeName = entry[4]?.ToString(),
-                            ReceiverAddress = entry[5]?.ToString(),
-                            Amount = entry[6]?.ToString()
-                        };
-                    })
-            }
+            StatusCode = ParseInt((result[1] as List<object>)?[0]?.ToString()),
+            Message = (result?[1] as List<object>)?[1]?.ToString(),
+            Account = account
         };
 
         return notification;
+    }
+
+    private static int ParseInt(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return 0;
+        return int.TryParse(value, out var result) ? result : 0;
     }
 
     /// <summary>
@@ -158,18 +172,18 @@ public static class ContractNotificationSerializer
                 {
                     break;
                 }
-        
+
                 endIndex++;
             }
-        
+
             var value = text.Substring(startIndex, endIndex - startIndex);
-        
+
             // remove trailing brackets or braces
             if (value.EndsWith("}") || value.EndsWith("]"))
             {
                 value = value.Substring(0, value.Length - 1);
             }
-        
+
             if (value == "Null")
             {
                 return (null, endIndex);
