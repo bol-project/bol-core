@@ -4,7 +4,6 @@ using Bol.Core.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Neo.IO.Json;
 using Neo.Plugins;
-using IBolService = Bol.Api.Services.IBolService;
 
 namespace Bol.Api.NeoPlugins
 {

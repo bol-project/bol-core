@@ -11,7 +11,6 @@ using Bol.Core.Model;
 using Bol.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using IBolService = Bol.Api.Services.IBolService;
 
 namespace Bol.Api.BackgroundServices
 {
