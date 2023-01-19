@@ -67,7 +67,9 @@ namespace Bol.Api.Mappers
                     ReceiverAddress = !string.IsNullOrWhiteSpace(pair.Value.ReceiverAddress)
                         ? ConvertToAddress(pair.Value.ReceiverAddress)
                         : null,
-                    Amount = ConvertToDecimal(pair.Value.Amount)
+                    Amount = pair.Value.TransactionType is (BolTransactionType.ClaimTransfer or BolTransactionType.Transfer or BolTransactionType.Fees) 
+                        ? ConvertToDecimal(HexToNumber(pair.Value.Amount))
+                        : ConvertToDecimal(pair.Value.Amount)
                 })
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
