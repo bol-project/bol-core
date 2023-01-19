@@ -67,6 +67,14 @@ namespace Bol.Core.Model
         Claim = 1,
         ClaimTransfer = 2,
         Transfer = 3,
-        Fees = 4
+        Fees = 4,
+        Register = 5,
+        Whitelist = 6,
+        CertifierSelection = 7,
+        CertificationRequest = 8,
+        Certify = 9,
+        UnCertify = 10,
+        RegisterCertifier = 11,
+        UnRegisterCertifier = 12
     }
 }
