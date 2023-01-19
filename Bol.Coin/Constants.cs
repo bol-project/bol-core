@@ -39,6 +39,14 @@ namespace Bol.Coin
         public const byte TransactionTypeClaimTransfer = 0x02;
         public const byte TransactionTypeTransfer = 0x03;
         public const byte TransactionTypeFees = 0x04;
+        public const byte TransactionTypeRegister = 0x05;
+        public const byte TransactionTypeWhitelist = 0x06;
+        public const byte TransactionTypeCertifierSelection = 0x07;
+        public const byte TransactionTypeCertificationRequest = 0x08;
+        public const byte TransactionTypeCertify = 0x09;
+        public const byte TransactionTypeUnCertify = 0x0A;
+        public const byte TransactionTypeRegisterCertifier = 0x0B;
+        public const byte TransactionTypeUnRegisterCertifier = 0x0C;
 
         public const int TransactionCountLimit = 50;
 

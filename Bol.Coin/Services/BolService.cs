@@ -114,7 +114,7 @@ namespace Bol.Coin.Services
             account.Transactions = new Map<int, BolTransactionEntry>();
             account.TransactionsCount = 0;
             
-            AddTransactionEntry(account, Constants.TransactionTypeClaim, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
+            AddTransactionEntry(account, Constants.TransactionTypeRegister, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
             BolRepository.SaveAccount(account);
             
             Transferred(null, account.MainAddress , account.ClaimBalance);
@@ -357,6 +357,8 @@ namespace Bol.Coin.Services
                 certifiers[bolAccount.CodeName] = fee;
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
+            
+            AddTransactionEntry(bolAccount, Constants.TransactionTypeRegisterCertifier, bolAccount.CodeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
 
@@ -376,7 +378,8 @@ namespace Bol.Coin.Services
             if (!BolServiceValidationHelper.IsUnRegisterCertifierValid(bolAccount)) return false;
             
             var paymentAddress = bolAccount.CommercialAddresses.Keys[0];
-            bolAccount.CommercialAddresses[paymentAddress] += bolAccount.Collateral;
+            var collateral = bolAccount.Collateral;
+            bolAccount.CommercialAddresses[paymentAddress] += collateral;
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
@@ -390,6 +393,8 @@ namespace Bol.Coin.Services
                 }
                 BolRepository.SetCertifiers(countryCode, certifiers);
             }
+            
+            AddTransactionEntry(bolAccount, Constants.TransactionTypeUnRegisterCertifier, codeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
             
@@ -431,6 +436,10 @@ namespace Bol.Coin.Services
                 }
             }
             
+            AddTransactionEntry(certifierAccount, Constants.TransactionTypeCertify, certifier, null, receiver, null, 0);
+            AddTransactionEntry(receiverAccount, Constants.TransactionTypeCertify, certifier, null, receiver, null, 0);
+            
+            BolRepository.SaveAccount(certifierAccount);
             BolRepository.SaveAccount(receiverAccount);
 
             Runtime.Notify("certify", BolResult.Ok(receiverAccount));
@@ -454,7 +463,11 @@ namespace Bol.Coin.Services
             {
                 receiverAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
             }
+            
+            AddTransactionEntry(certifierAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
+            AddTransactionEntry(receiverAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
 
+            BolRepository.SaveAccount(certifierAccount);
             BolRepository.SaveAccount(receiverAccount);
 
             Runtime.Notify("unCertify", BolResult.Ok(receiverAccount));
@@ -601,6 +614,9 @@ namespace Bol.Coin.Services
             
             BolRepository.AddToWhitelist(address);
             
+            AddTransactionEntry(account, Constants.TransactionTypeWhitelist, codeName, null, null, address, 0);
+            BolRepository.SaveAccount(account);
+            
             Runtime.Notify("whitelist", BolResult.Ok());
 
             return true;
@@ -686,6 +702,8 @@ namespace Bol.Coin.Services
             var mandatory3 = allCertifiers.Keys[(int)index3];
             account.MandatoryCertifiers[mandatory3] = currentHeight;
             
+            AddTransactionEntry(account, Constants.TransactionTypeCertifierSelection, account.CodeName, null, null, null, 0);
+            
             BolRepository.SaveAccount(account);
             
             Runtime.Notify("selectMandatoryCertifiers", BolResult.Ok(account));
@@ -741,7 +759,12 @@ namespace Bol.Coin.Services
             if (!BolServiceValidationHelper.IsRequestCertificationValid(account, certifierAccount)) return false;
 
             account.CertificationRequests[certifierCodeName] = account.LastCertifierSelectionHeight;
+            
+            AddTransactionEntry(account, Constants.TransactionTypeCertificationRequest, codeName, null, certifierCodeName, null, 0);
+            AddTransactionEntry(certifierAccount, Constants.TransactionTypeCertificationRequest, codeName, null, certifierCodeName, null, 0);
+            
             BolRepository.SaveAccount(account);
+            BolRepository.SaveAccount(certifierAccount);
             
             Runtime.Notify("requestCertification", BolResult.Ok(account));
             
@@ -777,7 +800,7 @@ namespace Bol.Coin.Services
         private static void AddTransactionEntry(BolAccount account, byte transactionType, byte[] senderCodeName, byte[] senderAddress, byte[] receiverCodeName, byte[] receiverAddress, BigInteger amount)
         {
             var transaction = new BolTransactionEntry();
-            transaction.TransactionHash = ExecutionEngine.CallingScriptHash;
+            transaction.TransactionHash = ((Transaction)ExecutionEngine.ScriptContainer).Hash;
             transaction.TransactionType = transactionType;
             transaction.SenderCodeName = senderCodeName;
             transaction.SenderAddress = senderAddress;
