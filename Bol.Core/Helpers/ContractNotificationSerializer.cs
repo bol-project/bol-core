@@ -79,7 +79,7 @@ public static class ContractNotificationSerializer
                     SenderAddress = entry[3]?.ToString(),
                     ReceiverCodeName = entry[4]?.ToString(),
                     ReceiverAddress = entry[5]?.ToString(),
-                    Amount = entry[6]?.ToString()
+                    Amount = entry.Count == 7 ? entry[6]?.ToString() : "0"
                 };
             });
 
