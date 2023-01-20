@@ -53,7 +53,7 @@ namespace Bol.Api.Mappers
                 TransactionsCount = account.TransactionsCount,
                 Transactions = account.Transactions.ToDictionary(pair => pair.Key, pair => new BolTransactionEntry
                 {
-                    TransactionHash = pair.Value.TransactionHash,
+                    TransactionHash = _hex.Encode(_hex.Decode(pair.Value.TransactionHash).Reverse().ToArray()),
                     TransactionType = pair.Value.TransactionType,
                     SenderCodeName = !string.IsNullOrWhiteSpace(pair.Value.SenderCodeName) 
                         ? Encoding.ASCII.GetString(_hex.Decode(pair.Value.SenderCodeName))
