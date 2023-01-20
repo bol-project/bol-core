@@ -133,7 +133,7 @@ public static class BolServiceValidationHelper
 
         if (fromBalance < value + transferFee)
         {
-            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols that address balance."));
+            Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols than address balance."));
             return false;
         }
 
