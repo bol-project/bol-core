@@ -190,9 +190,7 @@ namespace Bol.Core.Services
                 Encoding.ASCII.GetBytes(codeName)
             };
 
-            var mainAddress = CreateMainAddress(context);
-
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "getAccount", parameters);
+            var transaction = _transactionService.Create(null, context.Contract, "getAccount", parameters);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);
 
