@@ -38,7 +38,7 @@ namespace Bol.Core.Transactions
             var contractHash = _scriptHashFactory.Create(contract);
             var executionScript = _signatureScriptFactory.CreateContractOperationScript(contractHash, operation, parameters);
 
-            var transaction = CreateBolTransaction(executionScript, witness.ToScriptHash(), description, remarks);
+            var transaction = CreateBolTransaction(executionScript, witness?.ToScriptHash(), description, remarks);
 
             return transaction;
         }
@@ -52,7 +52,7 @@ namespace Bol.Core.Transactions
             //TODO: Add validations
 
             var executionScript = _signatureScriptFactory.Create(script);
-            var transaction = CreateBolTransaction(executionScript, witness.ToScriptHash(), description, remarks);
+            var transaction = CreateBolTransaction(executionScript, witness?.ToScriptHash(), description, remarks);
 
             return transaction;
         }
@@ -72,16 +72,19 @@ namespace Bol.Core.Transactions
             return _rpc.TestRawTransaction<T>(transaction, token);
         }
 
-        private BolTransaction CreateBolTransaction(ISignatureScript executionScript, IScriptHash address, string description = null, IEnumerable<string> remarks = null)
+        private BolTransaction CreateBolTransaction(ISignatureScript executionScript, IScriptHash address = null, string description = null, IEnumerable<string> remarks = null)
         {
             var attributes = new List<BolTransactionAttribute>();
 
-            attributes.Add(
-                new BolTransactionAttribute
-                {
-                    Type = TransactionAttributeType.Script,
-                    Value = address.GetBytes()
-                });
+            if (address != null)
+            {
+                attributes.Add(
+                    new BolTransactionAttribute
+                    {
+                        Type = TransactionAttributeType.Script,
+                        Value = address.GetBytes()
+                    });
+            }
 
             if (description != null)
             {
