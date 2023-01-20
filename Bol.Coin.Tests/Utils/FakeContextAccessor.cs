@@ -1,4 +1,5 @@
 using Bol.Core.Abstractions;
+using Bol.Core.Accessors;
 using Bol.Core.Model;
 
 namespace Bol.Coin.Tests.Utils;
@@ -12,7 +13,7 @@ public class FakeContextAccessor : IContextAccessor
         _context = context;
     }
 
-    public BolContext GetContext()
+    public IBolContext GetContext()
     {
         return _context;
     }

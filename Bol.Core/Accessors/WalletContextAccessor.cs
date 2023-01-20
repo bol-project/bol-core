@@ -39,7 +39,7 @@ namespace Bol.Core.Accessors
             _iCachingService = iCachingService ?? throw new ArgumentNullException(nameof(iCachingService));
         }
 
-        private BolContext CreateContext()
+        private IBolContext CreateContext()
         {
             var n = _bolWallet.Scrypt.N;
             var r = _bolWallet.Scrypt.R;
@@ -92,9 +92,11 @@ namespace Bol.Core.Accessors
             );
         }
 
-        public BolContext GetContext()
+        public IBolContext GetContext()
         {
-            return _iCachingService.GetOrCreate(CacheKeyNames.BolContext.ToString(), () => CreateContext());
+            return string.IsNullOrWhiteSpace(_bolWallet.Name) 
+                ? new UnauthorizedBolContext(_bolConfig.Contract) 
+                : _iCachingService.GetOrCreate(CacheKeyNames.BolContext.ToString(), () => CreateContext());
         }
     }
 }

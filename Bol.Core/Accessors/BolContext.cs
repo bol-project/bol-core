@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Bol.Address;
+using Bol.Core.Abstractions;
 using Bol.Cryptography;
 
-namespace Bol.Core.Model
+namespace Bol.Core.Accessors
 {
-    public class BolContext
+    public class BolContext : IBolContext
     {
         public string Contract { get; private set; }
         public string CodeName { get; private set; }

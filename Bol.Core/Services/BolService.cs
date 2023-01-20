@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Abstractions;
+using Bol.Core.Accessors;
 using Bol.Core.Model;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
@@ -349,7 +350,7 @@ namespace Bol.Core.Services
             return result;
         }
 
-        private ISignatureScript CreateMainAddress(BolContext context)
+        private ISignatureScript CreateMainAddress(IBolContext context)
         {
             return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);
         }

@@ -4,6 +4,7 @@ using System.Text;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
+using Bol.Core.Accessors;
 using Bol.Core.Model;
 using Bol.Cryptography;
 using Bol.Cryptography.Encoders;
