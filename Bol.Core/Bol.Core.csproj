@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BolChain.Core</PackageId>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Version>0.0.1-alpha.7</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
