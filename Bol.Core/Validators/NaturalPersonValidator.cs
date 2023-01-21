@@ -2,30 +2,33 @@ using System;
 using Bol.Core.Model;
 using FluentValidation;
 using System.Text.RegularExpressions;
+using Bol.Core.Abstractions;
 
 namespace Bol.Core.Validators
 {
-	public class NaturalPersonValidator : AbstractValidator<NaturalPerson>
+    public class NaturalPersonValidator : AbstractValidator<NaturalPerson>
     {
-	    private readonly IValidator<BasePerson> _basePersonValidator;
-	    private const int NIN_DIGITS = 11;
+        private readonly IValidator<BasePerson> _basePersonValidator;
+        private const int NIN_DIGITS = 11;
 
         private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
         private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
 
-        public NaturalPersonValidator(IValidator<BasePerson> basePersonValidator)
+        public NaturalPersonValidator(IValidator<BasePerson> basePersonValidator, INinService ninService)
         {
-	        _basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
+            _basePersonValidator = basePersonValidator ?? throw new ArgumentNullException(nameof(basePersonValidator));
 
-	        CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
 
-			Include(_basePersonValidator);
+            Include(_basePersonValidator);
 
             RuleFor(p => p).NotEmpty().WithMessage("Natural Person object cannot be empty.");
 
             RuleFor(p => p.Nin)
                 .NotEmpty()
                 .WithMessage("National Identification Number cannot be empty.")
+                .Length(p => ninService.GetLength(p.CountryCode))
+                .WithMessage(p => $"National Identification Number (NIN) does not match length for country {p.CountryCode}.")
                 .Must(IsHexRepresentation)
                 .WithMessage("Nin must be a Base16 (Hex) representation of the SHA256 Hash of the person's National Identification Number.");
 

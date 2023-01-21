@@ -26,46 +26,8 @@ namespace Bol.Core.Tests.Services
         private readonly CodeNameValidator _codeNameValidator;
         private readonly CodeNameService _service;
 
-        NaturalPerson papadopoulos = new NaturalPerson
-        {
-            FirstName = "GIANNIS",
-            Surname = "PAPADOPOULOS",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "GRC",
-            Gender = Gender.Male,
-            Birthdate = new DateTime(1963, 06, 23),
-            Nin = "23066301512",
-            Combination = "1"
-        };
-
-        NaturalPerson smith = new NaturalPerson
-        {
-            FirstName = "MICHAEL",
-            Surname = "SMITH",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "USA",
-            Gender = Gender.Male,
-            Birthdate = new DateTime(2006, 10, 28),
-            Nin = "295632657",
-            Combination = "1"
-        };
-
-        NaturalPerson zhou = new NaturalPerson
-        {
-            FirstName = "LIMING",
-            Surname = "ZHOU",
-            MiddleName = "",
-            ThirdName = "",
-            CountryCode = "CHN",
-            Gender = Gender.Female,
-            Birthdate = new DateTime(1989, 02, 27),
-            Nin = "568756198902275281",
-            Combination = "P"
-        };
-
         List<Country> countries;
+        List<NinSpecification> ninSpecifications;
 
         public CodeNameServiceTests()
         {
@@ -74,7 +36,8 @@ namespace Bol.Core.Tests.Services
             _hex = new Base16Encoder(_hasher);
             countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
             _basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
-            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator);
+            ninSpecifications = new List<NinSpecification> { new NinSpecification { CountryCode = "GRC", Digits = 11 }, new NinSpecification { CountryCode = "USA", Digits = 9 }, new NinSpecification { CountryCode = "CHN", Digits = 18 } };
+            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator, new NinService(Options.Create(ninSpecifications)));
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
             _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher, _hex);
             _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
