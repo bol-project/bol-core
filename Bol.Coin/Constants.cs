@@ -18,7 +18,7 @@ namespace Bol.Coin
         /// <summary>
         /// A fee in Bols that a Person or Company needs to pay in order to be certified in the BoL Blockchain.
         /// </summary>
-        public static readonly BigInteger MaxCertificationFee = 5000000;
+        public static readonly BigInteger MaxCertificationFee = new BigInteger("0x404B4C".HexToBytes()); //5000000
 
         /// <summary>
         /// The number of certifications required for an account to become a Bol Certifier.
@@ -126,12 +126,12 @@ namespace Bol.Coin
         /// <summary>
         /// The required fee for Transfer transactions.
         /// </summary>
-        public static readonly BigInteger TransferFee = 10000;
+        public static readonly BigInteger TransferFee = new BigInteger("0x1027".HexToBytes()); //10000
 
         /// <summary>
         /// The required fee for operational transactions except Transfer.
         /// </summary>
-        public static readonly BigInteger OperationsFee = 5000;
+        public static readonly BigInteger OperationsFee = new BigInteger("0x8813".HexToBytes()); //5000
 
         /// <summary>
         /// Earth population at the time of the Genesis block.
