@@ -345,9 +345,9 @@ namespace Bol.Coin.Services
         {
             var paymentAddress = bolAccount.CommercialAddresses.Keys[0];
             bolAccount.CommercialAddresses[paymentAddress] -= collateral;
-            bolAccount.Collateral = collateral;
+            bolAccount.Collateral = 1 * collateral;
             bolAccount.IsCertifier = 1;
-            bolAccount.CertificationFee = fee;
+            bolAccount.CertificationFee = 1 * fee;
             bolAccount.Countries = countries;
 
             for (var i = 0; i < countries.Length; i += 6)
@@ -806,7 +806,7 @@ namespace Bol.Coin.Services
             transaction.SenderAddress = senderAddress;
             transaction.ReceiverCodeName = receiverCodeName;
             transaction.ReceiverAddress = receiverAddress;
-            transaction.Amount = amount.Serialize();
+            transaction.Amount = 1 * amount;
 
             account.TransactionsCount += 1;
             account.Transactions[account.TransactionsCount] = transaction;

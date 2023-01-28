@@ -10,5 +10,5 @@ public class BolTransactionEntry
     public byte[] SenderAddress;
     public byte[] ReceiverCodeName;
     public byte[] ReceiverAddress;
-    public byte[] Amount;
+    public BigInteger Amount;
 }
