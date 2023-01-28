@@ -75,7 +75,7 @@ public class ContractNotificationSerializerTests
         public void TestSimpleValue()
         {
             var result = Parser.Parse("123");
-            Assert.Equal(123, result);
+            Assert.Equal("123", result);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ public class ContractNotificationSerializerTests
             Assert.Equal(5, list.Count);
             for (int i = 0; i < 5; i++)
             {
-                Assert.Equal(i + 1, list[i]);
+                Assert.Equal((i + 1).ToString(), list[i]);
             }
         }
 
@@ -96,9 +96,9 @@ public class ContractNotificationSerializerTests
             var result = Parser.Parse("{a:1,b:2,c:3}");
             var dict = (Dictionary<string, object>)result;
             Assert.Equal(3, dict.Count);
-            Assert.Equal(1, dict["a"]);
-            Assert.Equal(2, dict["b"]);
-            Assert.Equal(3, dict["c"]);
+            Assert.Equal("1", dict["a"]);
+            Assert.Equal("2", dict["b"]);
+            Assert.Equal("3", dict["c"]);
         }
 
         [Fact]
@@ -108,9 +108,9 @@ public class ContractNotificationSerializerTests
             var result = Parser.Parse(text);
             var list = (List<object>)result;
             Assert.Equal(4, list.Count);
-            Assert.Equal(1, list[0]);
+            Assert.Equal("1", list[0]);
             var dict1 = (Dictionary<string, object>)list[1];
-            Assert.Equal(1, dict1.Count);
+            Assert.Single(dict1);
             var list1 = (List<object>)dict1["a"];
         }
 
@@ -160,14 +160,14 @@ public class ContractNotificationSerializerTests
             var dict = (Dictionary<string, object>)result;
             Assert.Equal(3, dict.Count);
             var list1 = (List<object>)dict["a"];
-            Assert.Equal(1, list1[0]);
+            Assert.Equal("1", list1[0]);
             var dict1 = (Dictionary<string, object>)list1[1];
-            Assert.Equal(2, dict1["b"]);
+            Assert.Equal("2", dict1["b"]);
             var dict2 = (Dictionary<string, object>)dict["c"];
             var list2 = (List<object>)dict2["d"];
-            Assert.Equal(3, list2[0]);
-            Assert.Equal(4, list2[1]);
-            Assert.Equal(5, dict["e"]);
+            Assert.Equal("3", list2[0]);
+            Assert.Equal("4", list2[1]);
+            Assert.Equal("5", dict["e"]);
         }
     }
 }

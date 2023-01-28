@@ -192,17 +192,13 @@ public static class ContractNotificationSerializer
             {
                 return (Parse(value), endIndex);
             }
-            else if (int.TryParse(value, out int intValue))
-            {
-                return (intValue, endIndex);
-            }
             else if (bool.TryParse(value, out bool boolValue))
             {
                 return (boolValue, endIndex);
             }
             else
             {
-                return (value, endIndex);
+                return (value.Trim(), endIndex);
             }
         }
     }
