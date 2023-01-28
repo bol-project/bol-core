@@ -51,25 +51,26 @@ namespace Bol.Api.Mappers
                 LastCertifierSelectionHeight = account.LastCertifierSelectionHeight,
                 LastClaim = ConvertToDecimal(account.LastClaim),
                 TransactionsCount = account.TransactionsCount,
-                Transactions = account.Transactions.ToDictionary(pair => pair.Key, pair => new BolTransactionEntry
+                Transactions = account.Transactions.ToDictionary(pair => pair.Key, pair => 
                 {
-                    TransactionHash = _hex.Encode(_hex.Decode(pair.Value.TransactionHash).Reverse().ToArray()),
-                    TransactionType = pair.Value.TransactionType,
-                    SenderCodeName = !string.IsNullOrWhiteSpace(pair.Value.SenderCodeName) 
+                    var transactionEntry = new BolTransactionEntry();
+                    transactionEntry.TransactionHash = _hex.Encode(_hex.Decode(pair.Value.TransactionHash).Reverse().ToArray());
+                    transactionEntry.TransactionType = pair.Value.TransactionType;
+                    transactionEntry.SenderCodeName = !string.IsNullOrWhiteSpace(pair.Value.SenderCodeName)
                         ? Encoding.ASCII.GetString(_hex.Decode(pair.Value.SenderCodeName))
-                        : null,
-                    SenderAddress = !string.IsNullOrWhiteSpace(pair.Value.SenderAddress)
+                        : null;
+                    transactionEntry.SenderAddress = !string.IsNullOrWhiteSpace(pair.Value.SenderAddress)
                         ? ConvertToAddress(pair.Value.SenderAddress)
-                        : null,
-                    ReceiverCodeName = !string.IsNullOrWhiteSpace(pair.Value.ReceiverCodeName)
+                        : null;
+                    transactionEntry.ReceiverCodeName = !string.IsNullOrWhiteSpace(pair.Value.ReceiverCodeName)
                         ? Encoding.ASCII.GetString(_hex.Decode(pair.Value.ReceiverCodeName))
-                        : null,
-                    ReceiverAddress = !string.IsNullOrWhiteSpace(pair.Value.ReceiverAddress)
+                        : null;
+                    transactionEntry.ReceiverAddress = !string.IsNullOrWhiteSpace(pair.Value.ReceiverAddress)
                         ? ConvertToAddress(pair.Value.ReceiverAddress)
-                        : null,
-                    Amount = pair.Value.TransactionType is (BolTransactionType.ClaimTransfer or BolTransactionType.Transfer or BolTransactionType.Fees) 
-                        ? ConvertToDecimal(HexToNumber(pair.Value.Amount))
-                        : ConvertToDecimal(pair.Value.Amount)
+                        : null;
+                    transactionEntry.Amount = ConvertToDecimal(HexToNumber(pair.Value.Amount.Substring(4)));
+                    
+                    return transactionEntry;
                 })
             };
             bolAccount.TotalBalance = ConvertToDecimal(account.TotalBalance);
