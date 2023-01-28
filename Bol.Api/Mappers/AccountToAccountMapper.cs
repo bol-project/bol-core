@@ -41,7 +41,7 @@ namespace Bol.Api.Mappers
                 LastClaimHeight = account.LastClaimHeight,
                 IsCertifier = account.IsCertifier,
                 Collateral = ConvertToDecimal(account.Collateral),
-                CertificationFee = ConvertToDecimal(HexToNumber(account.CertificationFee)),
+                CertificationFee = ConvertToDecimal(account.CertificationFee),
                 Countries = Encoding.ASCII.GetString(_hex.Decode(account.Countries)),
                 Certifications = account.Certifications,
                 Certifiers = account.Certifiers.ToDictionary(pair => Encoding.ASCII.GetString(_hex.Decode(pair.Key)), pair => pair.Value),
@@ -68,7 +68,7 @@ namespace Bol.Api.Mappers
                     transactionEntry.ReceiverAddress = !string.IsNullOrWhiteSpace(pair.Value.ReceiverAddress)
                         ? ConvertToAddress(pair.Value.ReceiverAddress)
                         : null;
-                    transactionEntry.Amount = ConvertToDecimal(HexToNumber(pair.Value.Amount.Substring(4)));
+                    transactionEntry.Amount = ConvertToDecimal(pair.Value.Amount);
                     
                     return transactionEntry;
                 })
