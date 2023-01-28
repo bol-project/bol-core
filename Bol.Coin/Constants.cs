@@ -48,7 +48,7 @@ namespace Bol.Coin
         public const byte TransactionTypeRegisterCertifier = 0x0B;
         public const byte TransactionTypeUnRegisterCertifier = 0x0C;
 
-        public const int TransactionCountLimit = 50;
+        public const int TransactionCountLimit = 10;
 
         /// <summary>
         /// Start of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
@@ -100,7 +100,7 @@ namespace Bol.Coin
         /// Number of blocks that designates a BoL claim interval.
         /// All registrations that happen inside such an interval are considered equal in claim rights.  
         /// </summary>
-        public const uint ClaimInterval = 100;
+        public const uint ClaimInterval = 10;
         
         /// <summary>
         /// Name of the Smart Contract.
