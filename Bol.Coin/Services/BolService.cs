@@ -806,7 +806,7 @@ namespace Bol.Coin.Services
             transaction.SenderAddress = senderAddress;
             transaction.ReceiverCodeName = receiverCodeName;
             transaction.ReceiverAddress = receiverAddress;
-            transaction.Amount = amount;
+            transaction.Amount = amount.Serialize();
 
             account.TransactionsCount += 1;
             account.Transactions[account.TransactionsCount] = transaction;
