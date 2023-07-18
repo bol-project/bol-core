@@ -4,8 +4,10 @@ using System.Reflection;
 using System.Resources;
 using Bol.Address;
 using Bol.Address.Abstractions;
+using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
 using Bol.Core.Abstractions;
+using Bol.Core.Accessors;
 using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
@@ -59,8 +61,13 @@ namespace Bol.Core.Extensions
             services.AddScoped<IExportKeyFactory, ExportKeyFactory>();
             services.AddScoped<ISignatureScriptFactory, SignatureScriptFactory>();
             services.AddScoped<IKeyPairFactory, KeyPairFactory>();
+            services.AddScoped<IXor, Xor>();
 
             services.AddScoped<INonceCalculator, NonceCalculator>();
+
+            services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IContextAccessor, WalletContextAccessor>();
+            services.AddScoped<IBolService, BolService>();
 
             RegisterOptions();
 
@@ -70,14 +77,17 @@ namespace Bol.Core.Extensions
             {
                 var countriesResult = ReadResource("Bol.Core.content.country_code.json");
                 var ninResult = ReadResource("Bol.Core.content.nin.json");
+                var protocolConfiguratioResult = ReadResource("Bol.Core.content.protocolConfiguration.json");
 
                 var serializer = new JsonSerializer();
 
                 var countries = serializer.Deserialize<List<Country>>(countriesResult);
                 var ninSpecifications = serializer.Deserialize<List<NinSpecification>>(ninResult);
+                var protocolConfiguration = serializer.Deserialize<ProtocolConfiguration>(protocolConfiguratioResult);
 
                 services.AddSingleton(typeof(IOptions<List<Country>>), Options.Create(countries));
                 services.AddSingleton(typeof(IOptions<List<NinSpecification>>), Options.Create(ninSpecifications));
+                services.AddSingleton(typeof(IOptions<ProtocolConfiguration>), Options.Create(protocolConfiguration));
             }
         }
 
@@ -86,7 +96,7 @@ namespace Bol.Core.Extensions
             var assembly = Assembly.GetExecutingAssembly();
 
             using var stream = assembly.GetManifestResourceStream(filePath);
-                
+
             if (stream is null)
             {
                 throw new MissingManifestResourceException(nameof(filePath));
@@ -94,7 +104,7 @@ namespace Bol.Core.Extensions
 
             using var reader = new StreamReader(stream);
             var result = reader.ReadToEnd();
-                
+
             return result;
         }
     }

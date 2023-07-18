@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BolChain.Core</PackageId>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.1-alpha.7</Version>
+    <Version>0.0.1-alpha.8</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -22,10 +22,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="content\protocolConfiguration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="content\country_code.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="content\nin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\protocolConfiguration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
