@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Resources;
 using Bol.Address;
@@ -7,19 +8,24 @@ using Bol.Address.Abstractions;
 using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
 using Bol.Core.Abstractions;
-using Bol.Core.Accessors;
 using Bol.Core.Helpers;
 using Bol.Core.Model;
+using Bol.Core.Rpc.Abstractions;
+using Bol.Core.Rpc;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
+using Bol.Core.Transactions;
 using Bol.Core.Validators;
 using Bol.Cryptography;
+using Bol.Cryptography.Abstractions;
+using Bol.Cryptography.BouncyCastle;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
 using Bol.Cryptography.Neo.Keys;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using YamlDotNet.Serialization;
@@ -62,12 +68,36 @@ namespace Bol.Core.Extensions
             services.AddScoped<ISignatureScriptFactory, SignatureScriptFactory>();
             services.AddScoped<IKeyPairFactory, KeyPairFactory>();
             services.AddScoped<IXor, Xor>();
+            services.AddScoped<IRpcClient, RpcClient>();
+            services.AddScoped<IJsonSerializer, JsonSerializer>();
+            services.AddScoped<HttpClient>();
 
+            // Wallet
             services.AddScoped<INonceCalculator, NonceCalculator>();
-
             services.AddScoped<IWalletService, WalletService>();
-            services.AddScoped<IContextAccessor, WalletContextAccessor>();
-            services.AddScoped<IBolService, BolService>();
+
+            //Transactions
+            services.AddScoped<ITransactionSerializer, TransactionSerializer>();
+            services.AddScoped<IECCurveSigner, BouncyCastleECCurveSigner>();
+            services.AddScoped<ITransactionSigner, TransactionSigner>();
+            services.AddScoped<ITransactionNotarizer, TransactionNotarizer>();
+            services.AddScoped<IScriptHashFactory, ScriptHashFactory>();
+            services.AddScoped<ITransactionService, TransactionService>();
+
+            //Cache
+            services.AddSingleton<ICachingService>(provider =>
+            {
+                var cacheOptions = Options.Create(new MemoryCacheOptions { });
+
+                var memoryCache = new MemoryCache(cacheOptions);
+
+                return new CachingService(memoryCache);
+            });
+
+            //Rpc
+            services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
+            services.AddSingleton(typeof(IOptions<Bol.Core.Model.BolConfig>), Microsoft.Extensions.Options.Options.Create(new BolConfig
+            { RpcEndpoint = "https://validator-1.demo.bolchain.net:443", Contract = "032be89207da01ba724a20f567ccc3fdcfeac064" }));
 
             RegisterOptions();
 
