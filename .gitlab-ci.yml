@@ -72,7 +72,7 @@ build_rpc_node:
     - build-internal
 
 .deploy:
-  image: lachlanevenson/k8s-kubectl:latest
+  image: lachlanevenson/k8s-kubectl:v1.24.8
   environment:
     name: bol-demo
     url: https://explorer.demo.bolchain.net
