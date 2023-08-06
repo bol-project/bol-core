@@ -34,8 +34,8 @@ spec:
           mountPath: /blockchain
         env:
           - name: ASPNETCORE_ENVIRONMENT
-            value: Development
-          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting.Internal.WebHost
+            value: Production
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting
             value: Warning
         livenessProbe:
           httpGet:
