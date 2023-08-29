@@ -96,8 +96,6 @@ namespace Bol.Core.Extensions
 
             //Rpc
             services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
-            services.AddSingleton(typeof(IOptions<Bol.Core.Model.BolConfig>), Microsoft.Extensions.Options.Options.Create(new BolConfig
-            { RpcEndpoint = "https://validator-1.demo.bolchain.net:443", Contract = "032be89207da01ba724a20f567ccc3fdcfeac064" }));
 
             RegisterOptions();
 
