@@ -224,6 +224,29 @@ namespace Neo.SmartContract
                     var certifierCodeName = (byte[])args[1];
                     return BolService.RequestCertification(codeName, certifierCodeName);
                 }
+                if (operation == "migrate")
+                {
+                    if (args.Length != 9) return false;
+                    var script = (byte[])args[0];
+                    var plist = (byte[])args[1];
+                    var rtype = (byte)args[2];
+                    var cps = (ContractPropertyState)args[3];
+                    var name = (string)args[4];
+                    var version = (string)args[5];
+                    var author = (string)args[6];
+                    var email = (string)args[7];
+                    var description = (string)args[8];
+                    Contract.Migrate(script,
+                        plist,
+                        rtype,
+                        cps,
+                        name,
+                        version,
+                        author,
+                        email,
+                        description);
+                    return true;
+                }
             }
             return false;
         }
