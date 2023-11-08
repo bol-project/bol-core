@@ -100,7 +100,7 @@ namespace Bol.Coin
         /// Number of blocks that designates a BoL claim interval.
         /// All registrations that happen inside such an interval are considered equal in claim rights.  
         /// </summary>
-        public const uint ClaimInterval = 10;
+        public const uint ClaimInterval = 240;
         
         /// <summary>
         /// Name of the Smart Contract.
