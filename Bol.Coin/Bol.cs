@@ -3,6 +3,7 @@ using System.Numerics;
 using Bol.Coin;
 using Bol.Coin.Models;
 using Bol.Coin.Services;
+using Bol.Coin.Validators;
 using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Neo.SmartContract
@@ -223,6 +224,38 @@ namespace Neo.SmartContract
                     var codeName = (byte[])args[0];
                     var certifierCodeName = (byte[])args[1];
                     return BolService.RequestCertification(codeName, certifierCodeName);
+                }
+                if (operation == "migrate")
+                {
+                    if (BolValidator.AddressNotOwner(Constants.Owner))
+                    {
+                        Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
+                        return false;
+                    }
+                    if (args.Length != 9)
+                    {
+                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                        return false;
+                    }
+                    var script = (byte[])args[0];
+                    var plist = (byte[])args[1];
+                    var rtype = (byte)args[2];
+                    var cps = (ContractPropertyState)args[3];
+                    var name = (string)args[4];
+                    var version = (string)args[5];
+                    var author = (string)args[6];
+                    var email = (string)args[7];
+                    var description = (string)args[8];
+                    Contract.Migrate(script,
+                        plist,
+                        rtype,
+                        cps,
+                        name,
+                        version,
+                        author,
+                        email,
+                        description);
+                    return true;
                 }
             }
             return false;
