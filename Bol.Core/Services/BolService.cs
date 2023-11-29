@@ -364,12 +364,13 @@ namespace Bol.Core.Services
                 Encoding.ASCII.GetBytes(migration.Description)
             };
             var publicKeys = keys.Select(key => key.PublicKey).ToArray();
-            var multisig = _signatureScriptFactory.Create(publicKeys, publicKeys.Length / 2 + 1);
+            var signers = publicKeys.Length / 2 + 1;
+            var multisig = _signatureScriptFactory.Create(publicKeys, signers);
 
             var description = $"Migrate {migration.Name} Smart Contract to version {migration.Version}";
             var remarks = new[] { "migrate", migration.Name, migration.Version, migration.NewScriptHash };
             var transaction = _transactionService.Create(multisig, migration.CurrentScriptHash, "migrate", parameters, description, remarks);
-            transaction = _transactionService.Sign(transaction, multisig, keys);
+            transaction = _transactionService.Sign(transaction, multisig, keys.Take(signers));
             
             var result = await _transactionService.Test<bool>(transaction, token);
             
