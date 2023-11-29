@@ -4,6 +4,7 @@ using Bol.Coin;
 using Bol.Coin.Models;
 using Bol.Coin.Services;
 using Bol.Coin.Validators;
+using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Neo.SmartContract
@@ -255,6 +256,8 @@ namespace Neo.SmartContract
                         author,
                         email,
                         description);
+                    
+                    Runtime.Notify("migrate", BolResult.Ok());
                     return true;
                 }
             }
