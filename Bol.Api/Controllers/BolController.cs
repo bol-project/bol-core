@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +11,8 @@ using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using IBolService = Bol.Api.Services.IBolService;
 using Bol.Address;
+using Bol.Core.Model;
+using Neo;
 
 namespace Bol.Api.Controllers
 {
@@ -24,7 +28,13 @@ namespace Bol.Api.Controllers
         private readonly Bol.Core.Abstractions.IBolService _coreBolService;
         private readonly IAddressTransformer _addressTransformer;
 
-        public BolController(IBolService bolService, IWalletService walletService, IExportKeyFactory exportKeyFactory, IJsonSerializer jsonSerializer, IKeyPairFactory keyPairFactory, Core.Abstractions.IBolService coreBolService, IAddressTransformer addressTransformer)
+        public BolController(IBolService bolService,
+            IWalletService walletService,
+            IExportKeyFactory exportKeyFactory,
+            IJsonSerializer jsonSerializer,
+            IKeyPairFactory keyPairFactory,
+            Core.Abstractions.IBolService coreBolService,
+            IAddressTransformer addressTransformer)
         {
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
@@ -145,6 +155,42 @@ namespace Bol.Api.Controllers
         public ActionResult TotalSupply()
         {
             var result = _bolService.TotalSupply();
+            return Ok(result);
+        }
+        
+        [HttpPost("migrate")]
+        public async Task<ActionResult> Migrate(string currentBolHash, string walletFolderPath, string password, CancellationToken token)
+        {
+            var keys = Directory.GetFiles(walletFolderPath, "*.json")
+                .Select(System.IO.File.ReadAllText)
+                .Select(_jsonSerializer.Deserialize<BolWallet>)
+                .Select(wallet =>
+                {
+                    var account = wallet.accounts.First();
+                    var key = _exportKeyFactory.GetDecryptedPrivateKey(
+                        account.Key,
+                        password,
+                        wallet.Scrypt.N,
+                        wallet.Scrypt.R,
+                        wallet.Scrypt.P);
+                    return _keyPairFactory.Create(key);
+                })
+                .ToArray();
+
+            var bolSettings = ProtocolSettings.Default.BolSettings;
+            var script = System.IO.File.ReadAllBytes(bolSettings.Path);
+            var migration = new ContractMigration
+            {
+                Author = bolSettings.Author,
+                Description = bolSettings.Description,
+                Email = bolSettings.Email,
+                Name = bolSettings.Name,
+                Version = bolSettings.Version,
+                NewScriptHash = bolSettings.ScriptHash,
+                NewScript = script,
+                CurrentScriptHash = currentBolHash
+            };
+            var result = await _coreBolService.MigrateContract(migration, keys, token);
             return Ok(result);
         }
     }
