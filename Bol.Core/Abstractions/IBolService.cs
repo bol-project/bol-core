@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Model;
+using Bol.Cryptography;
 
 namespace Bol.Core.Abstractions
 {
@@ -21,5 +23,6 @@ namespace Bol.Core.Abstractions
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
         Task<BolAccount> PayCertificationFees(CancellationToken token = default);
         Task<BolAccount> RequestCertification(string codeName, CancellationToken token = default);
+        Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default);
     }
 }

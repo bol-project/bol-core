@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -343,6 +344,36 @@ namespace Bol.Core.Services
             
             var result = await _transactionService.Test<BolAccount>(transaction, token);
 
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default)
+        {
+            var parameters = new[]
+            {
+                migration.NewScript,
+                _hex.Decode("0710"), //Parameter List
+                _hex.Decode("05"), //ContractParameterType = ByteArray
+                _hex.Decode("01"), //ContractPropertyState = HasStorage
+                Encoding.ASCII.GetBytes(migration.Name),
+                Encoding.ASCII.GetBytes(migration.Version),
+                Encoding.ASCII.GetBytes(migration.Author),
+                Encoding.ASCII.GetBytes(migration.Email),
+                Encoding.ASCII.GetBytes(migration.Description)
+            };
+            var publicKeys = keys.Select(key => key.PublicKey).ToArray();
+            var signers = publicKeys.Length / 2 + 1;
+            var multisig = _signatureScriptFactory.Create(publicKeys, signers);
+
+            var description = $"Migrate {migration.Name} Smart Contract to version {migration.Version}";
+            var remarks = new[] { "migrate", migration.Name, migration.Version, migration.NewScriptHash };
+            var transaction = _transactionService.Create(multisig, migration.CurrentScriptHash, "migrate", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, multisig, keys.Take(signers));
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+            
             await _transactionService.Publish(transaction, token);
 
             return result;
