@@ -491,55 +491,43 @@ namespace Bol.Coin.Services
             uint startClaimHeight = (previousHeight / claimInterval) * claimInterval;
             uint endClaimHeight = (currentHeight / claimInterval) * claimInterval;
 
-            if (startClaimHeight == endClaimHeight) 
+            if (startClaimHeight == endClaimHeight)
             {
-                Runtime.Notify("error", BolResult.Forbidden("Nothing to claim in the same interval."));
+                Runtime.Notify("error", BolResult.Forbidden("Υou have claimed your share for this interval."));
                 return false;
             }
-
-            var bpsYear = BolRepository.GetBpsYear();
-            var dpsYear = BolRepository.GetDpsYear();
-            var popYear = BolRepository.GetPopYear();
-            var yearStamp = BolRepository.GetYearStamp();
-
-            //adding a method to distribute the remaining amount of the fee bucket to each validator 
-            var firstInClaim = BolRepository.GetPopulationAtBlock(endClaimHeight);
-            if (firstInClaim == 0)
+            //separating the claim from the storage data record
+            var intervalPopulation = BolRepository.GetPopulationAtBlock(endClaimHeight);
+            if (intervalPopulation == 0)
             {
-                DistributeFees();
-                
-                //refresh account data after fee distribution
-                bolAccount = BolRepository.GetAccount(codeName);
-            }
+                //storage data record
 
-            BigInteger cpp = 0;
-            BigInteger intervalDistribute = 0;
-            for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
-            {
-                intervalDistribute = BolRepository.GetDistributeAtBlock(i);
-                if(intervalDistribute > 0)
+                var bpsYear = BolRepository.GetBpsYear();
+                var dpsYear = BolRepository.GetDpsYear();
+                var popYear = BolRepository.GetPopYear();
+                var yearStamp = BolRepository.GetYearStamp();
+
+                uint storageWriter = endClaimHeight;
+                while (intervalPopulation == 0 && storageWriter > claimInterval)
                 {
-                    cpp += intervalDistribute;
+                    storageWriter -= claimInterval;
+                    intervalPopulation = BolRepository.GetPopulationAtBlock(storageWriter);
                 }
-                else
+                for (uint i = (storageWriter + claimInterval); i <= endClaimHeight; i += claimInterval)
                 {
                     var intervalTotal = BolRepository.GetRegisteredAtBlock(i);
-                    uint pointer = i;
-                    while (intervalTotal == 0 && pointer > claimInterval)
+                    if(intervalTotal == 0)
                     {
-                        pointer -= claimInterval;
-                        intervalTotal = BolRepository.GetRegisteredAtBlock(pointer);
+                        var intervalTotal = BolRepository.GetRegisteredAtBlock(i-claimInterval);
                     }
-
                     var EndIntervalStamp = Blockchain.GetBlock(i).Timestamp;
-                    
                     var StartIntervalStamp = Blockchain.GetBlock(i - claimInterval).Timestamp;
                     var intervalTime = EndIntervalStamp - StartIntervalStamp;
 
                     uint currentYear = 2022;
                     while (currentYear <= 2032)
                     {
-                        if(EndIntervalStamp > yearStamp[currentYear] && EndIntervalStamp <= yearStamp[currentYear+1] )
+                        if(EndIntervalStamp > yearStamp[currentYear] && EndIntervalStamp <= yearStamp[currentYear + 1])
                         {
                             break;
                         }
@@ -571,15 +559,28 @@ namespace Bol.Coin.Services
                     BolRepository.SetPopulationAtBlock(i, Pop);
                     var totalSupply = BolRepository.GetTotalSupplyAtBlock(i - claimInterval) + intervalBirths;
                     BolRepository.SetTotalSupplyAtBlock(i, totalSupply);
-
-                    cpp += intervalDistribute;
-                }                    
+                }
+                    //fee disrtibution
+                    DistributeFees();
+                    //refresh account data after fee disrtibution
+                    bolAccount = BolRepository.GetAccount(codeName);
             }
-            
+            //claim
+            BigInteger cpp = 0;
+            BigInteger intervalDistribute = 0;
+            for (uint i = (startClaimHeight + claimInterval); i <= endClaimHeight; i += claimInterval)
+            {
+                intervalDistribute = BolRepository.GetDistributeAtBlock(i);
+                if (intervalDistribute > 0)
+                {
+                    cpp += intervalDistribute;
+                }
+            }
+
             bolAccount.ClaimBalance = bolAccount.ClaimBalance + cpp;
             bolAccount.LastClaimHeight = currentHeight;
             bolAccount.LastClaim = cpp;
-            
+
             AddTransactionEntry(bolAccount, Constants.TransactionTypeClaim, null, null, bolAccount.CodeName, bolAccount.MainAddress, cpp);
 
             BolRepository.SaveAccount(bolAccount);
@@ -594,8 +595,9 @@ namespace Bol.Coin.Services
             Runtime.Notify("claim", BolResult.Ok(result));
 
             return true;
+
         }
-        
+
         public static bool GetCertifiers(byte[] countryCode)
         {
             var certifiers = BolRepository.GetCertifiers(countryCode);
