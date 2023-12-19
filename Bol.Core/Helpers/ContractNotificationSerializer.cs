@@ -56,7 +56,7 @@ public static class ContractNotificationSerializer
         account.LastCertificationHeight = accountParts[15] != null ? ParseInt(accountParts[15]?.ToString()) : 0;
         account.LastCertifierSelectionHeight =
             accountParts[16] != null ? ParseInt(accountParts[16]?.ToString()) : 0;
-        account.IsCertifier = bool.TryParse(accountParts[17]?.ToString() ?? "", out var isCertifier) && isCertifier;
+        account.IsCertifier = int.TryParse(accountParts[17]?.ToString() ?? "0", out var isCertifier) && isCertifier == 1;
         account.Collateral = accountParts[18] == null ? null : accountParts[18]?.ToString() ?? "";
         account.CertificationFee = accountParts[19] is (null or false) ? null : accountParts[19]?.ToString() ?? "";
         account.Countries = accountParts[20] == null ? null : accountParts[20]?.ToString() ?? "";
