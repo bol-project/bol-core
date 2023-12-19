@@ -379,6 +379,60 @@ namespace Bol.Core.Services
             return result;
         }
 
+        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<string> countries, BigInteger fee, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                countries.SelectMany(c => Encoding.ASCII.GetBytes(c)).ToArray(),
+                fee.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Registration as Certifier {context.CodeName}/{mainAddressString} with fee {fee}";
+            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString() };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "registerCertifier", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> UnRegisterAsCertifier(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName)
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Remove Registration as Certifier {context.CodeName}/{mainAddressString}";
+            var remarks = new[] { "unregisterCertifier", context.CodeName };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "unregisterCertifier", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
         private ISignatureScript CreateMainAddress(IBolContext context)
         {
             return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);
