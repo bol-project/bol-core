@@ -16,7 +16,7 @@ namespace Bol.Coin.Tests.ContractTests
             var registerNotification = await WhitelistAndRegister();
             var certifiedNotification = await AddCertifications();
             
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
 
             await _service.Claim();
             
@@ -37,7 +37,7 @@ namespace Bol.Coin.Tests.ContractTests
             var registerNotification = await WhitelistAndRegister();
             await AddCertifications();
 
-            _emulator.blockchain.AddMockBlocks(400);
+            _emulator.blockchain.AddMockBlocks(10*EmulatorUtils.ClaimInterval);
 
             await _service.Claim();
             var result = _emulator.Execute(_transactionGrabber);
@@ -51,17 +51,17 @@ namespace Bol.Coin.Tests.ContractTests
             await WhitelistAndRegister();
             await AddCertifications();
 
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
 
             await _service.Claim();
             _emulator.Execute(_transactionGrabber);
             
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(1);
 
             await _service.TransferClaim(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"), BigInteger.Parse("100000000"));
             _emulator.Execute(_transactionGrabber);
             
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
             
             await _service.Claim();
             var result = _emulator.Execute(_transactionGrabber);
@@ -75,7 +75,7 @@ namespace Bol.Coin.Tests.ContractTests
             await WhitelistAndRegister();
             await AddCertifications();
             
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
 
             await _service.Claim();
             var claimResult = _emulator.Execute(_transactionGrabber);
@@ -85,7 +85,7 @@ namespace Bol.Coin.Tests.ContractTests
             var transferClaimResult = _emulator.Execute(_transactionGrabber);
             transferClaimResult.Should().BeTrue();
             
-            _emulator.blockchain.AddMockBlocks(100);
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
             
             await _validatorService.Claim();
             var result = _emulator.Execute(_transactionGrabber);

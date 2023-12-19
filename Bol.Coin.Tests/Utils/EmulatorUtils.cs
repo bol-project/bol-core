@@ -8,6 +8,7 @@ namespace Bol.Coin.Tests.Utils
 {
     public static class EmulatorUtils
     {
+        public const int ClaimInterval = 240;
         public static Emulator Create()
         {
             var avmBytes = File.ReadAllBytes("Bol.Coin.avm");

@@ -14,7 +14,7 @@ public class TransferTest : TestBase
         await WhitelistAndRegister();
         await AddCertifications();
 
-        _emulator.blockchain.AddMockBlocks(100);
+        _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
 
         await _service.Claim();
         _emulator.Execute(_transactionGrabber);
@@ -32,7 +32,7 @@ public class TransferTest : TestBase
         await WhitelistAndRegister();
         await AddCertifications();
 
-        _emulator.blockchain.AddMockBlocks(100);
+        _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
 
         await _service.Claim();
         _emulator.Execute(_transactionGrabber);
