@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
-using Bol.Coin.Persistence;
 using Bol.Coin.Tests.Utils;
 using Bol.Core.Helpers;
 using Bol.Core.Model;
