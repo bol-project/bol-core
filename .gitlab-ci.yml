@@ -6,54 +6,10 @@ variables:
   DOCKER_HOST: tcp://docker-dind:2375
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-.build:
+build_main_node:
   stage: build
   image: docker:latest
   only:
-    - feature2021/BolAddress_Model
-    - develop
-    - master
-  variables:
-    VALIDATOR_NAME: validator-1
-    GIT_SUBMODULE_STRATEGY: recursive
-  script:
-    - docker info
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
-    - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
-    - echo CI_BUILD_REF=$CI_BUILD_REF
-    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.$VALIDATOR_NAME
-    - echo IMAGE_TAG=$IMAGE_TAG
-    - docker build --build-arg validator_wallet=$VALIDATOR_NAME.json -f Bol.Api/Validator.Dockerfile -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
-  tags:
-    - build-internal
-
-build_node_1:
-  extends: .build
-  variables:
-    VALIDATOR_NAME: validator-1
-
-build_node_2:
-  extends: .build
-  variables:
-    VALIDATOR_NAME: validator-2
-
-build_node_3:
-  extends: .build
-  variables:
-    VALIDATOR_NAME: validator-3
-
-build_node_4:
-  extends: .build
-  variables:
-    VALIDATOR_NAME: validator-4
-
-build_rpc_node:
-  stage: build
-  image: docker:latest
-  only:
-    - feature2021/BolAddress_Model
     - develop
     - master
   variables:
@@ -64,7 +20,7 @@ build_rpc_node:
     - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
     - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
     - echo CI_BUILD_REF=$CI_BUILD_REF
-    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.rpcnode
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
     - docker build -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
@@ -83,7 +39,6 @@ build_rpc_node:
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE_ALLOWED: '*'
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
   only:
-    - feature2021/BolAddress_Model
     - master
     - develop
   stage: deploy
@@ -92,14 +47,14 @@ build_rpc_node:
     - echo -n $KUBE_CONFIG | base64 -d > `pwd`/kube-config
     - export KUBECONFIG=`pwd`/kube-config
   script:
-    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.$VALIDATOR_NAME
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
     - kubectl version
     - kubectl cluster-info
     - cd manifests/    
-    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" deployment.yaml service.yaml
+    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml deployment.yaml service.yaml
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" deployment.yaml
-    - kubectl apply -f deployment.yaml
+    - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
     - kubectl apply -f service.yaml
     - kubectl apply -f nginx-config.yaml
     - kubectl rollout status -f deployment.yaml
@@ -124,6 +79,36 @@ deploy_node_4:
   extends: .deploy
   variables:
     VALIDATOR_NAME: validator-4
+
+deploy_node_5:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-5
+
+deploy_node_6:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-6
+
+deploy_node_7:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-7
+
+deploy_node_8:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-8
+
+deploy_node_9:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-9
+
+deploy_node_10:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-10
 
 deploy_rpc_node:
   extends: .deploy

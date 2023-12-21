@@ -43,6 +43,5 @@ FROM runtime-base AS runtime
 
 WORKDIR /app
 COPY --from=build /app/Bol.Api/out ./
-COPY ./validators /validators
 RUN mkdir /blockchain
 ENTRYPOINT ["dotnet", "Bol.Api.dll"]
