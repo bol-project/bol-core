@@ -61,16 +61,16 @@ spec:
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
-    volumes:
-      - name: wallet-volume
-        secret:
-          secretName: __CI_BUILD_REF_SLUG__-wallet
-      - name: config-volume
-        secret:
-          secretName: validator-config
-      - name: protocol-volume
-        secret:
-          secretName: validator-protocol
+      volumes:
+        - name: wallet-volume
+          secret:
+            secretName: __CI_BUILD_REF_SLUG__-wallet
+        - name: config-volume
+          secret:
+            secretName: validator-config
+        - name: protocol-volume
+          secret:
+            secretName: validator-protocol
   volumeClaimTemplates:
   - metadata:
       name: blockchain
