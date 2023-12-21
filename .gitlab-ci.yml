@@ -53,7 +53,7 @@ build_main_node:
     - kubectl cluster-info
     - cd manifests/    
     - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml deployment.yaml service.yaml
-    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" deployment.yaml
+    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
     - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
     - kubectl apply -f service.yaml
     - kubectl apply -f nginx-config.yaml
