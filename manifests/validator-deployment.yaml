@@ -34,7 +34,7 @@ spec:
           mountPath: /blockchain
         - name: wallet-volume
           mountPath: /app/wallet.json
-          subPath: wallet.json
+          subPath: __CI_BUILD_REF_SLUG__-wallet.json
           readOnly: true
         - name: config-volume
           mountPath: /app/config.json
