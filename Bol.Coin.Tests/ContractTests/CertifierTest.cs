@@ -18,7 +18,7 @@ public class CertifierTest : TestBase
         await _validatorService.Claim();
         _emulator.Execute(_transactionGrabber);
         
-        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BQLDQNWYtBXisR1E6otGYF4SQNMz3cKdAt"),
+        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj"),
             BigInteger.Parse("100000000000"));
        _emulator.Execute(_transactionGrabber);
        

@@ -39,7 +39,7 @@ public abstract class TestBase
             
         _service = BolServiceFactory.Create(_transactionGrabber);
 
-        var blockchainValidatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1985MP<LsDDs8n8snS5BCA", "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+        var blockchainValidatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1982M<5A7b1xQXR3c<13857", "BBBQ8Y8VamVmN4XTaprScFzzghATbMj9mS");
         _validatorService = BolServiceFactory.Create(_transactionGrabber, blockchainValidatorContext);
     }
     

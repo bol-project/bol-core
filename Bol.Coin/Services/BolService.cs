@@ -216,7 +216,8 @@ namespace Bol.Coin.Services
             BolRepository.SetPopYear(Constants.PopulationPerYear());
             BolRepository.SetYearStamp(Constants.TimestampPerYear());
             
-            BolRepository.SetTotalSupplyAtBlock(0, Constants.PopulationAtGenesis);
+            BolRepository.SetTotalSupplyAtBlock(new byte[]{0x00}.ToBigInteger(), Constants.PopulationAtGenesis);
+            BolRepository.SetPopulationAtBlock(new byte[]{0x00}.ToBigInteger(), Constants.PopulationAtGenesis);
             
             BolRepository.SetFeeBucket(0);
             BolRepository.SetTransferFee(Constants.TransferFee);

@@ -153,17 +153,17 @@ namespace Neo.SmartContract
                     var codeName = (byte[])args[0];
                     return BolService.GetAccount(codeName);
                 }
-                if (operation == "addCommercialAddress")
-                {
-                    if (args.Length != 2)
-                    {
-                        Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
-                        return false;
-                    }
-                    var codeName = (byte[])args[0];
-                    var commercialAddress = (byte[])args[1];
-                    return BolService.AddCommercialAddress(codeName, commercialAddress);
-                }
+                // if (operation == "addCommercialAddress")
+                // {
+                //     if (args.Length != 2)
+                //     {
+                //         Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                //         return false;
+                //     }
+                //     var codeName = (byte[])args[0];
+                //     var commercialAddress = (byte[])args[1];
+                //     return BolService.AddCommercialAddress(codeName, commercialAddress);
+                // }
                 if (operation == "getCertifiers")
                 {
                     if (args.Length != 1)
