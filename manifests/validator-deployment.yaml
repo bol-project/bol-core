@@ -32,6 +32,18 @@ spec:
         volumeMounts:
         - name: blockchain
           mountPath: /blockchain
+        - name: wallet-volume
+          mountPath: /app/wallet.json
+          subPath: wallet.json
+          readOnly: true
+        - name: config-volume
+          mountPath: /app/config.json
+          subPath: config.json
+          readOnly: true
+        - name: protocol-volume
+          mountPath: /app/protocol.json
+          subPath: protocol.json
+          readOnly: true
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
@@ -49,19 +61,6 @@ spec:
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
-          volumeMounts:
-            - name: wallet-volume
-              mountPath: /app/wallet.json
-              subPath: wallet.json
-              readOnly: true
-            - name: config-volume
-              mountPath: /app/config.json
-              subPath: config.json
-              readOnly: true
-            - name: protocol-volume
-              mountPath: /app/protocol.json
-              subPath: protocol.json
-              readOnly: true
     volumes:
       - name: wallet-volume
         secret:
