@@ -41,7 +41,7 @@ namespace Bol.Core.Services
 
             var birthdayToHash = person.Birthdate.ToString(Constants.CODENAME_BIRTHDATE_FORMAT, CultureInfo.InvariantCulture);
 
-            var ninToHash = GetLastFourNinDigits(person.Nin);
+            var ninToHash = GetLastNCharacters(person.Nin, 5);
 
             var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
 
@@ -62,9 +62,11 @@ namespace Bol.Core.Services
             return Encoding.ASCII.GetString(codeNameWithoutChecksum) + hexEncodeChecksum;
         }
 
-        private string GetLastFourNinDigits(string nin)
+        private string GetLastNCharacters(string nin, int chars)
         {
-            return nin.Substring(nin.Length - 4);
+            if (nin.Length < chars) throw new ArgumentException($"NIN needs to be at least {chars} characters.");
+            
+            return nin.Substring(nin.Length - chars);
         }
 
         private string ReplaceCombinationIfEmpty(string compination)
