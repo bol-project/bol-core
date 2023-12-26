@@ -55,9 +55,9 @@ namespace Bol.Core.Tests.Services
             _codeNameValidator.ValidateAndThrow(codeNameSmith);
             _codeNameValidator.ValidateAndThrow(codeNameZhou);
 
-            Assert.Equal("P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941", codeNamePapadopoulos);
-            Assert.Equal("P<USA<SMITH<M<<<2006M<5rQv7Z7NyA3<1C85D", codeNameSmith);
-            Assert.Equal("P<CHN<ZHOU<L<<<1989F<hX8fV4smtv4<PFFCF", codeNameZhou);
+            Assert.Equal("P<GRC<PAPA8<G<<<1963M<ca8FXTowBuE<1B58E", codeNamePapadopoulos);
+            Assert.Equal("P<USA<SM3<M<<<2006M<5rQv7Z7NyA3<19FDC", codeNameSmith);
+            Assert.Equal("P<CHN<ZH2<L<<<1989F<hX8fV4smtv4<PFB52", codeNameZhou);
 
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNamePapadopoulos), 2, 2));
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameSmith), 2, 2));
