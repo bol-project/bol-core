@@ -71,12 +71,12 @@ namespace Bol.Core.Serializers
 
             var result = $"P" +
                          $"{DIV}{person.CountryCode}" +
-                         $"{DIV}{person.Surname}" +
+                         $"{DIV}{NumberEllipsis(person.Surname, 4)}" +
                          $"{DIV}{person.FirstName.First()}";
 
             if (person.MiddleName != null)
             {
-                result = result + $"{DIV}{person.MiddleName}";
+                result = result + $"{DIV}{NumberEllipsis(person.MiddleName,3)}";
             }
             else
             {
@@ -85,7 +85,7 @@ namespace Bol.Core.Serializers
 
             if (person.ThirdName != null)
             {
-                result = result + $"{DIV}{person.ThirdName}";
+                result = result + $"{DIV}{NumberEllipsis(person.ThirdName,3)}";
             }
             else
             {
