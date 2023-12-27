@@ -73,9 +73,11 @@ namespace Bol.Coin.Services
                 .Concat(new byte[] { 0x00 })
                 .AsBigInteger();
 
+            BigInteger claimBalance = 0;
             if (Constants.BAddressStart <= addressPrefix && addressPrefix <= Constants.BAddressEnd)
             {
                 accountType = Constants.AccountTypeB;
+                claimBalance = 1 * Constants.Factor;
             }
             else if (Constants.CAddressStart <= addressPrefix && addressPrefix <= Constants.CAddressEnd)
             {
@@ -96,7 +98,7 @@ namespace Bol.Coin.Services
             account.BlockChainAddress = blockChainAddress;
             account.SocialAddress = socialAddress;
             account.VotingAddress = votingAddress;
-            account.ClaimBalance = 1 * Constants.Factor;
+            account.ClaimBalance = claimBalance;
             account.TotalBalance = 0;
             account.RegistrationHeight = currentHeight;
             account.LastClaimHeight = currentHeight;
@@ -116,8 +118,11 @@ namespace Bol.Coin.Services
             
             AddTransactionEntry(account, Constants.TransactionTypeRegister, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
             BolRepository.SaveAccount(account);
-            
-            Transferred(null, account.MainAddress , account.ClaimBalance);
+
+            if (account.ClaimBalance != 0)
+            {
+                Transferred(null, account.MainAddress , account.ClaimBalance);
+            }
 
             BolRepository.AddRegisteredPerson();
             var totalRegistered = BolRepository.GetTotalRegisteredPersons();
