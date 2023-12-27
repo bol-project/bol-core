@@ -569,7 +569,7 @@ namespace Bol.Coin.Services
                     BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
                     BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
 
-                    intervalDistribute = intervalTime * DpsNC / intervalTotal;
+                    intervalDistribute = intervalTime * DpsNC / intervalTotal; //TODO: Add DistributeCm and DistributeFa
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
                     BolRepository.SetRegisteredAtBlock(i, intervalTotal);
                     var intervalBirths = intervalTime * Bps;
