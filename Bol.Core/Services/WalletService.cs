@@ -42,7 +42,17 @@ namespace Bol.Core.Services
             _base16Encoder = base16Encoder ?? throw new ArgumentNullException(nameof(base16Encoder));
         }
 
-        public async Task<BolWallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
+        public Task<BolWallet> CreateWalletB(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
+        {
+            return CreateWallet(_addressService.GenerateAddressBAsync, walletPassword, codeName, edi, privateKey, token);
+        }
+
+        public Task<BolWallet> CreateWalletC(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
+        {
+            return CreateWallet(_addressService.GenerateAddressCAsync, walletPassword, codeName, edi, privateKey, token);
+        }
+
+        private async Task<BolWallet> CreateWallet(Func<string,IKeyPair,CancellationToken,Task<BolAddress>> bolAddressGenerator, string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
             var privateKeyPair = privateKey == null
                 ? _keyPairFactory.Create()
@@ -50,7 +60,7 @@ namespace Bol.Core.Services
             
             var codeNameKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName)));
             
-            var bolAddress = await _addressService.GenerateAddressBAsync(codeName, privateKeyPair, token);
+            var bolAddress = await bolAddressGenerator(codeName, privateKeyPair, token);
             var nonce = BitConverter.GetBytes(bolAddress.Nonce);
             
             var extendedKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce)));
