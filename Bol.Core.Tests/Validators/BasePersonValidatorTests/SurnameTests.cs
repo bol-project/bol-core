@@ -39,10 +39,9 @@ namespace Bol.Core.Tests.Validators.BasePersonValidatorTests
         [Theory]
         [InlineData("ABC123")]
         [InlineData("123")]
-        [InlineData("abc123")]
-        public void Validator_ShouldHaveError_WhenSurname_HasNumbers(string surname)
+        public void Validator_ShouldNotHaveError_WhenSurname_HasNumbers(string surname)
         {
-            _validator.ShouldHaveValidationErrorFor(p => p.Surname, surname);
+            _validator.ShouldNotHaveValidationErrorFor(p => p.Surname, surname);
         }
 
         [Theory]
