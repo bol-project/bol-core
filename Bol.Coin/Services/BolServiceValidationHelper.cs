@@ -85,6 +85,12 @@ public static class BolServiceValidationHelper
             return false;
         }
 
+        if (account.AccountType != Constants.AccountTypeB)
+        {
+            Runtime.Notify("error", BolResult.Forbidden("You need to be a physical Person in order to Transfer Claim."));
+            return false;
+        }
+
         if (account.ClaimBalance < value + claimTransferFee)
         {
             Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols than claim balance."));
