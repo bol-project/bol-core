@@ -17,13 +17,17 @@ namespace Bol.Coin.Tests.ContractTests;
 
 public abstract class TestBase
 {
+    public const string COMPANY_CODENAME = "P<GRC<BOL<FOUNDATION<<<2018MP<LsDDs8n8snS5BCA";
+    public const string COMPANY_MAIN_ADDRESS = "BCCuJDrUhciVk2B8FfNreJwj5F588HBZzJ";
+    
     protected readonly Emulator _emulator;
     protected readonly BolService _service;
     protected readonly TransactionGrabber _transactionGrabber;
     protected readonly AddressTransformer _addressTransformer;
     protected readonly BolService _validatorService;
+    protected readonly BolService _companyService;
     protected string _notifyOutput;
-    
+
     protected TestBase()
     {
         _emulator = EmulatorUtils.Create((string notifyOutput) =>
@@ -39,8 +43,11 @@ public abstract class TestBase
             
         _service = BolServiceFactory.Create(_transactionGrabber);
 
-        var blockchainValidatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1982M<5A7b1xQXR3c<13857", "BBBQ8Y8VamVmN4XTaprScFzzghATbMj9mS");
-        _validatorService = BolServiceFactory.Create(_transactionGrabber, blockchainValidatorContext);
+        var validatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1982M<5A7b1xQXR3c<13857", "BBBQ8Y8VamVmN4XTaprScFzzghATbMj9mS");
+        _validatorService = BolServiceFactory.Create(_transactionGrabber, validatorContext);
+        
+        var companyContext = BolContextFactory.Create(COMPANY_CODENAME, COMPANY_MAIN_ADDRESS);
+        _companyService = BolServiceFactory.Create(_transactionGrabber, companyContext);
     }
     
     protected async Task<ContractNotification> AddCertifications()

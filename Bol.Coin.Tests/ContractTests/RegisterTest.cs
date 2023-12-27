@@ -1,7 +1,10 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
+using Bol.Core.Helpers;
+using Bol.Core.Model;
 using Bol.Core.Services;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
@@ -30,6 +33,84 @@ namespace Bol.Coin.Tests.ContractTests
             var result = _emulator.Execute(_transactionGrabber);
             
             Assert.True(result);
+        }
+        
+        [Fact]
+        public async Task Register_Should_CompleteSuccessfully_WhenAccountIsCompany()
+        {
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            await _validatorService.Whitelist(_addressTransformer.ToScriptHash(COMPANY_MAIN_ADDRESS));
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.Register();
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            var registerNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
+            Assert.True(string.IsNullOrWhiteSpace(registerNotification.Account.ClaimBalance) || registerNotification.Account.ClaimBalance == "0");
+            Assert.True(result);
+        }
+        
+        [Fact]
+        protected async Task CompanyAccount_Should_GoToStatusOpen_WhenTwoCertificationsReceived()
+        {
+            await _service.Deploy();
+            _emulator.Execute(_transactionGrabber);
+
+            await _validatorService.Whitelist(_addressTransformer.ToScriptHash(COMPANY_MAIN_ADDRESS));
+            _emulator.Execute(_transactionGrabber);
+
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.Register();
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.SelectMandatoryCertifiers();
+            _emulator.Execute(_transactionGrabber);
+            var selectionNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
+            var mandatoryCertifier = selectionNotification.Account.MandatoryCertifiers.First().Key;
+            var mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+            var mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
+                
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.RequestCertification(mandatoryCertifier);
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+                
+            await mandatoryCertifierService.Certify(COMPANY_CODENAME);
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.SelectMandatoryCertifiers();
+            _emulator.Execute(_transactionGrabber);
+            selectionNotification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+            
+            mandatoryCertifier = selectionNotification.Account.MandatoryCertifiers.First().Key;
+            mandatoryCertifierContext = BolContextFactory.Create(mandatoryCertifier, "BBB9yo34hw2RarigYR3LrcXzrxEPMjojt5");
+            mandatoryCertifierService = BolServiceFactory.Create(_transactionGrabber, mandatoryCertifierContext);
+                
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _companyService.RequestCertification(mandatoryCertifier);
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+                
+            await mandatoryCertifierService.Certify(COMPANY_CODENAME);
+            _emulator.Execute(_transactionGrabber);
+            
+            var companyAccount = ContractNotificationSerializer.Deserialize(_notifyOutput).Account;
+            Assert.True(companyAccount.AccountStatus == AccountStatus.Open);
         }
 
         [Fact]
