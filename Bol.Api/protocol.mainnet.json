@@ -38,9 +38,9 @@
       "RegisterTransaction": 10000
     },
     "BolContract": {
-      "ScriptHash": "31a16f69b621203eab229e2a8ce63b8f0af642cb",
+      "ScriptHash": "1015babc18a1cbbc1f5c4996af9c733e5e274dec",
       "Name": "Bol",
-      "Version": "0.2",
+      "Version": "0.3",
       "Author": "Bol Team",
       "Email": "admin@bolchain.net",
       "Description": "Bonus Of Life",

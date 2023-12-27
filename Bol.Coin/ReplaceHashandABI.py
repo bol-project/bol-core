@@ -45,7 +45,6 @@ with open('bin/Debug/net6.0/Bol.Coin.abi.json') as json_file:
   print(the_hash)
 
 hash_replace('../Bol.Api/protocol.json', the_hash, protocol_path)
-hash_replace('../Bol.Api/protocol.internal.json', the_hash, protocol_path)
 hash_replace('../Bol.Api/protocol.mainnet.json', the_hash, protocol_path)
 
 hash_replace('../Bol.Api/appsettings.json', the_hash, appsettings_path)
