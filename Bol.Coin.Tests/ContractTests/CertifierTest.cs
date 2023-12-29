@@ -30,7 +30,9 @@ public class CertifierTest : TestBase
         await _validatorService.RegisterAsCertifier(new [] {"GR"}, BigInteger.Parse("500"));
         var result = _emulator.Execute(_transactionGrabber);
         
-        var account = ContractNotificationSerializer.Deserialize(_notifyOutput);
+        var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
         Assert.True(result);
+        Assert.True(notification.Account.IsCertifier);
+        Assert.True(notification.Account.Collateral == "100000000000");
     }
 }
