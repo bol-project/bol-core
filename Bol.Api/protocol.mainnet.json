@@ -38,7 +38,7 @@
       "RegisterTransaction": 10000
     },
     "BolContract": {
-      "ScriptHash": "1015babc18a1cbbc1f5c4996af9c733e5e274dec",
+      "ScriptHash": "c857d06b4ec16cf29a379ef867ef14fa4c455be6",
       "Name": "Bol",
       "Version": "0.3",
       "Author": "Bol Team",
