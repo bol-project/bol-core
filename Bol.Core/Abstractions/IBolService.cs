@@ -23,7 +23,7 @@ namespace Bol.Core.Abstractions
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
         Task<BolAccount> PayCertificationFees(CancellationToken token = default);
         Task<BolAccount> RequestCertification(string codeName, CancellationToken token = default);
-        Task<BolAccount> RegisterAsCertifier(IEnumerable<string> countries, BigInteger fee, CancellationToken token = default);
+        Task<BolAccount> RegisterAsCertifier(IEnumerable<Country> countries, BigInteger fee, CancellationToken token = default);
         Task<BolAccount> UnRegisterAsCertifier(CancellationToken token = default);
         Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default);
     }

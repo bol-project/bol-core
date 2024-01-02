@@ -379,14 +379,14 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<string> countries, BigInteger fee, CancellationToken token = default)
+        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<Country> countries, BigInteger fee, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
                 Encoding.ASCII.GetBytes(context.CodeName),
-                countries.SelectMany(c => Encoding.ASCII.GetBytes(c)).ToArray(),
+                countries.SelectMany(c => Encoding.ASCII.GetBytes(c.Alpha3)).ToArray(),
                 fee.ToByteArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
