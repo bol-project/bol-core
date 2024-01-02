@@ -360,9 +360,9 @@ namespace Bol.Coin.Services
             bolAccount.CertificationFee = 1 * fee;
             bolAccount.Countries = countries;
 
-            for (var i = 0; i < countries.Length; i += 6)
+            for (var i = 0; i < countries.Length; i += 3)
             {
-                var countryCode = countries.Range(i, 6);
+                var countryCode = countries.Range(i, 3);
                 var certifiers = BolRepository.GetCertifiers(countryCode);
                 certifiers[bolAccount.CodeName] = fee;
                 BolRepository.SetCertifiers(countryCode, certifiers);
