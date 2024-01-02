@@ -2,6 +2,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Bol.Coin.Tests.Utils;
 using Bol.Core.Helpers;
+using Bol.Core.Model;
 using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests;
@@ -27,7 +28,8 @@ public class CertifierTest : TestBase
         await _validatorService.UnRegisterAsCertifier();
         _emulator.Execute(_transactionGrabber);
 
-        await _validatorService.RegisterAsCertifier(new [] {"GR"}, BigInteger.Parse("500"));
+        await _validatorService.RegisterAsCertifier(new[] { new Country() { Alpha3 = "GRC" } },
+            BigInteger.Parse("500"));
         var result = _emulator.Execute(_transactionGrabber);
         
         var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
