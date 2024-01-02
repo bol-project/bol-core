@@ -119,22 +119,26 @@ namespace Bol.Coin.Services
             AddTransactionEntry(account, Constants.TransactionTypeRegister, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
             BolRepository.SaveAccount(account);
 
-            if (account.ClaimBalance != 0)
+            if (account.AccountType == Constants.AccountTypeB)
             {
                 Transferred(null, account.MainAddress , account.ClaimBalance);
-            }
 
-            BolRepository.AddRegisteredPerson();
-            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
+                BolRepository.AddRegisteredPerson();
+                var totalRegistered = BolRepository.GetTotalRegisteredPersons();
            
-            uint claimInterval = (uint)BolRepository.GetClaimInterval();
-            uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
-            if (currentHeight != 0 && currentHeight % claimInterval == 0)
-            {
-                endOfInterval = currentHeight;
-            }
+                uint claimInterval = (uint)BolRepository.GetClaimInterval();
+                uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+                if (currentHeight != 0 && currentHeight % claimInterval == 0)
+                {
+                    endOfInterval = currentHeight;
+                }
 
-            BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
+                BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
+            }
+            else if (account.AccountType == Constants.AccountTypeC)
+            {
+                BolRepository.AddRegisteredCompany();
+            }
 
             var result = BolRepository.GetAccount( account.CodeName);
 
