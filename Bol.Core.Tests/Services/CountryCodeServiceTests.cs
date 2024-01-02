@@ -69,5 +69,30 @@ namespace Bol.Core.Tests.Services
         {
             Assert.Null(_service.GetCountry("GRT"));
         }
+
+        [Theory]
+        [InlineData("A23B43#C427")]
+        [InlineData("A3F")]
+        [InlineData("A$F")]
+        [InlineData("Grc")]
+        [InlineData("gRC")]
+        [InlineData("123")]
+        [InlineData("GRCS")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void CountryConstructor_ShouldThrowError_WhenAlpha3IsNotValid(string alpha3)
+        {
+            Assert.Throws<ArgumentException>(() => new Country() { Alpha3 = alpha3 });
+        }
+
+        [Theory]
+        [InlineData("GRC")]
+        [InlineData("ENG")]
+        [InlineData("USA")]
+        [InlineData("ETH")]
+        public void CountryConstructor_ShouldCreateObject_WhenAlpha3IsValid(string alpha3)
+        {
+            Assert.NotNull(() => new Country() { Alpha3 = alpha3 });
+        }
     }
 }
