@@ -165,6 +165,20 @@ namespace Bol.Api.Controllers
             var result = _bolService.TotalSupply();
             return Ok(result);
         }
+
+        [HttpPost("multi-citizenship")]
+        public async Task<ActionResult> AddMultiCitizenship(string shortHash, CancellationToken token)
+        {
+            var result = await _coreBolService.AddMultiCitizenship(shortHash, token);
+            return Ok(result);
+        }
+
+        [HttpGet("multi-citizenship")]
+        public async Task<ActionResult> IsMultiCitizenship(string shortHash, CancellationToken token)
+        {
+            var result = await _coreBolService.IsMultiCitizenship(shortHash, token);
+            return Ok(result);
+        }
         
         [HttpPost("migrate")]
         public async Task<ActionResult> Migrate(string currentBolHash, string walletFolderPath, string password, CancellationToken token)

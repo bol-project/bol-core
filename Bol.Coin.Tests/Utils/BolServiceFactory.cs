@@ -41,7 +41,7 @@ namespace Bol.Coin.Tests.Utils
             var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
             var addressTransformer = new AddressTransformer(base58, base16, protocolConfig);
             
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, addressTransformer);
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer);
         }
         
         public static BolService Create(TransactionGrabber grabber)
@@ -79,7 +79,7 @@ namespace Bol.Coin.Tests.Utils
             var rpcMethodFactory = new FakeRpcMethodFactory(grabber);
             var transactionService = new TransactionService(signatureScriptFactory, scriptHashFactory, transactionNotarizer, rpcMethodFactory);
 
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, addressTransformer);
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer);
         }
     }
 }

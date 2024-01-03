@@ -18,6 +18,8 @@ namespace Bol.Core.Abstractions
         Task<BolAccount> Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default);
         Task<bool> Whitelist(IScriptHash address, CancellationToken token = default);
         Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default);
+        Task<bool> AddMultiCitizenship(string shortHash, CancellationToken token = default);
+        Task<bool> IsMultiCitizenship(string shortHash, CancellationToken token = default);
         Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
         Task<BolAccount> Certify(string codeName, CancellationToken token = default);
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
