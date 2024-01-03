@@ -447,34 +447,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool UnCertify(byte[] certifier, byte[] receiver)
-        {
-            if (!BolServiceValidationHelper.IsCertifyInputValid(certifier, receiver)) return false;
-
-            var certifierAccount = BolRepository.GetAccount(certifier);
-            var receiverAccount = BolRepository.GetAccount(receiver);
-            
-            if (!BolServiceValidationHelper.IsUnCertifyValid(certifierAccount, receiverAccount)) return false;
-            
-            receiverAccount.Certifications = receiverAccount.Certifications - 1;
-            receiverAccount.Certifiers.Remove(certifierAccount.CodeName);
-
-            if (receiverAccount.Certifications < 2)
-            {
-                receiverAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
-            }
-            
-            AddTransactionEntry(certifierAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
-            AddTransactionEntry(receiverAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
-
-            BolRepository.SaveAccount(certifierAccount);
-            BolRepository.SaveAccount(receiverAccount);
-
-            Runtime.Notify("unCertify", BolResult.Ok(receiverAccount));
-
-            return true;
-        }
-
         public static bool Claim(byte[] codeName)
         {
             if (!BolServiceValidationHelper.IsClaimInputValid(codeName)) return false;
