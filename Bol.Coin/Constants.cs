@@ -47,6 +47,7 @@ namespace Bol.Coin
         public const byte TransactionTypeUnCertify = 0x0A;
         public const byte TransactionTypeRegisterCertifier = 0x0B;
         public const byte TransactionTypeUnRegisterCertifier = 0x0C;
+        public const byte TransactionTypeAddMultiCitizenship = 0x0D;
 
         public const int TransactionCountLimit = 10;
 
