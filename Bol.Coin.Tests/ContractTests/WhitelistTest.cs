@@ -1,15 +1,6 @@
-using System;
 using System.Threading.Tasks;
-using Bol.Address;
-using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
-using Bol.Core.Services;
-using Bol.Cryptography.Encoders;
-using Bol.Cryptography.Hashers;
-using Bol.Cryptography.Neo.Encoders;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Neo.Emulation;
 using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests;
