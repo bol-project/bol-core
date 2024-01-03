@@ -181,6 +181,44 @@ public static class BolServiceValidationHelper
 
         return true;
     }
+    
+    public static bool IsAddMultiCitizenshipInputValid(byte[] shortHash, byte[] codeName)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        if (shortHash == null || shortHash.Length != 8)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("ShortHash should be exactly 8 bytes."));
+            return false;
+        }
+    
+        return true;
+    }
+
+    public static bool IsAddMultiCitizenshipValid(BolAccount account)
+    {
+        if (AccountNotOpen(account)) return false;
+        
+        if (account.CodeName == null || account.CodeName.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
+            return false;
+        }
+        
+        if (account.IsCertifier == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a Bol Certifier."));
+            return false;
+        }
+        
+        if (BolValidator.AddressNotOwner(account.VotingAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("AddMultiCitizenship requires a signature from Certifier Voting Address."));
+            return false;
+        }
+    
+        return true;
+    }
 
     public static bool IsCertifyInputValid(byte[] certifier, byte[] receiver)
     {

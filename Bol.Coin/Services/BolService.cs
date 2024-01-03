@@ -606,6 +606,38 @@ namespace Bol.Coin.Services
 
             return true;
         }
+        
+        public static bool AddMultiCitizenship(byte[] shortHash, byte[] codeName)
+        {
+            if (!BolServiceValidationHelper.IsAddMultiCitizenshipInputValid(shortHash, codeName)) return false;
+            
+            var account = BolRepository.GetAccount(codeName);
+            
+            if (!BolServiceValidationHelper.IsAddMultiCitizenshipValid(account)) return false;
+            
+            var currentHeight = BlockChainService.GetCurrentHeight();
+            BolRepository.AddToMultiCitizenshipList(shortHash, codeName, currentHeight);
+            
+            AddTransactionEntry(account, Constants.TransactionTypeAddMultiCitizenship, codeName, null, shortHash, null, 0);
+            BolRepository.SaveAccount(account);
+            
+            Runtime.Notify("addMultiCitizenship", BolResult.Ok());
+        
+            return true;
+        }
+
+        public static bool IsMultiCitizenship(byte[] shortHash)
+        {
+            if (!BolRepository.IsMultiCitizenship(shortHash))
+            {
+                Runtime.Notify("error", BolResult.NotFound("ShortHash is not in MultiCitizenship List."));
+                return false;
+            }
+            
+            Runtime.Notify("isMultiCitizenship", BolResult.Ok());
+        
+            return true;
+        }
 
         /// <summary>
         /// https://gitlab.com/bolchain/bol-internal/bol-docs/-/blob/master/5-%20Certifier%20Selection.md
