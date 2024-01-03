@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests;
 
-public class WhitelistTests : TestBase
+public class WhitelistTest : TestBase
 {
     [Fact]
         public async Task IsWhiteListed_ShouldReturnTrue_WhenAddressIsWhitelisted()
