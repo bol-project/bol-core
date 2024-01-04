@@ -71,12 +71,12 @@ namespace Bol.Core.Serializers
 
             var result = $"P" +
                          $"{DIV}{person.CountryCode}" +
-                         $"{DIV}{NumberEllipsis(person.Surname, 4)}" +
+                         $"{DIV}{StringUtils.NumberEllipsis(person.Surname, 4)}" +
                          $"{DIV}{person.FirstName.First()}";
 
             if (person.MiddleName != null)
             {
-                result = result + $"{DIV}{NumberEllipsis(person.MiddleName,3)}";
+                result = result + $"{DIV}{StringUtils.NumberEllipsis(person.MiddleName,3)}";
             }
             else
             {
@@ -85,7 +85,7 @@ namespace Bol.Core.Serializers
 
             if (person.ThirdName != null)
             {
-                result = result + $"{DIV}{NumberEllipsis(person.ThirdName,3)}";
+                result = result + $"{DIV}{StringUtils.NumberEllipsis(person.ThirdName,3)}";
             }
             else
             {
@@ -118,15 +118,6 @@ namespace Bol.Core.Serializers
             }
 
             return gender;
-        }
-
-        internal string NumberEllipsis(string input, int maxChars)
-        {
-            if (string.IsNullOrWhiteSpace(input)) return input;
-            
-            var length = input.Length;
-            var take = Math.Min((int)Math.Ceiling((double)input.Length / 2), maxChars);
-            return $"{input.Substring(0, take)}{length-take}";
         }
     }
 }
