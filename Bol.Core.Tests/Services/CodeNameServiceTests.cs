@@ -63,6 +63,42 @@ namespace Bol.Core.Tests.Services
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameSmith), 2, 2));
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameZhou), 2, 2));
         }
+        
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WithCompanyData()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "USA"},
+                Title = "IFESTOS METAL CONSTRUCTIONS LLC",
+                IncorporationDate = new DateTime(2009,4,8),
+                ExtraDigit = 1,
+                OrgType = OrgType.C,
+                VatNumber = "246467895464"
+            };
+
+            var codeName = _service.Generate(company);
+
+            Assert.Equal("C<USA<IFE4<MET2<CON10<LL1<2009C<iMEfH34J9Fi<157E4", codeName);
+        }
+        
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WithMoreThan4WordsCompanyTitle()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "USA"},
+                Title = "IFESTOS METAL CONSTRUCTIONS AND FRIENDS LLC",
+                IncorporationDate = new DateTime(2009,4,8),
+                ExtraDigit = 1,
+                OrgType = OrgType.C,
+                VatNumber = "246467895464"
+            };
+
+            var codeName = _service.Generate(company);
+
+            Assert.Equal("C<USA<IFE4<MET2<CON10<AND10<2009C<iMEfH34J9Fi<1209A", codeName);
+        }
 
         private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)
         {
