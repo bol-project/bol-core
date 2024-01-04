@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
+using Bol.Core.Serializers;
 using Bol.Cryptography;
 using FluentValidation;
 
@@ -60,6 +61,31 @@ namespace Bol.Core.Services
                 .ToArray();
 
             return Encoding.ASCII.GetString(codeNameWithoutChecksum) + hexEncodeChecksum;
+        }
+
+        public string Generate(Company company)
+        {
+            var countryCode = company.Country.Alpha3;
+            var year = company.IncorporationDate.Year;
+            var date = company.IncorporationDate.ToString("yyyydd");
+            var vat = GetLastNCharacters(company.VatNumber, 5);
+            var type = company.OrgType.ToString();
+            var extraDigit = company.ExtraDigit;
+
+            var title = new [] { "", "", "", "" };
+            var words = company.Title.Split(' ');
+            for (var i = 0; i < 3 && i < words.Length; i++)
+            {
+                title[i] = StringUtils.NumberEllipsis(words[i], 3);    
+            }
+            title[3] = StringUtils.NumberEllipsis(string.Join("", words.Skip(3)), 3);
+
+            var shortHash = $"{date}{words[0]}{words[1]}{vat}";
+            shortHash =_base58Encoder.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(shortHash)), 8));
+            
+            var codeName = $"C<{countryCode}<{title[0]}<{title[1]}<{title[2]}<{title[3]}<{year}{type}<{shortHash}<{extraDigit}";
+            var checkSum = _hex.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(codeName)), 2));
+            return $"{codeName}{checkSum}";
         }
 
         private string GetLastNCharacters(string nin, int chars)
