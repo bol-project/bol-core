@@ -65,6 +65,9 @@ namespace Bol.Core.Services
 
         public string Generate(Company company)
         {
+            var words = company.Title.Split(' ');
+            if (words.Length < 2) throw new ArgumentException("Company title should have a minimum of 2 words.");
+            
             var countryCode = company.Country.Alpha3;
             var year = company.IncorporationDate.Year;
             var date = company.IncorporationDate.ToString("yyyydd");
@@ -73,7 +76,6 @@ namespace Bol.Core.Services
             var extraDigit = company.ExtraDigit;
 
             var title = new [] { "", "", "", "" };
-            var words = company.Title.Split(' ');
             for (var i = 0; i < 3 && i < words.Length; i++)
             {
                 title[i] = StringUtils.NumberEllipsis(words[i], 3);    
