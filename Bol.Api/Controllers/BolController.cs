@@ -45,10 +45,18 @@ namespace Bol.Api.Controllers
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
-        [HttpPost("wallet")]
-        public async Task<ActionResult> CreateWallet([FromBody] CreateWalletRequest request, CancellationToken token = default)
+        [HttpPost("wallet-individual")]
+        public async Task<ActionResult> CreateWalletB([FromBody] CreateWalletRequest request, CancellationToken token = default)
         {
-            var result = await _walletService.CreateWallet(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
+            var result = await _walletService.CreateWalletB(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
+
+            return Ok(result);
+        }
+
+        [HttpPost("wallet-company")]
+        public async Task<ActionResult> CreateWalletC([FromBody] CreateWalletRequest request, CancellationToken token = default)
+        {
+            var result = await _walletService.CreateWalletC(request.WalletPassword, request.CodeName, request.Edi, request.PrivateKey, token);
 
             return Ok(result);
         }
@@ -155,6 +163,20 @@ namespace Bol.Api.Controllers
         public ActionResult TotalSupply()
         {
             var result = _bolService.TotalSupply();
+            return Ok(result);
+        }
+
+        [HttpPost("multi-citizenship")]
+        public async Task<ActionResult> AddMultiCitizenship(string shortHash, CancellationToken token)
+        {
+            var result = await _coreBolService.AddMultiCitizenship(shortHash, token);
+            return Ok(result);
+        }
+
+        [HttpGet("multi-citizenship")]
+        public async Task<ActionResult> IsMultiCitizenship(string shortHash, CancellationToken token)
+        {
+            var result = await _coreBolService.IsMultiCitizenship(shortHash, token);
             return Ok(result);
         }
         

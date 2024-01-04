@@ -55,14 +55,25 @@ namespace Bol.Core.Tests.Services
         }
 
         [Fact]
-        public async Task Generate_WalletAsync()
+        public async Task Generate_WalletBAsync()
         {
-            var bolWallet = await _walletService.CreateWallet("123456",
+            var bolWallet = await _walletService.CreateWalletB("123456",
                 "P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA",
                 "4F743113AF44B152C3D2D818DE91C808D104E14F612C268D7CA9D0A477F48D0C",
                 "CD8B78CD37AC684D82E066C95ED6995446B9FFB3E3F5028092FF0248C0C37B79");
             
             Assert.StartsWith("BBB", bolWallet.accounts.First().Address);
+        }
+
+        [Fact]
+        public async Task Generate_WalletCAsync()
+        {
+            var bolWallet = await _walletService.CreateWalletC("123456",
+                "P<GRC<BOL<FOUNDATION<<<2018MP<LsDDs8n8snS5BCA",
+                "4F743113AF44B152C3D2D818DE91C808D104E14F612C268D7CA9D0A477F48D0C",
+                "CD8B78CD37AC684D82E066C95ED6995446B9FFB3E3F5028092FF0248C0C37B79");
+            
+            Assert.StartsWith("BCC", bolWallet.accounts.First().Address);
         }
     }
 }

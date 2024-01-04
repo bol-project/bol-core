@@ -22,6 +22,11 @@ namespace Bol.Coin.Persistence
         public const byte Whitelist = 0x02;
 
         /// <summary>
+        /// Key for setting or retrieving Multi Citizenship Short Hashes.
+        /// </summary>
+        public const byte MultiCitizenship = 0x03;
+
+        /// <summary>
         /// Prefix for setting or retrieving Certifier CodeNames by Country Code.
         /// </summary>
         public const byte Certifiers = 0x04;
@@ -613,6 +618,43 @@ namespace Bol.Coin.Persistence
             var whitelist = (Map<byte[], BigInteger>)result.Deserialize();
             whitelist.Remove(mainAddress);
             BolStorage.Put(key, whitelist.Serialize());
+        }
+
+        /// <summary>
+        /// Adds a provided shortHash to the MultiCitizenship List, along with the certifier and block height of the action.
+        /// </summary>
+        /// <param name="shortHash"></param>
+        /// <param name="codeName"></param>
+        /// <param name="height"></param>
+        public static void AddToMultiCitizenshipList(byte[] shortHash, byte[] codeName, uint height)
+        {
+            var key = KeyHelper.GenerateKey(MultiCitizenship, shortHash);
+            var result = BolStorage.Get(key);
+            
+            Map<byte[], uint> multiCitizenship;
+            if (result == null || result.Length == 0)
+            {
+                multiCitizenship = new Map<byte[], uint>();
+            }
+            else
+            {
+                multiCitizenship = (Map<byte[], uint>)result.Deserialize();
+            }
+            multiCitizenship[codeName] = height;
+            
+            BolStorage.Put(key, multiCitizenship.Serialize());
+        }
+
+        /// <summary>
+        /// Returns true if the provided input has been registered as a Multi Citizenship shortHash. 
+        /// </summary>
+        /// <param name="shortHash"></param>
+        /// <returns></returns>
+        public static bool IsMultiCitizenship(byte[] shortHash)
+        {
+            var key = KeyHelper.GenerateKey(MultiCitizenship, shortHash);
+            
+            return BolStorage.KeyExists(key);
         }
     }
 }

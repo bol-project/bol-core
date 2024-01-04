@@ -85,6 +85,12 @@ public static class BolServiceValidationHelper
             return false;
         }
 
+        if (account.AccountType != Constants.AccountTypeB)
+        {
+            Runtime.Notify("error", BolResult.Forbidden("You need to be a physical Person in order to Transfer Claim."));
+            return false;
+        }
+
         if (account.ClaimBalance < value + claimTransferFee)
         {
             Runtime.Notify("error", BolResult.BadRequest("Cannot transfer more Bols than claim balance."));
@@ -175,6 +181,44 @@ public static class BolServiceValidationHelper
 
         return true;
     }
+    
+    public static bool IsAddMultiCitizenshipInputValid(byte[] shortHash, byte[] codeName)
+    {
+        if (CodeNameIsEmpty(codeName)) return false;
+        
+        if (shortHash == null || shortHash.Length != 8)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("ShortHash should be exactly 8 bytes."));
+            return false;
+        }
+    
+        return true;
+    }
+
+    public static bool IsAddMultiCitizenshipValid(BolAccount account)
+    {
+        if (AccountNotOpen(account)) return false;
+        
+        if (account.CodeName == null || account.CodeName.Length == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a registered Bol Account."));
+            return false;
+        }
+        
+        if (account.IsCertifier == 0)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("CodeName is not a Bol Certifier."));
+            return false;
+        }
+        
+        if (BolValidator.AddressNotOwner(account.VotingAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("AddMultiCitizenship requires a signature from Certifier Voting Address."));
+            return false;
+        }
+    
+        return true;
+    }
 
     public static bool IsCertifyInputValid(byte[] certifier, byte[] receiver)
     {
@@ -226,35 +270,6 @@ public static class BolServiceValidationHelper
         if (receiver.LastCertificationHeight >= receiver.LastCertifierSelectionHeight)
         {
             Runtime.Notify("error", BolResult.BadRequest("Only one certification per Certifier Selection is allowed."));
-            return false;
-        }
-
-        return true;
-    }
-
-    public static bool IsUnCertifyValid(BolAccount certifier, BolAccount receiver)
-    {
-        if (AccountNotExists(certifier, "Certifier is not a registered Bol Account.")) return false;
-
-        if (AccountNotExists(receiver, "Certification receiver is not a registered Bol Account.")) return false;
-
-        if (AccountNotOpen(certifier)) return false;
-
-        if (certifier.IsCertifier != 1)
-        {
-            Runtime.Notify("error", BolResult.BadRequest("Certifier is not a registered Bol Certifier."));
-            return false;
-        }
-
-        if (IsNotAddressOwner(certifier.VotingAddress))
-        {
-            Runtime.Notify("error", BolResult.BadRequest("Only the Voting Address of a registered Bol Certifier can perform this action."));
-            return false;
-        }
-
-        if (!receiver.Certifiers.HasKey(certifier.CodeName))
-        {
-            Runtime.Notify("error", BolResult.BadRequest("Certification receiver has not been certified by certifier."));
             return false;
         }
 

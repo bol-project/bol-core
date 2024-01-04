@@ -75,6 +75,7 @@ namespace Bol.Core.Model
         Certify = 9,
         UnCertify = 10,
         RegisterCertifier = 11,
-        UnRegisterCertifier = 12
+        UnRegisterCertifier = 12,
+        AddMultiCitizenship = 13
     }
 }

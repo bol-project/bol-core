@@ -73,9 +73,11 @@ namespace Bol.Coin.Services
                 .Concat(new byte[] { 0x00 })
                 .AsBigInteger();
 
+            BigInteger claimBalance = 0;
             if (Constants.BAddressStart <= addressPrefix && addressPrefix <= Constants.BAddressEnd)
             {
                 accountType = Constants.AccountTypeB;
+                claimBalance = 1 * Constants.Factor;
             }
             else if (Constants.CAddressStart <= addressPrefix && addressPrefix <= Constants.CAddressEnd)
             {
@@ -96,7 +98,7 @@ namespace Bol.Coin.Services
             account.BlockChainAddress = blockChainAddress;
             account.SocialAddress = socialAddress;
             account.VotingAddress = votingAddress;
-            account.ClaimBalance = 1 * Constants.Factor;
+            account.ClaimBalance = claimBalance;
             account.TotalBalance = 0;
             account.RegistrationHeight = currentHeight;
             account.LastClaimHeight = currentHeight;
@@ -116,20 +118,27 @@ namespace Bol.Coin.Services
             
             AddTransactionEntry(account, Constants.TransactionTypeRegister, null, null, account.CodeName, account.MainAddress, account.ClaimBalance);
             BolRepository.SaveAccount(account);
-            
-            Transferred(null, account.MainAddress , account.ClaimBalance);
 
-            BolRepository.AddRegisteredPerson();
-            var totalRegistered = BolRepository.GetTotalRegisteredPersons();
-           
-            uint claimInterval = (uint)BolRepository.GetClaimInterval();
-            uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
-            if (currentHeight != 0 && currentHeight % claimInterval == 0)
+            if (account.AccountType == Constants.AccountTypeB)
             {
-                endOfInterval = currentHeight;
-            }
+                Transferred(null, account.MainAddress , account.ClaimBalance);
 
-            BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
+                BolRepository.AddRegisteredPerson();
+                var totalRegistered = BolRepository.GetTotalRegisteredPersons();
+           
+                uint claimInterval = (uint)BolRepository.GetClaimInterval();
+                uint endOfInterval = (currentHeight / claimInterval) * claimInterval + claimInterval;
+                if (currentHeight != 0 && currentHeight % claimInterval == 0)
+                {
+                    endOfInterval = currentHeight;
+                }
+
+                BolRepository.SetRegisteredAtBlock(endOfInterval, totalRegistered);
+            }
+            else if (account.AccountType == Constants.AccountTypeC)
+            {
+                BolRepository.AddRegisteredCompany();
+            }
 
             var result = BolRepository.GetAccount( account.CodeName);
 
@@ -242,16 +251,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static BigInteger CirculatingSupply()
-        {
-            return BolRepository.GetCirculatingSupply();
-        }
-
-        public static BigInteger GlobalSupply(BigInteger blockHeight)
-        {
-            return BolRepository.GetTotalSupplyAtBlock(blockHeight);
-        }
-
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
             if (!BolServiceValidationHelper.IsTransferClaimInputValid(codeName, address, value)) return false;
@@ -351,9 +350,9 @@ namespace Bol.Coin.Services
             bolAccount.CertificationFee = 1 * fee;
             bolAccount.Countries = countries;
 
-            for (var i = 0; i < countries.Length; i += 6)
+            for (var i = 0; i < countries.Length; i += 3)
             {
-                var countryCode = countries.Range(i, 6);
+                var countryCode = countries.Range(i, 3);
                 var certifiers = BolRepository.GetCertifiers(countryCode);
                 certifiers[bolAccount.CodeName] = fee;
                 BolRepository.SetCertifiers(countryCode, certifiers);
@@ -448,34 +447,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool UnCertify(byte[] certifier, byte[] receiver)
-        {
-            if (!BolServiceValidationHelper.IsCertifyInputValid(certifier, receiver)) return false;
-
-            var certifierAccount = BolRepository.GetAccount(certifier);
-            var receiverAccount = BolRepository.GetAccount(receiver);
-            
-            if (!BolServiceValidationHelper.IsUnCertifyValid(certifierAccount, receiverAccount)) return false;
-            
-            receiverAccount.Certifications = receiverAccount.Certifications - 1;
-            receiverAccount.Certifiers.Remove(certifierAccount.CodeName);
-
-            if (receiverAccount.Certifications < 2)
-            {
-                receiverAccount.AccountStatus = Constants.AccountStatusPendingCertifications;
-            }
-            
-            AddTransactionEntry(certifierAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
-            AddTransactionEntry(receiverAccount, Constants.TransactionTypeUnCertify, certifier, null, receiver, null, 0);
-
-            BolRepository.SaveAccount(certifierAccount);
-            BolRepository.SaveAccount(receiverAccount);
-
-            Runtime.Notify("unCertify", BolResult.Ok(receiverAccount));
-
-            return true;
-        }
-
         public static bool Claim(byte[] codeName)
         {
             if (!BolServiceValidationHelper.IsClaimInputValid(codeName)) return false;
@@ -494,7 +465,7 @@ namespace Bol.Coin.Services
 
             if (startClaimHeight == endClaimHeight) 
             {
-                Runtime.Notify("error", BolResult.Forbidden("Nothing to claim in the same interval."));
+                Runtime.Notify("error", BolResult.Forbidden("Υou have claimed your share for this interval."));
                 return false;
             }
 
@@ -564,7 +535,7 @@ namespace Bol.Coin.Services
                     BigInteger Pop = ThisYearPop + (NextYearPop - ThisYearPop) * diffYear / SecInYear;
                     BigInteger DpsNC = Dps * (Pop - intervalTotal) / Pop;
 
-                    intervalDistribute = intervalTime * DpsNC / intervalTotal;
+                    intervalDistribute = intervalTime * DpsNC / intervalTotal; //TODO: Add DistributeCm and DistributeFa
                     BolRepository.SetDistributeAtBlock(i, intervalDistribute);
                     BolRepository.SetRegisteredAtBlock(i, intervalTotal);
                     var intervalBirths = intervalTime * Bps;
@@ -633,6 +604,38 @@ namespace Bol.Coin.Services
             
             Runtime.Notify("isWhitelisted", BolResult.Ok());
 
+            return true;
+        }
+        
+        public static bool AddMultiCitizenship(byte[] shortHash, byte[] codeName)
+        {
+            if (!BolServiceValidationHelper.IsAddMultiCitizenshipInputValid(shortHash, codeName)) return false;
+            
+            var account = BolRepository.GetAccount(codeName);
+            
+            if (!BolServiceValidationHelper.IsAddMultiCitizenshipValid(account)) return false;
+            
+            var currentHeight = BlockChainService.GetCurrentHeight();
+            BolRepository.AddToMultiCitizenshipList(shortHash, codeName, currentHeight);
+            
+            AddTransactionEntry(account, Constants.TransactionTypeAddMultiCitizenship, codeName, null, shortHash, null, 0);
+            BolRepository.SaveAccount(account);
+            
+            Runtime.Notify("addMultiCitizenship", BolResult.Ok());
+        
+            return true;
+        }
+
+        public static bool IsMultiCitizenship(byte[] shortHash)
+        {
+            if (!BolRepository.IsMultiCitizenship(shortHash))
+            {
+                Runtime.Notify("error", BolResult.NotFound("ShortHash is not in MultiCitizenship List."));
+                return false;
+            }
+            
+            Runtime.Notify("isMultiCitizenship", BolResult.Ok());
+        
             return true;
         }
 

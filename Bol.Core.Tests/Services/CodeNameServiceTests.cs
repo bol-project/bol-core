@@ -63,6 +63,76 @@ namespace Bol.Core.Tests.Services
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameSmith), 2, 2));
             Assert.True(new Sha256Hasher().CheckChecksum(AddByteHashRepresentationForLastTwoBytes(codeNameZhou), 2, 2));
         }
+        
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WithCompanyData()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "USA"},
+                Title = "IFESTOS METAL CONSTRUCTIONS LLC",
+                IncorporationDate = new DateTime(2009,4,8),
+                ExtraDigit = 1,
+                OrgType = OrgType.C,
+                VatNumber = "246467895464"
+            };
+
+            var codeName = _service.Generate(company);
+
+            Assert.Equal("C<USA<IFE4<MET2<CON10<LL1<2009C<iMEfH34J9Fi<157E4", codeName);
+        }
+        
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WithMoreThan4WordsCompanyTitle()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "SIEMENS HEALTHCARE MONOPROSOPI ANONYMOS ETAIRIA",
+                IncorporationDate = new DateTime(2010,8,25),
+                ExtraDigit = 1,
+                OrgType = OrgType.C,
+                VatNumber = "052635988"
+            };
+
+            var codeName = _service.Generate(company);
+
+            Assert.Equal("C<GRC<SIE4<HEA7<MON8<ANO12<2010C<TcVxJgu6TpM<128D3", codeName);
+        }
+        
+        [Fact]
+        public void Generate_ShouldGenerateCodeName_WhenSocialOrganization()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "ETHNIKO METSOBIO POLYTEXNEIO",
+                IncorporationDate = new DateTime(1914,9,1),
+                ExtraDigit = 1,
+                OrgType = OrgType.S,
+                VatNumber = "090001435"
+            };
+
+            var codeName = _service.Generate(company);
+
+            Assert.Equal("C<GRC<ETH4<MET5<POL8<<1914S<Mu61ehzQixw<1B741", codeName);
+        }
+        
+        [Fact]
+        public void Generate_ShouldThrowError_WhenCompanyTitleHasLessThanTwoWords()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "EMP",
+                IncorporationDate = new DateTime(1914,9,1),
+                ExtraDigit = 1,
+                OrgType = OrgType.S,
+                VatNumber = "090001435"
+            };
+
+            Assert.Throws<ArgumentException>(() => _service.Generate(company));
+        }
 
         private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)
         {

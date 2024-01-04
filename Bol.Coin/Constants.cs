@@ -13,7 +13,7 @@ namespace Bol.Coin
         /// <summary>
         /// Collateral in Bols that a Person or Company needs to reserve in order to become a BoL Certifier.
         /// </summary>
-        public static readonly BigInteger CertifierCollateral = 1000 * Factor;
+        public static readonly BigInteger CertifierCollateral = 100000000000;
         
         /// <summary>
         /// A fee in Bols that a Person or Company needs to pay in order to be certified in the BoL Blockchain.
@@ -47,6 +47,7 @@ namespace Bol.Coin
         public const byte TransactionTypeUnCertify = 0x0A;
         public const byte TransactionTypeRegisterCertifier = 0x0B;
         public const byte TransactionTypeUnRegisterCertifier = 0x0C;
+        public const byte TransactionTypeAddMultiCitizenship = 0x0D;
 
         public const int TransactionCountLimit = 10;
 

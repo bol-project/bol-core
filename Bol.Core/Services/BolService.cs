@@ -20,14 +20,16 @@ namespace Bol.Core.Services
         private readonly ITransactionService _transactionService;
         private readonly ISignatureScriptFactory _signatureScriptFactory;
         private readonly IBase16Encoder _hex;
+        private readonly IBase58Encoder _base58;
         private readonly IAddressTransformer _addressTransformer;
 
-        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IAddressTransformer addressTransformer)
+        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IBase58Encoder base58, IAddressTransformer addressTransformer)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
             _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
             _hex = hex ?? throw new ArgumentNullException(nameof(hex));
+            _base58 = base58 ?? throw new ArgumentNullException(nameof(base58));
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
         }
 
@@ -273,6 +275,53 @@ namespace Bol.Core.Services
             return result;
         }
 
+        public async Task<bool> AddMultiCitizenship(string shortHash, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                _base58.Decode(shortHash),
+                Encoding.ASCII.GetBytes(context.CodeName),
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var description = $"Add MultiCitizenship {shortHash} by {context.CodeName}";
+            var remarks = new[] { "addMultiCitizenship", shortHash, context.CodeName };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "addMultiCitizenship", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> IsMultiCitizenship(string shortHash, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                _base58.Decode(shortHash)
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var description = $"IsMultiCitizenship {shortHash}";
+            var remarks = new[] { "isMultiCitizenship", shortHash };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "isMultiCitizenship", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
+        }
+
         public async Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
@@ -379,14 +428,14 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<string> countries, BigInteger fee, CancellationToken token = default)
+        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<Country> countries, BigInteger fee, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
                 Encoding.ASCII.GetBytes(context.CodeName),
-                countries.SelectMany(c => Encoding.ASCII.GetBytes(c)).ToArray(),
+                countries.SelectMany(c => Encoding.ASCII.GetBytes(c.Alpha3)).ToArray(),
                 fee.ToByteArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
