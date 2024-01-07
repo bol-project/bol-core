@@ -361,6 +361,8 @@ namespace Bol.Coin.Services
             AddTransactionEntry(bolAccount, Constants.TransactionTypeRegisterCertifier, bolAccount.CodeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
+            
+            BolRepository.AddRegisteredCertifier();
 
             Transferred(paymentAddress, null, collateral);
 
@@ -397,6 +399,8 @@ namespace Bol.Coin.Services
             AddTransactionEntry(bolAccount, Constants.TransactionTypeUnRegisterCertifier, codeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
+            
+            BolRepository.RemoveRegisteredCertifier();
             
             Transferred(null, paymentAddress, bolAccount.Collateral);
 
