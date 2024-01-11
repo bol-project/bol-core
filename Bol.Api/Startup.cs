@@ -4,13 +4,9 @@ using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
 using Bol.Api.Mappers;
 using Bol.Core.Abstractions;
-using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
-using Bol.Core.Dtos;
 using Bol.Core.Helpers;
-using Bol.Core.Mappers;
 using Bol.Core.Model;
-using Bol.Core.Model.Responses;
 using Bol.Core.Rpc;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Serializers;
@@ -28,8 +24,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Neo.Ledger;
-using Neo.Network.P2P.Payloads;
 using Prometheus;
 
 namespace Bol.Api
@@ -111,19 +105,11 @@ namespace Bol.Api
             services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
 
             //BOL API
-            services.AddScoped<Bol.Api.Services.IContractService, Bol.Api.Services.ContractService>();
-            services.AddScoped<Bol.Api.Services.IBolService, Bol.Api.Services.BolService>();
             services.AddScoped<ITransactionPublisher, Bol.Api.Services.LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => NodeBackgroundService.MainService.system.LocalNode);
-            services.AddScoped<IBlockChainService, Bol.Api.Services.BlockChainService>();
-            services.AddScoped<Api.Abstractions.ITransactionService, Bol.Api.Services.BlockChainService>();
             services.AddSingleton<ICachingService, CachingService>();
 
             // Mappers
-            services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
-            services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
-            services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
-            services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
             services.AddScoped<IAccountToAccountMapper, AccountToAccountMapper>();
         }
 
