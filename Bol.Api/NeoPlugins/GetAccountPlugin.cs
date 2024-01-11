@@ -28,7 +28,7 @@ namespace Bol.Api.NeoPlugins
 
             var codeName = _params[0].AsString();
             var result = _bolService.GetAccount(codeName);
-            var account = result.Result; //_mapper.Map(result.Result);
+            var account = result.Result;
             
             var json = _json.Serialize(account);
 
