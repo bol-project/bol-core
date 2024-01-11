@@ -17,7 +17,7 @@
       "MaxConcurrentConnections": "10"
     },
     "UnlockWallet": {
-      "Path": "bolwallet.json",
+      "Path": "wallet.json",
       "Password": "bol",
       "StartConsensus": true,
       "IsActive": true
