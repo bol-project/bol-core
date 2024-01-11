@@ -23,6 +23,7 @@ using Bol.Cryptography.Neo.Keys;
 using Bol.Cryptography.Signers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -127,7 +128,7 @@ namespace Bol.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseExceptionHandler(c => c.Run(async context =>
             {
@@ -141,10 +142,12 @@ namespace Bol.Api
 
             app.UseMetricServer(url: "/health");
 
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
-
-            app.UseEndpoints(c => c.MapControllers());
+            if (env.IsDevelopment())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
+                app.UseEndpoints(c => c.MapControllers());    
+            }
         }
     }
 }
