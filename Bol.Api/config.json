@@ -1,8 +1,8 @@
 ﻿{
   "ApplicationConfiguration": {
     "Paths": {
-      "Chain": "/Users/hampos/blockchain2/Chain_{0}",
-      "Index": "/Users/hampos/blockchain2/Index_{0}"
+      "Chain": "/blockchain/Chain_{0}",
+      "Index": "/blockchain/Index_{0}"
     },
     "P2P": {
       "Port": 10333,

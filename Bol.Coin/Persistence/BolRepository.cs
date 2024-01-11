@@ -340,6 +340,26 @@ namespace Bol.Coin.Persistence
         }
 
         /// <summary>
+        /// Increases the Total Certifiers counter by 1.
+        /// </summary>
+        public static void AddRegisteredCertifier()
+        {
+            var key = KeyHelper.GenerateKey(Certifiers);
+            var currentTotal = BolStorage.GetAsBigInteger(key);
+            BolStorage.Put(key, currentTotal + 1);
+        }
+
+        /// <summary>
+        /// Decreases the Total Certifiers counter by 1.
+        /// </summary>
+        public static void RemoveRegisteredCertifier()
+        {
+            var key = KeyHelper.GenerateKey(Certifiers);
+            var currentTotal = BolStorage.GetAsBigInteger(key);
+            BolStorage.Put(key, currentTotal - 1);
+        }
+
+        /// <summary>
         /// Sets a dictionary that maps a year to the value of Births Per Second for that year. 
         /// </summary>
         /// <param name="bpsYear"></param>

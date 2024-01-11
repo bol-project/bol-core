@@ -361,6 +361,8 @@ namespace Bol.Coin.Services
             AddTransactionEntry(bolAccount, Constants.TransactionTypeRegisterCertifier, bolAccount.CodeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
+            
+            BolRepository.AddRegisteredCertifier();
 
             Transferred(paymentAddress, null, collateral);
 
@@ -397,6 +399,8 @@ namespace Bol.Coin.Services
             AddTransactionEntry(bolAccount, Constants.TransactionTypeUnRegisterCertifier, codeName, paymentAddress, null, null, collateral);
 
             BolRepository.SaveAccount(bolAccount);
+            
+            BolRepository.RemoveRegisteredCertifier();
             
             Transferred(null, paymentAddress, bolAccount.Collateral);
 
@@ -685,7 +689,7 @@ namespace Bol.Coin.Services
             }
             
             var selectionBlockHash = Blockchain.GetBlock((uint)account.LastCertifierSelectionHeight).Hash;
-            var hash = Neo.SmartContract.Bol.Sha256Hash(account.CodeName.Concat(selectionBlockHash));
+            var hash = Neo.SmartContract.Bol.Sha256Hash(Neo.SmartContract.Bol.Sha256Hash(account.CodeName).Concat(selectionBlockHash));
             var n1 = hash.Take(4).Concat(new byte[] { 0x00 }).ToBigInteger();
             var n2 = hash.Last(4).Concat(new byte[] { 0x00 }).ToBigInteger();
             var n3 = hash.Range(4,8).Concat(new byte[] { 0x00 }).ToBigInteger();
