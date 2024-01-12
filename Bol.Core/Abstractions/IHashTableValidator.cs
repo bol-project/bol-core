@@ -3,7 +3,11 @@ using FluentValidation;
 
 namespace Bol.Core.Abstractions
 {
-    public interface IHashTableValidator : IValidator<HashTable>
+    public interface ICitizenshipHashTableValidator : IValidator<CitizenshipHashTable>
+    {
+    }
+
+    public interface IGenericHashTableValidator : IValidator<GenericHashTable>
     {
     }
 }
