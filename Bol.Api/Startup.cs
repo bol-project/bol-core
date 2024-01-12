@@ -4,13 +4,9 @@ using Bol.Api.Abstractions;
 using Bol.Api.BackgroundServices;
 using Bol.Api.Mappers;
 using Bol.Core.Abstractions;
-using Bol.Core.Abstractions.Mappers;
 using Bol.Core.Accessors;
-using Bol.Core.Dtos;
 using Bol.Core.Helpers;
-using Bol.Core.Mappers;
 using Bol.Core.Model;
-using Bol.Core.Model.Responses;
 using Bol.Core.Rpc;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Serializers;
@@ -23,12 +19,11 @@ using Bol.Cryptography.Neo.Keys;
 using Bol.Cryptography.Signers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Neo.Ledger;
-using Neo.Network.P2P.Payloads;
 using Prometheus;
 
 namespace Bol.Api
@@ -58,7 +53,6 @@ namespace Bol.Api
 
         public IConfiguration Configuration { get; private set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -110,24 +104,15 @@ namespace Bol.Api
             services.AddScoped<IRpcMethodFactory, RpcMethodFactory>();
 
             //BOL API
-            services.AddScoped<Bol.Api.Services.IContractService, Bol.Api.Services.ContractService>();
-            services.AddScoped<Bol.Api.Services.IBolService, Bol.Api.Services.BolService>();
             services.AddScoped<ITransactionPublisher, Bol.Api.Services.LocalNodeTransactionPublisher>();
             services.AddScoped<IActorRef>((sp) => NodeBackgroundService.MainService.system.LocalNode);
-            services.AddScoped<IBlockChainService, Bol.Api.Services.BlockChainService>();
-            services.AddScoped<Api.Abstractions.ITransactionService, Bol.Api.Services.BlockChainService>();
             services.AddSingleton<ICachingService, CachingService>();
 
             // Mappers
-            services.AddScoped<IBolResponseMapper<InvocationTransaction, CreateContractResult>, CreateContractResponseMapper>();
-            services.AddScoped<IMapper<Block, BlockDto>, BlockDtoMapper>();
-            services.AddScoped<IMapper<TrimmedBlock, BaseBlockDto>, BaseBlockDtoMapper>();
-            services.AddScoped<IMapper<Transaction, BaseTransactionDto>, BaseTransactionDtoMapper>();
             services.AddScoped<IAccountToAccountMapper, AccountToAccountMapper>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseExceptionHandler(c => c.Run(async context =>
             {
@@ -141,10 +126,12 @@ namespace Bol.Api
 
             app.UseMetricServer(url: "/health");
 
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
-
-            app.UseEndpoints(c => c.MapControllers());
+            if (env.IsDevelopment())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
+                app.UseEndpoints(c => c.MapControllers());    
+            }
         }
     }
 }
