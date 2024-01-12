@@ -26,9 +26,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
-        - containerPort: 10332
-        - containerPort: 10333
-        - containerPort: 10334
+        - containerPort: 21332
+        - containerPort: 21333
+        - containerPort: 21334
         volumeMounts:
         - name: blockchain
           mountPath: /blockchain
@@ -39,14 +39,14 @@ spec:
             value: Warning
         livenessProbe:
           httpGet:
-            path: /swagger
+            path: /health
             port: 80
           initialDelaySeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /swagger
-            port: 80
+            path: /?jsonrpc=2.0&id=1&method=getversion&params=W10=
+            port: 21332
           initialDelaySeconds: 30
           timeoutSeconds: 5
   volumeClaimTemplates:

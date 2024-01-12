@@ -5,12 +5,12 @@
       "Index": "/blockchain/Index_{0}"
     },
     "P2P": {
-      "Port": 10333,
-      "WsPort": 10334
+      "Port": 21333,
+      "WsPort": 21334
     },
     "RPC": {
       "BindAddress": "0.0.0.0",
-      "Port": 10332,
+      "Port": 21332,
       "SslCert": "",
       "SslCertPassword": "",
       "ExtraGasInvoke": "0",

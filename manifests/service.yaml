@@ -9,7 +9,7 @@ metadata:
     prometheus.io/scrape: "true"
     prometheus.io/port: "80"
     prometheus.io/scheme: "http"
-    prometheus.io/path: "/metrics"
+    prometheus.io/path: "/health"
 spec:
   type: ClusterIP
   ports:
@@ -18,12 +18,12 @@ spec:
       protocol: TCP
     - name: node-p2p
       protocol: TCP
-      port: 10333
-      targetPort: 10333
+      port: 21333
+      targetPort: 21333
     - name: node-rpc
       protocol: TCP
-      port: 10332
-      targetPort: 10332
+      port: 21332
+      targetPort: 21332
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
 ---
@@ -53,4 +53,4 @@ spec:
           service:
             name: bol-__CI_BUILD_REF_SLUG__
             port: 
-              number: 10332
+              number: 21332
