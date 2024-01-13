@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -29,6 +30,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.Converters;
 
 namespace Bol.Core.Extensions
 {
@@ -42,7 +44,9 @@ namespace Bol.Core.Extensions
             services.AddSingleton<IBase16Encoder, Base16Encoder>();
             services.AddSingleton<IBase58Encoder, Base58Encoder>();
             services.AddSingleton<IRipeMD160Hasher, RipeMD160Hasher>();
-            services.AddSingleton<ISerializer, Serializer>();
+            services.AddSingleton<ISerializer>(new SerializerBuilder()
+                .WithTypeConverter(new DateTimeConverter(DateTimeKind.Local, formats:"yyyy-MM-dd"))
+                .Build());
             services.AddSingleton<IDeserializer, Deserializer>();
             services.AddSingleton<IYamlSeralizer, YamlSerializer>();
             services.AddSingleton<IRegexHelper, RegexHelper>();
