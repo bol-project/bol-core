@@ -68,19 +68,34 @@ namespace Bol.Core.Services
             var mainScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedKeyPair.PublicKey }, 2);
             var mainAccount = CreateAccount(walletPassword, "main", mainScript, multiSig: true);
             mainAccount.IsDefault = true;
-            
-            var codeNameAccount = CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey);
-            codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
-            
-            var privateKeyAccount = CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey);
-            privateKeyAccount.Extra = new Extra { nonce = bolAddress.Nonce.ToString() };
-            
-            var blockchainAccount = CreateAccount(walletPassword, "blockchain");
-            var socialAccount = CreateAccount(walletPassword, "social");
-            var votingAccount = CreateAccount(walletPassword, "voting");
 
-            var commercialAccounts = Enumerable.Range(0, 12)
-                .Select(_ => CreateAccount(walletPassword, "commercial"));
+            var codeNameTask = Task.Run(() => CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey), token);
+            var privateKeyAccountTask = Task.Run(() => CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey), token);
+            var blockchainAccountTask = Task.Run(() => CreateAccount(walletPassword, "blockchain"), token);
+            var socialAccounTask = Task.Run(() => CreateAccount(walletPassword, "social"), token);
+            var votingAccountTask = Task.Run(() => CreateAccount(walletPassword, "voting"), token);
+            var commercialAccountsTask = Enumerable.Range(0, 12)
+                .Select(_ => Task.Run(() => CreateAccount(walletPassword, "commercial"), token))
+                .ToArray();
+
+            var tasks = new List<Task<Account>>
+            {
+                codeNameTask, privateKeyAccountTask, blockchainAccountTask, socialAccounTask, votingAccountTask
+            };
+            tasks.AddRange(commercialAccountsTask);
+
+            await Task.WhenAll(tasks);
+
+            var codeNameAccount = codeNameTask.Result;
+            codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
+
+            var privateKeyAccount = privateKeyAccountTask.Result;
+            privateKeyAccount.Extra = new Extra { nonce = bolAddress.Nonce.ToString() };
+
+            var blockchainAccount = blockchainAccountTask.Result;
+            var socialAccount = socialAccounTask.Result;
+            var votingAccount = votingAccountTask.Result;
+            var commercialAccounts = commercialAccountsTask.Select(x => x.Result).ToArray();
 
             var bolWallet = new BolWallet
             {
