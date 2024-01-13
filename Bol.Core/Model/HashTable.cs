@@ -16,7 +16,7 @@
         public string ProofOfNin { get; set; }
     }
     
-    public class GenericHashTable
+    public class GenericHashTable : CitizenshipHashTable
     {
         /// <summary>
         /// Driving License card.

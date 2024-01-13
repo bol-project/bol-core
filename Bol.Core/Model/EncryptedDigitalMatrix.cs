@@ -20,12 +20,7 @@ namespace Bol.Core.Model
         public string CodeName { get; set; }
         
         /// <summary>
-        /// Hashes of documents that prove citizenship used in Bol Platform.
-        /// </summary>
-        public CitizenshipHashTable CitizenshipHashes { get; set; }
-        
-        /// <summary>
-        /// Hashes of generic identity documents and other files.
+        /// Hashes of documents that prove citizenship and of generic identity and other files.
         /// </summary>
         public GenericHashTable GenericHashes { get; set; }
         
@@ -38,7 +33,7 @@ namespace Bol.Core.Model
     /// <summary>
     /// 2nd level Matrix used for certification.
     /// </summary>
-    public class EncryptedDigitalCitizenshipMatrix : EncryptedDigitalMatrix
+    public class ExtendedEncryptedDigitalMatrix : EncryptedDigitalMatrix
     {
         public EncryptedCitizenship[] CitizenshipMatrices { get; set; }
     }

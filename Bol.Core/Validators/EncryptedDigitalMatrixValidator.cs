@@ -14,7 +14,7 @@ namespace Bol.Core.Validators
             ICitizenshipHashTableValidator citizenshipHashTableValidator,
             IGenericHashTableValidator genericHashTableValidator)
         {
-            RuleFor(edm => edm.CitizenshipHashes)
+            RuleFor(edm => edm.GenericHashes)
                 .NotEmpty()
                 .WithMessage("Hashes cannot be empty.")
                 .SetValidator(citizenshipHashTableValidator);
@@ -48,10 +48,10 @@ namespace Bol.Core.Validators
         }
     }
 
-    public class EncryptedDigitalCitizenshipMatrixValidator : AbstractValidator<EncryptedDigitalCitizenshipMatrix>,
-        IEncryptedDigitalCitizenshipMatrixValidator
+    public class ExtendedEncryptedDigitalMatrixValidator : AbstractValidator<ExtendedEncryptedDigitalMatrix>,
+        IExtendedEncryptedDigitalMatrixValidator
     {
-        public EncryptedDigitalCitizenshipMatrixValidator(
+        public ExtendedEncryptedDigitalMatrixValidator(
             IEncryptedDigitalMatrixValidator encryptedDigitalMatrixValidator,
             IEncryptedCitizenshipValidator encryptedCitizenshipValidator)
         {

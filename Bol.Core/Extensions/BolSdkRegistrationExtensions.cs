@@ -60,10 +60,14 @@ namespace Bol.Core.Extensions
             services.AddTransient<IValidator<CodenamePerson>, CodenamePersonValidator>();
             services.AddTransient<ICodeNameValidator, CodeNameValidator>();
             services.AddTransient<IEncryptedDigitalMatrixValidator, EncryptedDigitalMatrixValidator>();
-            services.AddTransient<IEncryptedDigitalCitizenshipMatrixValidator, EncryptedDigitalCitizenshipMatrixValidator>();
+            services.AddTransient<IExtendedEncryptedDigitalMatrixValidator, ExtendedEncryptedDigitalMatrixValidator>();
             services.AddTransient<IEncryptedCitizenshipValidator, EncryptedCitizenshipValidator>();
             services.AddTransient<ICitizenshipHashTableValidator, CitizenshipHashTableValidator>();
             services.AddTransient<IGenericHashTableValidator, GenericHashTableValidator>();
+            services.AddTransient<IEncryptedDigitalMatrixCompanyValidator, EncryptedDigitalMatrixCompanyValidator>();
+            services.AddTransient<IExtendedEncryptedDigitalMatrixCompanyValidator, ExtendedEncryptedDigitalMatrixCompanyValidator>();
+            services.AddTransient<ICompanyIncorporationValidator, CompanyIncorporationValidator>();
+            services.AddTransient<ICompanyHashTableValidator, CompanyHashTableValidator>();
 
             // Other
             services.AddScoped<IAddressTransformer, AddressTransformer>();

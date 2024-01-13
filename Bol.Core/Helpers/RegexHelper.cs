@@ -7,6 +7,7 @@ namespace Bol.Core.Helpers
     {
         private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
         private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
+        private readonly Regex _capitalLettersOrNumbers = new Regex(@"^[A-Z0-9]+$");
 
         public bool HasAllLettersCapital(string input)
         {
@@ -16,6 +17,11 @@ namespace Bol.Core.Helpers
         public bool IsHexRepresentation(string input)
         {
             return _hexRepresentation.IsMatch(input);
-        }        
+        }  
+        
+        public bool HasAllLettersCapitalOrNumbers(string input)
+        {
+            return _capitalLettersOrNumbers.IsMatch(input);
+        }
     }
 }

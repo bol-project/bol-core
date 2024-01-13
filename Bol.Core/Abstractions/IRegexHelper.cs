@@ -5,5 +5,7 @@
         bool HasAllLettersCapital(string input);
 
         bool IsHexRepresentation(string input);
+        
+        bool HasAllLettersCapitalOrNumbers(string input);
     }
 }
