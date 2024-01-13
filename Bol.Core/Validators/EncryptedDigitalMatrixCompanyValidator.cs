@@ -13,7 +13,7 @@ namespace Bol.Core.Validators
             ICodeNameValidator codeNameValidator,
             ICompanyHashTableValidator companyHashTableValidator)
         {
-            RuleFor(edm => edm.HashTable)
+            RuleFor(edm => edm.Hashes)
                 .NotEmpty()
                 .WithMessage("Hashes cannot be empty.")
                 .SetValidator(companyHashTableValidator);
@@ -46,7 +46,7 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixCompanyValidator);
 
-            RuleFor(edm => edm.CompanyIncorporation)
+            RuleFor(edm => edm.Incorporation)
                 .NotEmpty()
                 .WithMessage("Company Incorporation Table cannot be empty.")
                 .SetValidator(companyIncorporationValidator);

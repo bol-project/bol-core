@@ -14,12 +14,12 @@ namespace Bol.Core.Validators
             ICitizenshipHashTableValidator citizenshipHashTableValidator,
             IGenericHashTableValidator genericHashTableValidator)
         {
-            RuleFor(edm => edm.GenericHashes)
+            RuleFor(edm => edm.Hashes)
                 .NotEmpty()
                 .WithMessage("Hashes cannot be empty.")
                 .SetValidator(citizenshipHashTableValidator);
 
-            RuleFor(edm => edm.GenericHashes)
+            RuleFor(edm => edm.Hashes)
                 .NotEmpty()
                 .WithMessage("Hashes cannot be empty.")
                 .SetValidator(genericHashTableValidator);

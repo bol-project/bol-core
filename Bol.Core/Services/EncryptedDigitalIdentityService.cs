@@ -66,7 +66,7 @@ namespace Bol.Core.Services
             {
                 Version = extendedMatrix.Version,
                 CodeName = extendedMatrix.CodeName,
-                GenericHashes = extendedMatrix.GenericHashes,
+                Hashes = extendedMatrix.Hashes,
                 Citizenships = citizenships
             };
 
@@ -93,14 +93,14 @@ namespace Bol.Core.Services
         {
             _eedmcValidator.ValidateAndThrow(extendedMatrix);
 
-            var incorporationMatrix = _yamlSerializer.Serialize(extendedMatrix.CompanyIncorporation);
+            var incorporationMatrix = _yamlSerializer.Serialize(extendedMatrix.Incorporation);
             var incorporationHash = _hex.Encode(_sha256Hasher.Hash(Encoding.ASCII.GetBytes(incorporationMatrix)));
             
             var edmc = new EncryptedDigitalMatrixCompany
             {
                 Version = extendedMatrix.Version,
                 CodeName = extendedMatrix.CodeName,
-                HashTable = extendedMatrix.HashTable,
+                Hashes = extendedMatrix.Hashes,
                 IncorporationHash = incorporationHash
             };
 

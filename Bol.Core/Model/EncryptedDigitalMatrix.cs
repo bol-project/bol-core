@@ -1,4 +1,5 @@
 ﻿using System;
+using YamlDotNet.Serialization;
 
 namespace Bol.Core.Model
 {
@@ -12,21 +13,25 @@ namespace Bol.Core.Model
         /// <summary>
         /// EDM document format version.
         /// </summary>
+        [YamlMember(Order = 0)]
         public string Version { get; set; } = CURRENT_VERSION;
         
         /// <summary>
         /// Bol Platform CodeName.
         /// </summary>
+        [YamlMember(Order = 1)]
         public string CodeName { get; set; }
         
         /// <summary>
         /// Hashes of documents that prove citizenship and of generic identity and other files.
         /// </summary>
-        public GenericHashTable GenericHashes { get; set; }
+        [YamlMember(Order = 2)]
+        public GenericHashTable Hashes { get; set; }
         
         /// <summary>
         /// Hashes of Encrypted Citizenship matrices
         /// </summary>
+        [YamlMember(Order = 3)]
         public string[] Citizenships { get; set; }
     }
 
@@ -35,6 +40,7 @@ namespace Bol.Core.Model
     /// </summary>
     public class ExtendedEncryptedDigitalMatrix : EncryptedDigitalMatrix
     {
+        [YamlMember(Order = 4)]
         public EncryptedCitizenship[] CitizenshipMatrices { get; set; }
     }
     
