@@ -10,5 +10,9 @@ namespace Bol.Core.Abstractions
         string GenerateCompanyEDI(string matrix);
         EncryptedDigitalMatrix GenerateMatrix(ExtendedEncryptedDigitalMatrix extendedMatrix);
         EncryptedDigitalMatrixCompany GenerateMatrix(ExtendedEncryptedDigitalMatrixCompany extendedMatrix);
+        string SerializeMatrix(EncryptedDigitalMatrix matrix);
+        string SerializeMatrix(ExtendedEncryptedDigitalMatrix matrix);
+        string SerializeMatrix(EncryptedDigitalMatrixCompany matrix);
+        string SerializeMatrix(ExtendedEncryptedDigitalMatrixCompany matrix);
     }
 }

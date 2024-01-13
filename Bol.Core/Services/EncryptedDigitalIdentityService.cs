@@ -106,5 +106,25 @@ namespace Bol.Core.Services
 
             return edmc;
         }
+
+        public string SerializeMatrix(EncryptedDigitalMatrix matrix)
+        {
+            return _yamlSerializer.Serialize(matrix);;
+        }
+
+        public string SerializeMatrix(ExtendedEncryptedDigitalMatrix matrix)
+        {
+            return _yamlSerializer.Serialize(matrix);;
+        }
+
+        public string SerializeMatrix(EncryptedDigitalMatrixCompany matrix)
+        {
+            return _yamlSerializer.Serialize(matrix);;
+        }
+
+        public string SerializeMatrix(ExtendedEncryptedDigitalMatrixCompany matrix)
+        {
+            return _yamlSerializer.Serialize(matrix);;
+        }
     }
 }
