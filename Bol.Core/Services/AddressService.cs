@@ -13,8 +13,6 @@ namespace Bol.Core.Services
 {
     public class AddressService : IAddressService
     {
-        private static readonly byte[] ZERO_BYTES = new byte[] { 0x00, 0x00 };
-        
         private readonly IKeyPairFactory _keyPairFactory;
         private readonly ISignatureScriptFactory _signatureScriptFactory;
         private readonly IAddressTransformer _addressTransformer;
