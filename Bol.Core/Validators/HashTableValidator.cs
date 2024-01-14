@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace Bol.Core.Validators
 {
-    public class HashTableValidator : AbstractValidator<HashTable>, IHashTableValidator
+    public class CitizenshipHashTableValidator : AbstractValidator<CitizenshipHashTable>, ICitizenshipHashTableValidator
     {
-        public HashTableValidator(IRegexHelper regexHelper)
+        public CitizenshipHashTableValidator(IRegexHelper regexHelper)
         {
             RuleFor(ht => ht.Passport)
                 .Must(regexHelper.IsHexRepresentation)
@@ -18,10 +18,21 @@ namespace Bol.Core.Validators
                 .When(ht => !string.IsNullOrEmpty(ht.IdentityCard))
                 .WithMessage(ht => $"{nameof(ht.IdentityCard)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned identity card document."); ;
 
-            RuleFor(ht => ht.NinCertificate)
+            RuleFor(ht => ht.ProofOfNin)
                 .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.NinCertificate))
-                .WithMessage(ht => $"{nameof(ht.NinCertificate)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned national identification number certificate."); ;
+                .When(ht => !string.IsNullOrEmpty(ht.ProofOfNin))
+                .WithMessage(ht => $"{nameof(ht.ProofOfNin)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned national identification number certificate."); ;
+        }
+    }
+    
+    public class GenericHashTableValidator : AbstractValidator<GenericHashTable>, IGenericHashTableValidator
+    {
+        public GenericHashTableValidator(IRegexHelper regexHelper)
+        {
+            RuleFor(ht => ht.OtherIdentity)
+                .Must(regexHelper.IsHexRepresentation)
+                .When(ht => !string.IsNullOrEmpty(ht.OtherIdentity))
+                .WithMessage(ht => $"{nameof(ht.OtherIdentity)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned identity card document."); ;
 
             RuleFor(ht => ht.BirthCertificate)
                 .Must(regexHelper.IsHexRepresentation)
@@ -33,30 +44,25 @@ namespace Bol.Core.Validators
                 .When(ht => !string.IsNullOrEmpty(ht.DrivingLicense))
                 .WithMessage(ht => $"{nameof(ht.DrivingLicense)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned driving license.");
 
-            RuleFor(ht => ht.Other)
+            RuleFor(ht => ht.FacePhoto)
                 .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.Other))
-                .WithMessage(ht => $"{nameof(ht.Other)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned additional document.");
+                .When(ht => !string.IsNullOrEmpty(ht.FacePhoto))
+                .WithMessage(ht => $"{nameof(ht.FacePhoto)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned face photograph.");
 
-            RuleFor(ht => ht.Photo)
+            RuleFor(ht => ht.ProofOfResidence)
                 .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.Photo))
-                .WithMessage(ht => $"{nameof(ht.Photo)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned face photograph.");
+                .When(ht => !string.IsNullOrEmpty(ht.ProofOfResidence))
+                .WithMessage(ht => $"{nameof(ht.ProofOfResidence)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned proof of residence or utility bill.");
 
-            RuleFor(ht => ht.TelephoneBill)
+            RuleFor(ht => ht.ProofOfCommunication)
                 .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.TelephoneBill))
-                .WithMessage(ht => $"{nameof(ht.TelephoneBill)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned telephone bill.");
+                .When(ht => !string.IsNullOrEmpty(ht.ProofOfCommunication))
+                .WithMessage(ht => $"{nameof(ht.ProofOfCommunication)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's telephone number, email, or social network Id.");
 
-            RuleFor(ht => ht.TextInfo)
+            RuleFor(ht => ht.PersonalVoice)
                 .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.TextInfo))
-                .WithMessage(ht => $"{nameof(ht.TextInfo)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's electronic text document.");
-
-            RuleFor(ht => ht.Voice)
-                .Must(regexHelper.IsHexRepresentation)
-                .When(ht => !string.IsNullOrEmpty(ht.Voice))
-                .WithMessage(ht => $"{nameof(ht.Voice)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's voice recorded as audio clip.");
+                .When(ht => !string.IsNullOrEmpty(ht.PersonalVoice))
+                .WithMessage(ht => $"{nameof(ht.PersonalVoice)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's voice recorded as audio clip.");
         }
     }
 }

@@ -6,4 +6,28 @@ namespace Bol.Core.Abstractions
     public interface IEncryptedDigitalMatrixValidator : IValidator<EncryptedDigitalMatrix>
     {
     }
+
+    public interface IExtendedEncryptedDigitalMatrixValidator : IValidator<ExtendedEncryptedDigitalMatrix>
+    {
+    }
+
+    public interface IEncryptedCitizenshipValidator : IValidator<EncryptedCitizenship>
+    {
+    }
+
+    public interface IEncryptedDigitalMatrixCompanyValidator : IValidator<EncryptedDigitalMatrixCompany>
+    {
+    }
+
+    public interface IExtendedEncryptedDigitalMatrixCompanyValidator : IValidator<ExtendedEncryptedDigitalMatrixCompany>
+    {
+    }
+
+    public interface ICompanyIncorporationValidator : IValidator<CompanyIncorporation>
+    {
+    }
+
+    public interface ICompanyHashTableValidator : IValidator<CompanyHashTable>
+    {
+    }
 }

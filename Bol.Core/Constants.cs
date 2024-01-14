@@ -24,5 +24,7 @@ namespace Bol.Core
         public const int CODENAME_BIRTHYEAR_GENDER_LENGTH = 5;
         public const int CODENAME_BDATE_NAME_NIN_BASE58_LENGTH = 11;
         public const int CODENAME_COMBINATION_CHECKSUM_LENGTH = 5;
+        
+        public const string HASH_ZEROS = "0000000000000000000000000000000000000000000000000000000000000000";
     }
 }
