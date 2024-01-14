@@ -66,9 +66,8 @@ namespace Bol.Core.Services
             var extendedKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce)));
             
             var mainScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedKeyPair.PublicKey }, 2);
-            var mainAccount = CreateAccount(walletPassword, "main", mainScript, multiSig: true);
-            mainAccount.IsDefault = true;
-            
+
+            var mainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "main", mainScript, multiSig: true), token);
             var codeNameTask = RunInBackground(() => CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey), token);
             var privateKeyAccountTask = RunInBackground(() => CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey), token);
             var blockchainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "blockchain"), token);
@@ -80,7 +79,7 @@ namespace Bol.Core.Services
 
             var allTasks = new List<Task<Account>>
             {
-                codeNameTask, privateKeyAccountTask, blockchainAccountTask, socialAccounTask, votingAccountTask
+                mainAccountTask, codeNameTask, privateKeyAccountTask, blockchainAccountTask, socialAccounTask, votingAccountTask
             };
             allTasks.AddRange(commercialAccountsTask);
 
@@ -98,6 +97,9 @@ namespace Bol.Core.Services
                 }
             }
 
+            var mainAccount = mainAccountTask.Result;
+            mainAccount.IsDefault = true;
+            
             var codeNameAccount = codeNameTask.Result;
             codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
 
