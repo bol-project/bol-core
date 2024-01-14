@@ -74,7 +74,7 @@ namespace Bol.Core.Services
             var blockchainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "blockchain"), token);
             var socialAccounTask = RunInBackground(() => CreateAccount(walletPassword, "social"), token);
             var votingAccountTask = RunInBackground(() => CreateAccount(walletPassword, "voting"), token);
-            var commercialAccountsTask = Enumerable.Range(0, 12)
+            var commercialAccountsTask = Enumerable.Range(0, 8)
                 .Select(_ => RunInBackground(() => CreateAccount(walletPassword, "commercial"), token))
                 .ToArray();
 
