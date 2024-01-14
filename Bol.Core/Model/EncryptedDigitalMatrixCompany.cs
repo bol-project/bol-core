@@ -47,26 +47,26 @@ public class CompanyIncorporation
 public class CompanyHashTable
 {
     [YamlMember(Order = 0)]
-    public string IncorporationCertificate { get; set; }
+    public string IncorporationCertificate { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 1)]
-    public string MemorandumAndArticlesOfAssociation { get; set; }
+    public string MemorandumAndArticlesOfAssociation { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 2)]
-    public string RepresentationCertificate { get; set; }
+    public string RepresentationCertificate { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 3)]
-    public string TaxRegistrationCertificate { get; set; }
+    public string TaxRegistrationCertificate { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 4)]
-    public string ChambersRecords { get; set; }
+    public string ChambersRecords { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 5)]
-    public string RegisterOfShareholders { get; set; }
+    public string RegisterOfShareholders { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 6)]
-    public string ProofOfVatNumber { get; set; }
+    public string ProofOfVatNumber { get; set; } = Constants.HASH_ZEROS;
     
     [YamlMember(Order = 7)]
-    public string ProofOfAddress { get; set; }
+    public string ProofOfAddress { get; set; } = Constants.HASH_ZEROS;
 }
