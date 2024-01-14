@@ -11,10 +11,10 @@ namespace Bol.Core
         public const string B_ADDRESS_PLAIN_PREFIX = "BBB";
         public const string C_ADDRESS_PLAIN_PREFIX = "BCC";
 
-        public const uint B_ADDRESS_START = 0x1949BF00;
-        public const uint B_ADDRESS_END = 0x1949ED00;
-        public const uint C_ADDRESS_START = 0x1954E700;
-        public const uint C_ADDRESS_END = 0x19551600;
+        public const ushort B_ADDRESS_START = 0x49BF;
+        public const ushort B_ADDRESS_END = 0x49ED;
+        public const ushort C_ADDRESS_START = 0x54E7;
+        public const ushort C_ADDRESS_END = 0x5516;
 
         public const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941";
         public const string CODENAME_BIRTHDATE_FORMAT = "yyyydd";

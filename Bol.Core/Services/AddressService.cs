@@ -62,7 +62,7 @@ namespace Bol.Core.Services
             return address;
         }
 
-        private async Task<BolAddress> GenerateAddressAsync(string codeName, IKeyPair keyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default)
+        private async Task<BolAddress> GenerateAddressAsync(string codeName, IKeyPair keyPair, ushort rangeFrom, ushort rangeTo, CancellationToken token = default)
         {
             var hashedCodeName = _sha256.Hash(Encoding.ASCII.GetBytes(codeName));
             var codeNameKeyPair = _keyPairFactory.Create(hashedCodeName);
@@ -114,7 +114,7 @@ namespace Bol.Core.Services
             };
         }
 
-        private bool ValidateNonce(byte[] testNonce, IKeyPair codeNameKeyPair, IKeyPair privateKeyPair, uint rangeFrom, uint rangeTo)
+        private bool ValidateNonce(byte[] testNonce, IKeyPair codeNameKeyPair, IKeyPair privateKeyPair, ushort rangeFrom, ushort rangeTo)
         {
             //Extend the private key with a random nonce
             var extendedPrivateKey = _sha256.Hash(privateKeyPair.PrivateKey.Concat(testNonce).ToArray());
@@ -122,17 +122,23 @@ namespace Bol.Core.Services
 
             var signatureScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedPrivateKeyPair.PublicKey }, 2);
 
-            //Add address prefix byte at start
-            var addressHash = new[] { Constants.BOL_ADDRESS_PREFIX }.Concat(signatureScript.ToScriptHash().GetBytes());
+            //Convert to Script Hash
+            var addressHash = signatureScript
+                .ToScriptHash()
+                .GetBytes()
+                .Take(2)
+                .ToArray();
+            
+            // Ensure the byte order is correct (BitConverter works with system endianness)
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(addressHash);
+            }
 
-            //Take the first 4 bytes of the hash for range comparison
-            var addressHex = _hex.Encode(addressHash.Take(4).ToArray());
-
-            var scriptNumber = uint.Parse(addressHex, NumberStyles.HexNumber);
+            var scriptNumber = BitConverter.ToUInt16(addressHash, 0);
 
             //Scripthash must be in the specified range for successful proof of work
             return (rangeFrom <= scriptNumber && scriptNumber <= rangeTo);
-
         }
     }
 }
