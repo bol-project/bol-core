@@ -59,22 +59,34 @@ namespace Bol.Core.Services
             var mainAccount = CreateAccount(walletPassword, "main", mainScript, multiSig: true);
             mainAccount.IsDefault = true;
 
-            var codeNameTask = Task.Run(() => CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey), token);
-            var privateKeyAccountTask = Task.Run(() => CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey), token);
-            var blockchainAccountTask = Task.Run(() => CreateAccount(walletPassword, "blockchain"), token);
-            var socialAccounTask = Task.Run(() => CreateAccount(walletPassword, "social"), token);
-            var votingAccountTask = Task.Run(() => CreateAccount(walletPassword, "voting"), token);
+            var codeNameTask = RunInBackground(() => CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey), token);
+            var privateKeyAccountTask = RunInBackground(() => CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey), token);
+            var blockchainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "blockchain"), token);
+            var socialAccounTask = RunInBackground(() => CreateAccount(walletPassword, "social"), token);
+            var votingAccountTask = RunInBackground(() => CreateAccount(walletPassword, "voting"), token);
             var commercialAccountsTask = Enumerable.Range(0, 12)
-                .Select(_ => Task.Run(() => CreateAccount(walletPassword, "commercial"), token))
+                .Select(_ => RunInBackground(() => CreateAccount(walletPassword, "commercial"), token))
                 .ToArray();
 
-            var tasks = new List<Task<Account>>
+            var allTasks = new List<Task<Account>>
             {
                 codeNameTask, privateKeyAccountTask, blockchainAccountTask, socialAccounTask, votingAccountTask
             };
-            tasks.AddRange(commercialAccountsTask);
+            allTasks.AddRange(commercialAccountsTask);
 
-            await Task.WhenAll(tasks);
+            var queue = new Queue<Task>(allTasks);
+            var maxParallelization = Math.Min(Environment.ProcessorCount, queue.Count);
+            var tasks = Enumerable.Range(1, maxParallelization).Select(x => queue.Dequeue()).ToList();
+
+            while (tasks.Count > 0)
+            {
+                var completedTask = await Task.WhenAny(tasks.ToArray());
+                tasks.Remove(completedTask);
+                if (queue.Count > 0)
+                {
+                    tasks.Add(queue.Dequeue());
+                }
+            }
 
             var codeNameAccount = codeNameTask.Result;
             codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
@@ -108,6 +120,8 @@ namespace Bol.Core.Services
             return bolWallet;
         }
 
+        private static async Task<T> RunInBackground<T>(Func<T> func, CancellationToken token) => await Task.Run(func, token);
+        
         private Account CreateAccount(string password, string label, ISignatureScript signatureScript = null, byte[] privateKey = null, bool multiSig = false)
         {
             var keyPair = privateKey == null 

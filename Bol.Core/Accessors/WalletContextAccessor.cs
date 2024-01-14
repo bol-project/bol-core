@@ -57,24 +57,50 @@ namespace Bol.Core.Accessors
             var votingAddressAccount = accounts.Where(account => account.Label == "voting").Single();
             var commercialAddressAccounts = accounts.Where(account => account.Label == "commercial");
 
-            var codeNameKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, n, r, p));
-            var privateKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, password, n, r, p));
-            var blockchainKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, n, r, p));
-            var socialKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, n, r, p));
-            var votingKey = Task.Run(() => _exportKeyFactory.GetDecryptedPrivateKey(votingAddressAccount.Key, password, n, r, p));
+            var codeNameKey = RunInBackground(() => _exportKeyFactory.GetDecryptedPrivateKey(codeNameAccount.Key, password, n, r, p));
+            var privateKey = RunInBackground(() => _exportKeyFactory.GetDecryptedPrivateKey(privateAccount.Key, password, n, r, p));
+            var blockchainKey = RunInBackground(() => _exportKeyFactory.GetDecryptedPrivateKey(blockchainAddressAccount.Key, password, n, r, p));
+            var socialKey = RunInBackground(() => _exportKeyFactory.GetDecryptedPrivateKey(socialAddressAccount.Key, password, n, r, p));
+            var votingKey = RunInBackground(() => _exportKeyFactory.GetDecryptedPrivateKey(votingAddressAccount.Key, password, n, r, p));
+            var commercialKeys = commercialAddressAccounts
+                .Select(account => (account.Address, account.Key))
+                .Select(tuple =>
+                    (tuple.Address, Task: RunInBackground(() =>
+                        _exportKeyFactory.GetDecryptedPrivateKey(tuple.Key, password, n, r, p))))
+                .ToArray();
 
-            Task.WaitAll(codeNameKey, privateKey, blockchainKey, socialKey, votingKey);
+            var allTasks = new List<Task<byte[]>>
+            {
+                codeNameKey,
+                privateKey,
+                blockchainKey,
+                socialKey,
+                votingKey
+            };
+            allTasks.AddRange(commercialKeys.Select(x => x.Task).ToArray());
+            
+            var queue = new Queue<Task>(allTasks);
+            var maxParallelization = Math.Min(Environment.ProcessorCount, queue.Count);
+            var tasks = Enumerable.Range(1, maxParallelization).Select(x => queue.Dequeue()).ToList();
 
+            while (tasks.Count > 0)
+            {
+                var completedIndex = Task.WaitAny(tasks.ToArray());
+                tasks.RemoveAt(completedIndex);
+                if (queue.Count > 0)
+                {
+                    tasks.Add(queue.Dequeue());
+                }
+            }
+            
             var codeNameAccountKeyPair = _keyPairFactory.Create(codeNameKey.Result);
             var privateAccountKeyPair = _keyPairFactory.Create(privateKey.Result);
             var blockChainAddressAccountKeyPair = _keyPairFactory.Create(blockchainKey.Result);
             var socialAddressAccountKeyPair = _keyPairFactory.Create(socialKey.Result);
             var votingAddressAccountKeyPair = _keyPairFactory.Create(votingKey.Result);
 
-            var comm = commercialAddressAccounts.AsParallel()
-                .Select(account => (account.Address, account.Key))
-                .Select(tuple => (tuple.Address, Key: _exportKeyFactory.GetDecryptedPrivateKey(tuple.Key, password, n, r, p)))
-                .Select(tuple => (tuple.Address, KeyPair: _keyPairFactory.Create(tuple.Key)))
+            var comm = commercialKeys
+                .Select(tuple => (tuple.Address, KeyPair: _keyPairFactory.Create(tuple.Task.Result)))
                 .Select(tuple => (ScriptHash: _addressTransformer.ToScriptHash(tuple.Address), tuple.KeyPair))                
                 .ToDictionary(tuple => tuple.ScriptHash, tuple => tuple.KeyPair);
 
@@ -98,5 +124,7 @@ namespace Bol.Core.Accessors
                 ? new UnauthorizedBolContext(_bolConfig.Contract) 
                 : _iCachingService.GetOrCreate(CacheKeyNames.BolContext.ToString(), () => CreateContext());
         }
+
+        private static async Task<T> RunInBackground<T>(Func<T> func) => await Task.Run(func);
     }
 }
