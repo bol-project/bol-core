@@ -66,21 +66,50 @@ namespace Bol.Core.Services
             var extendedKeyPair = _keyPairFactory.Create(_sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(nonce)));
             
             var mainScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedKeyPair.PublicKey }, 2);
-            var mainAccount = CreateAccount(walletPassword, "main", mainScript, multiSig: true);
+
+            var mainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "main", mainScript, multiSig: true), token);
+            var codeNameTask = RunInBackground(() => CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey), token);
+            var privateKeyAccountTask = RunInBackground(() => CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey), token);
+            var blockchainAccountTask = RunInBackground(() => CreateAccount(walletPassword, "blockchain"), token);
+            var socialAccounTask = RunInBackground(() => CreateAccount(walletPassword, "social"), token);
+            var votingAccountTask = RunInBackground(() => CreateAccount(walletPassword, "voting"), token);
+            var commercialAccountsTask = Enumerable.Range(0, 8)
+                .Select(_ => RunInBackground(() => CreateAccount(walletPassword, "commercial"), token))
+                .ToArray();
+
+            var allTasks = new List<Task<Account>>
+            {
+                mainAccountTask, codeNameTask, privateKeyAccountTask, blockchainAccountTask, socialAccounTask, votingAccountTask
+            };
+            allTasks.AddRange(commercialAccountsTask);
+
+            var queue = new Queue<Task>(allTasks);
+            var maxParallelization = Math.Min(Environment.ProcessorCount, queue.Count);
+            var tasks = Enumerable.Range(1, maxParallelization).Select(x => queue.Dequeue()).ToList();
+
+            while (tasks.Count > 0)
+            {
+                var completedTask = await Task.WhenAny(tasks.ToArray());
+                tasks.Remove(completedTask);
+                if (queue.Count > 0)
+                {
+                    tasks.Add(queue.Dequeue());
+                }
+            }
+
+            var mainAccount = mainAccountTask.Result;
             mainAccount.IsDefault = true;
             
-            var codeNameAccount = CreateAccount(walletPassword, "codename", privateKey: codeNameKeyPair.PrivateKey);
+            var codeNameAccount = codeNameTask.Result;
             codeNameAccount.Extra = new Extra { codename = codeName, edi = edi };
-            
-            var privateKeyAccount = CreateAccount(walletPassword, "private", privateKey: extendedKeyPair.PrivateKey);
-            privateKeyAccount.Extra = new Extra { nonce = bolAddress.Nonce.ToString() };
-            
-            var blockchainAccount = CreateAccount(walletPassword, "blockchain");
-            var socialAccount = CreateAccount(walletPassword, "social");
-            var votingAccount = CreateAccount(walletPassword, "voting");
 
-            var commercialAccounts = Enumerable.Range(0, 12)
-                .Select(_ => CreateAccount(walletPassword, "commercial"));
+            var privateKeyAccount = privateKeyAccountTask.Result;
+            privateKeyAccount.Extra = new Extra { nonce = bolAddress.Nonce.ToString() };
+
+            var blockchainAccount = blockchainAccountTask.Result;
+            var socialAccount = socialAccounTask.Result;
+            var votingAccount = votingAccountTask.Result;
+            var commercialAccounts = commercialAccountsTask.Select(x => x.Result).ToArray();
 
             var bolWallet = new BolWallet
             {
@@ -103,6 +132,8 @@ namespace Bol.Core.Services
             return bolWallet;
         }
 
+        private static async Task<T> RunInBackground<T>(Func<T> func, CancellationToken token) => await Task.Run(func, token);
+        
         private Account CreateAccount(string password, string label, ISignatureScript signatureScript = null, byte[] privateKey = null, bool multiSig = false)
         {
             var keyPair = privateKey == null 
