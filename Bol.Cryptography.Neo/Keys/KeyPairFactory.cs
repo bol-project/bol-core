@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using Bol.Cryptography.Keys;
 using Bol.Cryptography.Neo.Core.ECC;
@@ -14,7 +15,16 @@ namespace Bol.Cryptography.Neo.Keys
                 throw new ArgumentException("Bad private key format.");
             }
 
-            if (new BigInteger(privateKey) >= ECCurve.Secp256r1.N)
+            // Reverse the byte array to ensure big-endian interpretation and add zero byte sign
+            var bytes = privateKey
+                .Reverse()
+                .Concat(new byte[] { 0x00 })
+                .ToArray();
+
+            // Create BigInteger from the modified byte array
+            var privateKeyBigInteger = new BigInteger(bytes);
+
+            if (privateKeyBigInteger >= ECCurve.Secp256r1.N)
             {
                 throw new KeyPairException("Private key cannot be higher than ECCurve N value.");
             }
