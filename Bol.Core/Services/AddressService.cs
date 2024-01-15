@@ -8,6 +8,7 @@ using Bol.Address;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using Bol.Cryptography;
+using Bol.Cryptography.Neo.Keys;
 
 namespace Bol.Core.Services
 {
@@ -118,7 +119,16 @@ namespace Bol.Core.Services
         {
             //Extend the private key with a random nonce
             var extendedPrivateKey = _sha256.Hash(privateKeyPair.PrivateKey.Concat(testNonce).ToArray());
-            var extendedPrivateKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+
+            IKeyPair extendedPrivateKeyPair;
+            try
+            {
+                extendedPrivateKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+            }
+            catch (KeyPairException)
+            {
+                return false;
+            }
 
             var signatureScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedPrivateKeyPair.PublicKey }, 2);
 
