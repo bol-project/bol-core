@@ -1,4 +1,7 @@
+using System;
+using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Xunit;
 using Bol.Core.Services;
 using Bol.Core.Abstractions;
@@ -10,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Bol.Address.Model.Configuration;
 using System.Threading.Tasks;
 using Bol.Core.Helpers;
+using Bol.Cryptography.Neo.Core.ECC;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
 using Bol.Cryptography.Neo.Keys;
@@ -74,6 +78,15 @@ namespace Bol.Core.Tests.Services
                 "CD8B78CD37AC684D82E066C95ED6995446B9FFB3E3F5028092FF0248C0C37B79");
             
             Assert.StartsWith("BCC", bolWallet.accounts.First().Address);
+        }
+
+        [Fact]
+        public void KeyPairFactory_Create_ThrowsKeyPairException_WhenPrivateKeyOutOfRange()
+        {
+            var factory = new KeyPairFactory();
+            var hex = new Base16Encoder(new Sha256Hasher());
+            var privateKey = hex.Decode("FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551");
+            Assert.Throws<KeyPairException>(() => factory.Create(privateKey));
         }
     }
 }
