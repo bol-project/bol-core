@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Bol.Cryptography.Keys;
 using Bol.Cryptography.Neo.Core.ECC;
 
@@ -11,6 +12,11 @@ namespace Bol.Cryptography.Neo.Keys
             if (privateKey == null || privateKey.Length != 32)
             {
                 throw new ArgumentException("Bad private key format.");
+            }
+
+            if (new BigInteger(privateKey) >= ECCurve.Secp256r1.N)
+            {
+                throw new KeyPairException("Private key cannot be higher than ECCurve N value.");
             }
 
             var publicKey = new PublicKey(ECCurve.Secp256r1.G * privateKey);
@@ -28,5 +34,10 @@ namespace Bol.Cryptography.Neo.Keys
 
             return Create(privateKey);
         }
+    }
+
+    public class KeyPairException : Exception
+    {
+        public KeyPairException(string message) : base(message) { }
     }
 }
