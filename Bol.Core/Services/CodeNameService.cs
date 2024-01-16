@@ -73,7 +73,7 @@ namespace Bol.Core.Services
             var date = company.IncorporationDate.ToString("yyyydd");
             var vat = GetLastNCharacters(company.VatNumber, 5);
             var type = company.OrgType.ToString();
-            var extraDigit = company.ExtraDigit;
+            var combination = company.Combination;
 
             var title = new [] { "", "", "", "" };
             for (var i = 0; i < 3 && i < words.Length; i++)
@@ -85,7 +85,7 @@ namespace Bol.Core.Services
             var shortHash = $"{date}{words[0]}{words[1]}{vat}";
             shortHash =_base58Encoder.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(shortHash)), 8));
             
-            var codeName = $"C<{countryCode}<{title[0]}<{title[1]}<{title[2]}<{title[3]}<{year}{type}<{shortHash}<{extraDigit}";
+            var codeName = $"C<{countryCode}<{title[0]}<{title[1]}<{title[2]}<{title[3]}<{year}{type}<{shortHash}<{combination}";
             var checkSum = _hex.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(codeName)), 2));
             return $"{codeName}{checkSum}";
         }

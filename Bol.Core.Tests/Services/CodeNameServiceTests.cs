@@ -72,7 +72,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "USA"},
                 Title = "IFESTOS METAL CONSTRUCTIONS LLC",
                 IncorporationDate = new DateTime(2009,4,8),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.C,
                 VatNumber = "246467895464"
             };
@@ -90,7 +90,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "SIEMENS HEALTHCARE MONOPROSOPI ANONYMOS ETAIRIA",
                 IncorporationDate = new DateTime(2010,8,25),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.C,
                 VatNumber = "052635988"
             };
@@ -108,7 +108,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
                 IncorporationDate = new DateTime(1914,9,1),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.S,
                 VatNumber = "090001435"
             };
@@ -126,7 +126,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "EMP",
                 IncorporationDate = new DateTime(1914,9,1),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.S,
                 VatNumber = "090001435"
             };
