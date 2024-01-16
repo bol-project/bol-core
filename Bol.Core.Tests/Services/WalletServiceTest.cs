@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Bol.Address.Model.Configuration;
 using System.Threading.Tasks;
 using Bol.Core.Helpers;
+using Bol.Core.Serializers;
 using Bol.Cryptography.Neo.Core.ECC;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
@@ -30,6 +31,7 @@ namespace Bol.Core.Tests.Services
             var sha256 = new Sha256Hasher();
             var ripemd160 = new RipeMD160Hasher();
             var base58 = new Base58Encoder(new Sha256Hasher());
+            var json = new JsonSerializer();
 
             var signatureScriptFactory = new SignatureScriptFactory(hex, sha256, ripemd160);
             var keyPairFactory = new KeyPairFactory();
@@ -55,7 +57,8 @@ namespace Bol.Core.Tests.Services
                 sha256,
                 addressTransformer,
                 exportKeyFactory,
-                hex);
+                hex,
+                json);
         }
 
         [Fact]
