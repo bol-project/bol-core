@@ -23,6 +23,7 @@ namespace Bol.Core.Services
         private readonly IAddressTransformer _addressTransformer;
         private readonly IExportKeyFactory _exportKeyFactory;
         private readonly IBase16Encoder _base16Encoder;
+        private readonly IJsonSerializer _jsonSerializer;
 
         public WalletService(
             IAddressService addressService,
@@ -31,7 +32,8 @@ namespace Bol.Core.Services
             ISha256Hasher sha256Hasher,
             IAddressTransformer addressTransformer,
             IExportKeyFactory exportKeyFactory,
-            IBase16Encoder base16Encoder)
+            IBase16Encoder base16Encoder,
+            IJsonSerializer jsonSerializer)
         {
             _addressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
@@ -40,6 +42,29 @@ namespace Bol.Core.Services
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
             _base16Encoder = base16Encoder ?? throw new ArgumentNullException(nameof(base16Encoder));
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+        }
+
+        public BolWallet MigrateWallet(string wallet, IEnumerable<string> addresses, string password, string newPassword)
+        {
+            var addressSet = new HashSet<string>(addresses);
+            var bolWallet = _jsonSerializer.Deserialize<BolWallet>(wallet);
+            var scrypt = bolWallet.Scrypt;
+            var accounts = bolWallet
+                .accounts
+                .Where(a => addressSet.Contains(a.Address))
+                .Select(account =>
+                {
+                    var privateKey = _exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, scrypt.N, scrypt.R, scrypt.P);
+                    var keyPair = _keyPairFactory.Create(privateKey);
+                    var signatureScript = _signatureScriptFactory.Create(keyPair.PublicKey);
+                    account.Key = _exportKeyFactory.Export(keyPair.PrivateKey, signatureScript.ToScriptHash(), newPassword, scrypt.N, scrypt.R, scrypt.P);
+                    return account;
+                })
+                .ToArray();
+
+            bolWallet.accounts = accounts;
+            return bolWallet;
         }
 
         public Task<BolWallet> CreateWalletB(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)

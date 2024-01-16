@@ -63,6 +63,16 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("migrate-wallet")]
+        public ActionResult MigrateWallet([FromBody] BolWallet wallet,
+            [FromQuery] string[] addresses,
+            [FromQuery] string password,
+            [FromQuery] string newPassword)
+        {
+            var result = _walletService.MigrateWallet(_jsonSerializer.Serialize(wallet), addresses, password, newPassword);
+            return Ok(result);
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult> Register(CancellationToken token)
         {
