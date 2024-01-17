@@ -84,15 +84,13 @@ namespace Bol.Core.Validators
                 .WithMessage("First name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.SecondName)
-                .NotEmpty()
-                .WithMessage("Second name cannot be empty.")
                 .Must(regexHelper.HasAllLettersCapital)
+                .When(edm => !string.IsNullOrWhiteSpace(edm.SecondName))
                 .WithMessage("Second name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.ThirdName)
-                .NotEmpty()
-                .WithMessage("Third name cannot be empty.")
                 .Must(regexHelper.HasAllLettersCapital)
+                .When(edm => !string.IsNullOrWhiteSpace(edm.ThirdName))
                 .WithMessage("Third name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.SurName)
