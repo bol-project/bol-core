@@ -8,6 +8,8 @@ namespace Bol.Core.Validators
     public class EncryptedDigitalMatrixCompanyValidator : AbstractValidator<EncryptedDigitalMatrixCompany>,
         IEncryptedDigitalMatrixCompanyValidator
     {
+        public bool ValidateIncorporationHash { get; set; } = true;
+        
         public EncryptedDigitalMatrixCompanyValidator(
             IRegexHelper regexHelper,
             ICodeNameValidator codeNameValidator,
@@ -29,8 +31,10 @@ namespace Bol.Core.Validators
 
             RuleFor(edm => edm.IncorporationHash)
                 .NotEmpty()
+                .When(edm => ValidateIncorporationHash)
                 .WithMessage("Incorporation Hash cannot be empty.")
                 .Must(regexHelper.IsHexRepresentation)
+                .When(edm => ValidateIncorporationHash)
                 .WithMessage(
                     "Incorporation hashe must be a hex representation of SHA256 hash of the company's Incorporation table.");
         }
@@ -43,6 +47,8 @@ namespace Bol.Core.Validators
             IEncryptedDigitalMatrixCompanyValidator encryptedDigitalMatrixCompanyValidator,
             ICompanyIncorporationValidator companyIncorporationValidator)
         {
+            encryptedDigitalMatrixCompanyValidator.ValidateIncorporationHash = false;
+            
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixCompanyValidator);
 

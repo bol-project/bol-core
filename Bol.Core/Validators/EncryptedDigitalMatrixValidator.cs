@@ -8,6 +8,8 @@ namespace Bol.Core.Validators
     public class EncryptedDigitalMatrixValidator : AbstractValidator<EncryptedDigitalMatrix>,
         IEncryptedDigitalMatrixValidator
     {
+        public bool ValidateCitizenshipHashes { get; set; } = true;
+        
         public EncryptedDigitalMatrixValidator(
             IRegexHelper regexHelper,
             ICodeNameValidator codeNameValidator,
@@ -41,8 +43,10 @@ namespace Bol.Core.Validators
 
             RuleForEach(edm => edm.Citizenships)
                 .NotEmpty()
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenship hashes cannot be empty.")
                 .Must(regexHelper.IsHexRepresentation)
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage(
                     "Citizenship hashes must be a hex representation of SHA256 hash of the corresponding EncryptedCitizenship.");
         }
@@ -55,6 +59,8 @@ namespace Bol.Core.Validators
             IEncryptedDigitalMatrixValidator encryptedDigitalMatrixValidator,
             IEncryptedCitizenshipValidator encryptedCitizenshipValidator)
         {
+            encryptedDigitalMatrixValidator.ValidateCitizenshipHashes = false;
+            
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixValidator);
 
