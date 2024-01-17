@@ -9,7 +9,7 @@ public class Company
     public string Title { get; set; }
     public string VatNumber { get; set; }
     public DateTime IncorporationDate { get; set; }
-    public int ExtraDigit { get; set; }
+    public string Combination { get; set; }
 }
 
 public enum OrgType

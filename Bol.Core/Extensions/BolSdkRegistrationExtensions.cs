@@ -72,6 +72,7 @@ namespace Bol.Core.Extensions
             services.AddTransient<IExtendedEncryptedDigitalMatrixCompanyValidator, ExtendedEncryptedDigitalMatrixCompanyValidator>();
             services.AddTransient<ICompanyIncorporationValidator, CompanyIncorporationValidator>();
             services.AddTransient<ICompanyHashTableValidator, CompanyHashTableValidator>();
+            services.AddTransient<ICompanyValidator, CompanyValidator>();
 
             // Other
             services.AddScoped<IAddressTransformer, AddressTransformer>();

@@ -24,6 +24,7 @@ namespace Bol.Core.Tests.Services
         private readonly NaturalPersonValidator _naturalPersonValidator;
         private readonly CodenamePersonValidator _codenamePersonValidator;
         private readonly CodeNameValidator _codeNameValidator;
+        private readonly CompanyValidator _companyValidator;
         private readonly CodeNameService _service;
 
         List<Country> countries;
@@ -35,12 +36,14 @@ namespace Bol.Core.Tests.Services
             _base58Encoder = new Base58Encoder(_hasher);
             _hex = new Base16Encoder(_hasher);
             countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
-            _basePersonValidator = new BasePersonValidator(new CountryCodeService(Options.Create(countries)));
+            var countryService = new CountryCodeService(Options.Create(countries));
+            _basePersonValidator = new BasePersonValidator(countryService);
             ninSpecifications = new List<NinSpecification> { new NinSpecification { CountryCode = "GRC", Digits = 11 }, new NinSpecification { CountryCode = "USA", Digits = 9 }, new NinSpecification { CountryCode = "CHN", Digits = 18 } };
             _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator, new NinService(Options.Create(ninSpecifications)));
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
             _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher, _hex);
-            _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _naturalPersonValidator, _hex);
+            _companyValidator = new CompanyValidator(countryService);
+            _service = new CodeNameService(new PersonStringSerializer(), _hasher, _base58Encoder, _hex, _naturalPersonValidator, _companyValidator);
         }
 
         [Theory]
@@ -72,7 +75,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "USA"},
                 Title = "IFESTOS METAL CONSTRUCTIONS LLC",
                 IncorporationDate = new DateTime(2009,4,8),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.C,
                 VatNumber = "246467895464"
             };
@@ -90,7 +93,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "SIEMENS HEALTHCARE MONOPROSOPI ANONYMOS ETAIRIA",
                 IncorporationDate = new DateTime(2010,8,25),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.C,
                 VatNumber = "052635988"
             };
@@ -108,7 +111,7 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
                 IncorporationDate = new DateTime(1914,9,1),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.S,
                 VatNumber = "090001435"
             };
@@ -126,12 +129,60 @@ namespace Bol.Core.Tests.Services
                 Country = new Country{Alpha3 = "GRC"},
                 Title = "EMP",
                 IncorporationDate = new DateTime(1914,9,1),
-                ExtraDigit = 1,
+                Combination = "1",
                 OrgType = OrgType.S,
                 VatNumber = "090001435"
             };
 
             Assert.Throws<ArgumentException>(() => _service.Generate(company));
+        }
+        
+        [Fact]
+        public void Generate_ShouldThrowError_WhenCompanyTitleHasMoreThanOneBlankBetweenWords()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "ETHNIKO  METSOVIO POLYTEXNEIO",
+                IncorporationDate = new DateTime(1914,9,1),
+                Combination = "1",
+                OrgType = OrgType.S,
+                VatNumber = "090001435"
+            };
+
+            Assert.Throws<ValidationException>(() => _service.Generate(company));
+        }
+        
+        [Fact]
+        public void Generate_ShouldThrowError_WhenCompanyIncorporationIsLaterThanNow()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "ETHNIKO METSOVIO POLYTEXNEIO",
+                IncorporationDate = DateTime.Now.AddDays(1),
+                Combination = "1",
+                OrgType = OrgType.S,
+                VatNumber = "090001435"
+            };
+
+            Assert.Throws<ValidationException>(() => _service.Generate(company));
+        }
+        
+        [Fact]
+        public void Generate_ShouldThrowError_WhenCompanyCombinationIsNotOneDigit()
+        {
+            var company = new Company
+            {
+                Country = new Country{Alpha3 = "GRC"},
+                Title = "ETHNIKO METSOVIO POLYTEXNEIO",
+                IncorporationDate = DateTime.Now.AddDays(1),
+                Combination = "15",
+                OrgType = OrgType.S,
+                VatNumber = "090001435"
+            };
+
+            Assert.Throws<ValidationException>(() => _service.Generate(company));
         }
 
         private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)
