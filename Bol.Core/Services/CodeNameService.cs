@@ -5,6 +5,7 @@ using System.Text;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
+using Bol.Core.Validators;
 using Bol.Cryptography;
 using FluentValidation;
 
@@ -17,19 +18,22 @@ namespace Bol.Core.Services
         private readonly IBase58Encoder _base58Encoder;
         private readonly IValidator<NaturalPerson> _naturalPersonValidator;
         private readonly IBase16Encoder _hex;
+        private readonly ICompanyValidator _companyValidator;
 
         public CodeNameService(
             IStringSerializer<NaturalPerson, CodenamePerson> stringSerializer,
             ISha256Hasher hasher,
             IBase58Encoder base58Encoder,
+            IBase16Encoder hex,
             IValidator<NaturalPerson> naturalPersonValidator,
-            IBase16Encoder hex)
+            ICompanyValidator companyValidator)
         {
             _stringSerializer = stringSerializer ?? throw new ArgumentNullException(nameof(stringSerializer));
             _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
             _base58Encoder = base58Encoder ?? throw new ArgumentException(nameof(base58Encoder));
-            _naturalPersonValidator = naturalPersonValidator ?? throw new ArgumentException(nameof(naturalPersonValidator));
             _hex = hex ?? throw new ArgumentNullException(nameof(hex));
+            _naturalPersonValidator = naturalPersonValidator ?? throw new ArgumentNullException(nameof(naturalPersonValidator));
+            _companyValidator = companyValidator ?? throw new ArgumentNullException(nameof(companyValidator));
         }
 
         public string Generate(NaturalPerson person)
@@ -65,6 +69,8 @@ namespace Bol.Core.Services
 
         public string Generate(Company company)
         {
+            _companyValidator.ValidateAndThrow(company);
+            
             var words = company.Title.Split(' ');
             if (words.Length < 2) throw new ArgumentException("Company title should have a minimum of 2 words.");
             
