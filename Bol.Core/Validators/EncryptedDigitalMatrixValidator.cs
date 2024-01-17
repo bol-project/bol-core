@@ -64,6 +64,10 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixValidator);
 
+            RuleFor(eedm => eedm.Citizenships)
+                .Empty()
+                .WithMessage("Citizenship Hashes array must be empty in Extended Matrix.");
+
             RuleFor(edm => edm.CitizenshipMatrices)
                 .NotEmpty()
                 .WithMessage("CitizenshipMatrices cannot be empty.")

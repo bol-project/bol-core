@@ -52,6 +52,10 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixCompanyValidator);
 
+            RuleFor(eedm => eedm.IncorporationHash)
+                .Empty()
+                .WithMessage("Incorporation Hash must be empty in Extended Matrix.");
+            
             RuleFor(edm => edm.Incorporation)
                 .NotEmpty()
                 .WithMessage("Company Incorporation Table cannot be empty.")
