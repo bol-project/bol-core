@@ -74,7 +74,7 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm.Title)
                 .NotEmpty()
                 .WithMessage("Company Title cannot be empty.")
-                .Must(regexHelper.HasAllLettersCapitalOrNumbers)
+                .Must(regexHelper.HasAllLettersCapitalOrNumbersSeparatedByOneSpace)
                 .WithMessage("Company Title must consist of capital letters A-Z or Numbers.");
 
             RuleFor(edm => edm.IncorporationDate)
