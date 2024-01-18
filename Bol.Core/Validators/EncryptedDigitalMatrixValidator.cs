@@ -37,8 +37,10 @@ namespace Bol.Core.Validators
 
             RuleFor(edm => edm.Citizenships)
                 .NotEmpty()
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships cannot be empty.")
                 .Must(c => c.Length >= 1 && c.Length <= 3)
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships can be between 1 and 3.");
 
             RuleForEach(edm => edm.Citizenships)
