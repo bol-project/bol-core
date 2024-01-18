@@ -5,6 +5,7 @@ namespace Bol.Core.Abstractions
 {
     public interface IEncryptedDigitalMatrixValidator : IValidator<EncryptedDigitalMatrix>
     {
+        bool ValidateCitizenshipHashes { get; set; }
     }
 
     public interface IExtendedEncryptedDigitalMatrixValidator : IValidator<ExtendedEncryptedDigitalMatrix>
@@ -17,6 +18,7 @@ namespace Bol.Core.Abstractions
 
     public interface IEncryptedDigitalMatrixCompanyValidator : IValidator<EncryptedDigitalMatrixCompany>
     {
+        bool ValidateIncorporationHash { get; set; }
     }
 
     public interface IExtendedEncryptedDigitalMatrixCompanyValidator : IValidator<ExtendedEncryptedDigitalMatrixCompany>

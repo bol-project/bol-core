@@ -33,6 +33,8 @@ namespace Bol.Core.Validators
             RuleFor(codeName => codeName)
                 .Custom((codeName, context) =>
                 {
+                    if (!codeName.StartsWith("P")) return;
+                    
                     var codenamePerson = _personSerializer.Deserialize(codeName);
                     var validationResult = _codenamePersonValidator.Validate(codenamePerson);
 
@@ -43,6 +45,8 @@ namespace Bol.Core.Validators
                         context.AddFailure(failure);
                     }
                 });
+            //TODO: Add Company CodeName validations
+            
             _hex = hex;
         }
 

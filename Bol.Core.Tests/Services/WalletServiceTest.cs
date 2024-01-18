@@ -1,7 +1,4 @@
-using System;
-using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Xunit;
 using Bol.Core.Services;
 using Bol.Core.Abstractions;
@@ -14,7 +11,6 @@ using Bol.Address.Model.Configuration;
 using System.Threading.Tasks;
 using Bol.Core.Helpers;
 using Bol.Core.Serializers;
-using Bol.Cryptography.Neo.Core.ECC;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
 using Bol.Cryptography.Neo.Keys;
@@ -24,7 +20,7 @@ namespace Bol.Core.Tests.Services
     public class WalletServiceTest
     {
         private readonly IWalletService _walletService;
-
+        
         public WalletServiceTest()
         {
             var hex = new Base16Encoder(new Sha256Hasher());

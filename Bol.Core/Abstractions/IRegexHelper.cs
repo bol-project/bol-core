@@ -7,5 +7,7 @@
         bool IsHexRepresentation(string input);
         
         bool HasAllLettersCapitalOrNumbers(string input);
+
+        bool HasAllLettersCapitalOrNumbersSeparatedByOneSpace(string input);
     }
 }

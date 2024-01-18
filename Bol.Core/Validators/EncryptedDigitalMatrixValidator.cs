@@ -8,6 +8,8 @@ namespace Bol.Core.Validators
     public class EncryptedDigitalMatrixValidator : AbstractValidator<EncryptedDigitalMatrix>,
         IEncryptedDigitalMatrixValidator
     {
+        public bool ValidateCitizenshipHashes { get; set; } = true;
+        
         public EncryptedDigitalMatrixValidator(
             IRegexHelper regexHelper,
             ICodeNameValidator codeNameValidator,
@@ -35,14 +37,18 @@ namespace Bol.Core.Validators
 
             RuleFor(edm => edm.Citizenships)
                 .NotEmpty()
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships cannot be empty.")
                 .Must(c => c.Length >= 1 && c.Length <= 3)
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships can be between 1 and 3.");
 
             RuleForEach(edm => edm.Citizenships)
                 .NotEmpty()
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenship hashes cannot be empty.")
                 .Must(regexHelper.IsHexRepresentation)
+                .When(edm => ValidateCitizenshipHashes)
                 .WithMessage(
                     "Citizenship hashes must be a hex representation of SHA256 hash of the corresponding EncryptedCitizenship.");
         }
@@ -55,8 +61,14 @@ namespace Bol.Core.Validators
             IEncryptedDigitalMatrixValidator encryptedDigitalMatrixValidator,
             IEncryptedCitizenshipValidator encryptedCitizenshipValidator)
         {
+            encryptedDigitalMatrixValidator.ValidateCitizenshipHashes = false;
+            
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixValidator);
+
+            RuleFor(eedm => eedm.Citizenships)
+                .Empty()
+                .WithMessage("Citizenship Hashes array must be empty in Extended Matrix.");
 
             RuleFor(edm => edm.CitizenshipMatrices)
                 .NotEmpty()
@@ -84,15 +96,13 @@ namespace Bol.Core.Validators
                 .WithMessage("First name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.SecondName)
-                .NotEmpty()
-                .WithMessage("Second name cannot be empty.")
                 .Must(regexHelper.HasAllLettersCapital)
+                .When(edm => !string.IsNullOrWhiteSpace(edm.SecondName))
                 .WithMessage("Second name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.ThirdName)
-                .NotEmpty()
-                .WithMessage("Third name cannot be empty.")
                 .Must(regexHelper.HasAllLettersCapital)
+                .When(edm => !string.IsNullOrWhiteSpace(edm.ThirdName))
                 .WithMessage("Third name must consist of capital letters A-Z.");
 
             RuleFor(edm => edm.SurName)

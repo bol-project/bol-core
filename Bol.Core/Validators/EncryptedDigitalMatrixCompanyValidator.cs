@@ -8,6 +8,8 @@ namespace Bol.Core.Validators
     public class EncryptedDigitalMatrixCompanyValidator : AbstractValidator<EncryptedDigitalMatrixCompany>,
         IEncryptedDigitalMatrixCompanyValidator
     {
+        public bool ValidateIncorporationHash { get; set; } = true;
+        
         public EncryptedDigitalMatrixCompanyValidator(
             IRegexHelper regexHelper,
             ICodeNameValidator codeNameValidator,
@@ -29,8 +31,10 @@ namespace Bol.Core.Validators
 
             RuleFor(edm => edm.IncorporationHash)
                 .NotEmpty()
+                .When(edm => ValidateIncorporationHash)
                 .WithMessage("Incorporation Hash cannot be empty.")
                 .Must(regexHelper.IsHexRepresentation)
+                .When(edm => ValidateIncorporationHash)
                 .WithMessage(
                     "Incorporation hashe must be a hex representation of SHA256 hash of the company's Incorporation table.");
         }
@@ -43,9 +47,15 @@ namespace Bol.Core.Validators
             IEncryptedDigitalMatrixCompanyValidator encryptedDigitalMatrixCompanyValidator,
             ICompanyIncorporationValidator companyIncorporationValidator)
         {
+            encryptedDigitalMatrixCompanyValidator.ValidateIncorporationHash = false;
+            
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixCompanyValidator);
 
+            RuleFor(eedm => eedm.IncorporationHash)
+                .Empty()
+                .WithMessage("Incorporation Hash must be empty in Extended Matrix.");
+            
             RuleFor(edm => edm.Incorporation)
                 .NotEmpty()
                 .WithMessage("Company Incorporation Table cannot be empty.")
@@ -64,7 +74,7 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm.Title)
                 .NotEmpty()
                 .WithMessage("Company Title cannot be empty.")
-                .Must(regexHelper.HasAllLettersCapitalOrNumbers)
+                .Must(regexHelper.HasAllLettersCapitalOrNumbersSeparatedByOneSpace)
                 .WithMessage("Company Title must consist of capital letters A-Z or Numbers.");
 
             RuleFor(edm => edm.IncorporationDate)
