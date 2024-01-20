@@ -16,7 +16,7 @@ namespace Bol.Core
         public const ushort C_ADDRESS_START = 0x54E7;
         public const ushort C_ADDRESS_END = 0x5516;
 
-        public const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPADOPOULOS<G<<<1963M<ca8FXTowBuE<1B941";
+        public const string INVALID_CODENAME = "Invalid Person CodeName format. Person CodeName format should be: " + "P<GRC<PAPA8<G<<<1963M<h1e8C8E7NKM<19B3E";
         public const string CODENAME_BIRTHDATE_FORMAT = "yyyydd";
         public const int CODENAME_CHECKSUM_LENGTH = 4;
         public const int CODENAME_CHECKSUM_BYTES = 2;
