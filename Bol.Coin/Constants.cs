@@ -127,12 +127,12 @@ namespace Bol.Coin
         /// <summary>
         /// The required fee for Transfer transactions.
         /// </summary>
-        public static readonly BigInteger TransferFee = new BigInteger("0x1027".HexToBytes()); //10000
+        public static readonly BigInteger TransferFee = new BigInteger("0xE803".HexToBytes()); //1000
 
         /// <summary>
         /// The required fee for operational transactions except Transfer.
         /// </summary>
-        public static readonly BigInteger OperationsFee = new BigInteger("0x8813".HexToBytes()); //5000
+        public static readonly BigInteger OperationsFee = new BigInteger("0xF401".HexToBytes()); //500
 
         /// <summary>
         /// Earth population at the time of the Genesis block.
