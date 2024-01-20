@@ -13,7 +13,7 @@ namespace Bol.Coin
         /// <summary>
         /// Collateral in Bols that a Person or Company needs to reserve in order to become a BoL Certifier.
         /// </summary>
-        public static readonly BigInteger CertifierCollateral = 100000000000;
+        public static readonly BigInteger CertifierCollateral = 20000000000;
         
         /// <summary>
         /// A fee in Bols that a Person or Company needs to pay in order to be certified in the BoL Blockchain.
