@@ -8,11 +8,11 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : validator-1.json
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-1.json:/app/wallet.json
     ports:
-      - "11333:10333"
+      - "11333:21333"
     networks:
         - bol-network
 
@@ -22,11 +22,11 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : validator-2.json    
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-2.json:/app/wallet.json
     ports:
-      - "12333:10333"   
+      - "12333:21333"   
     networks:
         - bol-network
 
@@ -36,11 +36,11 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : validator-3.json      
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-3.json:/app/wallet.json
     ports:
-      - "13333:10333"
+      - "13333:21333"
     networks:
         - bol-network
 
@@ -50,11 +50,11 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : validator-4.json
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-4.json:/app/wallet.json
     ports:
-      - "14333:10333"     
+      - "14333:21333"     
     networks:
         - bol-network
 
@@ -65,9 +65,11 @@ services:
     build:
       context: .
       dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - /Users/hampos/Downloads/certifiers/hampos-cert.json:/app/wallet.json
     ports:
-      - "8000:80"
-      - "10332:10332"
+      - "5000:8080"
+      - "21332:21332"
     networks:
         - bol-network
                 

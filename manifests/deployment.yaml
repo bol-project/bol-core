@@ -25,7 +25,7 @@ spec:
         image: __CI_IMAGE_TAG__
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         - containerPort: 21332
         - containerPort: 21333
         - containerPort: 21334
@@ -40,7 +40,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 80
+            port: 8080
           initialDelaySeconds: 30
           timeoutSeconds: 5
         readinessProbe:
