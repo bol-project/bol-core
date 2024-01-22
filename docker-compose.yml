@@ -65,8 +65,6 @@ services:
     build:
       context: .
       dockerfile: Bol.Api/Dockerfile
-    volumes:
-      - /Users/hampos/Downloads/certifiers/hampos-cert.json:/app/wallet.json
     ports:
       - "5000:8080"
       - "21332:21332"

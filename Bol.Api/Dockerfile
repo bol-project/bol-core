@@ -20,6 +20,7 @@ COPY . .
 WORKDIR /app/Bol.Api
 RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.private.json ./out/protocol.json
+COPY ./Bol.Api/config.private.json ./out/config.json
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime-base
 

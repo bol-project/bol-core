@@ -1,0 +1,26 @@
+﻿{
+  "ApplicationConfiguration": {
+    "Paths": {
+      "Chain": "/blockchain/Chain_{0}",
+      "Index": "/blockchain/Index_{0}"
+    },
+    "P2P": {
+      "Port": 21333,
+      "WsPort": 21334
+    },
+    "RPC": {
+      "BindAddress": "0.0.0.0",
+      "Port": 21332,
+      "SslCert": "",
+      "SslCertPassword": "",
+      "ExtraGasInvoke": "0",
+      "MaxConcurrentConnections": "10"
+    },
+    "UnlockWallet": {
+      "Path": "wallet.json",
+      "Password": "bol",
+      "StartConsensus": true,
+      "IsActive": true
+    }
+  }
+}

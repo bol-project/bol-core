@@ -31,21 +31,22 @@ def appsettings_path(data, value):
   return data['BolConfig']['Contract']
   
 #Copy Bol.Coin/bin/Debug/Bol.Coin.avm to Bol.Api/Bol.Coin.avm
-if os.path.exists("bin/Debug/net6.0/Bol.Coin.avm"):
-  copyfile("bin/Debug/net6.0/Bol.Coin.avm", "../Bol.Api/Bol.Coin.avm")
-  copyfile("bin/Debug/net6.0/Bol.Coin.avm", "../Bol.Coin.Tests/Bol.Coin.avm")
+if os.path.exists("bin/Debug/net8.0/Bol.Coin.avm"):
+  copyfile("bin/Debug/net8.0/Bol.Coin.avm", "../Bol.Api/Bol.Coin.avm")
+  copyfile("bin/Debug/net8.0/Bol.Coin.avm", "../Bol.Coin.Tests/Bol.Coin.avm")
   print("Copied Bol.Coin.avm")
 else:
   print("The file does not exist")
  
 #Obtain new contract's hash
-with open('bin/Debug/net6.0/Bol.Coin.abi.json') as json_file:
+with open('bin/Debug/net8.0/Bol.Coin.abi.json') as json_file:
   data = json.load(json_file)
   the_hash = data['hash'][2:]
   print(the_hash)
 
 hash_replace('../Bol.Api/protocol.json', the_hash, protocol_path)
 hash_replace('../Bol.Api/protocol.mainnet.json', the_hash, protocol_path)
+hash_replace('../Bol.Api/protocol.private.json', the_hash, protocol_path)
 
 hash_replace('../Bol.Api/appsettings.json', the_hash, appsettings_path)
 hash_replace('../Bol.Api/appsettings.Development.json', the_hash, appsettings_path)
