@@ -385,9 +385,9 @@ namespace Bol.Coin.Services
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
-            for (var i = 0; i < bolAccount.Countries.Length; i += 6)
+            for (var i = 0; i < bolAccount.Countries.Length; i += 3)
             {
-                var countryCode = bolAccount.Countries.Range(i, 6);
+                var countryCode = bolAccount.Countries.Range(i, 3);
                 var certifiers = BolRepository.GetCertifiers(countryCode);
                 if (certifiers.HasKey(bolAccount.CodeName))
                 {
