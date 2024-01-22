@@ -13,7 +13,7 @@ namespace Bol.Coin
         /// <summary>
         /// Collateral in Bols that a Person or Company needs to reserve in order to become a BoL Certifier.
         /// </summary>
-        public static readonly BigInteger CertifierCollateral = 100000000000;
+        public static readonly BigInteger CertifierCollateral = 20000000000;
         
         /// <summary>
         /// A fee in Bols that a Person or Company needs to pay in order to be certified in the BoL Blockchain.
@@ -48,28 +48,29 @@ namespace Bol.Coin
         public const byte TransactionTypeRegisterCertifier = 0x0B;
         public const byte TransactionTypeUnRegisterCertifier = 0x0C;
         public const byte TransactionTypeAddMultiCitizenship = 0x0D;
+        public const byte TransactionTypeSetCertifierFee = 0x0E;
 
         public const int TransactionCountLimit = 10;
 
         /// <summary>
         /// Start of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
         /// </summary>
-        public static readonly BigInteger BAddressStart = new BigInteger("0x00BF4900".HexToBytes());
+        public static readonly BigInteger BAddressStart = new BigInteger("0xBF4900".HexToBytes());
         
         /// <summary>
         /// End of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
         /// </summary>
-        public static readonly BigInteger BAddressEnd = new BigInteger("0x00ED4900".HexToBytes());
+        public static readonly BigInteger BAddressEnd = new BigInteger("0xED4900".HexToBytes());
         
         /// <summary>
         /// Start of the range of numbers a Company Address must reside in. Addresses in this range start with BCC.
         /// </summary>
-        public static readonly BigInteger CAddressStart = new BigInteger("0x00E75400".HexToBytes());
+        public static readonly BigInteger CAddressStart = new BigInteger("0xE75400".HexToBytes());
         
         /// <summary>
         /// End of the range of numbers a Company Address must reside in. Addresses in this range start with BCC.
         /// </summary>
-        public static readonly BigInteger CAddressEnd = new BigInteger("0x00165500".HexToBytes());
+        public static readonly BigInteger CAddressEnd = new BigInteger("0x165500".HexToBytes());
 
         /// <summary>
         /// A flag that represents an Account that has been certified and enabled for operation.
@@ -101,8 +102,8 @@ namespace Bol.Coin
         /// Number of blocks that designates a BoL claim interval.
         /// All registrations that happen inside such an interval are considered equal in claim rights.  
         /// </summary>
-        public const uint ClaimInterval = 240;
-        
+        public const uint ClaimInterval = 240; // To update at genesis
+
         /// <summary>
         /// Name of the Smart Contract.
         /// </summary>
@@ -122,27 +123,27 @@ namespace Bol.Coin
         /// Owner of the Smart Contract.
         /// This is the Multisig address that is derived from the Genesis Certifiers Blockchain addresses.
         /// </summary>
-        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address
+        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address  // To update at genesis
 
         /// <summary>
         /// The required fee for Transfer transactions.
         /// </summary>
-        public static readonly BigInteger TransferFee = new BigInteger("0x1027".HexToBytes()); //10000
+        public static readonly BigInteger TransferFee = new BigInteger("0xE803".HexToBytes()); //1000
 
         /// <summary>
         /// The required fee for operational transactions except Transfer.
         /// </summary>
-        public static readonly BigInteger OperationsFee = new BigInteger("0x8813".HexToBytes()); //5000
+        public static readonly BigInteger OperationsFee = new BigInteger("0xF401".HexToBytes()); //500
 
         /// <summary>
         /// Earth population at the time of the Genesis block.
         /// </summary>
-        public static readonly BigInteger PopulationAtGenesis = 787496573200000000;
-        
+        public static readonly BigInteger PopulationAtGenesis = 808910723600000000; // To update at genesis
+
         /// <summary>
         /// Births per Second by year.
         /// The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
-        /// World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+        /// World Population Prospects 2022, Online Edition. File GEN/01/REV1
         /// All data correspond to July 1 of each year
         /// </summary>
         /// <returns></returns>
@@ -150,18 +151,18 @@ namespace Bol.Coin
         {
             var bpsYear = new Map<uint, BigInteger>();
 
-            bpsYear[2022] = 424332170;
-            bpsYear[2023] = 424082805;
-            bpsYear[2024] = 425890833;
-            bpsYear[2025] = 426608730;
-            bpsYear[2026] = 427223938;
-            bpsYear[2027] = 426972273;
-            bpsYear[2028] = 428953596;
-            bpsYear[2029] = 429874248;
-            bpsYear[2030] = 430700536;
-            bpsYear[2031] = 430293855;
-            bpsYear[2032] = 432722815;
-            bpsYear[2033] = 433549813;
+            bpsYear[2022] = 424881402;
+            bpsYear[2023] = 425797856;
+            bpsYear[2024] = 425282581;
+            bpsYear[2025] = 427169356;
+            bpsYear[2026] = 427787475;
+            bpsYear[2027] = 428711254;
+            bpsYear[2028] = 428353344;
+            bpsYear[2029] = 430450574;
+            bpsYear[2030] = 431281573;
+            bpsYear[2031] = 432057271;
+            bpsYear[2032] = 432126853;
+            bpsYear[2033] = 434142174;
 
             return bpsYear;
         }
@@ -169,7 +170,7 @@ namespace Bol.Coin
         /// <summary>
         /// Deaths per Second by year.
         /// The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
-        /// World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+        /// World Population Prospects 2022, Online Edition. File GEN/01/REV1
         /// All data correspond to July 1 of each year
         /// </summary>
         /// <returns></returns>
@@ -177,18 +178,18 @@ namespace Bol.Coin
         {
             var dpsYear = new Map<uint, BigInteger>();
 
-            dpsYear[2022] = 212656072;
-            dpsYear[2023] = 192038779;
-            dpsYear[2024] = 193185613;
-            dpsYear[2025] = 196299975;
-            dpsYear[2026] = 199443455;
-            dpsYear[2027] = 202121623;
-            dpsYear[2028] = 206010807;
-            dpsYear[2029] = 209422815;
-            dpsYear[2030] = 212889047;
-            dpsYear[2031] = 215889642;
-            dpsYear[2032] = 220189761;
-            dpsYear[2033] = 223967735;
+            dpsYear[2022] = 212761818;
+            dpsYear[2023] = 192669172;
+            dpsYear[2024] = 192755468;
+            dpsYear[2025] = 196400336;
+            dpsYear[2026] = 199546369;
+            dpsYear[2027] = 202780876;
+            dpsYear[2028] = 205555783;
+            dpsYear[2029] = 209533711;
+            dpsYear[2030] = 213002762;
+            dpsYear[2031] = 216597726;
+            dpsYear[2032] = 219707426;
+            dpsYear[2033] = 224090401;
 
             return dpsYear;
         }
@@ -196,7 +197,7 @@ namespace Bol.Coin
         /// <summary>
         /// Population by year.
         /// The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
-        /// World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+        /// World Population Prospects 2022, Online Edition. File GEN/01/REV1
         /// All data correspond to July 1 of each year
         /// </summary>
         /// <returns></returns>
@@ -204,18 +205,18 @@ namespace Bol.Coin
         {
             var popYear = new Map<uint, BigInteger>();
 
-            popYear[2022] = 796761887400000000;
-            popYear[2023] = 803768884700000000;
-            popYear[2024] = 811107464300000000;
-            popYear[2025] = 818408655000000000;
-            popYear[2026] = 825632180500000000;
-            popYear[2027] = 832779362800000000;
-            popYear[2028] = 839850268300000000;
-            popYear[2029] = 846842093700000000;
-            popYear[2030] = 853753020200000000;
-            popYear[2031] = 860577855400000000;
-            popYear[2032] = 867319455700000000;
-            popYear[2033] = 873975760200000000;
+            popYear[2022] = 797510515600000000;
+            popYear[2023] = 804531144700000000;
+            popYear[2024] = 811883599900000000;
+            popYear[2025] = 819198845300000000;
+            popYear[2026] = 826436450900000000;
+            popYear[2027] = 833597767100000000;
+            popYear[2028] = 840682879200000000;
+            popYear[2029] = 847688939100000000;
+            popYear[2030] = 854614132700000000;
+            popYear[2031] = 861453274500000000;
+            popYear[2032] = 868209198400000000;
+            popYear[2033] = 874879854200000000;
 
             return popYear;
         }
@@ -223,7 +224,7 @@ namespace Bol.Coin
         /// <summary>
         /// Timestamp by year, corresponds to July 1 (00:00:00 GMT+0000) of each year.
         /// The following  data was obtained from : United Nations, Department of Economic and Social Affairs, Population Division (2022).
-        /// World Population Prospects 2022 - Special Aggregates, Online Edition. File SA3/GEN/01
+        /// World Population Prospects 2022, Online Edition. File GEN/01/REV1
         /// All data correspond to July 1 of each year
         /// </summary>
         /// <returns></returns>

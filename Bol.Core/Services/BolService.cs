@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Abstractions;
-using Bol.Core.Accessors;
 using Bol.Core.Model;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
@@ -473,6 +472,32 @@ namespace Bol.Core.Services
             var remarks = new[] { "unregisterCertifier", context.CodeName };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "unregisterCertifier", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> SetCertifierFee(BigInteger fee, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                fee.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var description = $"SetCertifierFee for certifier {context.CodeName} with fee {fee}";
+            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString() };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "setCertifierFee", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
             var result = await _transactionService.Test<BolAccount>(transaction, token);

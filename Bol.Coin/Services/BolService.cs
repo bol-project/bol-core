@@ -68,7 +68,7 @@ namespace Bol.Coin.Services
 
             byte accountType;
             var addressPrefix = address
-                .Take(3)
+                .Take(2)
                 .Reverse()
                 .Concat(new byte[] { 0x00 })
                 .AsBigInteger();
@@ -385,9 +385,9 @@ namespace Bol.Coin.Services
             bolAccount.Collateral = 0;
             bolAccount.IsCertifier = 0;
 
-            for (var i = 0; i < bolAccount.Countries.Length; i += 6)
+            for (var i = 0; i < bolAccount.Countries.Length; i += 3)
             {
-                var countryCode = bolAccount.Countries.Range(i, 6);
+                var countryCode = bolAccount.Countries.Range(i, 3);
                 var certifiers = BolRepository.GetCertifiers(countryCode);
                 if (certifiers.HasKey(bolAccount.CodeName))
                 {
@@ -397,8 +397,7 @@ namespace Bol.Coin.Services
             }
             
             AddTransactionEntry(bolAccount, Constants.TransactionTypeUnRegisterCertifier, codeName, paymentAddress, null, null, collateral);
-
-            BolRepository.SaveAccount(bolAccount);
+            if (!PayTransferFee(bolAccount)) return false;
             
             BolRepository.RemoveRegisteredCertifier();
             
@@ -406,6 +405,30 @@ namespace Bol.Coin.Services
 
             Runtime.Notify("unregisterAsCertifier", BolResult.Ok(bolAccount));
             
+            return true;
+        }
+
+        public static bool SetCertifierFee(byte[] certifier, BigInteger fee)
+        {
+            if (BolServiceValidationHelper.CodeNameIsEmpty(certifier)) return false;
+
+            var maxFee = BolRepository.GetMaxCertificationFee();
+
+            if (fee > maxFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Certifier fee exceeds the max certification fee."));
+                return false;
+            }
+            
+            var bolAccount = BolRepository.GetAccount(certifier);
+            
+            if (!BolServiceValidationHelper.IsUnRegisterCertifierValid(bolAccount)) return false;
+            
+            bolAccount.CertificationFee = 1 * fee;
+            AddTransactionEntry(bolAccount, Constants.TransactionTypeSetCertifierFee, certifier, null, null, null, fee);
+            if (!PayTransferFee(bolAccount)) return false;
+
+            Runtime.Notify("setCertifierFee", BolResult.Ok(bolAccount));
             return true;
         }
 
@@ -469,7 +492,7 @@ namespace Bol.Coin.Services
 
             if (startClaimHeight == endClaimHeight) 
             {
-                Runtime.Notify("error", BolResult.Forbidden("Υou have claimed your share for this interval."));
+                Runtime.Notify("error", BolResult.Forbidden("You have claimed your share for this interval."));
                 return false;
             }
 
@@ -823,6 +846,31 @@ namespace Bol.Coin.Services
             {
                 account.Transactions.Remove(account.TransactionsCount - Constants.TransactionCountLimit);
             }
+        }
+
+        private static bool PayTransferFee(BolAccount account)
+        {
+            var transferFee = BolRepository.GetTransferFee();
+            
+            var paymentAddress = account.CommercialAddresses.Keys[0];
+            var paymentAddressBalance = account.CommercialAddresses[paymentAddress];
+
+            if (paymentAddressBalance < transferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Not enough balance in Payment Address to pay transaction fee."));
+                return false;
+            }
+            
+            account.CommercialAddresses[paymentAddress] = paymentAddressBalance - transferFee;
+            
+            AddTransactionEntry(account, Constants.TransactionTypeFees, account.CodeName, paymentAddress, null, Constants.Owner, transferFee);
+            
+            var feeBucketAmount = BolRepository.GetFeeBucket();
+            BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
+            BolRepository.SaveAccount(account);
+            Transferred(paymentAddress, Constants.Owner, transferFee);
+            
+            return true;
         }
     }
 }

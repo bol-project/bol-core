@@ -29,7 +29,7 @@ namespace Bol.Core.Serializers
                 YearOfBirth = birthDate,
                 Gender = basePerson.Gender,
                 Combination = basePerson.Combination,
-                ShortHash = parts[7].Substring(0, 11),
+                ShortHash = parts[7],
                 CheckSum = parts[8].Substring(1, 4)
             };
         }
@@ -40,7 +40,7 @@ namespace Bol.Core.Serializers
                 parts.Length != Constants.CODENAME_PARTS ||
                 parts[0] != Constants.PERSONAL_CODENAME_INITIAL ||
                 parts[6].Length != Constants.CODENAME_BIRTHYEAR_GENDER_LENGTH ||
-                parts[7].Length != Constants.CODENAME_BDATE_NAME_NIN_BASE58_LENGTH ||
+                parts[7].Length > Constants.CODENAME_BDATE_NAME_NIN_BASE58_LENGTH ||
                 parts[8].Length != Constants.CODENAME_COMBINATION_CHECKSUM_LENGTH ||
                 !birthDateParseResult)
             {

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -22,7 +22,7 @@ RUN dotnet publish -c Release -o out
 COPY ./Bol.Api/protocol.mainnet.json ./out/protocol.json
 COPY ./Bol.Api/config.mainnet.json ./out/config.json
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime-base
 
 # Install dependencies:
 RUN apt-get update 
@@ -44,4 +44,4 @@ FROM runtime-base AS runtime
 WORKDIR /app
 COPY --from=build /app/Bol.Api/out ./
 RUN mkdir /blockchain
-ENTRYPOINT ["dotnet", "Bol.Api.dll"]
+ENTRYPOINT ["dotnet", "Bol.Api.dll", "--urls", "http://*:8080/"]

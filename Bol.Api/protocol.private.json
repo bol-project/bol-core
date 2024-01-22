@@ -14,10 +14,10 @@
       "036c34acb0eada2a4e717b5673de07fe32e9a2fff03d4c9b6befae8a89ed36ace0"
     ],
     "SeedList": [
-      "localhost:11333",
-      "localhost:12333",
-      "localhost:13333",
-      "localhost:14333"
+      "bol-validator-1:21333",
+      "bol-validator-2:21333",
+      "bol-validator-3:21333",
+      "bol-validator-4:21333"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,

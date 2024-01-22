@@ -96,6 +96,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("setCertifierFee")]
+        public async Task<ActionResult> SetCertifierFee(string fee, CancellationToken token)
+        {
+            var result = await _bolService.SetCertifierFee(BigInteger.Parse(fee), token);
+            return Ok(result);
+        }
+
         [HttpPost("claim")]
         public async Task<ActionResult> Claim(CancellationToken token)
         {

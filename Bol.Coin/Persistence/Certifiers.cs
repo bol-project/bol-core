@@ -40,18 +40,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_8 =
             "BHHfuEyMXU43sRByjPtoX3Toz8srzDUgZ9".ToScriptHash();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_9 =
-            "BCreqeJxE7XpjWKH3beBTXAyz8HwPiqaJh".ToScriptHash();
-
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_10 =
-            "BBN2aqJw55qV5HETrwcq9i2FjC3d51SCUn".ToScriptHash();
-
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_11 =
-            "BEWRqA7v1F4inycfD1DsiFVcuE3dDzkWYH".ToScriptHash();
-
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_12 =
-            "BGrwcgXqQ5uy8FccQbcr2ETvuTNdxBp54D".ToScriptHash();
-
         public static readonly byte[] CHOMENIDIS_CODENAME =
             "503c4752433c43484f4d454e494449533c433c3c3c313938324d3c35413762317851585233633c3133383537".HexToBytes();
 
@@ -90,18 +78,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_8 =
             "BAfc9XF2o5dMc1uEqge6ZzzkvWBe3123G6".ToScriptHash();
 
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_9 =
-            "BQegSV3HRGFf9bEo2jukDQy7jvEBDxtQ3a".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_10 =
-            "B5zJUyjs9cPBTJ4YHG9nMw4H8FPGbw5uZw".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_11 =
-            "B9TZpG19KQcXeG2qMVZ8C953VyDc1ZxAvM".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_12 =
-            "B8uWwRm4RKBzbjq7ursCdcL33Uwv98SYnF".ToScriptHash();
-
         public static readonly byte[] TOKAS_CODENAME =
             "503c4752433c544f4b41533c543c3c3c313938344d3c4a70513663327368734c7a3c3131323137".HexToBytes();
 
@@ -120,10 +96,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_6 = "BJyDqLmQdaoGn8hesB1oNrJGyu6BX2uh5o".ToScriptHash();
         public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_7 = "BQZmkKUaeVRTXbaQiskwusDuDLemJTnqp3".ToScriptHash();
         public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_8 = "BDrenNrzRNcU4SLjo133vJjeWZ84kM9qbe".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_9 = "BSAQjS9yWhC8EGTEfs6q78YHe3MfNVjiBF".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_10 = "BEnsATPn8L2ZKH3h4Sr5ryFed2VUWQThYY".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_11 = "BPLMzAonEDZgFARDeLCcWpKJguf2nibYAY".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_12 = "BDaiqDugVGQGABurW49nUamY3dNPCQrppx".ToScriptHash();
 
         public static readonly byte[] SEKKAS_CODENAME =
             "503c4752433c53454b4b41533c4f3c3c3c313938314d3c686a7841676e67683679383c3132313536".HexToBytes();
@@ -143,16 +115,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_6 = "B867EvRqQS9iXdXUiqnpxT4dFmzmrrcJMx".ToScriptHash();
         public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_7 = "BJVsviMa5h3rTAwUsLfv66fQU9MzP4SbKh".ToScriptHash();
         public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_8 = "BF8sWdf9kgHxsrSzbaKxqEtQoHFkDnEkMq".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_9 = "BLJ1sqo3nmLhGvsSWvEJkTdviksoj2k3Db".ToScriptHash();
-
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_10 =
-            "BMAwu77Zc4cqceLhQ6mmZYqGZXpmxBRnhG".ToScriptHash();
-
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_11 =
-            "BS4tr5WbMh3TuSPJKNwe8Ehz73kaytjzqD".ToScriptHash();
-
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_12 =
-            "BG1hypGgpuj75RyK6aRP9MVYdNJouqGDEx".ToScriptHash();
 
         public static readonly byte[] MOSCHOS_CODENAME =
             "503c4752433c4d4f5343484f533c4e3c3c3c323030304d3c47674d666e326d505354753c3139443037".HexToBytes();
@@ -189,18 +151,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_8 =
             "BQ1zhrVue9dYX8akwrkj8AZXVduxThqv8T".ToScriptHash();
 
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_9 =
-            "BJ79VjE8PYiBuWXT7tbNyqBh8cUmB6dTJN".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_10 =
-            "BKwNCk3zm2NXXa1vyAmAETMdYMMYPQGW4U".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_11 =
-            "BNeZ2ErUZgwV2QvwD9dCqot9UNYDu8tHCL".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_12 =
-            "BJpERQTuZCqkp2fKK1dTjG3dLDRR61ffJW".ToScriptHash();
-
         public static readonly byte[] LEMONIS_CODENAME =
             "503c4752433c4c454d4f4e49533c423c3c3c313939344d3c555475544e4c54417a766b3c3142344532".HexToBytes();
 
@@ -235,18 +185,6 @@ namespace Bol.Coin.Persistence
 
         public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_8 =
             "BFtW7UAQePNkinox7QUPYRTo7NPpCu7LY8".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_9 =
-            "B7notjgrbhGmmzuX1C5TtmGU1YVNejDrEF".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_10 =
-            "B62fvQBek6qFCPwgY2DxmrymzUbRSs2U1k".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_11 =
-            "B4uMUHubZhiZhJukgGwz51fRMpifuioWX8".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_12 =
-            "BJHSgLX7nc1Lbxh29BYT9BP35td4st9pVN".ToScriptHash();
 
         public static readonly byte[] VANTSOS_CODENAME =
             "503c4752433c56414e54534f533c443c3c3c323030324d3c3537765545617a435132413c3142383438".HexToBytes();
@@ -283,19 +221,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_8 =
             "BFznCdCQhzqw5hFYL26FnS8ztgJQcC6mBS".ToScriptHash();
 
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_9 =
-            "BKVvV5rB8iAEs36y13P5iBvC7g5LmHuFJM".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_10 =
-            "B4VppTWxdWswLeAt1bEStfnSmDuzwxKa3C".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_11 =
-            "BN8GFthmFJZjczUetnZdGnZkRbhF6gkQ44".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_12 =
-            "BKkzRFFs9HzAYtMwo3EXgibmNJst1xfgqh".ToScriptHash();
-
-
         public static BolAccount[] GenesisCertifiers()
         {
             var stathas = new BolAccount();
@@ -315,10 +240,6 @@ namespace Bol.Coin.Persistence
             stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_6] = 0;
             stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_7] = 0;
             stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_8] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_9] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_10] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_11] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_12] = 0;
 
             var chomenidis = new BolAccount();
             chomenidis.CodeName = CHOMENIDIS_CODENAME;
@@ -337,10 +258,6 @@ namespace Bol.Coin.Persistence
             chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_6] = 0;
             chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_7] = 0;
             chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_8] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_9] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_10] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_11] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_12] = 0;
 
             var tokas = new BolAccount();
             tokas.CodeName = TOKAS_CODENAME;
@@ -359,10 +276,6 @@ namespace Bol.Coin.Persistence
             tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_6] = 0;
             tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_7] = 0;
             tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_8] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_9] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_10] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_11] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_12] = 0;
 
             var sekkas = new BolAccount();
             sekkas.CodeName = SEKKAS_CODENAME;
@@ -381,10 +294,6 @@ namespace Bol.Coin.Persistence
             sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_6] = 0;
             sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_7] = 0;
             sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_8] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_9] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_10] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_11] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_12] = 0;
 
             var moschos = new BolAccount();
             moschos.CodeName = MOSCHOS_CODENAME;
@@ -403,10 +312,6 @@ namespace Bol.Coin.Persistence
             moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_6] = 0;
             moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_7] = 0;
             moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_8] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_9] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_10] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_11] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_12] = 0;
 
             var lemonis = new BolAccount();
             lemonis.CodeName = LEMONIS_CODENAME;
@@ -425,10 +330,6 @@ namespace Bol.Coin.Persistence
             lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_6] = 0;
             lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_7] = 0;
             lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_8] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_9] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_10] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_11] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_12] = 0;
 
             var vantsos = new BolAccount();
             vantsos.CodeName = VANTSOS_CODENAME;
@@ -447,10 +348,6 @@ namespace Bol.Coin.Persistence
             vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_6] = 0;
             vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_7] = 0;
             vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_8] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_9] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_10] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_11] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_12] = 0;
 
             return new[] { stathas, chomenidis, tokas, sekkas, moschos, lemonis, vantsos };
         }

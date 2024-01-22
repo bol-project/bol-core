@@ -35,7 +35,13 @@ namespace Bol.Core.Tests.Services
             _hasher = new Sha256Hasher();
             _base58Encoder = new Base58Encoder(_hasher);
             _hex = new Base16Encoder(_hasher);
-            countries = new List<Country> { new Country() { Name = "Greece", Alpha3 = "GRC" }, new Country() { Name = "United States of America", Alpha3 = "USA" }, new Country() { Name = "China", Alpha3 = "CHN" } };
+            countries = new List<Country>
+            {
+                new Country() { Name = "Greece", Alpha3 = "GRC" }, 
+                new Country() { Name = "United States of America", Alpha3 = "USA" }, 
+                new Country() { Name = "China", Alpha3 = "CHN" },
+                new Country() { Name = "Albania", Alpha3 = "ALB" }
+            };
             var countryService = new CountryCodeService(Options.Create(countries));
             _basePersonValidator = new BasePersonValidator(countryService);
             ninSpecifications = new List<NinSpecification> { new NinSpecification { CountryCode = "GRC", Digits = 11 }, new NinSpecification { CountryCode = "USA", Digits = 9 }, new NinSpecification { CountryCode = "CHN", Digits = 18 } };
@@ -183,6 +189,14 @@ namespace Bol.Core.Tests.Services
             };
 
             Assert.Throws<ValidationException>(() => _service.Generate(company));
+        }
+
+        [Fact]
+        public void CodeNameValidator_ShouldValidateCodeName_WhenShortHashIs10Characters()
+        {
+            var codeName = "P<ALB<ASD3<A<<<2023M<Y7R12q4Jrg<10D20";
+            var result = _codeNameValidator.Validate(codeName);
+            Assert.True(result.IsValid);
         }
 
         private byte[] AddByteHashRepresentationForLastTwoBytes(string codeName)

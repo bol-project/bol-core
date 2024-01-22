@@ -129,7 +129,7 @@ namespace Bol.Api
             if (env.IsDevelopment())
             {
                 app.UseOpenApi();
-                app.UseSwaggerUi3();
+                app.UseSwaggerUi();
                 app.UseEndpoints(c => c.MapControllers());    
             }
         }

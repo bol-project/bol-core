@@ -99,6 +99,20 @@ namespace Neo.SmartContract
                 return BolService.UnregisterAsCertifier(codeName);
             }
 
+            if (operation == "setCertifierFee")
+            {
+                if (args.Length != 2)
+                {
+                    Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                    return false;
+                }
+
+                var codeName = (byte[])args[0];
+                var fee = (BigInteger)args[1];
+
+                return BolService.SetCertifierFee(codeName, fee);
+            }
+
             if (operation == "certify")
             {
                 if (args.Length != 2)
