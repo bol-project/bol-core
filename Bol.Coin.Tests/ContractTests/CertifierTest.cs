@@ -20,7 +20,7 @@ public class CertifierTest : TestBase
         _emulator.Execute(_transactionGrabber);
         
         await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj"),
-            BigInteger.Parse("100000000000"));
+            BigInteger.Parse("20000000000"));
        _emulator.Execute(_transactionGrabber);
        
        _emulator.blockchain.AddMockBlocks(1);
@@ -35,6 +35,6 @@ public class CertifierTest : TestBase
         var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
         Assert.True(result);
         Assert.True(notification.Account.IsCertifier);
-        Assert.True(notification.Account.Collateral == "100000000000");
+        Assert.True(notification.Account.Collateral == "20000000000");
     }
 }
