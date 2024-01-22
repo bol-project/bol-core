@@ -20,7 +20,7 @@ public class CertifierTest : TestBase
         _emulator.Execute(_transactionGrabber);
         
         await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj"),
-            BigInteger.Parse("20000000000"));
+            BigInteger.Parse("20000001000"));
        _emulator.Execute(_transactionGrabber);
        
        _emulator.blockchain.AddMockBlocks(1);
