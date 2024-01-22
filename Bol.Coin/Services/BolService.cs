@@ -409,6 +409,29 @@ namespace Bol.Coin.Services
             return true;
         }
 
+        public static bool SetCertifierFee(byte[] certifier, BigInteger fee)
+        {
+            if (BolServiceValidationHelper.CodeNameIsEmpty(certifier)) return false;
+
+            var maxFee = BolRepository.GetMaxCertificationFee();
+
+            if (fee > maxFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Certifier fee exceeds the max certification fee."));
+                return false;
+            }
+            
+            var bolAccount = BolRepository.GetAccount(certifier);
+            
+            if (!BolServiceValidationHelper.IsUnRegisterCertifierValid(bolAccount)) return false;
+
+            bolAccount.CertificationFee = 1 * fee;
+            BolRepository.SaveAccount(bolAccount);
+
+            Runtime.Notify("setCertifierFee", BolResult.Ok(bolAccount));
+            return true;
+        }
+
         public static bool Certify(byte[] certifier, byte[] receiver)
         {
             if (!BolServiceValidationHelper.IsCertifyInputValid(certifier, receiver)) return false;
