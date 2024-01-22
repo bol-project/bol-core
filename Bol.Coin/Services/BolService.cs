@@ -469,7 +469,7 @@ namespace Bol.Coin.Services
 
             if (startClaimHeight == endClaimHeight) 
             {
-                Runtime.Notify("error", BolResult.Forbidden("Υou have claimed your share for this interval."));
+                Runtime.Notify("error", BolResult.Forbidden("You have claimed your share for this interval."));
                 return false;
             }
 
