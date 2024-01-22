@@ -397,8 +397,7 @@ namespace Bol.Coin.Services
             }
             
             AddTransactionEntry(bolAccount, Constants.TransactionTypeUnRegisterCertifier, codeName, paymentAddress, null, null, collateral);
-
-            BolRepository.SaveAccount(bolAccount);
+            if (!PayTransferFee(bolAccount)) return false;
             
             BolRepository.RemoveRegisteredCertifier();
             
@@ -424,9 +423,10 @@ namespace Bol.Coin.Services
             var bolAccount = BolRepository.GetAccount(certifier);
             
             if (!BolServiceValidationHelper.IsUnRegisterCertifierValid(bolAccount)) return false;
-
+            
             bolAccount.CertificationFee = 1 * fee;
-            BolRepository.SaveAccount(bolAccount);
+            AddTransactionEntry(bolAccount, Constants.TransactionTypeSetCertifierFee, certifier, null, null, null, fee);
+            if (!PayTransferFee(bolAccount)) return false;
 
             Runtime.Notify("setCertifierFee", BolResult.Ok(bolAccount));
             return true;
