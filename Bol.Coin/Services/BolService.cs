@@ -847,5 +847,30 @@ namespace Bol.Coin.Services
                 account.Transactions.Remove(account.TransactionsCount - Constants.TransactionCountLimit);
             }
         }
+
+        private static bool PayTransferFee(BolAccount account)
+        {
+            var transferFee = BolRepository.GetTransferFee();
+            
+            var paymentAddress = account.CommercialAddresses.Keys[0];
+            var paymentAddressBalance = account.CommercialAddresses[paymentAddress];
+
+            if (paymentAddressBalance < transferFee)
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Not enough balance in Payment Address to pay transaction fee."));
+                return false;
+            }
+            
+            account.CommercialAddresses[paymentAddress] = paymentAddressBalance - transferFee;
+            
+            AddTransactionEntry(account, Constants.TransactionTypeFees, account.CodeName, paymentAddress, null, Constants.Owner, transferFee);
+            
+            var feeBucketAmount = BolRepository.GetFeeBucket();
+            BolRepository.SetFeeBucket(feeBucketAmount + transferFee);
+            BolRepository.SaveAccount(account);
+            Transferred(paymentAddress, Constants.Owner, transferFee);
+            
+            return true;
+        }
     }
 }
