@@ -68,7 +68,7 @@ namespace Bol.Coin.Services
 
             byte accountType;
             var addressPrefix = address
-                .Take(3)
+                .Take(2)
                 .Reverse()
                 .Concat(new byte[] { 0x00 })
                 .AsBigInteger();

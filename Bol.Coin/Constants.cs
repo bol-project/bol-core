@@ -54,22 +54,22 @@ namespace Bol.Coin
         /// <summary>
         /// Start of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
         /// </summary>
-        public static readonly BigInteger BAddressStart = new BigInteger("0x00BF4900".HexToBytes());
+        public static readonly BigInteger BAddressStart = new BigInteger("0xBF4900".HexToBytes());
         
         /// <summary>
         /// End of the range of numbers a Person Address must reside in. Addresses in this range start with BBB.
         /// </summary>
-        public static readonly BigInteger BAddressEnd = new BigInteger("0x00ED4900".HexToBytes());
+        public static readonly BigInteger BAddressEnd = new BigInteger("0xED4900".HexToBytes());
         
         /// <summary>
         /// Start of the range of numbers a Company Address must reside in. Addresses in this range start with BCC.
         /// </summary>
-        public static readonly BigInteger CAddressStart = new BigInteger("0x00E75400".HexToBytes());
+        public static readonly BigInteger CAddressStart = new BigInteger("0xE75400".HexToBytes());
         
         /// <summary>
         /// End of the range of numbers a Company Address must reside in. Addresses in this range start with BCC.
         /// </summary>
-        public static readonly BigInteger CAddressEnd = new BigInteger("0x00165500".HexToBytes());
+        public static readonly BigInteger CAddressEnd = new BigInteger("0x165500".HexToBytes());
 
         /// <summary>
         /// A flag that represents an Account that has been certified and enabled for operation.
