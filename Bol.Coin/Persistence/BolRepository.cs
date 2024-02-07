@@ -35,6 +35,11 @@ namespace Bol.Coin.Persistence
         /// Key for setting or retrieving the required fee for Certifications.
         /// </summary>
         public const byte MaxCertificationFee = 0x05;
+        
+        /// <summary>
+        /// Key for setting or retrieving the blockchain validator CodeName list.
+        /// </summary>
+        public const byte BlockchainValidators = 0x07;
 
         /// <summary>
         /// Key for setting or retrieving the total number of registered people in BoL.
@@ -211,14 +216,24 @@ namespace Bol.Coin.Persistence
         }
 
         /// <summary>
-        /// Returns true if a BoL Account with the given CodeName exists in storage.
+        /// Sets the list of Blockchain Validator Codenames
         /// </summary>
-        /// <param name="codeName"></param>
-        /// <returns></returns>
-        public static bool AccountExists(byte[] codeName)
+        /// <param name="validators"></param>
+        public static void SetBlockchainValidators(Map<byte[],int> validators)
         {
-            var key = KeyHelper.GenerateKey(Account, codeName);
-            return BolStorage.KeyExists(key);
+            var key = KeyHelper.GenerateKey(BlockchainValidators);
+            BolStorage.Put(key, validators.Serialize());
+        }
+        
+        /// <summary>
+        /// Retrieves the number of BoL coins in circulation.
+        /// New BoL are added in circulation when a Claim transaction is executed in a new interval.
+        /// </summary>
+        /// <returns></returns>
+        public static Map<byte[],int> GetBlockchainValidators()
+        {
+            var key = KeyHelper.GenerateKey(BlockchainValidators);
+            return BolStorage.Get(key).Deserialize() as Map<byte[],int>;
         }
 
         /// <summary>
