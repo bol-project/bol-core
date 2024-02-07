@@ -7,11 +7,6 @@ namespace Bol.Coin.Persistence
     public static class BolRepository
     {
         /// <summary>
-        /// Key for setting or retrieving the BoL coins in circulation.
-        /// </summary>
-        public const byte CirculatingSupply = 0x00;
-
-        /// <summary>
         /// Prefix for creating the key that sets or retrieves BoL Accounts by CodeName.
         /// </summary>
         public const byte Account = 0x01;
@@ -35,6 +30,11 @@ namespace Bol.Coin.Persistence
         /// Key for setting or retrieving the required fee for Certifications.
         /// </summary>
         public const byte MaxCertificationFee = 0x05;
+        
+        /// <summary>
+        /// Key for setting or retrieving the BoL coins in circulation.
+        /// </summary>
+        public const byte CirculatingSupply = 0x06;
         
         /// <summary>
         /// Key for setting or retrieving the blockchain validator CodeName list.
