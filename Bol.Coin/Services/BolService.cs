@@ -195,6 +195,7 @@ namespace Bol.Coin.Services
             BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
+            var blockchainValidators = new Map<byte[], int>();
             foreach (var certifier in certifiers)
             {
                 if (!RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1)) return false;
@@ -215,7 +216,10 @@ namespace Bol.Coin.Services
                 }
                 certifierAccount.AccountStatus = Constants.AccountStatusOpen;
                 BolRepository.SaveAccount(certifierAccount);
+                
+                blockchainValidators[certifier.CodeName] = 1;
             }
+            BolRepository.SetBlockchainValidators(blockchainValidators);
 
             BolRepository.SetCirculatingSupply(0);
             BolRepository.SetMaxCertificationFee(Constants.MaxCertificationFee);
@@ -805,20 +809,19 @@ namespace Bol.Coin.Services
         private static void DistributeFees()
         {
             var fees = BolRepository.GetFeeBucket();
-            var validators = Certifiers.GenesisCertifiers();
-            var amount = fees / validators.Length;
+            var validators = BolRepository.GetBlockchainValidators();
+            var amount = fees / validators.Keys.Length;
 
             if (fees == 0 || amount == 0) return;
 
-            foreach (var validator in validators)
+            foreach (var validator in validators.Keys)
             {
-                var validatorCodeName = validator.CodeName;
-                var validatorAccount = BolRepository.GetAccount( validatorCodeName);
+                var validatorAccount = BolRepository.GetAccount(validator);
                 var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
                 var paymentAddressBalance = validatorAccount.CommercialAddresses[validatorPaymentAddress];
                 validatorAccount.CommercialAddresses[validatorPaymentAddress] = paymentAddressBalance + amount;
                 
-                AddTransactionEntry(validatorAccount, Constants.TransactionTypeFees, null, Constants.Owner, validatorCodeName, validatorPaymentAddress, amount);
+                AddTransactionEntry(validatorAccount, Constants.TransactionTypeFees, null, Constants.Owner, validator, validatorPaymentAddress, amount);
                 
                 BolRepository.SaveAccount(validatorAccount);
                 Transferred(Constants.Owner, validatorPaymentAddress, amount);
