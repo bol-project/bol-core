@@ -10,13 +10,12 @@
         public int? Digits { get; set; }
         public int? SplitIndex { get; set; }
         public string Regex { get; set; }
-        public NinType Type { get; set; }
+        public NinStatus Status { get; set; }
     }
 
-    public enum NinType
+    public enum NinStatus
     {
-        N = 0,
-        A = 1,
-        AN = 2
+        Inactive = 0,
+        Active = 1
     }
 }
