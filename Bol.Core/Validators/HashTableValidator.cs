@@ -18,6 +18,11 @@ namespace Bol.Core.Validators
                 .When(ht => !string.IsNullOrEmpty(ht.IdentityCard))
                 .WithMessage(ht => $"{nameof(ht.IdentityCard)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned identity card document."); ;
 
+            RuleFor(ht => ht.IdentityCardBack)
+                .Must(regexHelper.IsHexRepresentation)
+                .When(ht => !string.IsNullOrEmpty(ht.IdentityCardBack))
+                .WithMessage(ht => $"{nameof(ht.IdentityCardBack)} must be a Base16 (Hex) representation of the SHA256 Hash of the person's scanned identity card document back side."); ;
+            
             RuleFor(ht => ht.ProofOfNin)
                 .Must(regexHelper.IsHexRepresentation)
                 .When(ht => !string.IsNullOrEmpty(ht.ProofOfNin))
