@@ -221,12 +221,6 @@ namespace Bol.Coin.Persistence
         public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_8 =
             "BFznCdCQhzqw5hFYL26FnS8ztgJQcC6mBS".ToScriptHash();
 
-        public static readonly byte[] VALIDATOR_8_CODENAME =
-            "503C4752433C504F4C45333C533C3C3C313936384D3C5362674E3475686E5A76733C3133323538".HexToBytes();
-        
-        public static readonly byte[] VALIDATOR_9_CODENAME =
-            "503C414C423C50554C323C413C524154343C534154343C323032334D3C3431684458774A376633463C3544463735".HexToBytes();
-
         public static BolAccount[] GenesisCertifiers()
         {
             var stathas = new BolAccount();

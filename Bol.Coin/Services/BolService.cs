@@ -195,7 +195,6 @@ namespace Bol.Coin.Services
             BolRepository.SetClaimInterval(Constants.ClaimInterval);
 
             var certifiers = Certifiers.GenesisCertifiers();
-            var blockchainValidators = new Map<byte[], int>();
             foreach (var certifier in certifiers)
             {
                 if (!RegisterAccount(certifier.MainAddress, certifier.CodeName, certifier.Edi, certifier.BlockChainAddress, certifier.SocialAddress, certifier.VotingAddress, 1)) return false;
@@ -216,11 +215,18 @@ namespace Bol.Coin.Services
                 }
                 certifierAccount.AccountStatus = Constants.AccountStatusOpen;
                 BolRepository.SaveAccount(certifierAccount);
-                
-                blockchainValidators[certifier.CodeName] = 1;
             }
-            blockchainValidators[Certifiers.VALIDATOR_8_CODENAME] = 1;
-            blockchainValidators[Certifiers.VALIDATOR_9_CODENAME] = 1;
+            var blockchainValidators = new Map<byte[], int>();
+
+            blockchainValidators[BlockChainValidators.VALIDATOR_1_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_2_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_3_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_4_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_5_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_6_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_7_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_8_CODENAME] = 1;
+            blockchainValidators[BlockChainValidators.VALIDATOR_9_CODENAME] = 1;
             BolRepository.SetBlockchainValidators(blockchainValidators);
 
             BolRepository.SetCirculatingSupply(0);
