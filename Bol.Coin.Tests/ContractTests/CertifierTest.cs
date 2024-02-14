@@ -35,7 +35,7 @@ public class CertifierTest : TestBase
         var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
         Assert.True(result);
         Assert.True(notification.Account.IsCertifier);
-        Assert.True(notification.Account.Collateral == "20000000000");
+        Assert.True(notification.Account.Collateral == "10000000000");
     }
     
     [Fact]
