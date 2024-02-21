@@ -980,16 +980,6 @@
   "status": 0
  },
  {
-  "Country": "Holy See (Vatican City State)",
-  "CountryCode": "VAT",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
- },
- {
   "Country": "Honduras",
   "CountryCode": "HND",
   "InternationalName": "ID number",
@@ -1327,16 +1317,6 @@
   "Format": 11111111,
   "Digits": 8,
   "Regex": "^[0-9]{8}$",
-  "status": 1
- },
- {
-  "Country": "North Macedonia",
-  "CountryCode": "MKD",
-  "InternationalName": "Unique Master Citizen Number",
-  "LocalName": "Единствен матичен број на граѓанинот, acronym ЕМБГ",
-  "Format": 1111111111111,
-  "Digits": 13,
-  "Regex": "^[0-9]{13}$",
   "status": 1
  },
  {
@@ -2148,36 +2128,6 @@
   "Digits": 12,
   "Regex": "^[0-9]{12}$",
   "status": 1
- },
- {
-  "Country": "St. Kitts and Nevis",
-  "CountryCode": "KNA",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
- },
- {
-  "Country": "St. Pierre\/ Miquelon",
-  "CountryCode": "SPM",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
- },
- {
-  "Country": "St. Vincent\/Grenadines",
-  "CountryCode": "VCT",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
  },
  {
   "Country": "Sudan",
