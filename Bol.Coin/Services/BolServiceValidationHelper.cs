@@ -130,6 +130,8 @@ public static class BolServiceValidationHelper
         if (AccountNotExists(targetAccount, "Target Account is not a registered Bol Account.")) return false;
         
         if (AccountNotOpen(senderAccount)) return false;
+        
+        if (AccountNotOpen(targetAccount)) return false;
 
         if (CommercialAddressNotPresent(senderAccount, senderAddress)) return false;
 
