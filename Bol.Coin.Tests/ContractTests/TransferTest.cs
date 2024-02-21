@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Bol.Coin.Tests.Utils;
@@ -51,5 +52,45 @@ public class TransferTest : TestBase
         var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
 
         Assert.True(result);
+    }
+
+    [Fact]
+    public async Task Transfer_ShouldNotExecute_WhenTargetAccountNotOpen()
+    {
+        await WhitelistAndRegister();
+        await AddCertifications();
+
+        _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
+
+        await _service.Claim();
+        _emulator.Execute(_transactionGrabber);
+
+        await _service.TransferClaim(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+            BigInteger.Parse("100000000"));
+        _emulator.Execute(_transactionGrabber);
+
+        var targetCodeName = "P<GRC<POLE3<S<<<1968M<SbgN4uhnZvs<13258";
+        var targetMainAddress = "BBBSECtyLRArFHPbsFTiwkyZzitiGajpUF";
+        var targetContext = BolContextFactory.Create(targetCodeName, targetMainAddress);
+        var targetService = BolServiceFactory.Create(_transactionGrabber, targetContext);
+        
+        await _validatorService.Whitelist(_addressTransformer.ToScriptHash(targetMainAddress));
+        _emulator.Execute(_transactionGrabber);
+        _emulator.blockchain.AddMockBlocks(1);
+
+        await targetService.Register();
+        _emulator.Execute(_transactionGrabber);
+        _emulator.blockchain.AddMockBlocks(1);
+        
+        await _service.Transfer(
+            _addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+            targetContext.CommercialAddresses.First().Key,
+            targetCodeName,
+            BigInteger.Parse("10000000"));
+        var result = _emulator.Execute(_transactionGrabber);
+
+        var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+
+        Assert.False(result);
     }
 }

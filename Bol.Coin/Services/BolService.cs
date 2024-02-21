@@ -825,7 +825,7 @@ namespace Bol.Coin.Services
             foreach (var validator in validators.Keys)
             {
                 var validatorAccount = BolRepository.GetAccount(validator);
-                if (validatorAccount.CodeName == null || validatorAccount.CodeName.Length == 0) continue;
+                if (validatorAccount.CodeName == null || validatorAccount.CodeName.Length == 0 || validatorAccount.AccountStatus != Constants.AccountStatusOpen) continue;
                 
                 var validatorPaymentAddress = validatorAccount.CommercialAddresses.Keys[0];
                 var paymentAddressBalance = validatorAccount.CommercialAddresses[validatorPaymentAddress];

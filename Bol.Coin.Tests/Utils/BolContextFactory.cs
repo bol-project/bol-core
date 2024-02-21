@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
@@ -49,6 +51,15 @@ public static class BolContextFactory
         var socialAddressHash = signatureScriptFactory.Create(socialAddressKeyPair.PublicKey).ToScriptHash();
         var votingAddressHash = signatureScriptFactory.Create(votingAddressKeyPair.PublicKey).ToScriptHash();
 
+        var commercialAddresses = Enumerable.Range(1, 5)
+            .Select(i =>
+            {
+                var keyPair = keyPairFactory.Create(sha256.Hash(new[] { Convert.ToByte(i) }));
+                var scriptHash = signatureScriptFactory.Create(keyPair.PublicKey).ToScriptHash();
+                return (scriptHash, keyPair);
+            })
+            .ToDictionary(pair => pair.scriptHash, pair => pair.keyPair);
+
         var mainAddressHash = addressTransformer.ToScriptHash(mainAddress);
         var context = new BolContext(
             bolConfig.Contract, 
@@ -59,7 +70,7 @@ public static class BolContextFactory
             new KeyValuePair<IScriptHash, IKeyPair>(blockchainAddressHash, blockchainAddressKeyPair),
             new KeyValuePair<IScriptHash, IKeyPair>(socialAddressHash, socialAddressKeyPair), 
             new KeyValuePair<IScriptHash, IKeyPair>(votingAddressHash, votingAddressKeyPair), 
-            new Dictionary<IScriptHash, IKeyPair>());
+            commercialAddresses);
 
         return context;
     }
