@@ -5,6 +5,6 @@ namespace Bol.Core.Rpc.Abstractions
 {
     public interface IRpcClient
     {
-        Task<T> InvokeAsync<T>(string method, object[] @params, CancellationToken token = default);
+        Task<T> InvokeAsync<T>(string method, string[] @params, CancellationToken token = default);
     }
 }

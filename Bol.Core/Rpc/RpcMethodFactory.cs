@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Core.Model;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
@@ -39,9 +40,14 @@ namespace Bol.Core.Rpc
             return _rpcClient.InvokeAsync<T>("testrawtransaction", new[] { _bse16Encoder.Encode(unsignedTransaction) }, token);
         }
 
-        public Task<T> GetAccount<T>(string codeName, CancellationToken token = default)
+        public Task<BolAccount> GetAccount(string codeName, CancellationToken token = default)
         {
-            return _rpcClient.InvokeAsync<T>("getaccount", new[] { codeName }, token);
+            return _rpcClient.InvokeAsync<BolAccount>("getaccount", new[] { codeName }, token);
+        }
+
+        public Task<string> GetBolHash(CancellationToken token = default)
+        {
+            return _rpcClient.InvokeAsync<string>("getBolHash", [], token);
         }
     }
 }
