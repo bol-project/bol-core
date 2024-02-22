@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Core.Model;
 using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Transactions;
 
@@ -20,11 +21,6 @@ namespace Bol.Coin.Tests.Utils
             _grabber = grabber ?? throw new ArgumentNullException(nameof(grabber));
         }
 
-        public Task<T> GetAccount<T>(string mainAddress, CancellationToken token = default)
-        {
-            return Task.FromResult(default(T));
-        }
-
         public Task<T> SendRawTransaction<T>(BolTransaction transaction, CancellationToken token = default)
         {
             _grabber.Transaction = transaction;
@@ -35,6 +31,16 @@ namespace Bol.Coin.Tests.Utils
         {
             _grabber.Transaction = transaction;
             return Task.FromResult(default(T));
+        }
+
+        public Task<BolAccount> GetAccount(string mainAddress, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetBolHash(CancellationToken token = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

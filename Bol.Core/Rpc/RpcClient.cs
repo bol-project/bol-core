@@ -25,7 +25,7 @@ namespace Bol.Core.Rpc
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
-        public async Task<T> InvokeAsync<T>(string method, object[] @params, CancellationToken token = default)
+        public async Task<T> InvokeAsync<T>(string method, string[] @params, CancellationToken token = default)
         {
             var url = new Uri(_bolConfig.RpcEndpoint);
             var request = new RpcRequest

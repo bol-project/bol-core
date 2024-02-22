@@ -399,6 +399,11 @@ namespace Bol.Core.Services
 
         public async Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default)
         {
+            if (migration.CurrentScriptHash == migration.NewScriptHash)
+            {
+                throw new ArgumentException("Old and new contract ScriptHash cannot match.");
+            }
+            
             var parameters = new[]
             {
                 migration.NewScript,
