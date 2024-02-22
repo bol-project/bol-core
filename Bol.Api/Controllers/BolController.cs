@@ -12,6 +12,7 @@ using Bol.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Bol.Address;
 using Bol.Core.Model;
+using Bol.Core.Rpc.Abstractions;
 using Neo;
 
 namespace Bol.Api.Controllers
@@ -26,6 +27,7 @@ namespace Bol.Api.Controllers
 
         private readonly IBolService _bolService;
         private readonly IAddressTransformer _addressTransformer;
+        private readonly IRpcMethodFactory _rpc;
 
         public BolController(
             IWalletService walletService,
@@ -33,7 +35,7 @@ namespace Bol.Api.Controllers
             IJsonSerializer jsonSerializer,
             IKeyPairFactory keyPairFactory,
             IBolService bolService,
-            IAddressTransformer addressTransformer)
+            IAddressTransformer addressTransformer, IRpcMethodFactory rpc)
         {
             _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
             _exportKeyFactory = exportKeyFactory ?? throw new ArgumentNullException(nameof(exportKeyFactory));
@@ -41,6 +43,7 @@ namespace Bol.Api.Controllers
             _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
             _bolService = bolService ?? throw new ArgumentNullException(nameof(bolService));
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
+            _rpc = rpc ?? throw new ArgumentNullException(nameof(rpc));
         }
 
         [HttpPost("wallet-individual")]
@@ -191,9 +194,11 @@ namespace Bol.Api.Controllers
         }
 
         [HttpPost("migrate")]
-        public async Task<ActionResult> Migrate(string currentBolHash, string walletFolderPath, string password,
+        public async Task<ActionResult> Migrate(string walletFolderPath, string password,
             CancellationToken token)
         {
+            var currentBolHash = await _rpc.GetBolHash(token);
+                
             var keys = Directory.GetFiles(walletFolderPath, "*.json")
                 .Select(System.IO.File.ReadAllText)
                 .Select(_jsonSerializer.Deserialize<BolWallet>)
