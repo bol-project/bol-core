@@ -5,6 +5,7 @@ metadata:
   namespace: __CI_ENV_SLUG__
   labels:
     app: bol-__CI_BUILD_REF_SLUG__
+    bol-seed: "true"
     track: stable
 spec:
   replicas: 1
@@ -16,6 +17,7 @@ spec:
     metadata:
       labels:
         app: bol-__CI_BUILD_REF_SLUG__
+        bol-seed: "true"
         track: stable
     spec:
       imagePullSecrets:
@@ -49,6 +51,13 @@ spec:
             port: 21332
           initialDelaySeconds: 30
           timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 125m
+            memory: 350Mi
+          limits:
+            cpu: 500m
+            memory: 1000Mi
   volumeClaimTemplates:
   - metadata:
       name: blockchain
@@ -57,4 +66,4 @@ spec:
       storageClassName: "longhorn"
       resources:
         requests:
-          storage: 100Gi
+          storage: 200Gi
