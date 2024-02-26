@@ -30,10 +30,10 @@ build_main_node:
 .deploy:
   image: lachlanevenson/k8s-kubectl:v1.24.8
   environment:
-    name: bol-demo
-    url: https://explorer.demo.bolchain.net
+    name: mainnet
+    url: https://monitor.mainnet.bolchain.net
   tags:
-    - deploy-internal
+    - deploy-mainnet
   variables:
     VALIDATOR_NAME: validator-1
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE_ALLOWED: '*'
@@ -56,7 +56,6 @@ build_main_node:
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
     - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
     - kubectl apply -f service.yaml
-    - kubectl apply -f nginx-config.yaml
     - kubectl rollout status -f deployment.yaml
     - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
 
