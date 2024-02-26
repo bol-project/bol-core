@@ -20,16 +20,21 @@
       "0364e40639e58588f0c65369102667687f1ce37066adef769db3522859748eaff6"
     ],
     "SeedList": [
-      "bolchain.net:21604",
-      "bolchain.net:21614",
-      "bolchain.net:21624",
-      "bolchain.net:21634",
-      "bolchain.net:21644",
-      "bolchain.net:21654",
-      "bolchain.net:21664",
-      "bolchain.net:21674",
-      "bolchain.net:21684",
-      "bolchain.net:21694"
+      "seed-1.mainnet.bolchain.net:21333",
+      "seed-2.mainnet.bolchain.net:21333",
+      "seed-3.mainnet.bolchain.net:21333",
+      "seed-4.mainnet.bolchain.net:21333",
+      "seed-5.mainnet.bolchain.net:21333",
+      "seed-6.mainnet.bolchain.net:21333",
+      "seed-7.mainnet.bolchain.net:21333",
+      "seed-8.mainnet.bolchain.net:21333",
+      "seed-9.mainnet.bolchain.net:21333",
+      "seed-10.mainnet.bolchain.net:21333",
+      "rpc-1.mainnet.bolchain.net:21333",
+      "rpc-2.mainnet.bolchain.net:21333",
+      "rpc-3.mainnet.bolchain.net:21333",
+      "rpc-4.mainnet.bolchain.net:21333",
+      "rpc-5.mainnet.bolchain.net:21333"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
