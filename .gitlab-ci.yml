@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://docker-dind:2375
+  DOCKER_HOST: tcp://docker-dind.docker:2375
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 build_main_node:
