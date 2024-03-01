@@ -19,7 +19,10 @@ spec:
     - name: node-p2p
       protocol: TCP
       port: 21333
-      targetPort: 21333
+    - name: node-ws
+      protocol: TCP
+      port: 21334
+      targetPort: 21334
     - name: node-rpc
       protocol: TCP
       port: 21332
@@ -54,3 +57,10 @@ spec:
             name: bol-__CI_BUILD_REF_SLUG__
             port: 
               number: 21332
+      - pathType: Prefix
+        path: /ws
+        backend:
+          service:
+            name: bol-__CI_BUILD_REF_SLUG__
+            port:
+              number: 21334
