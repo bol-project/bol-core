@@ -22,8 +22,7 @@ build_main_node:
     - echo CI_BUILD_REF=$CI_BUILD_REF
     - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
-    - docker build -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - docker buildx build --platform linux/amd64,linux/arm64 -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG . --push
   tags:
     - build-internal
 
