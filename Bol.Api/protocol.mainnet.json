@@ -30,11 +30,16 @@
       "seed-8.mainnet.bolchain.net:21333",
       "seed-9.mainnet.bolchain.net:21333",
       "seed-10.mainnet.bolchain.net:21333",
-      "rpc-1.mainnet.bolchain.net:21333",
-      "rpc-2.mainnet.bolchain.net:21333",
-      "rpc-3.mainnet.bolchain.net:21333",
-      "rpc-4.mainnet.bolchain.net:21333",
-      "rpc-5.mainnet.bolchain.net:21333"
+      "validator-1.mainnet.bolchain.net:21604",
+      "validator-2.mainnet.bolchain.net:21614",
+      "validator-3.mainnet.bolchain.net:21624",
+      "validator-4.mainnet.bolchain.net:21634",
+      "validator-5.mainnet.bolchain.net:21644",
+      "validator-6.mainnet.bolchain.net:21654",
+      "validator-7.mainnet.bolchain.net:21664",
+      "validator-8.mainnet.bolchain.net:21674",
+      "validator-9.mainnet.bolchain.net:21684",
+      "validator-10.mainnet.bolchain.net:21694"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
