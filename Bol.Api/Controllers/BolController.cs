@@ -180,16 +180,16 @@ namespace Bol.Api.Controllers
         }
 
         [HttpPost("multi-citizenship")]
-        public async Task<ActionResult> AddMultiCitizenship(string shortHash, CancellationToken token)
+        public async Task<ActionResult> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token)
         {
-            var result = await _bolService.AddMultiCitizenship(shortHash, token);
+            var result = await _bolService.AddMultiCitizenship(countryCode, shortHash, token);
             return Ok(result);
         }
 
         [HttpGet("multi-citizenship")]
-        public async Task<ActionResult> IsMultiCitizenship(string shortHash, CancellationToken token)
+        public async Task<ActionResult> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token)
         {
-            var result = await _bolService.IsMultiCitizenship(shortHash, token);
+            var result = await _bolService.IsMultiCitizenship(countryCode, shortHash, token);
             return Ok(result);
         }
 
