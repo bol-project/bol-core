@@ -274,13 +274,18 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<bool> AddMultiCitizenship(string shortHash, CancellationToken token = default)
+        public async Task<bool> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
         {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                _base58.Decode(shortHash),
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
                 Encoding.ASCII.GetBytes(context.CodeName),
             };
             var keys = new[] { context.VotingAddress.Value };
@@ -300,13 +305,18 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<bool> IsMultiCitizenship(string shortHash, CancellationToken token = default)
+        public async Task<bool> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
         {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                _base58.Decode(shortHash)
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
             };
             var keys = new[] { context.VotingAddress.Value };
 
