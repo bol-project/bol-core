@@ -184,13 +184,13 @@ public static class BolServiceValidationHelper
         return true;
     }
     
-    public static bool IsAddMultiCitizenshipInputValid(byte[] shortHash, byte[] codeName)
+    public static bool IsAddMultiCitizenshipInputValid(byte[] countryShortHash, byte[] codeName)
     {
         if (CodeNameIsEmpty(codeName)) return false;
         
-        if (shortHash == null || shortHash.Length != 8)
+        if (countryShortHash == null || countryShortHash.Length != 11)
         {
-            Runtime.Notify("error", BolResult.BadRequest("ShortHash should be exactly 8 bytes."));
+            Runtime.Notify("error", BolResult.BadRequest("CountryShortHash should be exactly 11 bytes."));
             return false;
         }
     

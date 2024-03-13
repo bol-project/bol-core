@@ -646,18 +646,18 @@ namespace Bol.Coin.Services
             return true;
         }
         
-        public static bool AddMultiCitizenship(byte[] shortHash, byte[] codeName)
+        public static bool AddMultiCitizenship(byte[] countryShortHash, byte[] codeName)
         {
-            if (!BolServiceValidationHelper.IsAddMultiCitizenshipInputValid(shortHash, codeName)) return false;
+            if (!BolServiceValidationHelper.IsAddMultiCitizenshipInputValid(countryShortHash, codeName)) return false;
             
             var account = BolRepository.GetAccount(codeName);
             
             if (!BolServiceValidationHelper.IsAddMultiCitizenshipValid(account)) return false;
             
             var currentHeight = BlockChainService.GetCurrentHeight();
-            BolRepository.AddToMultiCitizenshipList(shortHash, codeName, currentHeight);
+            BolRepository.AddToMultiCitizenshipList(countryShortHash, codeName, currentHeight);
             
-            AddTransactionEntry(account, Constants.TransactionTypeAddMultiCitizenship, codeName, null, shortHash, null, 0);
+            AddTransactionEntry(account, Constants.TransactionTypeAddMultiCitizenship, codeName, null, countryShortHash, null, 0);
             BolRepository.SaveAccount(account);
             
             Runtime.Notify("addMultiCitizenship", BolResult.Ok());
