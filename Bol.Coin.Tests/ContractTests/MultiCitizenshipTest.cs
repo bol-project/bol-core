@@ -14,12 +14,12 @@ public class MultiCitizenshipTest : TestBase
         _emulator.Execute(_transactionGrabber);
 
         var shortHash = "5A7b1xQXR3c";
-        await _validatorService.AddMultiCitizenship(shortHash);
+        await _validatorService.AddMultiCitizenship("GRC", shortHash);
         _emulator.Execute(_transactionGrabber);
 
         _emulator.blockchain.AddMockBlocks(1);
 
-        await _service.IsMultiCitizenship(shortHash);
+        await _service.IsMultiCitizenship("GRC", shortHash);
         var result = _emulator.Execute(_transactionGrabber);
 
         result.Should().BeTrue();
@@ -35,25 +35,25 @@ public class MultiCitizenshipTest : TestBase
         
         _emulator.blockchain.AddMockBlocks(1);
 
-        await _service.IsMultiCitizenship(shortHash);
+        await _service.IsMultiCitizenship("GRC", shortHash);
         var result = _emulator.Execute(_transactionGrabber);
         
         result.Should().BeFalse();
     }
     
     [Fact]
-    public async Task IsMultiCitizenship_ShouldReturnFalse_WhenShortHashIsNot8Bytes()
+    public async Task IsMultiCitizenship_ShouldReturnFalse_WhenShortHashRegisteredWithDifferentCountry()
     {
         await _service.Deploy();
         _emulator.Execute(_transactionGrabber);
 
-        var shortHash = "KME59DYqF8Wg";
-        await _validatorService.AddMultiCitizenship(shortHash);
+        var shortHash = "KME59DYqF8";
+        await _validatorService.AddMultiCitizenship("GRC", shortHash);
         _emulator.Execute(_transactionGrabber);
 
         _emulator.blockchain.AddMockBlocks(1);
 
-        await _service.IsMultiCitizenship(shortHash);
+        await _service.IsMultiCitizenship("USA", shortHash);
         var result = _emulator.Execute(_transactionGrabber);
 
         result.Should().BeFalse();
