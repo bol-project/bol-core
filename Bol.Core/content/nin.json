@@ -15,7 +15,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -33,7 +33,7 @@
   "Country": "Algeria",
   "CountryCode": "DZA",
   "InternationalName": "National Identification Number (NIN)",
-  "LocalName": "بطاقة الهوية الوطن     carte nationale d’identité",
+  "LocalName": "بطاقة الهوية الوطن   carte nationale d’identité",
   "Format": "111111111111111111",
   "Digits": 18,
   "Regex": "^[0-9]{18}$",
@@ -42,10 +42,10 @@
  {
   "Country": "American Samoa",
   "CountryCode": "ASM",
-  "InternationalName": "\n",
+  "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -55,7 +55,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -66,8 +66,8 @@
   "LocalName": "Bihete de intentidade no",
   "Format": "1111111AA111",
   "Digits": 12,
-  "Regex": "^[0-9]{11}$",
-  "status": 0
+  "Regex": "^[0-9]{7}[A-Z]{2}[0-9]{3}$",
+  "status": 1
  },
  {
   "Country": "Anguilla",
@@ -75,7 +75,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -85,7 +85,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -95,7 +95,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -115,7 +115,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -125,7 +125,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -145,7 +145,7 @@
   "InternationalName": "Sector-Specific Personal Identifier (ssPIN)",
   "LocalName": "CCR-ID Austrian Identity Card",
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -155,7 +155,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -165,7 +165,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -173,7 +173,7 @@
   "Country": "Bahrain",
   "CountryCode": "BHR",
   "InternationalName": " Identification Card (with a personal number)",
-  "LocalName": "بطاقة الهوية Arabic",
+  "LocalName": "بطاقة الهوية ",
   "Format": 111111111,
   "Digits": 9,
   "Regex": "^[0-9]{9}$",
@@ -183,11 +183,11 @@
   "Country": "Bangladesh",
   "CountryCode": "BGD",
   "InternationalName": "National Identity Card",
-  "LocalName": "Bengali : জাতীয় পরিচয়পত্র",
+  "LocalName": "জাতীয় পরিচয়পত্র",
   "Format": 1111111111111,
   "Digits": 13,
   "Regex": "^[0-9]{13}$",
-  "status": 0
+  "status": 1
  },
  {
   "Country": "Barbados",
@@ -195,7 +195,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -225,7 +225,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -235,7 +235,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -245,7 +245,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -255,7 +255,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -275,7 +275,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -295,7 +295,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -305,7 +305,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -325,7 +325,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -335,7 +335,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -345,7 +345,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -365,7 +365,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -375,7 +375,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -385,7 +385,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -415,7 +415,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -425,7 +425,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -435,7 +435,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -445,7 +445,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -475,7 +475,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -485,7 +485,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -505,7 +505,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -515,7 +515,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -525,7 +525,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -535,7 +535,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -545,7 +545,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -555,7 +555,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -585,7 +585,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -594,10 +594,10 @@
   "CountryCode": "CYP",
   "InternationalName": "ID card number",
   "LocalName": "Αριθμός δελτίου ταυτότητας",
-  "Format": "1111111**",
-  "Digits": 9,
-  "Regex": "^[0-9]{9}$",
-  "status": 0
+  "Format": 1111111,
+  "Digits": 7,
+  "Regex": "^[0-9]{6,7}$",
+  "status": 1
  },
  {
   "Country": "Czech Republic",
@@ -625,7 +625,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -635,7 +635,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -645,7 +645,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -655,7 +655,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -685,7 +685,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -695,7 +695,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -725,7 +725,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -735,7 +735,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -745,7 +745,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -775,7 +775,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -785,7 +785,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -795,7 +795,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -805,7 +805,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -815,7 +815,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -825,7 +825,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -855,7 +855,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -875,7 +875,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -885,7 +885,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -895,7 +895,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -905,7 +905,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -925,7 +925,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -945,7 +945,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -955,7 +955,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -965,7 +965,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -975,7 +975,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -993,7 +993,7 @@
   "Country": "Hong Kong, SAR China",
   "CountryCode": "HKG",
   "InternationalName": "Identity card",
-  "LocalName": "香港身份證    -  Hēunggóng sānfánjing (HKID)",
+  "LocalName": "香港身份證  Hēunggóng sānfánjing (HKID)",
   "Format": "A1111111",
   "Digits": 8,
   "Regex": "^[A-Z]{1}[0-9]{7}$",
@@ -1075,7 +1075,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1105,7 +1105,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1125,7 +1125,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1135,7 +1135,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1143,7 +1143,7 @@
   "Country": "Kazakhstan",
   "CountryCode": "KAZ",
   "InternationalName": "Individual Identification Number",
-  "LocalName": "ЖСН , ZhSN , ИИН , IIN - Жеке сәйкестендіру номері қысқ. ЖСН",
+  "LocalName": "Καζακστάν : ЖСН , ZhSN , στα ρώσικα : ИИН , IIN - Жеке сәйкестендіру номері қысқ. ЖСН",
   "Format": 111111111111,
   "Digits": 12,
   "Regex": "^[0-9]{12}$",
@@ -1165,7 +1165,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1175,7 +1175,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1195,7 +1195,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1215,7 +1215,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1225,7 +1225,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1245,7 +1245,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1255,7 +1255,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1265,7 +1265,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1275,7 +1275,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1285,7 +1285,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1305,7 +1305,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1335,7 +1335,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1355,7 +1355,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1365,7 +1365,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1375,7 +1375,7 @@
   "InternationalName": "Identity Card",
   "LocalName": "Tal -identita",
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1385,7 +1385,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1395,7 +1395,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1405,7 +1405,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1415,7 +1415,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1425,7 +1425,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1436,7 +1436,7 @@
   "LocalName": "CURP - Clave Única de Registro de Población",
   "Format": "AAAA111111AAAAAA11",
   "Digits": 18,
-  "Regex": "^[A-Z]{4}[0-9]{6}[0-9]{2}[A-Z]{6}[0-9]{2}$",
+  "Regex": "^[A-Z]{4}[0-9]{6}[A-Z]{6}[0-9]{2}$",
   "status": 1
  },
  {
@@ -1445,7 +1445,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1465,7 +1465,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1475,7 +1475,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1495,7 +1495,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1515,7 +1515,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1525,7 +1525,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1535,7 +1535,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1545,7 +1545,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1575,7 +1575,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1585,7 +1585,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1624,7 +1624,7 @@
   "CountryCode": "NGA",
   "InternationalName": "National Identification Number",
   "LocalName": "National Identification Number (NIN)",
-  "Format": 11111111111,
+  "Format": "1A111111111",
   "Digits": 11,
   "Regex": "^[0-9]{1}[A-Z]{1}[0-9]{9]$",
   "status": 1
@@ -1635,7 +1635,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1645,7 +1645,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1665,7 +1665,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1685,7 +1685,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1705,7 +1705,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1715,7 +1715,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1725,7 +1725,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1735,7 +1735,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1745,7 +1745,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1775,7 +1775,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1785,7 +1785,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1815,7 +1815,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1825,7 +1825,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1835,7 +1835,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1852,7 +1852,7 @@
  {
   "Country": "Russian Federation",
   "CountryCode": "RUS",
-  "InternationalName": "SNILS card\nIndividual insurance account number (SNILS)",
+  "InternationalName": "SNILS card - Individual insurance account number (SNILS)",
   "LocalName": "страховой номер индивидуального лицевого счета СНИЛС",
   "Format": 11111111111,
   "Digits": 11,
@@ -1875,7 +1875,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1885,7 +1885,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1895,7 +1895,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1905,7 +1905,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1915,7 +1915,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1925,7 +1925,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1935,7 +1935,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1945,7 +1945,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1953,9 +1953,9 @@
   "Country": "San Marino",
   "CountryCode": "SMR",
   "InternationalName": 0,
-  "LocalName": "Codice ISS",
+  "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -1965,7 +1965,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2005,7 +2005,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2015,7 +2015,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2035,7 +2035,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2065,7 +2065,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2075,7 +2075,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2092,12 +2092,12 @@
  {
   "Country": "South Georgia and the South Sandwich Islands",
   "CountryCode": "SGS",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
+  "InternationalName": "Personal namber",
+  "LocalName": "პირადი ნომერი (p’iradi nomeri)",
+  "Format": 11111111111,
+  "Digits": 11,
+  "Regex": "^[0-9]{11}$",
+  "status": 1
  },
  {
   "Country": "South Sudan",
@@ -2105,7 +2105,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2132,12 +2132,12 @@
  {
   "Country": "Sudan",
   "CountryCode": "SDN",
-  "InternationalName": "National Identification Number",
-  "LocalName": "National Identification Number",
-  "Format": 11111111111,
-  "Digits": 11,
-  "Regex": "^[0-9]{11}$",
-  "status": 0
+  "InternationalName": "Personal Number",
+  "LocalName": "Nomer pribadi",
+  "Format": "A1111111111111",
+  "Digits": 14,
+  "Regex": "^[A-Z]{1}[0-9]{13}$",
+  "status": 1
  },
  {
   "Country": "Suriname",
@@ -2145,7 +2145,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2155,7 +2155,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2165,7 +2165,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2195,7 +2195,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2215,7 +2215,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2245,7 +2245,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2255,7 +2255,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2265,7 +2265,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2275,7 +2275,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2285,7 +2285,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2295,7 +2295,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2304,8 +2304,8 @@
   "CountryCode": "TUR",
   "InternationalName": "Turkish Identification Number",
   "LocalName": "Türkiye Cumhuriyeti Kimlik Numarası",
-  "Format": 111111111111,
-  "Digits": 12,
+  "Format": 11111111111,
+  "Digits": 11,
   "Regex": "^[0-9]{11}$",
   "status": 1
  },
@@ -2315,7 +2315,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2325,7 +2325,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2335,7 +2335,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2405,19 +2405,19 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
  {
   "Country": "Uzbekistan",
   "CountryCode": "UZB",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
+  "InternationalName": "National ID card",
+  "LocalName": "Shaxsiy raqami",
+  "Format": 111111111111111,
+  "Digits": 15,
+  "Regex": "^[0-9]{15}$",
+  "status": 1
  },
  {
   "Country": "Vanuatu",
@@ -2425,7 +2425,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2435,7 +2435,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2465,7 +2465,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2475,7 +2475,7 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
@@ -2485,38 +2485,38 @@
   "InternationalName": 0,
   "LocalName": 0,
   "Format": 0,
-  "Digits": 1,
+  "Digits": 0,
   "Regex": 0,
   "status": 0
  },
  {
   "Country": "Yemen",
   "CountryCode": "YEM",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
+  "InternationalName": "national identification number",
+  "LocalName": "   (raqm alhuiat alwatania)  رقم الهوية الوطنية",
+  "Format": 111111111111,
+  "Digits": 12,
+  "Regex": "^[0-9]{12}$",
+  "status": 1
  },
  {
   "Country": "Zambia",
   "CountryCode": "ZMB",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
+  "InternationalName": "National ID card",
+  "LocalName": "ID namber",
+  "Format": 1111111111,
+  "Digits": 10,
+  "Regex": "^[0-9]{10}$",
+  "status": 1
  },
  {
   "Country": "Zimbabwe",
   "CountryCode": "ZWE",
-  "InternationalName": 0,
-  "LocalName": 0,
-  "Format": 0,
-  "Digits": 1,
-  "Regex": 0,
-  "status": 0
+  "InternationalName": "National Identification Number (NIN)",
+  "LocalName": "National Identification Number (NIN)",
+  "Format": "11111111A11",
+  "Digits": 11,
+  "Regex": "^[0-9]{8}[A-Z]{1}[0-9]{2}$",
+  "status": 1
  }
 ]
