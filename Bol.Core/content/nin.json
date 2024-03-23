@@ -1143,7 +1143,7 @@
   "Country": "Kazakhstan",
   "CountryCode": "KAZ",
   "InternationalName": "Individual Identification Number",
-  "LocalName": "Καζακστάν : ЖСН , ZhSN , στα ρώσικα : ИИН , IIN - Жеке сәйкестендіру номері қысқ. ЖСН",
+  "LocalName": " ЖСН , ZhSN ,: ИИН , IIN - Жеке сәйкестендіру номері қысқ. ЖСН",
   "Format": 111111111111,
   "Digits": 12,
   "Regex": "^[0-9]{12}$",
