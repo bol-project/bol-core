@@ -193,6 +193,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("codename-exists")]
+        public async Task<ActionResult> CodeNameExists(string codeNamePrefix, CancellationToken token)
+        {
+            var result = await _bolService.CodeNameExists(codeNamePrefix, token);
+            return Ok(result);
+        }
+
         [HttpPost("migrate")]
         public async Task<ActionResult> Migrate(string walletFolderPath, string password,
             CancellationToken token)

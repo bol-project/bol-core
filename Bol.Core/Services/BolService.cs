@@ -331,6 +331,23 @@ namespace Bol.Core.Services
             return result;
         }
 
+        public async Task<bool> CodeNameExists(string codeNamePrefix, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(codeNamePrefix),
+            };
+            var description = $"CodeNameExists {codeNamePrefix}";
+            var remarks = new[] { "codeNameExists", codeNamePrefix };
+
+            var transaction = _transactionService.Create(null, context.Contract, "codeNameExists", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
+        }
+
         public async Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
