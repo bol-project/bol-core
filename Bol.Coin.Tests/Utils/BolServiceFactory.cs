@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using System.IO;
 using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
 using Bol.Core.Accessors;
 using Bol.Core.Model;
+using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Bol.Core.Transactions;
+using Bol.Core.Validators;
 using Bol.Cryptography.Encoders;
 using Bol.Cryptography.Hashers;
 using Bol.Cryptography.Neo.Encoders;
@@ -40,8 +43,16 @@ namespace Bol.Coin.Tests.Utils
             
             var protocolConfig = Options.Create(new ProtocolConfiguration { AddressVersion = "25" });
             var addressTransformer = new AddressTransformer(base58, base16, protocolConfig);
+
+            var stringSerializer = new PersonStringSerializer();
+            var countryCodeService = new CountryCodeService(Options.Create(new List<Country>()));
+            var basePersonValidator = new BasePersonValidator(countryCodeService);
+            var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator,
+                new NinService(Options.Create(new List<NinSpecification>())));
+            var codenameService = new CodeNameService(stringSerializer, sha256, base58, base16, naturalPersonValidator,
+                new CompanyValidator(countryCodeService));
             
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer);
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer, codenameService);
         }
         
         public static BolService Create(TransactionGrabber grabber)
@@ -78,8 +89,16 @@ namespace Bol.Coin.Tests.Utils
 
             var rpcMethodFactory = new FakeRpcMethodFactory(grabber);
             var transactionService = new TransactionService(signatureScriptFactory, scriptHashFactory, transactionNotarizer, rpcMethodFactory);
-
-            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer);
+            
+            var stringSerializer = new PersonStringSerializer();
+            var countryCodeService = new CountryCodeService(Options.Create(new List<Country>()));
+            var basePersonValidator = new BasePersonValidator(countryCodeService);
+            var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator,
+                new NinService(Options.Create(new List<NinSpecification>())));
+            var codenameService = new CodeNameService(stringSerializer, sha256, base58, base16, naturalPersonValidator,
+                new CompanyValidator(countryCodeService));
+            
+            return new BolService(contextAccessor, transactionService, signatureScriptFactory, base16, base58, addressTransformer, codenameService);
         }
     }
 }
