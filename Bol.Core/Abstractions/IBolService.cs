@@ -21,6 +21,7 @@ namespace Bol.Core.Abstractions
         Task<bool> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default);
         Task<bool> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default);
         Task<bool> CodeNameExists(string codeNamePrefix, CancellationToken token = default);
+        Task<IEnumerable<string>> FindAlternativeCodeNames(string codeName, CancellationToken token = default);
         Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
         Task<BolAccount> Certify(string codeName, CancellationToken token = default);
         Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);

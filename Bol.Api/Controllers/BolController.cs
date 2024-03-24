@@ -200,6 +200,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("find-alternative-codeNames")]
+        public async Task<ActionResult> FindAlternativeCodeNames(string codeName, CancellationToken token)
+        {
+            var result = await _bolService.FindAlternativeCodeNames(codeName, token);
+            return Ok(result);
+        }
+
         [HttpPost("migrate")]
         public async Task<ActionResult> Migrate(string walletFolderPath, string password,
             CancellationToken token)
