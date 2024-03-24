@@ -213,6 +213,18 @@ namespace Neo.SmartContract
                 return BolService.IsMultiCitizenship(shortHash);
             }
 
+            if (operation == "codeNameExists")
+            {
+                if (args.Length != 1)
+                {
+                    Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                    return false;
+                }
+
+                var codeNamePrefix = (byte[])args[0];
+                return BolService.CodeNameExists(codeNamePrefix);
+            }
+
             if (operation == "selectMandatoryCertifiers")
             {
                 if (args.Length != 1)

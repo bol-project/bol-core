@@ -678,6 +678,19 @@ namespace Bol.Coin.Services
             return true;
         }
 
+        public static bool CodeNameExists(byte[] codeNamePrefix)
+        {
+            if (!BolRepository.CodeNameExists(codeNamePrefix))
+            {
+                Runtime.Notify("error", BolResult.NotFound("CodeName prefix not found."));
+                return false;
+            }
+            
+            Runtime.Notify("CodeNameExists", BolResult.Ok());
+        
+            return true;
+        }
+
         /// <summary>
         /// https://gitlab.com/bolchain/bol-internal/bol-docs/-/blob/master/5-%20Certifier%20Selection.md
         /// </summary>
