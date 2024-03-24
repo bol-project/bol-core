@@ -56,15 +56,7 @@ namespace Bol.Core.Services
 
             codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCombinationIfEmpty(person.Combination)}";
 
-            var codeNameBytes = _hasher.AddChecksum(Encoding.ASCII.GetBytes(codeName), 2, Constants.CODENAME_CHECKSUM_BYTES);
-
-            var hexEncodeChecksum = _hex.Encode(codeNameBytes.Skip(codeNameBytes.Length - Constants.CODENAME_CHECKSUM_BYTES).ToArray());
-
-            var codeNameWithoutChecksum = codeNameBytes
-                .SkipLastN(Constants.CODENAME_CHECKSUM_BYTES)
-                .ToArray();
-
-            return Encoding.ASCII.GetString(codeNameWithoutChecksum) + hexEncodeChecksum;
+            return AddCodeNameChecksum(codeName);
         }
 
         public string Generate(Company company)
@@ -92,6 +84,11 @@ namespace Bol.Core.Services
             shortHash =_base58Encoder.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(shortHash)), 8));
             
             var codeName = $"C<{countryCode}<{title[0]}<{title[1]}<{title[2]}<{title[3]}<{year}{type}<{shortHash}<{combination}";
+            return AddCodeNameChecksum(codeName);
+        }
+
+        public string AddCodeNameChecksum(string codeName)
+        {
             var checkSum = _hex.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(codeName)), 2));
             return $"{codeName}{checkSum}";
         }
@@ -103,9 +100,9 @@ namespace Bol.Core.Services
             return nin.Substring(nin.Length - chars);
         }
 
-        private string ReplaceCombinationIfEmpty(string compination)
+        private string ReplaceCombinationIfEmpty(string combination)
         {
-            return string.IsNullOrEmpty(compination) ? "1" : compination;
+            return string.IsNullOrEmpty(combination) ? "1" : combination;
         }
     }
 }

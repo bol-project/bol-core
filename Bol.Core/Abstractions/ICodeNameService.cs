@@ -6,5 +6,6 @@ namespace Bol.Core.Abstractions
     {
         string Generate(NaturalPerson person);
         string Generate(Company company);
+        string AddCodeNameChecksum(string codeName);
     }
 }
