@@ -12,11 +12,13 @@ using Bol.Core.Rpc.Abstractions;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
 using Bol.Core.Transactions;
+using Bol.Core.Validators;
 using Bol.Cryptography.Abstractions;
 using Bol.Cryptography.Neo.Encoders;
 using Bol.Cryptography.Neo.Hashers;
 using Bol.Cryptography.Neo.Keys;
 using Bol.Cryptography.Signers;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -75,6 +77,13 @@ namespace Bol.Api
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<INonceCalculator, NonceCalculator>();
             services.AddScoped<IContextAccessor, WalletContextAccessor>();
+            services.AddScoped<IStringSerializer<NaturalPerson, CodenamePerson>, PersonStringSerializer>();
+            services.AddScoped<IValidator<BasePerson>, BasePersonValidator>();
+            services.AddScoped<IValidator<NaturalPerson>, NaturalPersonValidator>();
+            services.AddScoped<ICompanyValidator, CompanyValidator>();
+            services.AddScoped<ICountryCodeService, CountryCodeService>();
+            services.AddScoped<INinService, NinService>();
+            services.AddScoped<ICodeNameService, CodeNameService>();
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();

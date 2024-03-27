@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Bol.Address;
 using Bol.Core.Abstractions;
 using Bol.Core.Model;
+using Bol.Core.Rpc.Model;
 using Bol.Core.Transactions;
 using Bol.Cryptography;
 
@@ -21,8 +22,9 @@ namespace Bol.Core.Services
         private readonly IBase16Encoder _hex;
         private readonly IBase58Encoder _base58;
         private readonly IAddressTransformer _addressTransformer;
+        private readonly ICodeNameService _codeNameService;
 
-        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IBase58Encoder base58, IAddressTransformer addressTransformer)
+        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IBase58Encoder base58, IAddressTransformer addressTransformer, ICodeNameService codeNameService)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
@@ -30,6 +32,7 @@ namespace Bol.Core.Services
             _hex = hex ?? throw new ArgumentNullException(nameof(hex));
             _base58 = base58 ?? throw new ArgumentNullException(nameof(base58));
             _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
+            _codeNameService = codeNameService ?? throw new ArgumentNullException(nameof(codeNameService));
         }
 
         public Task Deploy(CancellationToken token = default)
@@ -274,13 +277,18 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<bool> AddMultiCitizenship(string shortHash, CancellationToken token = default)
+        public async Task<bool> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
         {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                _base58.Decode(shortHash),
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
                 Encoding.ASCII.GetBytes(context.CodeName),
             };
             var keys = new[] { context.VotingAddress.Value };
@@ -300,13 +308,18 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public async Task<bool> IsMultiCitizenship(string shortHash, CancellationToken token = default)
+        public async Task<bool> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
         {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                _base58.Decode(shortHash)
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
             };
             var keys = new[] { context.VotingAddress.Value };
 
@@ -319,6 +332,57 @@ namespace Bol.Core.Services
 
             var result = await _transactionService.Test<bool>(transaction, token);
             return result;
+        }
+
+        public async Task<bool> CodeNameExists(string codeNamePrefix, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(codeNamePrefix),
+            };
+            var description = $"CodeNameExists {codeNamePrefix}";
+            var remarks = new[] { "codeNameExists", codeNamePrefix };
+
+            var transaction = _transactionService.Create(null, context.Contract, "codeNameExists", parameters, description, remarks);
+
+            try
+            {
+                var result = await _transactionService.Test<bool>(transaction, token);
+                return result;
+            }
+            catch (RpcException)
+            {
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<string>> FindAlternativeCodeNames(string codeName, CancellationToken token = default)
+        {
+            var codeNamePrefix = codeName.Substring(0, codeName.LastIndexOf(Constants.CODENAME_DIVIDER));
+            
+            var codeNameExists = await CodeNameExists(codeNamePrefix, token);
+            if (!codeNameExists) return Array.Empty<string>();
+
+            var combinations = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+
+            var altCodeNames = combinations
+                .Select(c => codeNamePrefix + Constants.CODENAME_DIVIDER + c)
+                .Select(cn => _codeNameService.AddCodeNameChecksum(cn));
+
+            var registeredAltCodeNames = new List<string>(36);
+            
+            foreach (var altCodeName in altCodeNames)
+            {
+                if (await CodeNameExists(altCodeName, token))
+                {
+                    registeredAltCodeNames.Add(altCodeName);
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+            }
+            return registeredAltCodeNames;
         }
 
         public async Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default)

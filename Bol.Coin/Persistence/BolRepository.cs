@@ -691,5 +691,13 @@ namespace Bol.Coin.Persistence
             
             return BolStorage.KeyExists(key);
         }
+
+        public static bool CodeNameExists(byte[] codeNamePrefix)
+        {
+            var key = KeyHelper.GenerateKey(Account, codeNamePrefix);
+
+            var result = BolStorage.Find(key);
+            return result.Next();
+        }
     }
 }
