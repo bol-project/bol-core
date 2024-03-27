@@ -4,6 +4,7 @@ using Bol.Address;
 using Bol.Address.Model.Configuration;
 using Bol.Address.Neo;
 using Bol.Core.Accessors;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Serializers;
 using Bol.Core.Services;
@@ -48,7 +49,8 @@ namespace Bol.Coin.Tests.Utils
             var countryCodeService = new CountryCodeService(Options.Create(new List<Country>()));
             var basePersonValidator = new BasePersonValidator(countryCodeService);
             var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator,
-                new NinService(Options.Create(new List<NinSpecification>())));
+                new NinService(Options.Create(new List<NinSpecification>())),
+                new RegexHelper());
             var codenameService = new CodeNameService(stringSerializer, sha256, base58, base16, naturalPersonValidator,
                 new CompanyValidator(countryCodeService));
             
@@ -94,7 +96,8 @@ namespace Bol.Coin.Tests.Utils
             var countryCodeService = new CountryCodeService(Options.Create(new List<Country>()));
             var basePersonValidator = new BasePersonValidator(countryCodeService);
             var naturalPersonValidator = new NaturalPersonValidator(basePersonValidator,
-                new NinService(Options.Create(new List<NinSpecification>())));
+                new NinService(Options.Create(new List<NinSpecification>())),
+                new RegexHelper());
             var codenameService = new CodeNameService(stringSerializer, sha256, base58, base16, naturalPersonValidator,
                 new CompanyValidator(countryCodeService));
             

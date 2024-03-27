@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Bol.Core.Helpers;
 using Bol.Cryptography.Neo.Encoders;
 using Xunit;
 
@@ -45,7 +46,7 @@ namespace Bol.Core.Tests.Services
             var countryService = new CountryCodeService(Options.Create(countries));
             _basePersonValidator = new BasePersonValidator(countryService);
             ninSpecifications = new List<NinSpecification> { new NinSpecification { CountryCode = "GRC", Digits = 11 }, new NinSpecification { CountryCode = "USA", Digits = 9 }, new NinSpecification { CountryCode = "CHN", Digits = 18 } };
-            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator, new NinService(Options.Create(ninSpecifications)));
+            _naturalPersonValidator = new NaturalPersonValidator(_basePersonValidator, new NinService(Options.Create(ninSpecifications)), new RegexHelper());
             _codenamePersonValidator = new CodenamePersonValidator(_basePersonValidator);
             _codeNameValidator = new CodeNameValidator(_basePersonValidator, new PersonStringSerializer(), _hasher, _hex);
             _companyValidator = new CompanyValidator(countryService);

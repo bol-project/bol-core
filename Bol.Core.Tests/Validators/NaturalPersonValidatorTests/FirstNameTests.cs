@@ -1,4 +1,5 @@
 using Bol.Core.Abstractions;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Services;
 using Bol.Core.Validators;
@@ -19,7 +20,7 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
         {
             _basePersonValidator = new Mock<IValidator<BasePerson>>();
             _ninService = new Mock<INinService>();
-            _validator = new NaturalPersonValidator(_basePersonValidator.Object, _ninService.Object);
+            _validator = new NaturalPersonValidator(_basePersonValidator.Object, _ninService.Object, new RegexHelper());
             _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
         }
 
