@@ -84,6 +84,7 @@ namespace Bol.Api
             services.AddScoped<ICountryCodeService, CountryCodeService>();
             services.AddScoped<INinService, NinService>();
             services.AddScoped<ICodeNameService, CodeNameService>();
+            services.AddSingleton<IRegexHelper, RegexHelper>();
 
             //BOL Cryptography
             services.AddScoped<Cryptography.IBase16Encoder, Cryptography.Encoders.Base16Encoder>();
