@@ -8,7 +8,7 @@ variables:
 
 build_main_node:
   stage: build
-  image: cruizba/ubuntu-dind:jammy-26.0.0-r0
+  image: docker:24-dind
   only:
     - develop
     - master
