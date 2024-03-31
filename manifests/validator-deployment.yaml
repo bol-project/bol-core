@@ -60,9 +60,10 @@ spec:
           initialDelaySeconds: 30
           timeoutSeconds: 5
         readinessProbe:
-          httpGet:
-            path: /?jsonrpc=2.0&id=1&method=getversion&params=W10=
-            port: 21332
+          exec:
+            command:
+              - sh
+              - /app/ready.sh
           initialDelaySeconds: 30
           timeoutSeconds: 5
         resources:

@@ -44,5 +44,7 @@ FROM runtime-base AS runtime
 
 WORKDIR /app
 COPY --from=build /app/Bol.Api/out ./
+COPY ready.sh ./
+RUN chmod +x ready.sh
 RUN mkdir /blockchain
 ENTRYPOINT ["dotnet", "Bol.Api.dll", "--urls", "http://*:8080/"]
