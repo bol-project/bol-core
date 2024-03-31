@@ -30,6 +30,22 @@ spec:
   selector:
     app: bol-__CI_BUILD_REF_SLUG__
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bol-hl-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+spec:
+  clusterIP: None
+  ports:
+    - name: node-p2p
+      protocol: TCP
+      port: 21333
+  selector:
+    app: bol-__CI_BUILD_REF_SLUG__
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
