@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       app: bol-__CI_BUILD_REF_SLUG__
-  serviceName: bol-hl-__CI_BUILD_REF_SLUG__
+  serviceName: hl-bol-__CI_BUILD_REF_SLUG__
   template:
     metadata:
       labels:
