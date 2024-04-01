@@ -34,8 +34,7 @@ RUN apt-get install -y \
     wget \
     expect \
     screen \
-    zip \
-    curl
+    zip
 
 # APT cleanup to reduce image size
 RUN rm -rf /var/lib/apt/lists/*
