@@ -34,6 +34,8 @@ spec:
         volumeMounts:
         - name: blockchain
           mountPath: /blockchain
+        - name: index
+          mountPath: /index
         - name: protocol-volume
           readOnly: true
           mountPath: /app/protocol.json
@@ -71,7 +73,15 @@ spec:
       name: blockchain
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "longhorn"
+      storageClassName: "longhorn-blockchain"
       resources:
         requests:
-          storage: 200Gi
+          storage: 250Gi
+  - metadata:
+      name: index
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn-index"
+      resources:
+        requests:
+          storage: 1Gi

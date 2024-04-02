@@ -2,7 +2,7 @@
   "ApplicationConfiguration": {
     "Paths": {
       "Chain": "/blockchain/Chain_{0}",
-      "Index": "/blockchain/Index_{0}"
+      "Index": "/index/Index_{0}"
     },
     "P2P": {
       "Port": 21333,

@@ -36,6 +36,8 @@ spec:
         volumeMounts:
         - name: blockchain
           mountPath: /blockchain
+        - name: index
+          mountPath: /index
         - name: wallet-volume
           mountPath: /app/wallet.json
           subPath: __CI_BUILD_REF_SLUG__-wallet.json
@@ -87,7 +89,15 @@ spec:
       name: blockchain
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "longhorn"
+      storageClassName: "longhorn-blockchain"
       resources:
         requests:
-          storage: 200Gi
+          storage: 250Gi
+  - metadata:
+      name: index
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn-index"
+      resources:
+        requests:
+          storage: 1Gi
