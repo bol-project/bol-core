@@ -249,18 +249,6 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool SetMaxCertificationFee(BigInteger fee)
-        {
-            if (BolValidator.AddressNotOwner(Constants.Owner))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
-                return false;
-            }
-
-            BolRepository.SetMaxCertificationFee(Constants.MaxCertificationFee);
-            return true;
-        }
-
         public static bool TransferClaim(byte[] codeName, byte[] address, BigInteger value)
         {
             if (!BolServiceValidationHelper.IsTransferClaimInputValid(codeName, address, value)) return false;
