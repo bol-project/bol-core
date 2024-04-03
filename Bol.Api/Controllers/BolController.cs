@@ -207,6 +207,13 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("add-commercial-address")]
+        public async Task<ActionResult> AddCommercialAddress(string address, CancellationToken token)
+        {
+            var result = await _bolService.AddCommercialAddress(_addressTransformer.ToScriptHash(address), token);
+            return Ok(result);
+        }
+
         [HttpPost("migrate")]
         public async Task<ActionResult> Migrate(string walletFolderPath, string password,
             CancellationToken token)
