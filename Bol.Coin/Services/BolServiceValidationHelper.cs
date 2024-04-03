@@ -50,13 +50,9 @@ public static class BolServiceValidationHelper
         if (AddressIsEmpty(commercialAddress, CommercialAddressCannotBeEmpty)) return false;
         
         if(AddressHasBadLength(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
-        
-        if (account.MainAddress == null)
-        {
-            Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
-            return false;
-        }
 
+        if (AccountNotExists(account)) return false;
+        
         return true;
     }
 
