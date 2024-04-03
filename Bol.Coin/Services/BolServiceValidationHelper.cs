@@ -58,6 +58,12 @@ public static class BolServiceValidationHelper
             Runtime.Notify("error", BolResult.BadRequest("Cannot add more commercial addresses."));
             return false;
         }
+
+        if (account.CommercialAddresses.HasKey(commercialAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot add existing commercial address."));
+            return false;
+        }
         
         return true;
     }
