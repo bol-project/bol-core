@@ -165,7 +165,19 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
+        public static bool AddCommAddress(byte[] codeName, byte[] commercialAddress)
+        {
+            var account = BolRepository.GetAccount(codeName);
+
+            if (!BolServiceValidationHelper.CanAddCommercialAddress(codeName, commercialAddress, account)) return false;
+
+            if (BolServiceValidationHelper.IsNotAddressOwner(account.MainAddress)) return false;
+
+            AddTransactionEntry(account, Constants.TransactionTypeAddCommercialAddress, account.CodeName, commercialAddress, null, null, 0);
+            return PayTransferFee(account) && AddCommercialAddress(codeName, commercialAddress);
+        }
+
+        private static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
             var account = BolRepository.GetAccount(codeName);
 
