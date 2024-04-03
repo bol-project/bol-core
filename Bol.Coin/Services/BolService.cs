@@ -225,8 +225,6 @@ namespace Bol.Coin.Services
             blockchainValidators[BlockChainValidators.VALIDATOR_5_CODENAME] = 1;
             blockchainValidators[BlockChainValidators.VALIDATOR_6_CODENAME] = 1;
             blockchainValidators[BlockChainValidators.VALIDATOR_7_CODENAME] = 1;
-            blockchainValidators[BlockChainValidators.VALIDATOR_8_CODENAME] = 1;
-            blockchainValidators[BlockChainValidators.VALIDATOR_9_CODENAME] = 1;
             BolRepository.SetBlockchainValidators(blockchainValidators);
 
             BolRepository.SetCirculatingSupply(0);
