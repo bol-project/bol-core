@@ -1,4 +1,5 @@
 ﻿using Bol.Coin.Services;
+using Neo.SmartContract.Framework.Services.Neo;
 
 namespace Bol.Coin.Validators
 {
@@ -16,7 +17,7 @@ namespace Bol.Coin.Validators
 
         public static bool AddressNotOwner(byte[] address)
         {
-            return !RuntimeService.ValidateCallerAddress(address);
+            return !Runtime.CheckWitness(address);
         }
 
         public static bool CodeNameEmpty(byte[] codeName)
