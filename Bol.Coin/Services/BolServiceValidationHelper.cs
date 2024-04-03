@@ -52,6 +52,12 @@ public static class BolServiceValidationHelper
         if(AddressHasBadLength(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
 
         if (AccountNotExists(account)) return false;
+
+        if (account.CommercialAddresses.Keys.Length > Constants.MaxCommercialAddresses)
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot add more commercial addresses."));
+            return false;
+        }
         
         return true;
     }

@@ -136,6 +136,11 @@ namespace Bol.Coin
         public static readonly BigInteger OperationsFee = new BigInteger("0xF401".HexToBytes()); //500
 
         /// <summary>
+        /// The max number of commercial addresses that can be added to a Bol Account.
+        /// </summary>
+        public static readonly int MaxCommercialAddresses = 50;
+
+        /// <summary>
         /// Earth population at the time of the Genesis block.
         /// </summary>
         public static readonly BigInteger PopulationAtGenesis = 808910723600000000; // To update at genesis
