@@ -1,16 +1,9 @@
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
-using Bol.Address;
-using Bol.Address.Model.Configuration;
 using Bol.Coin.Tests.Utils;
 using Bol.Core.Helpers;
 using Bol.Core.Model;
-using Bol.Core.Services;
-using Bol.Cryptography.Encoders;
-using Bol.Cryptography.Hashers;
-using Bol.Cryptography.Neo.Encoders;
-using Microsoft.Extensions.Options;
-using Neo.Emulation;
 using Xunit;
 
 namespace Bol.Coin.Tests.ContractTests
@@ -144,6 +137,76 @@ namespace Bol.Coin.Tests.ContractTests
             _emulator.blockchain.AddMockBlocks(100);
 
             await _service.Register();
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task AddCommercialAddress_ShouldComplete_WhenFeeIsPaid()
+        { 
+            await WhitelistAndRegister();
+            await AddCertifications();
+
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
+
+            await _service.Claim();
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _service.TransferClaim(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+                BigInteger.Parse("100000000"));
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            var addressHash = _addressTransformer.ToScriptHash("B7wcyVrtgbasytJwbfmbvjpUytoJk6fryq");
+            await _service.AddCommercialAddress(addressHash);
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task AddCommercialAddress_ShouldFail_WhenAddressIsAlreadyInAccount()
+        { 
+            await WhitelistAndRegister();
+            await AddCertifications();
+
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
+
+            await _service.Claim();
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _service.TransferClaim(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+                BigInteger.Parse("100000000"));
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _service.AddCommercialAddress(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"));
+            var result = _emulator.Execute(_transactionGrabber);
+            
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task AddCommercialAddress_ShouldFail_WhenFeeCannotBePaid()
+        { 
+            await WhitelistAndRegister();
+            await AddCertifications();
+
+            _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
+
+            await _service.Claim();
+            _emulator.Execute(_transactionGrabber);
+            
+            _emulator.blockchain.AddMockBlocks(1);
+
+            await _service.AddCommercialAddress(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"));
             var result = _emulator.Execute(_transactionGrabber);
             
             Assert.False(result);
