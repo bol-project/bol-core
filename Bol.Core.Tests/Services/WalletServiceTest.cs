@@ -69,6 +69,16 @@ namespace Bol.Core.Tests.Services
         }
 
         [Fact]
+        public async Task Generate_WalletBAsync_RandomKey()
+        {
+            var bolWallet = await _walletService.CreateWalletB("123456",
+                "P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA",
+                "4F743113AF44B152C3D2D818DE91C808D104E14F612C268D7CA9D0A477F48D0C");
+            
+            Assert.StartsWith("BBB", bolWallet.accounts.First().Address);
+        }
+
+        [Fact]
         public async Task Generate_WalletCAsync()
         {
             var bolWallet = await _walletService.CreateWalletC("123456",
