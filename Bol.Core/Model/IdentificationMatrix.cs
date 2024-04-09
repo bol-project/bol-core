@@ -6,7 +6,7 @@ namespace Bol.Core.Model
     /// <summary>
     /// 1st level Matrix used for identification.
     /// </summary>
-    public class EncryptedDigitalMatrix
+    public class IdentificationMatrix
     {
         public const string CURRENT_VERSION = "1.0";
         
@@ -32,22 +32,22 @@ namespace Bol.Core.Model
         /// Hashes of Encrypted Citizenship matrices
         /// </summary>
         [YamlMember(Order = 3)]
-        public string[] Citizenships { get; set; }
+        public string[] CitizenshipHashes { get; set; }
     }
 
     /// <summary>
     /// 2nd level Matrix used for certification.
     /// </summary>
-    public class ExtendedEncryptedDigitalMatrix : EncryptedDigitalMatrix
+    public class CertificationMatrix : IdentificationMatrix
     {
         [YamlMember(Order = 4)]
-        public EncryptedCitizenship[] CitizenshipMatrices { get; set; }
+        public Citizenship[] Citizenships { get; set; }
     }
     
     /// <summary>
     /// Data and hashes related to a specific citizenship.
     /// </summary>
-    public class EncryptedCitizenship
+    public class Citizenship
     {
         public string CountryCode { get; set; }
         public string BirthCountryCode { get; set; }

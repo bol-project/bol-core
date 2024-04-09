@@ -36,7 +36,7 @@ namespace Bol.Core.Services
             _eedmcValidator = eedmcValidator ?? throw new ArgumentNullException(nameof(eedmcValidator));
         }
 
-        public string GenerateEDI(EncryptedDigitalMatrix matrix)
+        public string GenerateEDI(IdentificationMatrix matrix)
         {
             _edmValidator.ValidateAndThrow(matrix);
             var serializedMatrix = _yamlSerializer.Serialize(matrix);
@@ -46,34 +46,35 @@ namespace Bol.Core.Services
 
         public string GenerateEDI(string matrix)
         {
-            var deserializedMatrix = _yamlSerializer.Deserialize<EncryptedDigitalMatrix>(matrix);
+            var deserializedMatrix = _yamlSerializer.Deserialize<IdentificationMatrix>(matrix);
             _edmValidator.ValidateAndThrow(deserializedMatrix);
             var edi = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(matrix));
             return _hex.Encode(edi);
         }
 
-        public EncryptedDigitalMatrix GenerateMatrix(ExtendedEncryptedDigitalMatrix extendedMatrix)
+        public IdentificationMatrix GenerateMatrix(CertificationMatrix matrix)
         {
-            _eedmValidator.ValidateAndThrow(extendedMatrix);
-            var citizenships = extendedMatrix
-                .CitizenshipMatrices
+            _eedmValidator.ValidateAndThrow(matrix);
+            var citizenshipHashes = matrix
+                .Citizenships
                 .Select(_yamlSerializer.Serialize)
                 .Select(Encoding.ASCII.GetBytes)
                 .Select(cm => _hex.Encode(_sha256Hasher.Hash(cm)))
                 .ToArray();
 
-            var edm = new EncryptedDigitalMatrix
+            var idm = new IdentificationMatrix
             {
-                Version = extendedMatrix.Version,
-                CodeName = extendedMatrix.CodeName,
-                Hashes = extendedMatrix.Hashes,
-                Citizenships = citizenships
+                Version = matrix.Version,
+                CodeName = matrix.CodeName,
+                Hashes = matrix.Hashes,
+                CitizenshipHashes = citizenshipHashes
             };
+            matrix.CitizenshipHashes = citizenshipHashes;
 
-            return edm;
+            return idm;
         }
 
-        public string GenerateCompanyEDI(EncryptedDigitalMatrixCompany matrix)
+        public string GenerateCompanyEDI(IdentificationMatrixCompany matrix)
         {
             _edmcValidator.ValidateAndThrow(matrix);
             var serializedMatrix = _yamlSerializer.Serialize(matrix);
@@ -83,48 +84,62 @@ namespace Bol.Core.Services
 
         public string GenerateCompanyEDI(string matrix)
         {
-            var deserializedMatrix = _yamlSerializer.Deserialize<EncryptedDigitalMatrixCompany>(matrix);
+            var deserializedMatrix = _yamlSerializer.Deserialize<IdentificationMatrixCompany>(matrix);
             _edmcValidator.ValidateAndThrow(deserializedMatrix);
             var edi = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(matrix));
             return _hex.Encode(edi);
         }
         
-        public EncryptedDigitalMatrixCompany GenerateMatrix(ExtendedEncryptedDigitalMatrixCompany extendedMatrix)
+        public IdentificationMatrixCompany GenerateMatrix(CertificationMatrixCompany matrix)
         {
-            _eedmcValidator.ValidateAndThrow(extendedMatrix);
+            _eedmcValidator.ValidateAndThrow(matrix);
 
-            var incorporationMatrix = _yamlSerializer.Serialize(extendedMatrix.Incorporation);
+            var incorporationMatrix = _yamlSerializer.Serialize(matrix.Incorporation);
             var incorporationHash = _hex.Encode(_sha256Hasher.Hash(Encoding.ASCII.GetBytes(incorporationMatrix)));
             
-            var edmc = new EncryptedDigitalMatrixCompany
+            var idmc = new IdentificationMatrixCompany
             {
-                Version = extendedMatrix.Version,
-                CodeName = extendedMatrix.CodeName,
-                Hashes = extendedMatrix.Hashes,
+                Version = matrix.Version,
+                CodeName = matrix.CodeName,
+                Hashes = matrix.Hashes,
                 IncorporationHash = incorporationHash
             };
+            matrix.IncorporationHash = incorporationHash;
 
-            return edmc;
+            return idmc;
         }
 
-        public string SerializeMatrix(EncryptedDigitalMatrix matrix)
+        public string SerializeMatrix(IdentificationMatrix matrix)
         {
             return _yamlSerializer.Serialize(matrix);;
         }
 
-        public string SerializeMatrix(ExtendedEncryptedDigitalMatrix matrix)
+        public string SerializeMatrix(CertificationMatrix matrix)
         {
             return _yamlSerializer.Serialize(matrix);;
         }
 
-        public string SerializeMatrix(EncryptedDigitalMatrixCompany matrix)
+        public string[] SerializeCitizenships(CertificationMatrix matrix)
+        {
+            return matrix
+                .Citizenships
+                .Select(_yamlSerializer.Serialize)
+                .ToArray();
+        }
+
+        public string SerializeMatrix(IdentificationMatrixCompany matrix)
         {
             return _yamlSerializer.Serialize(matrix);;
         }
 
-        public string SerializeMatrix(ExtendedEncryptedDigitalMatrixCompany matrix)
+        public string SerializeMatrix(CertificationMatrixCompany matrix)
         {
             return _yamlSerializer.Serialize(matrix);;
+        }
+
+        public string SerializeIncorporation(CertificationMatrixCompany matrix)
+        {
+            return _yamlSerializer.Serialize(matrix.Incorporation);;
         }
     }
 }

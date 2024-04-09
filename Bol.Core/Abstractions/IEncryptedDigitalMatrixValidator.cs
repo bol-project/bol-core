@@ -3,29 +3,29 @@ using FluentValidation;
 
 namespace Bol.Core.Abstractions
 {
-    public interface IEncryptedDigitalMatrixValidator : IValidator<EncryptedDigitalMatrix>
+    public interface IEncryptedDigitalMatrixValidator : IValidator<IdentificationMatrix>
     {
         bool ValidateCitizenshipHashes { get; set; }
     }
 
-    public interface IExtendedEncryptedDigitalMatrixValidator : IValidator<ExtendedEncryptedDigitalMatrix>
+    public interface IExtendedEncryptedDigitalMatrixValidator : IValidator<CertificationMatrix>
     {
     }
 
-    public interface IEncryptedCitizenshipValidator : IValidator<EncryptedCitizenship>
+    public interface IEncryptedCitizenshipValidator : IValidator<Citizenship>
     {
     }
 
-    public interface IEncryptedDigitalMatrixCompanyValidator : IValidator<EncryptedDigitalMatrixCompany>
+    public interface IEncryptedDigitalMatrixCompanyValidator : IValidator<IdentificationMatrixCompany>
     {
         bool ValidateIncorporationHash { get; set; }
     }
 
-    public interface IExtendedEncryptedDigitalMatrixCompanyValidator : IValidator<ExtendedEncryptedDigitalMatrixCompany>
+    public interface IExtendedEncryptedDigitalMatrixCompanyValidator : IValidator<CertificationMatrixCompany>
     {
     }
 
-    public interface ICompanyIncorporationValidator : IValidator<CompanyIncorporation>
+    public interface ICompanyIncorporationValidator : IValidator<Incorporation>
     {
     }
 
