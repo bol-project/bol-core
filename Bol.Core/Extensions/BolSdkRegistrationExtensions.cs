@@ -48,7 +48,7 @@ namespace Bol.Core.Extensions
                 .WithTypeConverter(new DateTimeConverter(DateTimeKind.Local, formats:"yyyy-MM-dd"))
                 .Build());
             services.AddSingleton<IDeserializer, Deserializer>();
-            services.AddSingleton<IYamlSeralizer, YamlSerializer>();
+            services.AddSingleton<IYamlSerializer, YamlSerializer>();
             services.AddSingleton<IRegexHelper, RegexHelper>();
 
             // Services

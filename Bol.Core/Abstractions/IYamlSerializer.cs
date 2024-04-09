@@ -2,7 +2,7 @@
 
 namespace Bol.Core.Abstractions
 {
-    public interface IYamlSeralizer
+    public interface IYamlSerializer
     {
         string Serialize<T>(T entity);
         void Serialize<T>(T entity, Stream stream);

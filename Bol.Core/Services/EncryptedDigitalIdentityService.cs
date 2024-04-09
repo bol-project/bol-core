@@ -14,13 +14,13 @@ namespace Bol.Core.Services
         private readonly IExtendedEncryptedDigitalMatrixValidator _eedmValidator;
         private readonly IEncryptedDigitalMatrixCompanyValidator _edmcValidator;
         private readonly IExtendedEncryptedDigitalMatrixCompanyValidator _eedmcValidator;
-        private readonly IYamlSeralizer _yamlSerializer;
+        private readonly IYamlSerializer _yamlSerializer;
         private readonly ISha256Hasher _sha256Hasher;
         private readonly IBase16Encoder _hex;
 
         public EncryptedDigitalIdentityService(
             IEncryptedDigitalMatrixValidator edmValidator,
-            IYamlSeralizer yamlSerializer,
+            IYamlSerializer yamlSerializer,
             ISha256Hasher sha256Hasher,
             IBase16Encoder hex,
             IEncryptedDigitalMatrixCompanyValidator edmcValidator,
