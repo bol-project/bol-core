@@ -520,7 +520,7 @@ namespace Bol.Core.Services
 
             var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
             var description = $"Registration as Certifier {context.CodeName}/{mainAddressString} with fee {fee}";
-            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString() };
+            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "registerCertifier", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
@@ -546,7 +546,7 @@ namespace Bol.Core.Services
 
             var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
             var description = $"Remove Registration as Certifier {context.CodeName}/{mainAddressString}";
-            var remarks = new[] { "unregisterCertifier", context.CodeName };
+            var remarks = new[] { "unregisterCertifier", context.CodeName, Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "unregisterCertifier", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
@@ -572,7 +572,7 @@ namespace Bol.Core.Services
             var mainAddress = CreateMainAddress(context);
 
             var description = $"SetCertifierFee for certifier {context.CodeName} with fee {fee}";
-            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString() };
+            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "setCertifierFee", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
