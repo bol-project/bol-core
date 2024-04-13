@@ -5,351 +5,232 @@ namespace Bol.Coin.Persistence
 {
     public class Certifiers
     {
-        public static readonly byte[] STATHAS_CODENAME =
-            "503c4752433c535441544841533c503c3c3c313936334d3c41316174474c7a42366e763c3145423043".HexToBytes();
+        public static readonly byte[] STAT3P_CODENAME =
+            "503c4752433c53544154333c503c3c3c313936334d3c5163466e786e6f57704d573c3132354546".HexToBytes();
 
-        public static readonly byte[] STATHAS_EDI =
-            "7AF2BCDE04DCB2790D77F1CDB23D61E184A475A68489BE00EFDEEB9124F45128".HexToBytes();
+        public static readonly byte[] STAT3P_EDI =
+            "5aaabfe3a0f1c1e2ff41b0a627df560f7b059db7af6bba6a7c19fbf39b29ccf2".HexToBytes();
 
-        public static readonly byte[] STATHAS_MAIN_ADDRESS = "BBBQKm39WYk18DxAbND5WpvFobW3bcQcCE".ToScriptHash();
-        public static readonly byte[] STATHAS_BLOCKCHAIN_ADDRESS = "BFk5WAnwzrcJ2mih2r93vdwPLNrMrASDPM".ToScriptHash();
-        public static readonly byte[] STATHAS_SOCIAL_ADDRESS = "BSU2zYDaZCPimCGEqcVCBLLKZMWKmKQqza".ToScriptHash();
-        public static readonly byte[] STATHAS_VOTING_ADDRESS = "BCBBXviuJiXHRasqmaSBstux43p998ioXE".ToScriptHash();
+        public static readonly byte[] STAT3P_MAIN_ADDRESS = "BBBg8ujhJTVzw8JnAiB1uFupZPq63Qn9yb".ToScriptHash();
+        public static readonly byte[] STAT3P_BLOCKCHAIN_ADDRESS = "BSrXvdNqyA8rucrm1PHq34gGcWrRiXJQJR".ToScriptHash();
+        public static readonly byte[] STAT3P_SOCIAL_ADDRESS = "BLw4Xq3k7RRMR3gnzb6GwnihxWbDEWVSnJ".ToScriptHash();
+        public static readonly byte[] STAT3P_VOTING_ADDRESS = "BDZNBsz5xQxzi3kCe3Rvewvod8tZFD2ACX".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_1 = "BPWLkYHcrWyuvQHKnSzKCpvr29LSC9PdgJ".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_2 = "B66mMjLfwftQU3QopUzUvy8V396Eso9Dsx".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_3 = "B62s34CGu87BRBH6Xcoianym8uyxrrrDWT".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_4 = "BCqidEzqK6fHPfP7Bg2omfLCm87U8NP4Sp".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_5 = "BCX3iU82hqdJ5moJYc8CQk4uDhJuPwVdDo".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_6 = "B6WKTUGc58DVcoC5KeFwdWhUTgf5R5t45E".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_7 = "BTRb8KXn4gt3jh3VowLWGW1FNgKqWGXMCG".ToScriptHash();
+        public static readonly byte[] STAT3P_COMMERCIAL_ADDRESS_8 = "BK7r2cNGY9W1Szd8dSKdXf2Nz1YF3taFvE".ToScriptHash();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_1 =
-            "BE9iWtLcCeLR6dPZBsC7uJ51utJFbEYfZh".ToScriptHash();
+        public static readonly byte[] CHOM6C_CODENAME =
+            "503c4752433c43484f4d363c433c3c3c313938354d3c3562376a4c5761596e46723c3133304633".HexToBytes();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_2 =
-            "BSCQpEwGvkVKbXK2uzuL6TQ8Cw4V3iHdpR".ToScriptHash();
+        public static readonly byte[] CHOM6C_EDI =
+            "a35e6d35f5467230411d14a470a247290ddffb8be9e72e32d2bf7cd0619e539d".HexToBytes();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_3 =
-            "B54BmGJ7YyFwbwUEjFmdJ4egAvKwRtsjKD".ToScriptHash();
+        public static readonly byte[] CHOM6C_MAIN_ADDRESS = "BBB6S94ztTvNpv59udAGiC1tVadYYcxAJB".ToScriptHash();
+        public static readonly byte[] CHOM6C_BLOCKCHAIN_ADDRESS = "BKAcq4zktoaL3bbSyRcQVpTaHu2RoCTiNW".ToScriptHash();
+        public static readonly byte[] CHOM6C_SOCIAL_ADDRESS = "B86dqij7FHVuQCW6sBvrxGFhQeJrMEscV3".ToScriptHash();
+        public static readonly byte[] CHOM6C_VOTING_ADDRESS = "BJXfkNYGVaE1gX4uMDXnV7tzTZWdS7cpVH".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_1 = "B5RxxgSMa2ACyHrKZPpH6eHfTFMsqtLx8T".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_2 = "BFxDqjW9W51mRz7HvmSA8wEqW6WbRo1fQP".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_3 = "B6ZJfNppbTBLjej3ChTadEkYKzf7663dJQ".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_4 = "BTQXQoQchhBYW9LSkUHFfTj3opyLDc83Zq".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_5 = "B4oFevMGnJd8u2MzcepzNsMGCRnMuiLsJU".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_6 = "BMx5L6v4fQMrDDjoXwn8ABT22vH713yGxc".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_7 = "BGh5hfwghgiHu3mgCEfCTwrBHrZD29krQv".ToScriptHash();
+        public static readonly byte[] CHOM6C_COMMERCIAL_ADDRESS_8 = "BChkaU8sSudhG8VSuLM8juoEPJygBaoy4z".ToScriptHash();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_4 =
-            "BJVTp3LUGuRfiU4mR8M7c5ueadgV76SG6P".ToScriptHash();
+        public static readonly byte[] TOK2T_CODENAME =
+            "503c4752433c544f4b323c543c3c3c313938354d3c615a386d526e36786234343c3135364635".HexToBytes();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_5 =
-            "BBcqPvmcNBKnahyqqgDDxNbdS12v4uXdQw".ToScriptHash();
+        public static readonly byte[] TOK2T_EDI =
+            "f01437baf4be24aecf63b33b005fe37502b36e5147c4e3b95109445228b55fd5".HexToBytes();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_6 =
-            "BDw9Mts3ML3fwLeLhxGfxdVG5NBBmE8qzr".ToScriptHash();
+        public static readonly byte[] TOK2T_MAIN_ADDRESS = "BBBBWFs7znwecb3fQ3xBRkFJyA6uK8z1LP".ToScriptHash();
+        public static readonly byte[] TOK2T_BLOCKCHAIN_ADDRESS = "BH5QpFcpgGggj2QFwdq3CDv22E1E8NJDcM".ToScriptHash();
+        public static readonly byte[] TOK2T_SOCIAL_ADDRESS = "BPX5t4HeWVoJ2fmgUHoh1gf6o8QAyKHviY".ToScriptHash();
+        public static readonly byte[] TOK2T_VOTING_ADDRESS = "BNoqpxVz8S5KhsRYbWMkwGAxVZBEfyiF29".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_1 = "B7j2czt1T51Bsw1FH49APpQBEvFM3XJQVG".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_2 = "BJPhkyHGjFzwCuQUpYzuQQPTHJrqBNb8qU".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_3 = "B6eau7XpQbyPMrfNYbK37Zgtz2N2eiq2WW".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_4 = "BJ9WAGN3J6MCEyaHen1BjH8FPBWqtGdZzU".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_5 = "BLfPpMKdpFrWZebDetP67o99HLWCX16mDw".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_6 = "B4tr7g5HvVoYMSJ1fkNBsV5HDAdThhYJ6F".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_7 = "BLC22RiYS9zy4QPDRbEdVvo3t7KTpLemcV".ToScriptHash();
+        public static readonly byte[] TOK2T_COMMERCIAL_ADDRESS_8 = "BTmpzHFiZrvHqckYUjKLRM4QL1oTfBkPF2".ToScriptHash();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_7 =
-            "BHr2quVXV1xz19PvsYw27aufrFnTJAzCMf".ToScriptHash();
+        public static readonly byte[] CHOM6N_CODENAME =
+            "503c4752433c43484f4d363c4e3c3c3c313938334d3c44594a61456937656868613c3131314131".HexToBytes();
 
-        public static readonly byte[] STATHAS_COMMERCIAL_ADDRESS_8 =
-            "BHHfuEyMXU43sRByjPtoX3Toz8srzDUgZ9".ToScriptHash();
+        public static readonly byte[] CHOM6N_EDI =
+            "02f9c93b5313a939d870daa1ba8f1995868fe35609eef2510f2a02b947ced6e7".HexToBytes();
 
-        public static readonly byte[] CHOMENIDIS_CODENAME =
-            "503c4752433c43484f4d454e494449533c433c3c3c313938324d3c35413762317851585233633c3133383537".HexToBytes();
+        public static readonly byte[] CHOM6N_MAIN_ADDRESS = "BBBPEqeHTenDQV6taLR58pEtuzgCsLpznt".ToScriptHash();
+        public static readonly byte[] CHOM6N_BLOCKCHAIN_ADDRESS = "BK41hxz86aaZrtRCvka6LaBcDPWWRoz1Zb".ToScriptHash();
+        public static readonly byte[] CHOM6N_SOCIAL_ADDRESS = "BN8t61Q8BN1mX9wgJpfvbPVP1cqtwViBgK".ToScriptHash();
+        public static readonly byte[] CHOM6N_VOTING_ADDRESS = "B9WtCZDrGRyZuSb18ZPjs8qSzmbTGQDyjX".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_1 = "BNncSmQm96CZLyf1SwofkARv6WL3v6a2gx".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_2 = "BBZMBnC3BFi1jCPF7ANqoj9CVS7HUo9Svq".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_3 = "BRxKRoyi9H5pygAaNN8CQPeQjp5fTTaFPw".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_4 = "BMkRpt4qpEdF35e7sPhHDMnGuBMnhAvSwL".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_5 = "BFmktngswVSJP8fD6jy7xzvB9w4AWExBiZ".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_6 = "BD5nJ74aqaKGm9TwXFrv4a1wwobw8YQqRX".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_7 = "BF2bCdW9ZMUgTchgkkVgkhuG6TAY8YvWoA".ToScriptHash();
+        public static readonly byte[] CHOM6N_COMMERCIAL_ADDRESS_8 = "BBckdVvtzPNiDvNwkDjpKRiXP8c5jqP4mt".ToScriptHash();
 
-        public static readonly byte[] CHOMENIDIS_EDI =
-            "929BB356C77580DD56E977C8BB4A280706AA97F74E12E8BF1C6DDD875F9D8858".HexToBytes();
+        public static readonly byte[] MOSC3N_CODENAME =
+            "503c4752433c4d4f5343333c4e3c3c3c313939324d3c4542596d7365367846456e3c3838373243".HexToBytes();
 
-        public static readonly byte[] CHOMENIDIS_MAIN_ADDRESS = "BBBQ8Y8VamVmN4XTaprScFzzghATbMj9mS".ToScriptHash();
+        public static readonly byte[] MOSC3N_EDI =
+            "a6fd81aac51bcfd5913ee73ea74886e7261ef24688ad0bd2352356420ed24ac0".HexToBytes();
 
-        public static readonly byte[] CHOMENIDIS_BLOCKCHAIN_ADDRESS =
-            "BBeVLU1csSmv78YKLKZqEJthPCN1BKZfZj".ToScriptHash();
+        public static readonly byte[] MOSC3N_MAIN_ADDRESS = "BBBKAABTXPZAB2SJSF4qQP9Lk3am2FpTxr".ToScriptHash();
+        public static readonly byte[] MOSC3N_BLOCKCHAIN_ADDRESS = "BJ7sFGyDB3bcjU8r3PBWPcRN5fQDsfqT56".ToScriptHash();
+        public static readonly byte[] MOSC3N_SOCIAL_ADDRESS = "BQFhfMg12aRGALW6xj84S4dZs26bvCX4e6".ToScriptHash();
+        public static readonly byte[] MOSC3N_VOTING_ADDRESS = "BRGL29Ud5LNSaXRN4UFVb3D9Vr8Ze9XFSb".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_1 = "BMjLsoYiVufT6jpS1H3RaAdBWwBu829V2b".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_2 = "BDLa9eiaUsNChQyPTN8UtsTPVEDv34VHLc".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_3 = "BMe9vCLnctoCeXN6arK4dTDEkugDdr9eaA".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_4 = "BLMkufo7ufUUYQ4wpah8x4dqxp5zdKiWpZ".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_5 = "BAdEUuvWx1acZbWgXWyUKKYsAdzSckqnQg".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_6 = "BPXmxrEwymJBY8GaozogkzFCKKgoiFK8Py".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_7 = "BSLw2cjbXBhaKnCC946K5qPVFHDNpqKz4M".ToScriptHash();
+        public static readonly byte[] MOSC3N_COMMERCIAL_ADDRESS_8 = "BDEFZuxW7FU1ynNG1zcuPCNcg2xSmq3aH4".ToScriptHash();
 
-        public static readonly byte[] CHOMENIDIS_SOCIAL_ADDRESS = "BKiBpttpNiUfWEFf3acYs1ffjKfPEjZZMY".ToScriptHash();
-        public static readonly byte[] CHOMENIDIS_VOTING_ADDRESS = "BF8huhKwT13QcjshAEVdpgduFYTbUGCcqX".ToScriptHash();
+        public static readonly byte[] SEK3O_CODENAME =
+            "503c4752433c53454b333c4f3c3c3c313937394d3c4359693861357450564d623c3146384542".HexToBytes();
 
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_1 =
-            "BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj".ToScriptHash();
+        public static readonly byte[] SEK3O_EDI =
+            "cb57825b0b1714d60b7961e9840fe294fafe863eba3c2f949d984cdbaaec03d9".HexToBytes();
 
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_2 =
-            "BBeH5LaXcAVdJpYLtwQWj5iM3pMA7wrn6P".ToScriptHash();
+        public static readonly byte[] SEK3O_MAIN_ADDRESS = "BBBNSK5MEt7ZLJdtdQNYZ66iepvdehJa4z".ToScriptHash();
+        public static readonly byte[] SEK3O_BLOCKCHAIN_ADDRESS = "BT9BbhXdoco979AWtbRx3dh36cHrWm37cM".ToScriptHash();
+        public static readonly byte[] SEK3O_SOCIAL_ADDRESS = "BCyHgSUiAVjxgNQDtUNcMojXfydbm8hY6t".ToScriptHash();
+        public static readonly byte[] SEK3O_VOTING_ADDRESS = "BNS4Ev6vA1CURBzrdutEa9icjkUtEXo5HB".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_1 = "BJqCC5hh946Q8SxHtamACFsRjfn6MvDZii".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_2 = "BJAEAuZedKikSCYg21fTsEQKYiXL2d7L3s".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_3 = "BKKNqCi3EC7GYf95Et3KTCXXsjjcLAzshh".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_4 = "BDV97mYknov2yjCKY5jxBhqsJuSWM4Ucwb".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_5 = "B5oCMnGeqdhFvtdi4r15BkMvQAuiFzXcRE".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_6 = "BSxZ1kGmYQnxbUnzm3phANGKWVTN5YACvP".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_7 = "B4T8JPEhKBhZSHAW3FkAKfgZ9Aq27CeVto".ToScriptHash();
+        public static readonly byte[] SEK3O_COMMERCIAL_ADDRESS_8 = "B87rmnWRJNjM8UYEj6syDqZT7ddgzffVBX".ToScriptHash();
 
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_3 =
-            "BB8fJNhLyH5SkyxmpgLPvKx1py6uraD6bT".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_4 =
-            "B63HdghuLR9YzXVaNdUUXLU1pRsU4kWxjv".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_5 =
-            "B76J1DvQyDYEbdkK33pQUbidJMiaZ69X9P".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_6 =
-            "BCbSrr7P7J7yKFFyXj13UiJcrBAfh6mvTA".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_7 =
-            "BADG6Vy6VUpYND8up4QMNhUUrPBvCvV648".ToScriptHash();
-
-        public static readonly byte[] CHOMENIDIS_COMMERCIAL_ADDRESS_8 =
-            "BAfc9XF2o5dMc1uEqge6ZzzkvWBe3123G6".ToScriptHash();
-
-        public static readonly byte[] TOKAS_CODENAME =
-            "503c4752433c544f4b41533c543c3c3c313938344d3c4a70513663327368734c7a3c3131323137".HexToBytes();
-
-        public static readonly byte[] TOKAS_EDI =
-            "B92277F2DC242A0E08C14FEF144BD6FD35F56E9049150846AB83BE1B5499102F".HexToBytes();
-
-        public static readonly byte[] TOKAS_MAIN_ADDRESS = "BBBHZYCbm1s6p5MGzfaVr7KQp1NusMQuya".ToScriptHash();
-        public static readonly byte[] TOKAS_BLOCKCHAIN_ADDRESS = "BEaF2Zjfv1dgCM7KYYWVWhD9WpqypMEJsK".ToScriptHash();
-        public static readonly byte[] TOKAS_SOCIAL_ADDRESS = "BRfnGawkGLtavVZZVPo7JjWzv6veY3F7ou".ToScriptHash();
-        public static readonly byte[] TOKAS_VOTING_ADDRESS = "B5WCaMNHAL1UhoCTedBCKsZQ6FeEocQqqZ".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_1 = "BRZ3AuuSDWuNVYD1M63csZJspBGQozKXhV".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_2 = "B5yzLS6vJYRtSZjYuDgpmYjkBXB4Hzu14Q".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_3 = "BQ4ckkaLBw9769XCGAKJSToSsv3ZwDojej".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_4 = "B8z7Cd9nz2gDbEuPDv7wAKMSGhG7KL8wfD".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_5 = "BT96SwzGFN9R7ZQ7YkgfRL5K1fk2WdmKKd".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_6 = "BJyDqLmQdaoGn8hesB1oNrJGyu6BX2uh5o".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_7 = "BQZmkKUaeVRTXbaQiskwusDuDLemJTnqp3".ToScriptHash();
-        public static readonly byte[] TOKAS_COMMERCIAL_ADDRESS_8 = "BDrenNrzRNcU4SLjo133vJjeWZ84kM9qbe".ToScriptHash();
-
-        public static readonly byte[] SEKKAS_CODENAME =
-            "503c4752433c53454b4b41533c4f3c3c3c313938314d3c686a7841676e67683679383c3132313536".HexToBytes();
-
-        public static readonly byte[] SEKKAS_EDI =
-            "AC10FE34AFA5AEA85488736FB98C558F1EDB1EAF8949A914FB1D6AFBCDE30D7A".HexToBytes();
-
-        public static readonly byte[] SEKKAS_MAIN_ADDRESS = "BBBtuavgFSm5okqjQboPbpYdBp2PRu3HaV".ToScriptHash();
-        public static readonly byte[] SEKKAS_BLOCKCHAIN_ADDRESS = "BQz9ihDVLzdvzcmZuXCd39F5z1cXjtktgq".ToScriptHash();
-        public static readonly byte[] SEKKAS_SOCIAL_ADDRESS = "BCjDnji7RcTyLJUNB5QYC5CUEQpnkRsasw".ToScriptHash();
-        public static readonly byte[] SEKKAS_VOTING_ADDRESS = "BSAp8EAgZHC7RhGukoCBVZpqi5SwuUpJpn".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_1 = "BRZpJFsKW8nPgFbLSagoCujPjKLwiYPPw1".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_2 = "B9sT5KUaHvGBBVCJxNDn8C5MGT8ZxEiUhG".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_3 = "BAp4JryaxysTVgL6srQ5BLKWRnbttEzbbv".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_4 = "B9SCPHfmk1JLiPfnC2ijxoW783tKRaikoR".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_5 = "B9pgHiU6RXxV1PXr63hpbVFz6qu3ovCfXg".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_6 = "B867EvRqQS9iXdXUiqnpxT4dFmzmrrcJMx".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_7 = "BJVsviMa5h3rTAwUsLfv66fQU9MzP4SbKh".ToScriptHash();
-        public static readonly byte[] SEKKAS_COMMERCIAL_ADDRESS_8 = "BF8sWdf9kgHxsrSzbaKxqEtQoHFkDnEkMq".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_CODENAME =
-            "503c4752433c4d4f5343484f533c4e3c3c3c323030304d3c47674d666e326d505354753c3139443037".HexToBytes();
-
-        public static readonly byte[] MOSCHOS_EDI =
-            "0ACB042FFD53350F9870195C7F5E47BC1DCEDC0EA9BEE81710E01182467CAED5".HexToBytes();
-
-        public static readonly byte[] MOSCHOS_MAIN_ADDRESS = "BBBGVvLWKXAh3EMibr6CtUzfezCveZnkZY".ToScriptHash();
-        public static readonly byte[] MOSCHOS_BLOCKCHAIN_ADDRESS = "BF8Z4uTH4ERQpG1GVcbSaEezhqkuSUSm72".ToScriptHash();
-        public static readonly byte[] MOSCHOS_SOCIAL_ADDRESS = "BEW24DgZeAJFjBrrwfZzLuR8HJBKhqQmHh".ToScriptHash();
-        public static readonly byte[] MOSCHOS_VOTING_ADDRESS = "BFjaCBof9XBtDksFbwQG4RJ5DjEx7GbiEd".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_1 =
-            "B6DqZqijsSJiAn6aVCrooh991gf51ZxcSe".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_2 =
-            "BCXfCNq3VjYgYwjb4vxRkXK9GqLnvve1J9".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_3 =
-            "BGjfZo6vbuNw19ojqYsYZe2x4bKGXbzhzY".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_4 =
-            "BJmH2K5ujasgdpvpNrAjxdu6F7mFKPRqUz".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_5 =
-            "B9BBXZFDrMjxHrqxw7ocANNowgo2P7Z4vN".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_6 =
-            "BJEwN4jhxFNiJTzBe3PYooQ9T482WSD4yj".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_7 =
-            "BNxKwTmGTEturZrKqmY2EbUCYmCcfg6F99".ToScriptHash();
-
-        public static readonly byte[] MOSCHOS_COMMERCIAL_ADDRESS_8 =
-            "BQ1zhrVue9dYX8akwrkj8AZXVduxThqv8T".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_CODENAME =
-            "503c4752433c4c454d4f4e49533c423c3c3c313939344d3c555475544e4c54417a766b3c3142344532".HexToBytes();
-
-        public static readonly byte[] LEMONIS_EDI =
-            "E47DFECAEB71E424244759DFF6541E4F75B0F54FDAD942B51B858CFA362A96BF".HexToBytes();
-
-        public static readonly byte[] LEMONIS_MAIN_ADDRESS = "BBBUNzjYpK5r9UmsdecBJpGbFoCsv5hckQ".ToScriptHash();
-        public static readonly byte[] LEMONIS_BLOCKCHAIN_ADDRESS = "BHcCgf4feposJj64GCBtHw4yu4M8xioz4E".ToScriptHash();
-        public static readonly byte[] LEMONIS_SOCIAL_ADDRESS = "BN4wQxXQjZwMLaG3jFhUmjLU1eN9r5X5yH".ToScriptHash();
-        public static readonly byte[] LEMONIS_VOTING_ADDRESS = "BQ6D9ZxS2mHqzsqq66WqbGNCeyMZYY5VQt".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_1 =
-            "BJs4owKeQ4vJJLWbsA8ujYS2YpqLu75HYc".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_2 =
-            "B991aFBviuJ1eS8CFjA7fbnNT8mgsygjdQ".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_3 =
-            "BQC5C4GgkUr2NRB4CCKs8Wknbv4WSASBme".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_4 =
-            "BQhdMspupMTb6yMZ3mYqjjHLfPr8wp1ApJ".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_5 =
-            "B9gq1BkUX6uEMthPNCtn3hnBDwdFNnbsvU".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_6 =
-            "BLj9nfhnomshVkECURmt1bYshsR5FBNhx7".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_7 =
-            "BJcvYKv65PyfzMUzRPvRVAZ1f2vsVxwop3".ToScriptHash();
-
-        public static readonly byte[] LEMONIS_COMMERCIAL_ADDRESS_8 =
-            "BFtW7UAQePNkinox7QUPYRTo7NPpCu7LY8".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_CODENAME =
-            "503c4752433c56414e54534f533c443c3c3c323030324d3c3537765545617a435132413c3142383438".HexToBytes();
-
-        public static readonly byte[] VANTSOS_EDI =
-            "9C7A4126341796554E56F2D1A66EA8CFA7C961D7DBAF6B95D3928D7FCB522B02".HexToBytes();
-
-        public static readonly byte[] VANTSOS_MAIN_ADDRESS = "BBBMBojrtCJU34NQrwRzX1CHE73FBu6KLj".ToScriptHash();
-        public static readonly byte[] VANTSOS_BLOCKCHAIN_ADDRESS = "BJy429jQSZCCipvUy4ZV9uJrvC2jSpSVX9".ToScriptHash();
-        public static readonly byte[] VANTSOS_SOCIAL_ADDRESS = "BFNT5XnLhoiBT5uyXrjHB5ytG9wosuLqxt".ToScriptHash();
-        public static readonly byte[] VANTSOS_VOTING_ADDRESS = "B9o5tyjmGf355SakRwHBtBC9U9WCptvnzb".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_1 =
-            "B9QsS5zv3vtTgnaeA1R5sKtrnYJwi3W9vA".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_2 =
-            "BEVpNvh8wHYdbEoVCBZKmxFu5ja1wAYeao".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_3 =
-            "BJBcKSFSM4atzA74xawqcJiW6UhtYMHktD".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_4 =
-            "BRzGaz8gXb4EKejJJp33uSS37xNvtKcnd7".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_5 =
-            "B95GrgZnp5nQ49VGgbZ2wjuXE4hk4MhLPb".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_6 =
-            "BACmcpQaK2C9uScjsPHoaRKUVhbCj6oTbs".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_7 =
-            "BEUsWnvavnKJapKMU83sBfK1sAEnKmrx5E".ToScriptHash();
-
-        public static readonly byte[] VANTSOS_COMMERCIAL_ADDRESS_8 =
-            "BFznCdCQhzqw5hFYL26FnS8ztgJQcC6mBS".ToScriptHash();
 
         public static BolAccount[] GenesisCertifiers()
         {
-            var stathas = new BolAccount();
-            stathas.CodeName = STATHAS_CODENAME;
-            stathas.Edi = STATHAS_EDI;
-            stathas.MainAddress = STATHAS_MAIN_ADDRESS;
-            stathas.BlockChainAddress = STATHAS_BLOCKCHAIN_ADDRESS;
-            stathas.SocialAddress = STATHAS_SOCIAL_ADDRESS;
-            stathas.VotingAddress = STATHAS_VOTING_ADDRESS;
-            stathas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            stathas.Countries = Constants.AllCountriesCode;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_1] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_2] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_3] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_4] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_5] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_6] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_7] = 0;
-            stathas.CommercialAddresses[STATHAS_COMMERCIAL_ADDRESS_8] = 0;
+            var stat3p = new BolAccount();
+            stat3p.CodeName = STAT3P_CODENAME;
+            stat3p.Edi = STAT3P_EDI;
+            stat3p.MainAddress = STAT3P_MAIN_ADDRESS;
+            stat3p.BlockChainAddress = STAT3P_BLOCKCHAIN_ADDRESS;
+            stat3p.SocialAddress = STAT3P_SOCIAL_ADDRESS;
+            stat3p.VotingAddress = STAT3P_VOTING_ADDRESS;
+            stat3p.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            stat3p.Countries = Constants.AllCountriesCode;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_1] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_2] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_3] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_4] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_5] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_6] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_7] = 0;
+            stat3p.CommercialAddresses[STAT3P_COMMERCIAL_ADDRESS_8] = 0;
 
-            var chomenidis = new BolAccount();
-            chomenidis.CodeName = CHOMENIDIS_CODENAME;
-            chomenidis.Edi = CHOMENIDIS_EDI;
-            chomenidis.MainAddress = CHOMENIDIS_MAIN_ADDRESS;
-            chomenidis.BlockChainAddress = CHOMENIDIS_BLOCKCHAIN_ADDRESS;
-            chomenidis.SocialAddress = CHOMENIDIS_SOCIAL_ADDRESS;
-            chomenidis.VotingAddress = CHOMENIDIS_VOTING_ADDRESS;
-            chomenidis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            chomenidis.Countries = Constants.AllCountriesCode;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_1] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_2] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_3] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_4] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_5] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_6] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_7] = 0;
-            chomenidis.CommercialAddresses[CHOMENIDIS_COMMERCIAL_ADDRESS_8] = 0;
+            var chom6c = new BolAccount();
+            chom6c.CodeName = CHOM6C_CODENAME;
+            chom6c.Edi = CHOM6C_EDI;
+            chom6c.MainAddress = CHOM6C_MAIN_ADDRESS;
+            chom6c.BlockChainAddress = CHOM6C_BLOCKCHAIN_ADDRESS;
+            chom6c.SocialAddress = CHOM6C_SOCIAL_ADDRESS;
+            chom6c.VotingAddress = CHOM6C_VOTING_ADDRESS;
+            chom6c.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            chom6c.Countries = Constants.AllCountriesCode;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_1] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_2] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_3] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_4] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_5] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_6] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_7] = 0;
+            chom6c.CommercialAddresses[CHOM6C_COMMERCIAL_ADDRESS_8] = 0;
 
-            var tokas = new BolAccount();
-            tokas.CodeName = TOKAS_CODENAME;
-            tokas.Edi = TOKAS_EDI;
-            tokas.MainAddress = TOKAS_MAIN_ADDRESS;
-            tokas.BlockChainAddress = TOKAS_BLOCKCHAIN_ADDRESS;
-            tokas.SocialAddress = TOKAS_SOCIAL_ADDRESS;
-            tokas.VotingAddress = TOKAS_VOTING_ADDRESS;
-            tokas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            tokas.Countries = Constants.AllCountriesCode;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_1] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_2] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_3] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_4] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_5] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_6] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_7] = 0;
-            tokas.CommercialAddresses[TOKAS_COMMERCIAL_ADDRESS_8] = 0;
+            var tok2t = new BolAccount();
+            tok2t.CodeName = TOK2T_CODENAME;
+            tok2t.Edi = TOK2T_EDI;
+            tok2t.MainAddress = TOK2T_MAIN_ADDRESS;
+            tok2t.BlockChainAddress = TOK2T_BLOCKCHAIN_ADDRESS;
+            tok2t.SocialAddress = TOK2T_SOCIAL_ADDRESS;
+            tok2t.VotingAddress = TOK2T_VOTING_ADDRESS;
+            tok2t.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            tok2t.Countries = Constants.AllCountriesCode;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_1] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_2] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_3] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_4] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_5] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_6] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_7] = 0;
+            tok2t.CommercialAddresses[TOK2T_COMMERCIAL_ADDRESS_8] = 0;
 
-            var sekkas = new BolAccount();
-            sekkas.CodeName = SEKKAS_CODENAME;
-            sekkas.Edi = SEKKAS_EDI;
-            sekkas.MainAddress = SEKKAS_MAIN_ADDRESS;
-            sekkas.BlockChainAddress = SEKKAS_BLOCKCHAIN_ADDRESS;
-            sekkas.SocialAddress = SEKKAS_SOCIAL_ADDRESS;
-            sekkas.VotingAddress = SEKKAS_VOTING_ADDRESS;
-            sekkas.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            sekkas.Countries = Constants.AllCountriesCode;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_1] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_2] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_3] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_4] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_5] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_6] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_7] = 0;
-            sekkas.CommercialAddresses[SEKKAS_COMMERCIAL_ADDRESS_8] = 0;
+            var chom6n = new BolAccount();
+            chom6n.CodeName = CHOM6N_CODENAME;
+            chom6n.Edi = CHOM6N_EDI;
+            chom6n.MainAddress = CHOM6N_MAIN_ADDRESS;
+            chom6n.BlockChainAddress = CHOM6N_BLOCKCHAIN_ADDRESS;
+            chom6n.SocialAddress = CHOM6N_SOCIAL_ADDRESS;
+            chom6n.VotingAddress = CHOM6N_VOTING_ADDRESS;
+            chom6n.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            chom6n.Countries = Constants.AllCountriesCode;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_1] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_2] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_3] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_4] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_5] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_6] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_7] = 0;
+            chom6n.CommercialAddresses[CHOM6N_COMMERCIAL_ADDRESS_8] = 0;
 
-            var moschos = new BolAccount();
-            moschos.CodeName = MOSCHOS_CODENAME;
-            moschos.Edi = MOSCHOS_EDI;
-            moschos.MainAddress = MOSCHOS_MAIN_ADDRESS;
-            moschos.BlockChainAddress = MOSCHOS_BLOCKCHAIN_ADDRESS;
-            moschos.SocialAddress = MOSCHOS_SOCIAL_ADDRESS;
-            moschos.VotingAddress = MOSCHOS_VOTING_ADDRESS;
-            moschos.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            moschos.Countries = Constants.AllCountriesCode;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_1] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_2] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_3] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_4] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_5] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_6] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_7] = 0;
-            moschos.CommercialAddresses[MOSCHOS_COMMERCIAL_ADDRESS_8] = 0;
+            var mosc3n = new BolAccount();
+            mosc3n.CodeName = MOSC3N_CODENAME;
+            mosc3n.Edi = MOSC3N_EDI;
+            mosc3n.MainAddress = MOSC3N_MAIN_ADDRESS;
+            mosc3n.BlockChainAddress = MOSC3N_BLOCKCHAIN_ADDRESS;
+            mosc3n.SocialAddress = MOSC3N_SOCIAL_ADDRESS;
+            mosc3n.VotingAddress = MOSC3N_VOTING_ADDRESS;
+            mosc3n.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            mosc3n.Countries = Constants.AllCountriesCode;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_1] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_2] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_3] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_4] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_5] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_6] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_7] = 0;
+            mosc3n.CommercialAddresses[MOSC3N_COMMERCIAL_ADDRESS_8] = 0;
 
-            var lemonis = new BolAccount();
-            lemonis.CodeName = LEMONIS_CODENAME;
-            lemonis.Edi = LEMONIS_EDI;
-            lemonis.MainAddress = LEMONIS_MAIN_ADDRESS;
-            lemonis.BlockChainAddress = LEMONIS_BLOCKCHAIN_ADDRESS;
-            lemonis.SocialAddress = LEMONIS_SOCIAL_ADDRESS;
-            lemonis.VotingAddress = LEMONIS_VOTING_ADDRESS;
-            lemonis.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            lemonis.Countries = Constants.AllCountriesCode;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_1] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_2] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_3] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_4] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_5] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_6] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_7] = 0;
-            lemonis.CommercialAddresses[LEMONIS_COMMERCIAL_ADDRESS_8] = 0;
+            var sek3o = new BolAccount();
+            sek3o.CodeName = SEK3O_CODENAME;
+            sek3o.Edi = SEK3O_EDI;
+            sek3o.MainAddress = SEK3O_MAIN_ADDRESS;
+            sek3o.BlockChainAddress = SEK3O_BLOCKCHAIN_ADDRESS;
+            sek3o.SocialAddress = SEK3O_SOCIAL_ADDRESS;
+            sek3o.VotingAddress = SEK3O_VOTING_ADDRESS;
+            sek3o.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
+            sek3o.Countries = Constants.AllCountriesCode;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_1] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_2] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_3] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_4] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_5] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_6] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_7] = 0;
+            sek3o.CommercialAddresses[SEK3O_COMMERCIAL_ADDRESS_8] = 0;
 
-            var vantsos = new BolAccount();
-            vantsos.CodeName = VANTSOS_CODENAME;
-            vantsos.Edi = VANTSOS_EDI;
-            vantsos.MainAddress = VANTSOS_MAIN_ADDRESS;
-            vantsos.BlockChainAddress = VANTSOS_BLOCKCHAIN_ADDRESS;
-            vantsos.SocialAddress = VANTSOS_SOCIAL_ADDRESS;
-            vantsos.VotingAddress = VANTSOS_VOTING_ADDRESS;
-            vantsos.CommercialAddresses = new Map<byte[], System.Numerics.BigInteger>();
-            vantsos.Countries = Constants.AllCountriesCode;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_1] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_2] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_3] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_4] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_5] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_6] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_7] = 0;
-            vantsos.CommercialAddresses[VANTSOS_COMMERCIAL_ADDRESS_8] = 0;
-
-            return new[] { stathas, chomenidis, tokas, sekkas, moschos, lemonis, vantsos };
+            return new[] { stat3p, chom6c, tok2t, chom6n, mosc3n, sek3o };
         }
     }
 }
