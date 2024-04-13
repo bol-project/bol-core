@@ -102,7 +102,7 @@ namespace Bol.Coin
         /// Number of blocks that designates a BoL claim interval.
         /// All registrations that happen inside such an interval are considered equal in claim rights.  
         /// </summary>
-        public const uint ClaimInterval = 240; // To update at genesis
+        public const uint ClaimInterval = 5000; //  1 Bol Day
 
         /// <summary>
         /// Name of the Smart Contract.
@@ -143,7 +143,7 @@ namespace Bol.Coin
         /// <summary>
         /// Earth population at the time of the Genesis block.
         /// </summary>
-        public static readonly BigInteger PopulationAtGenesis = 808910723600000000; // To update at genesis
+        public static readonly BigInteger PopulationAtGenesis = 810332534000000000; // To update at genesis
 
         /// <summary>
         /// Births per Second by year.
