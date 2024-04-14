@@ -165,7 +165,19 @@ namespace Bol.Coin.Services
             return true;
         }
 
-        public static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
+        public static bool AddCommAddress(byte[] codeName, byte[] commercialAddress)
+        {
+            var account = BolRepository.GetAccount(codeName);
+
+            if (!BolServiceValidationHelper.CanAddCommercialAddress(codeName, commercialAddress, account)) return false;
+
+            if (BolServiceValidationHelper.IsNotAddressOwner(account.MainAddress)) return false;
+
+            AddTransactionEntry(account, Constants.TransactionTypeAddCommercialAddress, account.CodeName, commercialAddress, null, null, 0);
+            return PayTransferFee(account) && AddCommercialAddress(codeName, commercialAddress);
+        }
+
+        private static bool AddCommercialAddress(byte[] codeName, byte[] commercialAddress)
         {
             var account = BolRepository.GetAccount(codeName);
 
@@ -225,8 +237,6 @@ namespace Bol.Coin.Services
             blockchainValidators[BlockChainValidators.VALIDATOR_5_CODENAME] = 1;
             blockchainValidators[BlockChainValidators.VALIDATOR_6_CODENAME] = 1;
             blockchainValidators[BlockChainValidators.VALIDATOR_7_CODENAME] = 1;
-            blockchainValidators[BlockChainValidators.VALIDATOR_8_CODENAME] = 1;
-            blockchainValidators[BlockChainValidators.VALIDATOR_9_CODENAME] = 1;
             BolRepository.SetBlockchainValidators(blockchainValidators);
 
             BolRepository.SetCirculatingSupply(0);
@@ -248,18 +258,6 @@ namespace Bol.Coin.Services
             BolRepository.SetContractDeployed();
 
             Runtime.Notify("deploy", BolResult.Ok());
-            return true;
-        }
-
-        public static bool SetMaxCertificationFee(BigInteger fee)
-        {
-            if (BolValidator.AddressNotOwner(Constants.Owner))
-            {
-                Runtime.Notify("error", BolResult.Unauthorized("Only the Bol Contract owner can perform this action."));
-                return false;
-            }
-
-            BolRepository.SetMaxCertificationFee(Constants.MaxCertificationFee);
             return true;
         }
 

@@ -167,23 +167,31 @@ namespace Bol.Core.Services
             return result;
         }
 
-        public Task AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
+        public async Task<BolAccount> AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                context.MainAddress.GetBytes(),
+                Encoding.ASCII.GetBytes(context.CodeName),
                 commercialAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
             var mainAddress = CreateMainAddress(context);
 
-            var transaction = _transactionService.Create(mainAddress, context.Contract, "addCommercialAddress", parameters);
+            var addressString = _addressTransformer.ToAddress(commercialAddress);
+            var description = $"Added address {addressString} to CodeName {context.CodeName}.";
+            var remarks = new[] { "addCommercialAddress", context.CodeName, addressString };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "addCommercialAddress", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
 
-            return _transactionService.Publish(transaction, token);
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
         public async Task<BolAccount> GetAccount(string codeName, CancellationToken token = default)
@@ -512,7 +520,7 @@ namespace Bol.Core.Services
 
             var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
             var description = $"Registration as Certifier {context.CodeName}/{mainAddressString} with fee {fee}";
-            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString() };
+            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "registerCertifier", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
@@ -538,7 +546,7 @@ namespace Bol.Core.Services
 
             var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
             var description = $"Remove Registration as Certifier {context.CodeName}/{mainAddressString}";
-            var remarks = new[] { "unregisterCertifier", context.CodeName };
+            var remarks = new[] { "unregisterCertifier", context.CodeName, Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "unregisterCertifier", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);
@@ -564,7 +572,7 @@ namespace Bol.Core.Services
             var mainAddress = CreateMainAddress(context);
 
             var description = $"SetCertifierFee for certifier {context.CodeName} with fee {fee}";
-            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString() };
+            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
             
             var transaction = _transactionService.Create(mainAddress, context.Contract, "setCertifierFee", parameters, description, remarks);
             transaction = _transactionService.Sign(transaction, mainAddress, keys);

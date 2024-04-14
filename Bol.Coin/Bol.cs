@@ -262,6 +262,19 @@ namespace Neo.SmartContract
                 return BolService.RequestCertification(codeName, certifierCodeName);
             }
 
+            if (operation == "addCommercialAddress")
+            {
+                if (args.Length != 2)
+                {
+                    Runtime.Notify("error", BolResult.BadRequest("Bad number of arguments"));
+                    return false;
+                }
+
+                var codeName = (byte[])args[0];
+                var address = (byte[])args[1];
+                return BolService.AddCommAddress(codeName, address);
+            }
+
             if (operation == "migrate")
             {
                 if (BolValidator.AddressNotOwner(Constants.Owner))

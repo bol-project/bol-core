@@ -50,13 +50,21 @@ public static class BolServiceValidationHelper
         if (AddressIsEmpty(commercialAddress, CommercialAddressCannotBeEmpty)) return false;
         
         if(AddressHasBadLength(commercialAddress, CommercialAddressLengthMustBeBytes)) return false;
-        
-        if (account.MainAddress == null)
+
+        if (AccountNotExists(account)) return false;
+
+        if (account.CommercialAddresses.Keys.Length > Constants.MaxCommercialAddresses)
         {
-            Runtime.Notify("error", BolResult.BadRequest("Code Name is not a registerd Bol Account."));
+            Runtime.Notify("error", BolResult.BadRequest("Cannot add more commercial addresses."));
             return false;
         }
 
+        if (account.CommercialAddresses.HasKey(commercialAddress))
+        {
+            Runtime.Notify("error", BolResult.BadRequest("Cannot add existing commercial address."));
+            return false;
+        }
+        
         return true;
     }
 

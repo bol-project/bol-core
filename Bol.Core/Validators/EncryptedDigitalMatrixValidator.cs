@@ -5,7 +5,7 @@ using System;
 
 namespace Bol.Core.Validators
 {
-    public class EncryptedDigitalMatrixValidator : AbstractValidator<EncryptedDigitalMatrix>,
+    public class EncryptedDigitalMatrixValidator : AbstractValidator<IdentificationMatrix>,
         IEncryptedDigitalMatrixValidator
     {
         public bool ValidateCitizenshipHashes { get; set; } = true;
@@ -32,10 +32,10 @@ namespace Bol.Core.Validators
                 .SetValidator(codeNameValidator);
 
             RuleFor(edm => edm.Version)
-                .Must(v => v == EncryptedDigitalMatrix.CURRENT_VERSION)
-                .WithMessage($"Encrypted Digital Matrix should have version: {EncryptedDigitalMatrix.CURRENT_VERSION}");
+                .Must(v => v == IdentificationMatrix.CURRENT_VERSION)
+                .WithMessage($"Encrypted Digital Matrix should have version: {IdentificationMatrix.CURRENT_VERSION}");
 
-            RuleFor(edm => edm.Citizenships)
+            RuleFor(edm => edm.CitizenshipHashes)
                 .NotEmpty()
                 .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships cannot be empty.")
@@ -43,7 +43,7 @@ namespace Bol.Core.Validators
                 .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenships can be between 1 and 3.");
 
-            RuleForEach(edm => edm.Citizenships)
+            RuleForEach(edm => edm.CitizenshipHashes)
                 .NotEmpty()
                 .When(edm => ValidateCitizenshipHashes)
                 .WithMessage("Citizenship hashes cannot be empty.")
@@ -54,7 +54,7 @@ namespace Bol.Core.Validators
         }
     }
 
-    public class ExtendedEncryptedDigitalMatrixValidator : AbstractValidator<ExtendedEncryptedDigitalMatrix>,
+    public class ExtendedEncryptedDigitalMatrixValidator : AbstractValidator<CertificationMatrix>,
         IExtendedEncryptedDigitalMatrixValidator
     {
         public ExtendedEncryptedDigitalMatrixValidator(
@@ -66,22 +66,22 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm)
                 .SetValidator(encryptedDigitalMatrixValidator);
 
-            RuleFor(eedm => eedm.Citizenships)
+            RuleFor(eedm => eedm.CitizenshipHashes)
                 .Empty()
                 .WithMessage("Citizenship Hashes array must be empty in Extended Matrix.");
 
-            RuleFor(edm => edm.CitizenshipMatrices)
+            RuleFor(edm => edm.Citizenships)
                 .NotEmpty()
                 .WithMessage("CitizenshipMatrices cannot be empty.")
                 .Must(c => c.Length >= 1 && c.Length <= 3)
                 .WithMessage("CitizenshipMatrices can be between 1 and 3.");
 
-            RuleForEach(edm => edm.CitizenshipMatrices)
+            RuleForEach(edm => edm.Citizenships)
                 .SetValidator(encryptedCitizenshipValidator);
         }
     }
 
-    public class EncryptedCitizenshipValidator : AbstractValidator<EncryptedCitizenship>, IEncryptedCitizenshipValidator
+    public class EncryptedCitizenshipValidator : AbstractValidator<Citizenship>, IEncryptedCitizenshipValidator
     {
         public EncryptedCitizenshipValidator(
             IRegexHelper regexHelper,

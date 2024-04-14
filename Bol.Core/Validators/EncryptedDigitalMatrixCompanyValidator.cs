@@ -5,7 +5,7 @@ using System;
 
 namespace Bol.Core.Validators
 {
-    public class EncryptedDigitalMatrixCompanyValidator : AbstractValidator<EncryptedDigitalMatrixCompany>,
+    public class EncryptedDigitalMatrixCompanyValidator : AbstractValidator<IdentificationMatrixCompany>,
         IEncryptedDigitalMatrixCompanyValidator
     {
         public bool ValidateIncorporationHash { get; set; } = true;
@@ -26,8 +26,8 @@ namespace Bol.Core.Validators
                 .SetValidator(codeNameValidator);
 
             RuleFor(edm => edm.Version)
-                .Must(v => v == EncryptedDigitalMatrix.CURRENT_VERSION)
-                .WithMessage($"Encrypted Digital Matrix should have version: {EncryptedDigitalMatrix.CURRENT_VERSION}");
+                .Must(v => v == IdentificationMatrix.CURRENT_VERSION)
+                .WithMessage($"Encrypted Digital Matrix should have version: {IdentificationMatrix.CURRENT_VERSION}");
 
             RuleFor(edm => edm.IncorporationHash)
                 .NotEmpty()
@@ -40,7 +40,7 @@ namespace Bol.Core.Validators
         }
     }
 
-    public class ExtendedEncryptedDigitalMatrixCompanyValidator : AbstractValidator<ExtendedEncryptedDigitalMatrixCompany>,
+    public class ExtendedEncryptedDigitalMatrixCompanyValidator : AbstractValidator<CertificationMatrixCompany>,
         IExtendedEncryptedDigitalMatrixCompanyValidator
     {
         public ExtendedEncryptedDigitalMatrixCompanyValidator(
@@ -63,7 +63,7 @@ namespace Bol.Core.Validators
         }
     }
 
-    public class CompanyIncorporationValidator : AbstractValidator<CompanyIncorporation>, ICompanyIncorporationValidator
+    public class CompanyIncorporationValidator : AbstractValidator<Incorporation>, ICompanyIncorporationValidator
     {
         public CompanyIncorporationValidator(
             IRegexHelper regexHelper,

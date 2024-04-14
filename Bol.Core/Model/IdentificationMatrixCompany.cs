@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace Bol.Core.Model;
 
-public class EncryptedDigitalMatrixCompany
+public class IdentificationMatrixCompany
 {
     public const string CURRENT_VERSION = "1.0";
         
@@ -26,13 +26,13 @@ public class EncryptedDigitalMatrixCompany
     public string IncorporationHash { get; set; }
 }
 
-public class ExtendedEncryptedDigitalMatrixCompany : EncryptedDigitalMatrixCompany
+public class CertificationMatrixCompany : IdentificationMatrixCompany
 {
     [YamlMember(Order = 4)]
-    public CompanyIncorporation Incorporation { get; set; }
+    public Incorporation Incorporation { get; set; }
 }
 
-public class CompanyIncorporation
+public class Incorporation
 {
     [YamlMember(Order = 0)]
     public string Title { get; set; }

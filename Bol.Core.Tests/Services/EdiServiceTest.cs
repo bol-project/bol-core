@@ -44,7 +44,7 @@ public class EdiServiceTest
     [Fact]
     public void GenerateMatrix_ShouldCreateValidEDM()
     {
-        var eedm = new ExtendedEncryptedDigitalMatrix
+        var eedm = new CertificationMatrix
         {
             CodeName = "P<GRC<PAPA8<G<<<1963M<h1e8C8E7NKM<19B3E",
             Hashes = new GenericHashTable
@@ -57,9 +57,9 @@ public class EdiServiceTest
                 FacePhoto = hash("6"),
                 ProofOfResidence = hash("7")
             },
-            CitizenshipMatrices = new[]
+            Citizenships = new[]
             {
-                new EncryptedCitizenship
+                new Citizenship
                 {
                     CountryCode = "GRC",
                     BirthCountryCode = "GRC",
@@ -74,7 +74,7 @@ public class EdiServiceTest
                         BirthCertificate = hash("4")
                     }
                 },
-                new EncryptedCitizenship
+                new Citizenship
                 {
                     CountryCode = "USA",
                     BirthCountryCode = "GRC",
@@ -91,14 +91,14 @@ public class EdiServiceTest
         };
 
         var edm = _ediService.GenerateMatrix(eedm);
-        Assert.NotEmpty(edm.Citizenships);
-        Assert.True(edm.Citizenships.Length == eedm.CitizenshipMatrices.Length);
+        Assert.NotEmpty(edm.CitizenshipHashes);
+        Assert.True(edm.CitizenshipHashes.Length == eedm.Citizenships.Length);
     }
 
     [Fact]
     public void GenerateMatrix_ShouldCreateValidEDMC()
     {
-        var eedmc = new ExtendedEncryptedDigitalMatrixCompany
+        var eedmc = new CertificationMatrixCompany
         {
             CodeName = "C<GRC<ETH4<MET5<POL8<<1914S<Mu61ehzQixw<1B741",
             Hashes = new CompanyHashTable
@@ -112,7 +112,7 @@ public class EdiServiceTest
                 RepresentationCertificate = hash("7"),
                 TaxRegistrationCertificate = hash("8")
             },
-            Incorporation = new CompanyIncorporation
+            Incorporation = new Incorporation
             {
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
                 VatNumber = "111111111111",
@@ -127,7 +127,7 @@ public class EdiServiceTest
     [Fact]
     public void GenerateMatrix_ShouldThrowError_WhenExtendedMatrixHasIncorporationHash()
     {
-        var eedmc = new ExtendedEncryptedDigitalMatrixCompany
+        var eedmc = new CertificationMatrixCompany
         {
             CodeName = "C<GRC<ETH4<MET5<POL8<<1914S<Mu61ehzQixw<1B741",
             Hashes = new CompanyHashTable
@@ -142,7 +142,7 @@ public class EdiServiceTest
                 TaxRegistrationCertificate = hash("8")
             },
             IncorporationHash = hash("9"),
-            Incorporation = new CompanyIncorporation
+            Incorporation = new Incorporation
             {
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
                 VatNumber = "111111111111",
@@ -156,7 +156,7 @@ public class EdiServiceTest
     [Fact]
     public void GenerateMatrix_ShouldThrowError_WhenExtendedMatrixHasCitizenshipHashes()
     {
-        var eedm = new ExtendedEncryptedDigitalMatrix
+        var eedm = new CertificationMatrix
         {
             CodeName = "P<GRC<PAPA8<G<<<1963M<h1e8C8E7NKM<19B3E",
             Hashes =
@@ -170,10 +170,10 @@ public class EdiServiceTest
                     FacePhoto = hash("6"),
                     ProofOfResidence = hash("7")
                 },
-            Citizenships = new []{hash("8")},
-            CitizenshipMatrices = new[]
+            CitizenshipHashes = new []{hash("8")},
+            Citizenships = new[]
             {
-                new EncryptedCitizenship
+                new Citizenship
                 {
                     CountryCode = "GRC",
                     BirthCountryCode = "GRC",
@@ -190,7 +190,7 @@ public class EdiServiceTest
                             BirthCertificate = hash("4")
                         }
                 },
-                new EncryptedCitizenship
+                new Citizenship
                 {
                     CountryCode = "USA",
                     BirthCountryCode = "GRC",

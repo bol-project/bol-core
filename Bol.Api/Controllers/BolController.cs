@@ -83,7 +83,7 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("registerAsCertifier")]
+        [HttpPost("register-as-Certifier")]
         public async Task<ActionResult> RegisterAsCertifier(IEnumerable<string> countries, string fee,
             CancellationToken token)
         {
@@ -92,14 +92,14 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("unregisterAsCertifier")]
+        [HttpPost("unregister-as-certifier")]
         public async Task<ActionResult> UnregisterAsCertifier(CancellationToken token)
         {
             var result = await _bolService.UnRegisterAsCertifier(token);
             return Ok(result);
         }
 
-        [HttpPost("setCertifierFee")]
+        [HttpPost("set-certifier-fee")]
         public async Task<ActionResult> SetCertifierFee(string fee, CancellationToken token)
         {
             var result = await _bolService.SetCertifierFee(BigInteger.Parse(fee), token);
@@ -113,14 +113,14 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("getAccount")]
+        [HttpGet("get-account")]
         public async Task<ActionResult> GetAccount(string codeName, CancellationToken token)
         {
             var result = await _bolService.GetAccount(codeName, token);
             return Ok(result);
         }
 
-        [HttpPost("transferClaim")]
+        [HttpPost("transfer-claim")]
         public async Task<ActionResult> TransferClaim(string address, string value, CancellationToken token)
         {
             var result = await _bolService.TransferClaim(_addressTransformer.ToScriptHash(address),
@@ -144,21 +144,21 @@ namespace Bol.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("selectMandatoryCertifiers")]
+        [HttpPost("select-mandatory-certifiers")]
         public async Task<ActionResult> SelectMandatoryCertifiers(CancellationToken token)
         {
             var result = await _bolService.SelectMandatoryCertifiers(token);
             return Ok(result);
         }
 
-        [HttpPost("payCertificationFees")]
+        [HttpPost("pay-certification-fees")]
         public async Task<ActionResult> PayCertificationFees(CancellationToken token)
         {
             var result = await _bolService.PayCertificationFees(token);
             return Ok(result);
         }
 
-        [HttpPost("requestCertification")]
+        [HttpPost("request-certification")]
         public async Task<ActionResult> RequestCertification(string codeName, CancellationToken token)
         {
             var result = await _bolService.RequestCertification(codeName, token);
@@ -204,6 +204,13 @@ namespace Bol.Api.Controllers
         public async Task<ActionResult> FindAlternativeCodeNames(string codeName, CancellationToken token)
         {
             var result = await _bolService.FindAlternativeCodeNames(codeName, token);
+            return Ok(result);
+        }
+
+        [HttpPost("add-commercial-address")]
+        public async Task<ActionResult> AddCommercialAddress(string address, CancellationToken token)
+        {
+            var result = await _bolService.AddCommercialAddress(_addressTransformer.ToScriptHash(address), token);
             return Ok(result);
         }
 

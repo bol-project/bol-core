@@ -56,10 +56,7 @@ namespace Bol.Core.Services
                 .Select(account =>
                 {
                     var privateKey = _exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, scrypt.N, scrypt.R, scrypt.P);
-                    var keyPair = _keyPairFactory.Create(privateKey);
-                    var signatureScript = _signatureScriptFactory.Create(keyPair.PublicKey);
-                    account.Key = _exportKeyFactory.Export(keyPair.PrivateKey, signatureScript.ToScriptHash(), newPassword, scrypt.N, scrypt.R, scrypt.P);
-                    return account;
+                    return CreateAccount(newPassword, account.Label, privateKey: privateKey);
                 })
                 .ToArray();
 

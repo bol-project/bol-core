@@ -41,19 +41,8 @@ namespace Bol.Core.Services
             _naturalPersonValidator.ValidateAndThrow(person);
 
             var codeName = _stringSerializer.Serialize(person);
-
-            var nameToHash = person.FirstName;
-
-            var birthdayToHash = person.Birthdate.ToString(Constants.CODENAME_BIRTHDATE_FORMAT, CultureInfo.InvariantCulture);
-
-            var ninToHash = GetLastNCharacters(person.Nin, 5);
-
-            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
-
-            var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
-
-            var shortHashString = _base58Encoder.Encode(shortHash);
-
+            var shortHashString = GenerateShortHash(person.FirstName, person.Birthdate, person.Nin);
+            
             codeName = $"{codeName}{shortHashString}{Constants.CODENAME_DIVIDER}{ReplaceCombinationIfEmpty(person.Combination)}";
 
             return AddCodeNameChecksum(codeName);
@@ -68,8 +57,6 @@ namespace Bol.Core.Services
             
             var countryCode = company.Country.Alpha3;
             var year = company.IncorporationDate.Year;
-            var date = company.IncorporationDate.ToString("yyyydd");
-            var vat = GetLastNCharacters(company.VatNumber, 5);
             var type = company.OrgType.ToString();
             var combination = company.Combination;
 
@@ -80,11 +67,38 @@ namespace Bol.Core.Services
             }
             title[3] = StringUtils.NumberEllipsis(string.Join("", words.Skip(3)), 3);
 
-            var shortHash = $"{date}{words[0]}{words[1]}{vat}";
-            shortHash =_base58Encoder.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(shortHash)), 8));
+            var shortHash = GenerateShortHash(words[0], words[1], company.IncorporationDate, company.VatNumber);
             
             var codeName = $"C<{countryCode}<{title[0]}<{title[1]}<{title[2]}<{title[3]}<{year}{type}<{shortHash}<{combination}";
             return AddCodeNameChecksum(codeName);
+        }
+
+        public string GenerateShortHash(string firstName, DateTime birthDate, string nin)
+        {
+            var nameToHash = firstName;
+
+            var birthdayToHash = birthDate.ToString(Constants.CODENAME_BIRTHDATE_FORMAT, CultureInfo.InvariantCulture);
+
+            var ninToHash = GetLastNCharacters(nin, 5);
+
+            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
+
+            var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
+
+            var shortHashString = _base58Encoder.Encode(shortHash);
+
+            return shortHashString;
+        }
+
+        public string GenerateShortHash(string firstWord, string secondWord, DateTime incorporationDate, string vatNumber)
+        {
+            var date = incorporationDate.ToString("yyyydd");
+            var vat = GetLastNCharacters(vatNumber, 5);
+
+            var shortHash = $"{date}{firstWord}{secondWord}{vat}";
+            shortHash =_base58Encoder.Encode(_hasher.Hash(_hasher.Hash(Encoding.ASCII.GetBytes(shortHash)), 8));
+
+            return shortHash;
         }
 
         public string AddCodeNameChecksum(string codeName)

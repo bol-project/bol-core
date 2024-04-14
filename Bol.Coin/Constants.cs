@@ -44,11 +44,11 @@ namespace Bol.Coin
         public const byte TransactionTypeCertifierSelection = 0x07;
         public const byte TransactionTypeCertificationRequest = 0x08;
         public const byte TransactionTypeCertify = 0x09;
-        public const byte TransactionTypeUnCertify = 0x0A;
         public const byte TransactionTypeRegisterCertifier = 0x0B;
         public const byte TransactionTypeUnRegisterCertifier = 0x0C;
         public const byte TransactionTypeAddMultiCitizenship = 0x0D;
         public const byte TransactionTypeSetCertifierFee = 0x0E;
+        public const byte TransactionTypeAddCommercialAddress = 0x0F;
 
         public const int TransactionCountLimit = 10;
 
@@ -102,7 +102,7 @@ namespace Bol.Coin
         /// Number of blocks that designates a BoL claim interval.
         /// All registrations that happen inside such an interval are considered equal in claim rights.  
         /// </summary>
-        public const uint ClaimInterval = 240; // To update at genesis
+        public const uint ClaimInterval = 5000; //  1 Bol Day
 
         /// <summary>
         /// Name of the Smart Contract.
@@ -121,9 +121,9 @@ namespace Bol.Coin
         
         /// <summary>
         /// Owner of the Smart Contract.
-        /// This is the Multisig address that is derived from the Genesis Certifiers Blockchain addresses.
+        /// This is the Multisign address that is derived from the Blockchain addresses of the founding members of Bol blockchain.
         /// </summary>
-        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address  // To update at genesis
+        public static readonly byte[] Owner = "BArFMTf79Mm4ZvTTWEgF4A3mMWENvbFWhK".ToScriptHash();
 
         /// <summary>
         /// The required fee for Transfer transactions.
@@ -136,9 +136,14 @@ namespace Bol.Coin
         public static readonly BigInteger OperationsFee = new BigInteger("0xF401".HexToBytes()); //500
 
         /// <summary>
+        /// The max number of commercial addresses that can be added to a Bol Account.
+        /// </summary>
+        public static readonly int MaxCommercialAddresses = 50;
+
+        /// <summary>
         /// Earth population at the time of the Genesis block.
         /// </summary>
-        public static readonly BigInteger PopulationAtGenesis = 808910723600000000; // To update at genesis
+        public static readonly BigInteger PopulationAtGenesis = 810408072900000000; // World Population at genesis block
 
         /// <summary>
         /// Births per Second by year.

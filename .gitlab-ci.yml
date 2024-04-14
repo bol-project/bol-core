@@ -94,21 +94,6 @@ deploy_node_7:
   variables:
     VALIDATOR_NAME: validator-7
 
-deploy_node_8:
-  extends: .deploy
-  variables:
-    VALIDATOR_NAME: validator-8
-
-deploy_node_9:
-  extends: .deploy
-  variables:
-    VALIDATOR_NAME: validator-9
-
-deploy_node_10:
-  extends: .deploy
-  variables:
-    VALIDATOR_NAME: validator-10
-
 deploy_rpc_node:
   extends: .deploy
   variables:
