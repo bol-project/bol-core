@@ -121,9 +121,9 @@ namespace Bol.Coin
         
         /// <summary>
         /// Owner of the Smart Contract.
-        /// This is the Multisig address that is derived from the Genesis Certifiers Blockchain addresses.
+        /// This is the Multisign address that is derived from the Blockchain addresses of the founding members of Bol blockchain.
         /// </summary>
-        public static readonly byte[] Owner = "BLat18A3E1mNFNRq2FHpPu48BNpaorocCf".ToScriptHash(); //Blockchain validators multisig address  // To update at genesis
+        public static readonly byte[] Owner = "BArFMTf79Mm4ZvTTWEgF4A3mMWENvbFWhK".ToScriptHash();
 
         /// <summary>
         /// The required fee for Transfer transactions.
