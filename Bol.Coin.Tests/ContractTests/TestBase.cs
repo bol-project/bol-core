@@ -43,7 +43,7 @@ public abstract class TestBase
             
         _service = BolServiceFactory.Create(_transactionGrabber);
 
-        var validatorContext = BolContextFactory.Create("P<GRC<CHOMENIDIS<C<<<1982M<5A7b1xQXR3c<13857", "BBBQ8Y8VamVmN4XTaprScFzzghATbMj9mS");
+        var validatorContext = BolContextFactory.Create("P<GRC<CHOM6<C<<<1985M<5b7jLWaYnFr<130F3", "BBB6S94ztTvNpv59udAGiC1tVadYYcxAJB");
         _validatorService = BolServiceFactory.Create(_transactionGrabber, validatorContext);
         
         var companyContext = BolContextFactory.Create(COMPANY_CODENAME, COMPANY_MAIN_ADDRESS);

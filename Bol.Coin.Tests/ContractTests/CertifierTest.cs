@@ -19,8 +19,8 @@ public class CertifierTest : TestBase
         await _validatorService.Claim();
         _emulator.Execute(_transactionGrabber);
         
-        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj"),
-            BigInteger.Parse("20000001000"));
+        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("B5RxxgSMa2ACyHrKZPpH6eHfTFMsqtLx8T"),
+            BigInteger.Parse("10000001000"));
        _emulator.Execute(_transactionGrabber);
        
        _emulator.blockchain.AddMockBlocks(1);
@@ -48,7 +48,7 @@ public class CertifierTest : TestBase
         await _validatorService.Claim();
         _emulator.Execute(_transactionGrabber);
         
-        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("BBpiTxvWLJyNpLQXu2m1dEzV9qNUEzEswj"),
+        await _validatorService.TransferClaim(_addressTransformer.ToScriptHash("B5RxxgSMa2ACyHrKZPpH6eHfTFMsqtLx8T"),
             BigInteger.Parse("1000"));
         _emulator.Execute(_transactionGrabber);
        
