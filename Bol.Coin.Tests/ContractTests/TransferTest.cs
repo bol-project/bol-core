@@ -93,4 +93,44 @@ public class TransferTest : TestBase
 
         Assert.False(result);
     }
+
+    [Fact]
+    public async Task Transfer_ShouldNotExecute_WhenSameSenderAndTarget_CodeNameAndAddress()
+    {
+        await WhitelistAndRegister();
+        await AddCertifications();
+
+        _emulator.blockchain.AddMockBlocks(EmulatorUtils.ClaimInterval);
+
+        await _service.Claim();
+        _emulator.Execute(_transactionGrabber);
+
+        await _service.TransferClaim(_addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+            BigInteger.Parse("100000000"));
+        _emulator.Execute(_transactionGrabber);
+
+        var targetCodeName = "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA";
+        var targetMainAddress = "BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91";
+        var targetContext = BolContextFactory.Create(targetCodeName, targetMainAddress);
+        var targetService = BolServiceFactory.Create(_transactionGrabber, targetContext);
+        
+        await _validatorService.Whitelist(_addressTransformer.ToScriptHash(targetMainAddress));
+        _emulator.Execute(_transactionGrabber);
+        _emulator.blockchain.AddMockBlocks(1);
+
+        await targetService.Register();
+        _emulator.Execute(_transactionGrabber);
+        _emulator.blockchain.AddMockBlocks(1);
+        
+        await _service.Transfer(
+            _addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+            _addressTransformer.ToScriptHash("B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ"),
+            targetCodeName,
+            BigInteger.Parse("10000000"));
+        var result = _emulator.Execute(_transactionGrabber);
+
+        var notification = ContractNotificationSerializer.Deserialize(_notifyOutput);
+
+        Assert.False(result);
+    }
 }
