@@ -296,12 +296,18 @@ namespace Bol.Coin.Services
         {
             if (!BolServiceValidationHelper.IsTransferInputValid(senderCodeName, senderAddress, targetCodeName, targetAddress, value))
                 return false;
+            
+            var internalTransfer = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName);
+            if (internalTransfer && ArraysHelper.ArraysEqual(senderAddress, targetAddress))
+            {
+                Runtime.Notify("error", BolResult.BadRequest("Cannot transfer to the same account and address."));
+                return false;
+            }
 
             var transferFee = BolRepository.GetTransferFee();
 
-            var targetAccount = BolRepository.GetAccount( targetCodeName);
+            var targetAccount = BolRepository.GetAccount(targetCodeName);
 
-            var internalTransfer = ArraysHelper.ArraysEqual(senderCodeName, targetCodeName); 
             var senderAccount =  internalTransfer
                 ? targetAccount
                 : BolRepository.GetAccount(senderCodeName);
