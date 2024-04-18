@@ -143,7 +143,7 @@ namespace Bol.Coin
         /// <summary>
         /// Earth population at the time of the Genesis block.
         /// </summary>
-        public static readonly BigInteger PopulationAtGenesis = 810408072900000000; // World Population at genesis block
+        public static readonly BigInteger PopulationAtGenesis = 810490326400000000; // World Population at genesis block
 
         /// <summary>
         /// Births per Second by year.
