@@ -2,24 +2,57 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.1</LangVersion>
-    <Version>0.0.1</Version>
+    <PackageId>BolChain.Core</PackageId>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include=".content\country_code.json">
+    <Compile Remove="Abstractions\ICrypto.cs" />
+    <Compile Remove="Helpers\WalletHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="content\protocolConfiguration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="content\country_code.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\nin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\protocolConfiguration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="7.6.104" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="YamlDotNet" Version="5.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="YamlDotNet" Version="13.7.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\neo\neo\neo.csproj" />
+    <ProjectReference Include="..\Bol.Address.Neo\Bol.Address.Neo.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Address\Bol.Address.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Cryptography.Neo\Bol.Cryptography.Neo.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Bol.Cryptography\Bol.Cryptography.csproj" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
 using Bol.Core.Model;
 using FluentValidation;
 using System;
@@ -12,7 +12,8 @@ namespace Bol.Core.Validators
 
 		private readonly ICountryCodeService _countryCodeService;
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
-		private readonly Regex _correctGender = new Regex(@"^Male|Female|Unspecified$");
+		private readonly Regex _capitalLettersOrNumbers = new Regex(@"^[A-Z0-9]+$");
+        private readonly Regex _correctGender = new Regex(@"^Male|Female|Unspecified$");
 
 		public BasePersonValidator(ICountryCodeService countryCodeService)
 		{
@@ -24,18 +25,18 @@ namespace Bol.Core.Validators
 
 			RuleFor(p => p.MiddleName)
 				.Cascade(CascadeMode.StopOnFirstFailure)
-				.Must(HasAllLettersCapital)
+				.Must(HasAllLettersCapitalOrNumbers)
 			    .When(p => !string.IsNullOrEmpty(p.MiddleName))
-                .WithMessage("Middle Name must consist of capital letters A-Z.")
+                .WithMessage("Middle Name must consist of capital letters A-Z and numbers.")
 			    .Length(1, 20)
 			    .When(p => !string.IsNullOrEmpty(p.MiddleName))
                 .WithMessage("Middle Name cannot have more than 20 characters");
 
             RuleFor(p => p.ThirdName)
 				.Cascade(CascadeMode.StopOnFirstFailure)
-				.Must(HasAllLettersCapital)
+				.Must(HasAllLettersCapitalOrNumbers)
 				.When(p => !string.IsNullOrEmpty(p.ThirdName))
-				.WithMessage("Third Name must consist of capital letters A-Z.")
+				.WithMessage("Third Name must consist of capital letters A-Z and numbers.")
 		        .Length(1, 20)
                 .When(p => !string.IsNullOrEmpty(p.ThirdName))
                 .WithMessage("Third Name cannot have more than 20 characters");
@@ -43,8 +44,8 @@ namespace Bol.Core.Validators
 			RuleFor(p => p.Surname)
 				.NotEmpty()
 				.WithMessage("Surname cannot be empty.")
-				.Must(HasAllLettersCapital)
-				.WithMessage("Surname must consist of capital letters A-Z.")
+				.Must(HasAllLettersCapitalOrNumbers)
+				.WithMessage("Surname must consist of capital letters A-Z and numbers.")
 			    .Length(2, 20)
 			    .WithMessage("Surname cannot have more than 20 characters");
 
@@ -55,15 +56,15 @@ namespace Bol.Core.Validators
 				.Must(HasCorrectGender)
 				.WithMessage("Gender must consist of exactly one capital letter M, F or U.");
 
-			RuleFor(p => p.Combination)
-				.NotEmpty()
-				.WithMessage("1 digit combination cannot be empty.")
-				.Length(COMB_DIGITS)
-				.WithMessage($"Combination must be exactly {COMB_DIGITS} digits.")
-			    .Must(HasAllLettersCapital)
-			    .WithMessage("Combination must be an English Capital letter");
+            RuleFor(p => p.Combination)
+                .NotEmpty()
+                .WithMessage("1 digit combination cannot be empty.")
+                .Length(COMB_DIGITS)
+                .WithMessage($"Combination must be exactly {COMB_DIGITS} digits.")
+                .Must(HasAllLettersCapitalOrNumbers)
+                .WithMessage("Combination must be an English Capital letter");
 
-			RuleFor(p => p.CountryCode)
+            RuleFor(p => p.CountryCode)
 				.NotEmpty()
 				.WithMessage("Country cannot be empty.")
 				.Must(CountryCodeExists)
@@ -74,8 +75,12 @@ namespace Bol.Core.Validators
 		{
 			return _capitalLetters.IsMatch(input);
 		}
+        private bool HasAllLettersCapitalOrNumbers(string input)
+        {
+            return _capitalLettersOrNumbers.IsMatch(input);
+        }
 
-		private bool HasCorrectGender(Gender input)
+        private bool HasCorrectGender(Gender input)
 		{
 			var character = input.ToString();
 			return _correctGender.IsMatch(character);

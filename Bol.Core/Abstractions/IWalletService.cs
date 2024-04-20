@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Neo.Wallets.NEP6;
+using Bol.Core.Model;
 
 namespace Bol.Core.Abstractions
 {
     public interface IWalletService
     {
-        Task<NEP6Wallet> CreateWallet(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default);
+        Task<BolWallet> CreateWalletB(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default);
+        Task<BolWallet> CreateWalletC(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default);
+        BolWallet MigrateWallet(string wallet, IEnumerable<string> addresses, string password, string newPassword);
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 using Bol.Core.Abstractions;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
 using Bol.Core.Validators;
 using FluentValidation;
@@ -15,11 +14,13 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
     {
         private readonly NaturalPersonValidator _validator;
         private readonly Mock<IValidator<BasePerson>> _basePersonValidator;
+        private readonly Mock<INinService> _ninService;
 
         public BirthDateTests()
         {
             _basePersonValidator = new Mock<IValidator<BasePerson>>();
-            _validator = new NaturalPersonValidator(_basePersonValidator.Object);
+            _ninService = new Mock<INinService>();
+            _validator = new NaturalPersonValidator(_basePersonValidator.Object, _ninService.Object, new RegexHelper());
             _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
         }
 

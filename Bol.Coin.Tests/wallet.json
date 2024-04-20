@@ -1,0 +1,290 @@
+{
+    "name": "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
+    "version": "1.0",
+    "scrypt": {
+        "n": 16384,
+        "r": 8,
+        "p": 8
+    },
+    "accounts": [
+        {
+            "address": "B5sBfiBknypHXgtAmpfEXgeu6bjgmmRxiv",
+            "label": "codename",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYVbuFoY5BkzEF52QD833H2dvh1aMTL9bAEKtN78fsR3E1myg29WYuNrF",
+            "contract": {
+                "script": "21034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c006ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": {
+                "codename": "P\u003CGRC\u003CPAPPAS\u003CS\u003CMANU\u003CCHAO\u003C1983MP\u003CLsDDs8n8snS5BCA",
+                "edi": "e3274f6bbd018f920e7d629ba035d211e68e41f23f28f5a9f9b89b7b0ea860db"
+            }
+        },
+        {
+            "address": "BCSKUPjD5R3rESqwZ1uTedVBacV6TBtHqJ",
+            "label": "private",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYLF2pdbF3dZiEfhrR9dQdRtNyV3uam1i1peawsuhFXtUCQgoVvt2L1hB",
+            "contract": {
+                "script": "21032bdda389c270897b9cf14dab769416484c303044a4901ddfe50811c52974e14cac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": {
+                "nonce": 2505398938
+            }
+        },
+        {
+            "address": "BBBBkGYdgXAjThre8FgpQQF7uyx1CwqZ91",
+            "label": "main",
+            "isDefault": true,
+            "lock": false,
+            "key": null,
+            "contract": {
+                "script": "5221032bdda389c270897b9cf14dab769416484c303044a4901ddfe50811c52974e14c21034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c00652ae",
+                "parameters": [
+                    {
+                        "name": "parameter0",
+                        "type": "Signature"
+                    },
+                    {
+                        "name": "parameter1",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BCQgrM8nHNsjGhEMNtCbAMLmWSPQ1BmjTe",
+            "label": "blockchain",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYLJaXdqy71N7uDRHs694RNaCvSiwhaNd8ZnX1qsP98skVCRQmyek4HHm",
+            "contract": {
+                "script": "2103828c5fe6c61350e849438dfc9e21583eef1f06a24272d210563ee36cb6e806eeac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+          "address": "BSizM5YtXQVgzdta6NYkhaUvMKRBmkzyFK",
+          "label": "voting",
+          "isDefault": false,
+          "lock": false,
+          "key": "6PYWX7xRL82bepofik7BJPEiG3KHw8nMTKzoaCaR4TEugNLMEEWsZjRQ4g",
+          "contract": {
+            "script": "2103d1c942e7a2bc7fb341789a712545d784996106b5d72a8917f9d06d198633abc1ac",
+            "parameters": [
+              {
+                "name": "signature",
+                "type": "Signature"
+              }
+            ],
+            "deployed": false
+          },
+          "extra": null
+        },
+        {
+            "address": "BGfALdfQpoByaL5bTEsPetiUhBwm2S7jCh",
+            "label": "social",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYKW14WXgxKHwQp5PEAe5JVtWeBb6xYFoLZDmmD4C5bG26pw3eBxRfN7M",
+            "contract": {
+                "script": "2102c1c1bbf42c6e6b16ecaec51b11497c0b34ac062ad97a2a7935cca43d404f90f9ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "B5ZuFhYb9vxZfbE6KeeDW4TMFtMPJrBEgZ",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYWdMRP83sTGetnDTXEmueYxXST9RPfvWqCjs4xJEvy2woeFrijbosCFe",
+            "contract": {
+                "script": "2103917aa8981e30e5a72db40cb0804819a70c7b95a235dbaaf3b180c648d1b5cc47ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BDfMZmAYSNJZGenaKzXxqH4DYDU8mqmFWM",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYR1iGSsaudUXW2LzsurdQiLPwUYHwmADiz6neV7p3KQ4XvnxjZvB9nna",
+            "contract": {
+                "script": "210296d8db198c6f4339166f1e81508f0b54b52536446b01902825cb3ff9b620a247ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BE3mXKfnMMHqXiuhaQKVVnH6GkYJVYdGTd",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYMdi7wyNmtpZa34kgvkXUmzNp8uV8JxBnQDVVQ3SSqeXuDLwmf2WaCyh",
+            "contract": {
+                "script": "2102a0a9f6326a5c9a369833cc4c58d912daaaaa7c4cec0d20e57390555eee6d99c1ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BAnLHX2pCCjnPTSJPZxWvs2tPjLziSAsSx",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYPAVbwCkcpqmjziYQP29suw4VegeuXhS4Rvs5rZ9AKFWwDGC5X2ey6ja",
+            "contract": {
+                "script": "210368b94da35c4f83a61f78a7ba23c9306f2dc74c0897cdc072f53c3d12ba5a7c7eac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BAnyonwLzx4UfrBAYywDJnQ4xYFsTY8GG1",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYPQ3rAYucTdW7TDWn4VumrxR3R47yjVxMLDYtTfo7K7z3YXH3ovu6W3A",
+            "contract": {
+                "script": "210244c5baab61ac0070318a669e64bfcede12b3afef749909ce52ccb0d9e4735af4ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "B7qyoLnVSbVsE7uQhkGMPPQWdV6HhbkrvU",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYTaLAadebnbo76KhRNBeW8342jS48yswBKDjUxPvYBbowM9mUzyRcN3p",
+            "contract": {
+                "script": "21023c5b424b8e9d0627bbd5c2a40fe5c468244215ab5c1da0c2fcab4968e428f974ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BQTeWJoNzyrnAjiDcsDCcyvYT814q8U8Tm",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYVPKv6j3asKL1bjNcr8pUHv3HjvGsAZRYdHmz6mbEr2yTbP54NDh8f3K",
+            "contract": {
+                "script": "21022c8c64c4f3a178d94b96d11e1d4b3b1dc55a751bbb83cf56332603316c8992f8ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "B6QWN2J4xUASrM6tGudBFxoYtR6rukLgb9",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYX1aCtuWBp2cJhKxRQyBXE5ag33iEFkbw735TFBoro9NmzbTkpPCQcoB",
+            "contract": {
+                "script": "2103c86ee6ca3e719fc9fa5bc9fc69bfb2da19dd788f0dbd162c333d968e9225449dac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        },
+        {
+            "address": "BSWzdj1hqPktS6q1dXfknFuR8eyWKVptHs",
+            "label": "commercial",
+            "isDefault": false,
+            "lock": false,
+            "key": "6PYUveiaDLnhTmzK4rw3QdXi3WdH7cvWtQ3p81pvhX6tP6Cr3xVQgJHeuW",
+            "contract": {
+                "script": "210301f6cb1d3418ef805f1c6879bff0979e108da8a4cbd1547ed1c247fd0a036b08ac",
+                "parameters": [
+                    {
+                        "name": "signature",
+                        "type": "Signature"
+                    }
+                ],
+                "deployed": false
+            },
+            "extra": null
+        }
+    ]
+}

@@ -5,7 +5,7 @@ using YamlDotNet.Serialization;
 
 namespace Bol.Core.Serializers
 {
-    public class YamlSerializer : IYamlSeralizer
+    public class YamlSerializer : IYamlSerializer
     {
         private readonly ISerializer _serializer;
         private readonly IDeserializer _deserializer;

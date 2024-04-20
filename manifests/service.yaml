@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/scheme: "http"
+    prometheus.io/path: "/health"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-metrics
+      port: 8080
+      protocol: TCP
+    - name: node-p2p
+      protocol: TCP
+      port: 21333
+    - name: node-ws
+      protocol: TCP
+      port: 21334
+      targetPort: 21334
+    - name: node-rpc
+      protocol: TCP
+      port: 21332
+      targetPort: 21332
+  selector:
+    app: bol-__CI_BUILD_REF_SLUG__
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hl-bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+spec:
+  clusterIP: None
+  ports:
+    - name: node-p2p
+      protocol: TCP
+      port: 21333
+  selector:
+    app: bol-__CI_BUILD_REF_SLUG__
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - __CI_BUILD_REF_SLUG__.__CI_ENV_SLUG__.bolchain.net
+    secretName: __CI_ENV_SLUG__-__CI_BUILD_REF_SLUG__-tls-prod
+  rules:
+  - host: __CI_BUILD_REF_SLUG__.__CI_ENV_SLUG__.bolchain.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: bol-__CI_BUILD_REF_SLUG__
+            port: 
+              number: 21332
+      - pathType: Prefix
+        path: /ws
+        backend:
+          service:
+            name: bol-__CI_BUILD_REF_SLUG__
+            port:
+              number: 21334

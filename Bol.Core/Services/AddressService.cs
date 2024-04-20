@@ -4,41 +4,44 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Bol.Address;
 using Bol.Core.Abstractions;
-using Bol.Core.Hashers;
 using Bol.Core.Model;
-using Neo;
-using Neo.Wallets;
+using Bol.Cryptography;
+using Bol.Cryptography.Neo.Keys;
 
 namespace Bol.Core.Services
 {
     public class AddressService : IAddressService
     {
-        private readonly IContractService _contractService;
-        private readonly ISha256Hasher _sha256Hasher;
+        private readonly IKeyPairFactory _keyPairFactory;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IAddressTransformer _addressTransformer;
+        private readonly ISha256Hasher _sha256;
+        private readonly IBase16Encoder _hex;
         private readonly INonceCalculator _nonceCalculator;
 
-        public AddressService(
-            IContractService contractService,
-            ISha256Hasher sha256Hasher,
-            INonceCalculator nonceCalculator)
+        public AddressService(IKeyPairFactory keyPairFactory, ISignatureScriptFactory signatureScriptFactory, IAddressTransformer addressTransformer, ISha256Hasher sha256Hasher, IBase16Encoder hex, INonceCalculator nonceCalculator)
         {
-            _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
-            _sha256Hasher = sha256Hasher ?? throw new ArgumentNullException(nameof(sha256Hasher));
+            _keyPairFactory = keyPairFactory ?? throw new ArgumentNullException(nameof(keyPairFactory));
+            _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
+            _sha256 = sha256Hasher ?? throw new ArgumentNullException(nameof(sha256Hasher));
+            _hex = hex ?? throw new ArgumentNullException(nameof(hex));
             _nonceCalculator = nonceCalculator ?? throw new ArgumentNullException(nameof(nonceCalculator));
         }
 
-        public Task<BolAddress> GenerateAddressBAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
+        public Task<BolAddress> GenerateAddressBAsync(string codeName, IKeyPair keyPair, CancellationToken token = default)
         {
             return GenerateAddressAsync(codeName, keyPair, Constants.B_ADDRESS_START, Constants.B_ADDRESS_END, token);
         }
 
-        public Task<BolAddress> GenerateAddressCAsync(string codeName, KeyPair keyPair, CancellationToken token = default)
+        public Task<BolAddress> GenerateAddressCAsync(string codeName, IKeyPair keyPair, CancellationToken token = default)
         {
             return GenerateAddressAsync(codeName, keyPair, Constants.C_ADDRESS_START, Constants.C_ADDRESS_END, token);
         }
 
-        public BolAddress GenerateAddressB(string codeName, KeyPair keyPair, byte[] nonce)
+        public BolAddress GenerateAddressB(string codeName, IKeyPair keyPair, byte[] nonce)
         {
             var address = GenerateAddress(codeName, keyPair, nonce);
             if (!address.Address.StartsWith(Constants.B_ADDRESS_PLAIN_PREFIX))
@@ -49,7 +52,7 @@ namespace Bol.Core.Services
             return address;
         }
 
-        public BolAddress GenerateAddressC(string codeName, KeyPair keyPair, byte[] nonce)
+        public BolAddress GenerateAddressC(string codeName, IKeyPair keyPair, byte[] nonce)
         {
             var address = GenerateAddress(codeName, keyPair, nonce);
             if (!address.Address.StartsWith(Constants.C_ADDRESS_PLAIN_PREFIX))
@@ -60,89 +63,92 @@ namespace Bol.Core.Services
             return address;
         }
 
-        private async Task<BolAddress> GenerateAddressAsync(string codeName, KeyPair keyPair, uint rangeFrom, uint rangeTo, CancellationToken token = default)
+        private async Task<BolAddress> GenerateAddressAsync(string codeName, IKeyPair keyPair, ushort rangeFrom, ushort rangeTo, CancellationToken token = default)
         {
-            var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
-            var codeNameKeyPair = new KeyPair(hashedCodeName);
-            var codeNameAddress = _contractService.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+            var hashedCodeName = _sha256.Hash(Encoding.ASCII.GetBytes(codeName));
+            var codeNameKeyPair = _keyPairFactory.Create(hashedCodeName);
+            var codeNameAddress = _signatureScriptFactory.Create(codeNameKeyPair.PublicKey).ToScriptHash();
 
             var nonce = await _nonceCalculator.CalculateAsync(testNonce => ValidateNonce(testNonce, codeNameKeyPair, keyPair, rangeFrom, rangeTo), token);
 
-            var extendedPrivateKey = _sha256Hasher.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
-            var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
-            var internalAddress = _contractService.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
+            var extendedPrivateKey = _sha256.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
+            var extendedPrivateKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+            var internalAddress = _signatureScriptFactory.Create(extendedPrivateKeyPair.PublicKey).ToScriptHash();
 
-            var address = CreateAddress(codeNameKeyPair, extendedPrivateKeyPair);
+            var address = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedPrivateKeyPair.PublicKey }, 2).ToScriptHash();
 
             return new BolAddress
             {
-                Address = address,
+                Address = _addressTransformer.ToAddress(address),
                 AddressType = AddressType.B,
                 Nonce = BitConverter.ToUInt32(nonce, 0),
                 CodeName = codeName,
-                CodeNameAddress = codeNameAddress,
-                InternalAddress = internalAddress,
+                CodeNameAddress = _addressTransformer.ToAddress(codeNameAddress),
+                InternalAddress = _addressTransformer.ToAddress(internalAddress),
                 CodeNamePublicKey = codeNameKeyPair.PublicKey.ToString(),
                 InternalPublicKey = extendedPrivateKeyPair.PublicKey.ToString()
             };
         }
 
-        private BolAddress GenerateAddress(string codeName, KeyPair keyPair, byte[] nonce)
+        private BolAddress GenerateAddress(string codeName, IKeyPair keyPair, byte[] nonce)
         {
-            var hashedCodeName = _sha256Hasher.Hash(Encoding.ASCII.GetBytes(codeName));
-            var codeNameKeyPair = new KeyPair(hashedCodeName);
-            var codeNameAddress = _contractService.CreateSignatureContract(codeNameKeyPair.PublicKey).Address;
+            var hashedCodeName = _sha256.Hash(Encoding.ASCII.GetBytes(codeName));
+            var codeNameKeyPair = _keyPairFactory.Create(hashedCodeName);
+            var codeNameAddress = _signatureScriptFactory.Create(codeNameKeyPair.PublicKey).ToScriptHash();
 
-            var extendedPrivateKey = _sha256Hasher.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
-            var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
-            var internalAddress = _contractService.CreateSignatureContract(extendedPrivateKeyPair.PublicKey).Address;
+            var extendedPrivateKey = _sha256.Hash(keyPair.PrivateKey.Concat(nonce).ToArray());
+            var extendedPrivateKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+            var internalAddress = _signatureScriptFactory.Create(extendedPrivateKeyPair.PublicKey).ToScriptHash();
 
-            var address = CreateAddress(codeNameKeyPair, extendedPrivateKeyPair);
+            var address = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedPrivateKeyPair.PublicKey }, 2).ToScriptHash();
 
             return new BolAddress
             {
-                Address = address,
+                Address = _addressTransformer.ToAddress(address),
                 AddressType = AddressType.B,
                 Nonce = BitConverter.ToUInt32(nonce, 0),
                 CodeName = codeName,
-                CodeNameAddress = codeNameAddress,
-                InternalAddress = internalAddress,
+                CodeNameAddress = _addressTransformer.ToAddress(codeNameAddress),
+                InternalAddress = _addressTransformer.ToAddress(internalAddress),
                 CodeNamePublicKey = codeNameKeyPair.PublicKey.ToString(),
                 InternalPublicKey = extendedPrivateKeyPair.PublicKey.ToString()
             };
         }
 
-        private bool ValidateNonce(byte[] testNonce, KeyPair codeNameKeyPair, KeyPair privateKeyPair, uint rangeFrom, uint rangeTo)
+        private bool ValidateNonce(byte[] testNonce, IKeyPair codeNameKeyPair, IKeyPair privateKeyPair, ushort rangeFrom, ushort rangeTo)
         {
             //Extend the private key with a random nonce
-            var extendedPrivateKey = _sha256Hasher.Hash(privateKeyPair.PrivateKey.Concat(testNonce).ToArray());
-            var extendedPrivateKeyPair = new KeyPair(extendedPrivateKey);
+            var extendedPrivateKey = _sha256.Hash(privateKeyPair.PrivateKey.Concat(testNonce).ToArray());
 
-            var scriptHash = CreateScriptHash(codeNameKeyPair, extendedPrivateKeyPair);
+            IKeyPair extendedPrivateKeyPair;
+            try
+            {
+                extendedPrivateKeyPair = _keyPairFactory.Create(extendedPrivateKey);
+            }
+            catch (KeyPairException)
+            {
+                return false;
+            }
 
-            //Add address prefix byte at start
-            var addressHash = new[] { Constants.BOL_ADDRESS_PREFIX }.Concat(scriptHash.ToArray());
+            var signatureScript = _signatureScriptFactory.Create(new[] { codeNameKeyPair.PublicKey, extendedPrivateKeyPair.PublicKey }, 2);
 
-            //Take the first 4 bytes of the hash for range comparison
-            addressHash = addressHash.Take(4).ToArray();
+            //Convert to Script Hash
+            var addressHash = signatureScript
+                .ToScriptHash()
+                .GetBytes()
+                .Take(2)
+                .ToArray();
+            
+            // Ensure the byte order is correct (BitConverter works with system endianness)
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(addressHash);
+            }
 
-            var scriptNumber = uint.Parse(addressHash.ToHexString(), NumberStyles.HexNumber);
+            var scriptNumber = BitConverter.ToUInt16(addressHash, 0);
 
             //Scripthash must be in the specified range for successful proof of work
             return (rangeFrom <= scriptNumber && scriptNumber <= rangeTo);
-        }
-
-        private string CreateAddress(KeyPair codeNameKeyPair, KeyPair secretKeyPair)
-        {
-            var addressContract = _contractService.CreateMultiSigContract(2, codeNameKeyPair.PublicKey, secretKeyPair.PublicKey);
-            return addressContract.Address;
-        }
-
-        private UInt160 CreateScriptHash(params KeyPair[] keyPairs)
-        {
-            var publicKeys = keyPairs.Select(kp => kp.PublicKey).ToArray();
-            var addressContract = _contractService.CreateMultiSigContract(publicKeys.Length, publicKeys);
-            return addressContract.ScriptHash;
         }
     }
 }

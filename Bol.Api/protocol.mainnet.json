@@ -1,0 +1,57 @@
+﻿{
+  "ProtocolConfiguration": {
+    "Magic": 630594781,
+    "AddressVersion": 25,
+    "SecondsPerBlock": 15,
+    "LowPriorityThreshold": 0.001,
+    "StateRootEnableIndex": 0,
+    "FreeGasChangeHeight": 0,
+    "MinimumNetworkFee": 0,
+    "StandbyValidators": [
+      "022B770D6E9F584CF9029EFB8442CF46DEB06981FE016EAEB1914DD934D473321E",
+      "0328849456a46f841df34f443b92576562f34eaedfbb6d759e09f3dff8925f4ab8",
+      "035230D8AB5C9149FA918955B9BBC2CC4E03461F6E571811BDA2779D5AFA6CBEA9",
+      "03D14C8CADE3AA25936DD04D39A603F8CC364DE05738967C0E6C7DB328191DA51F",
+      "03D4169CE4B93F2FE5579C393B902EAF3D30F27FE9630DDD3A3441D6089D5ED735",
+      "03B95FA8CC6408548BCF909C714FEA20952CE7C053DF3EFCD587FD7FE70357C000",
+      "0325E9A43961DD540A25263659D68FA4396BAB17A10171883B84EE833DAA831670"
+    ],
+    "SeedList": [
+      "seed-1.mainnet.bolchain.net:21333",
+      "seed-2.mainnet.bolchain.net:21333",
+      "seed-3.mainnet.bolchain.net:21333",
+      "seed-4.mainnet.bolchain.net:21333",
+      "seed-5.mainnet.bolchain.net:21333",
+      "seed-6.mainnet.bolchain.net:21333",
+      "seed-7.mainnet.bolchain.net:21333",
+      "seed-8.mainnet.bolchain.net:21333",
+      "seed-9.mainnet.bolchain.net:21333",
+      "seed-10.mainnet.bolchain.net:21333",
+      "validator-1.mainnet.bolchain.net:21604",
+      "validator-2.mainnet.bolchain.net:21614",
+      "validator-3.mainnet.bolchain.net:21624",
+      "validator-4.mainnet.bolchain.net:21634",
+      "validator-5.mainnet.bolchain.net:21644",
+      "validator-6.mainnet.bolchain.net:21654",
+      "validator-7.mainnet.bolchain.net:21664",
+      "validator-8.mainnet.bolchain.net:21674",
+      "validator-9.mainnet.bolchain.net:21684",
+      "validator-10.mainnet.bolchain.net:21694"
+    ],
+    "SystemFee": {
+      "EnrollmentTransaction": 1000,
+      "IssueTransaction": 500,
+      "PublishTransaction": 500,
+      "RegisterTransaction": 10000
+    },
+    "BolContract": {
+      "ScriptHash": "a9e9e4aa25e86147e9cc69762ce9b776f556d88d",
+      "Name": "Bol",
+      "Version": "1.0",
+      "Author": "Bol Team",
+      "Email": "info@1bol.org",
+      "Description": "Bonus Of Life",
+      "Path": "Bol.Coin.avm"
+    }
+  }
+}

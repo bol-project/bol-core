@@ -1,0 +1,21 @@
+using Neo.SmartContract.Framework;
+
+namespace Bol.Coin.Persistence;
+
+public class BlockChainValidators
+{
+    public static readonly byte[] VALIDATOR_1_CODENAME =
+        "503c4752433c53544154333c503c3c3c313936334d3c5163466e786e6f57704d573c3132354546".HexToBytes();
+    public static readonly byte[] VALIDATOR_2_CODENAME =
+        "503c4752433c43484f4d363c433c3c3c313938354d3c3562376a4c5761596e46723c3133304633".HexToBytes();
+    public static readonly byte[] VALIDATOR_3_CODENAME =
+        "503c4752433c544f4b323c543c3c3c313938354d3c615a386d526e36786234343c3135364635".HexToBytes();
+    public static readonly byte[] VALIDATOR_4_CODENAME =
+        "503c4752433c43484f4d363c4e3c3c3c313938334d3c44594a61456937656868613c3131314131".HexToBytes();
+    public static readonly byte[] VALIDATOR_5_CODENAME =
+        "503c5553413c53544154333c4e3c3c3c313939394d3c43734b726d7038535266533c3138303031".HexToBytes();
+    public static readonly byte[] VALIDATOR_6_CODENAME =
+        "503c4752433c504150333c433c3c3c313936344d3c64473157353555525069703c3143303538".HexToBytes();
+    public static readonly byte[] VALIDATOR_7_CODENAME =
+        "433c5553413c504f4c343c4641323c4c4c313c3c32303135433c5858436550594a4a4b67353c3141424432".HexToBytes();
+}

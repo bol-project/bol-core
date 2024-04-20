@@ -1,392 +1,592 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Numerics;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Bol.Address;
 using Bol.Core.Abstractions;
-using Bol.Core.Abstractions.Mappers;
-using Bol.Core.BolContract.Models;
 using Bol.Core.Model;
-using Bol.Core.Model.Responses;
-using Neo;
-using Neo.Ledger;
-using Neo.Network.P2P.Payloads;
-using Neo.SmartContract;
-using Neo.VM;
-using Neo.Wallets;
+using Bol.Core.Rpc.Model;
+using Bol.Core.Transactions;
+using Bol.Cryptography;
 
 namespace Bol.Core.Services
 {
     public class BolService : IBolService
     {
-        private IContractService _contractService;
-        private IContextAccessor _contextAccessor;
-        private readonly IBolResponseMapper<InvocationTransaction, CreateContractResult> _createContractResponseMapper;
+        private readonly IContextAccessor _contextAccessor;
+        private readonly ITransactionService _transactionService;
+        private readonly ISignatureScriptFactory _signatureScriptFactory;
+        private readonly IBase16Encoder _hex;
+        private readonly IBase58Encoder _base58;
+        private readonly IAddressTransformer _addressTransformer;
+        private readonly ICodeNameService _codeNameService;
 
-        public BolService(
-            IContractService contractService,
-            IContextAccessor contextAccessor,
-            IBolResponseMapper<InvocationTransaction, CreateContractResult> createContractResponseMapper)
+        public BolService(IContextAccessor contextAccessor, ITransactionService transactionService, ISignatureScriptFactory signatureScriptFactory, IBase16Encoder hex, IBase58Encoder base58, IAddressTransformer addressTransformer, ICodeNameService codeNameService)
         {
-            _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-            _createContractResponseMapper = createContractResponseMapper ?? throw new ArgumentNullException(nameof(createContractResponseMapper));
+            _transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
+            _signatureScriptFactory = signatureScriptFactory ?? throw new ArgumentNullException(nameof(signatureScriptFactory));
+            _hex = hex ?? throw new ArgumentNullException(nameof(hex));
+            _base58 = base58 ?? throw new ArgumentNullException(nameof(base58));
+            _addressTransformer = addressTransformer ?? throw new ArgumentNullException(nameof(addressTransformer));
+            _codeNameService = codeNameService ?? throw new ArgumentNullException(nameof(codeNameService));
         }
 
-        public BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys)
+        public Task Deploy(CancellationToken token = default)
         {
-            var settings = ProtocolSettings.Default.BolSettings;
-            var script = File.ReadAllBytes(settings.Path);
+            var context = _contextAccessor.GetContext();
 
-            var transaction = _contractService.DeployContract(script, settings.Name, settings.Version, settings.Author, settings.Email, settings.Description, keys, keys.Count() / 2 + 1);
+            var parameters = new byte[0][];
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            return _createContractResponseMapper.Map(transaction);
+            var mainAddress = CreateMainAddress(context);
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "deploy", parameters);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            return _transactionService.Publish(transaction, token);
         }
 
-        public BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys)
+        public async Task<BolAccount> Register(CancellationToken token = default)
         {
-            var settings = ProtocolSettings.Default.BolSettings;
+            var context = _contextAccessor.GetContext();
 
-            var result = TestAndInvokeBolContract<BolAccount>("deploy", keys.ToArray(), "", new[] { "" }, numberOfSignatures: keys.Count() / 2 + 1, parameters: new byte[0][]);
+            var parameters = new[]
+           {
+                 context.MainAddress.GetBytes(),
+                 Encoding.ASCII.GetBytes(context.CodeName),
+                 _hex.Decode(context.Edi),
+                 context.BlockChainAddress.Key.GetBytes(),
+                 context.SocialAddress.Key.GetBytes(),
+                 context.VotingAddress.Key.GetBytes(),
+                 context.CommercialAddresses.SelectMany(pair => pair.Key.GetBytes()).ToArray()
+             };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            //var transaction = _contractService.InvokeContract(settings.ScriptHash, "deploy", new byte[0][], keys: keys, numberOfSignatures: keys.Count() / 2 + 1);
+            var mainAddress = CreateMainAddress(context);
 
-            return new BolResponse<DeployContractResult>
-            {
-                Success = true,
-                TransactionId = result.Transaction.Hash.ToString()
-            };
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Registration of {context.CodeName}/{mainAddressString}";
+            var remarks = new[] { "register", context.CodeName, mainAddressString };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "register", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
         }
 
-        public BolResult<BolAccount> Register()
+        public async Task<BolAccount> Claim(CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                context.MainAddress.ToArray(),
+                Encoding.ASCII.GetBytes(context.CodeName)
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var description = $"Distribution Claim by {context.CodeName}";
+            var remarks = new[] { "claim", context.CodeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "claim", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
                 Encoding.ASCII.GetBytes(context.CodeName),
-                context.Edi.HexToBytes(),
-                context.BlockChainAddress.Key.ToArray(),
-                context.SocialAddress.Key.ToArray(),
-                context.CommercialAddresses.SelectMany(pair => pair.Key.ToArray()).ToArray()
+                address.GetBytes(),
+                value.ToByteArray()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("register", keys, "", new[] { "" }, parameters: parameters);
+            var mainAddress = CreateMainAddress(context);
+
+            var targetAddressString = _addressTransformer.ToAddress(address);
+            var description = $"Transfer Claim from {context.CodeName} to {context.CodeName}/{targetAddressString}";
+            var remarks = new[] { "transferClaim", context.CodeName, targetAddressString, value.ToString(), Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "transferClaim", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
 
             return result;
         }
 
-        public BolResult<BolAccount> Claim()
+        public async Task<BolAccount> Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                context.MainAddress.ToArray()
+                from.GetBytes(),
+                Encoding.ASCII.GetBytes(context.CodeName),
+                to.GetBytes(),
+                Encoding.ASCII.GetBytes(codeName),
+                value.ToByteArray()
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+            
+            var keys = new[] { context.CommercialAddresses[from] };
 
-            var result = TestAndInvokeBolContract<BolAccount>("claim", keys, "", new[] { Blockchain.Singleton.Height.ToString() }, parameters: parameters);
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var fromAddressString = _addressTransformer.ToAddress(from);
+            var targetAddressString = _addressTransformer.ToAddress(to);
+            var description = $"Transfer from {context.CodeName}/{fromAddressString} to {codeName}/{targetAddressString}";
+            var remarks = new[] { "transfer", context.CodeName, fromAddressString, codeName, targetAddressString, value.ToString(), Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "transfer", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
 
             return result;
         }
 
-        public BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress)
+        public async Task<BolAccount> AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                context.MainAddress.ToArray(),
-                commercialAddress.ToArray()
+                Encoding.ASCII.GetBytes(context.CodeName),
+                commercialAddress.GetBytes()
             };
             var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestAndInvokeBolContract<BolAccount>("addCommercialAddress", keys, "", new[] { "" }, parameters: parameters);
+            var mainAddress = CreateMainAddress(context);
+
+            var addressString = _addressTransformer.ToAddress(commercialAddress);
+            var description = $"Added address {addressString} to CodeName {context.CodeName}.";
+            var remarks = new[] { "addCommercialAddress", context.CodeName, addressString };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "addCommercialAddress", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
 
             return result;
         }
 
-        public BolResult<BolAccount> GetAccount(UInt160 mainAddress)
+        public async Task<BolAccount> GetAccount(string codeName, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
 
             var parameters = new[]
             {
-                mainAddress.ToArray()
+                Encoding.ASCII.GetBytes(codeName)
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
 
-            var result = TestBolContract<BolAccount>("getAccount", keys, "", new[] { "" }, parameters: parameters);
+            var transaction = _transactionService.Create(null, context.Contract, "getAccount", parameters);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
 
             return result;
         }
 
-        public BolResponse BalanceOf()
+        public async Task<BolAccount> Certify(string codeName, CancellationToken token = default)
         {
             var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+
+            var parameters = new[]
+           {
+               Encoding.ASCII.GetBytes(context.CodeName),
+               Encoding.ASCII.GetBytes(codeName)
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+            
+            var description = $"Certify {codeName} by {context.CodeName}";
+            var remarks = new[] { "certify", context.CodeName, codeName };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "certify", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> Whitelist(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
             var parameters = new[]
             {
-                context.MainAddress.ToArray()
+                Encoding.ASCII.GetBytes(context.CodeName),
+                address.GetBytes()
             };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+            var keys = new[] { context.VotingAddress.Value };
 
-            var result = _contractService.TestContract(bolContract, "balanceOf", parameters, keys: keys);
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
 
-            if (!result.Success)
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"Whitelist {addressString} by {context.CodeName}";
+            var remarks = new[] { "whitelist", context.CodeName, addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "whitelist", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
             {
-                throw new Exception(); //Deserialize BolResult first
+                address.GetBytes()
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var addressString = _addressTransformer.ToAddress(address);
+            var description = $"IsWhitelisted {addressString}";
+            var remarks = new[] { "isWhitelisted", addressString };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "isWhitelisted", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
+        }
+
+        public async Task<bool> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
+        {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
+                Encoding.ASCII.GetBytes(context.CodeName),
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var description = $"Add MultiCitizenship {shortHash} by {context.CodeName}";
+            var remarks = new[] { "addMultiCitizenship", shortHash, context.CodeName };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "addMultiCitizenship", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, witness, keys);
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default)
+        {
+            if (countryCode?.Length != 3) throw new ArgumentException("countryCode must contain exactly 3 characters.");
+
+            var shortHashBytes = _base58.Decode(shortHash);
+            if (shortHashBytes.Length != 8) throw new ArgumentException("shortHash must be exactly 8 bytes.");
+            
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(countryCode).Concat(shortHashBytes).ToArray(),
+            };
+            var keys = new[] { context.VotingAddress.Value };
+
+            var witness = _signatureScriptFactory.Create(keys[0].PublicKey);
+
+            var description = $"IsMultiCitizenship {shortHash}";
+            var remarks = new[] { "isMultiCitizenship", shortHash };
+
+            var transaction = _transactionService.Create(witness, context.Contract, "isMultiCitizenship", parameters, description, remarks);
+
+            var result = await _transactionService.Test<bool>(transaction, token);
+            return result;
+        }
+
+        public async Task<bool> CodeNameExists(string codeNamePrefix, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(codeNamePrefix),
+            };
+            var description = $"CodeNameExists {codeNamePrefix}";
+            var remarks = new[] { "codeNameExists", codeNamePrefix };
+
+            var transaction = _transactionService.Create(null, context.Contract, "codeNameExists", parameters, description, remarks);
+
+            try
+            {
+                var result = await _transactionService.Test<bool>(transaction, token);
+                return result;
             }
-
-            var balance = new BigInteger(result.Result);
-
-            return new BolResponse
+            catch (RpcException)
             {
-                Success = true,
-                Result = balance.ToString()
-            };
-        }
-
-        public BolResponse TotalSupply()
-        {
-            var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
-            var parameters = new[]
-            {
-                context.MainAddress.ToArray()
-            };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
-
-            var result = _contractService.TestContract(bolContract, "totalSupply", parameters, keys: keys);
-
-            if (!result.Success)
-            {
-                throw new Exception(); //Deserialize BolResult first
+                return false;
             }
-
-            var balance = new BigInteger(result.Result);
-
-            return new BolResponse
-            {
-                Success = true,
-                Result = balance.ToString()
-            };
         }
 
-        public BolResponse<int> Decimals()
+        public async Task<IEnumerable<string>> FindAlternativeCodeNames(string codeName, CancellationToken token = default)
         {
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
+            var codeNamePrefix = codeName.Substring(0, codeName.LastIndexOf(Constants.CODENAME_DIVIDER));
+            
+            var codeNameExists = await CodeNameExists(codeNamePrefix, token);
+            if (!codeNameExists) return Array.Empty<string>();
 
-            var parameters = new byte[0][];
+            var combinations = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
-            var result = _contractService.TestContract(bolContract, "decimals", parameters);
+            var altCodeNames = combinations
+                .Select(c => codeNamePrefix + Constants.CODENAME_DIVIDER + c)
+                .Select(cn => _codeNameService.AddCodeNameChecksum(cn));
 
-            if (!result.Success)
+            var registeredAltCodeNames = new List<string>(36);
+            
+            foreach (var altCodeName in altCodeNames)
             {
-                throw new Exception(); //Deserialize BolResult first
-            }
-
-            return new BolResponse<int>
-            {
-                Success = true,
-                Result = result.Result.First()
-            };
-        }
-
-        public BolResponse Name()
-        {
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
-
-            var parameters = new byte[0][];
-
-            var result = _contractService.TestContract(bolContract, "name", parameters);
-            var name = Encoding.UTF8.GetString(result.Result);
-            if (!result.Success)
-            {
-                throw new Exception(); //Deserialize BolResult first
-            }
-
-            return new BolResponse
-            {
-                Success = true
-            };
-        }
-
-        public BolResult<object> GetCertifiers(string countryCode)
-        {
-            var context = _contextAccessor.GetContext();
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
-            var parameters = new[]
-            {
-                Encoding.ASCII.GetBytes(countryCode)
-            };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
-
-            var result = TestBolContract<object>("getCertifiers", keys, "", new[] { "" }, parameters: parameters);
-
-            return result;
-        }
-
-        public BolResult<BolAccount> Certify(UInt160 address)
-        {
-            var context = _contextAccessor.GetContext();
-
-            var parameters = new[]
-            {
-                context.MainAddress.ToArray(),
-                address.ToArray()
-            };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
-
-            var result = TestAndInvokeBolContract<BolAccount>("certify", keys, "", new[] { "" }, parameters: parameters);
-
-            return result;
-        }
-
-        public BolResult<BolAccount> UnCertify(UInt160 address)
-        {
-            var context = _contextAccessor.GetContext();
-
-            var parameters = new[]
-            {
-                context.MainAddress.ToArray(),
-                address.ToArray()
-            };
-            var keys = new[] { context.CodeNameKey, context.PrivateKey };
-
-            var result = TestAndInvokeBolContract<BolAccount>("unCertify", keys, "", new[] { "" }, parameters: parameters);
-
-            return result;
-        }
-
-        private BolResult<T> TestBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
-        {
-            var bolContract = ProtocolSettings.Default.BolSettings.ScriptHash;
-
-            BolResult<T> bolResult = default;
-            Action<BolResult<T>> callback = (result) =>
-            {
-                bolResult = result;
-            };
-
-            var transaction = _contractService.CreateTransaction(bolContract, operation, parameters, description, remarks, keys, numberOfSignatures ?? keys.Length);
-
-            EventHandler<NotifyEventArgs> handler = (sender, args) => ResponseHandler(transaction.Hash, operation, args, callback);
-
-            StandardService.Notify += handler;
-
-            var executionResult = _contractService.TestContract(transaction);
-
-            StandardService.Notify -= handler;
-
-            if (!executionResult.Success) throw new Exception("Contract invocation on a local snapshot failed.");
-
-            bolResult.Transaction = transaction;
-            return bolResult;
-        }
-
-        private BolResult<T> TestAndInvokeBolContract<T>(string operation, KeyPair[] keys, string description = null, IEnumerable<string> remarks = null, int? numberOfSignatures = null, params byte[][] parameters)
-        {
-            var bolResult = TestBolContract<T>(operation, keys, description, remarks, numberOfSignatures, parameters);
-
-            if (bolResult?.StatusCode != HttpStatusCode.OK)
-            {
-                return bolResult;
-            }
-
-            _contractService.InvokeContract(bolResult.Transaction);
-
-            return bolResult;
-        }
-
-        private void ResponseHandler<T>(UInt256 transactionHash, string operation, NotifyEventArgs args, Action<BolResult<T>> callback)
-        {
-            var eventTranscation = args.ScriptContainer as InvocationTransaction;
-            if (eventTranscation == null || eventTranscation.Hash != transactionHash) return;
-
-            var parameters = args.State.ToParameter().Value as List<ContractParameter>;
-
-            if (parameters == null || parameters.Count != 2) return;
-
-            var op = Encoding.UTF8.GetString(parameters[0].Value as byte[]);
-
-            if (op == "error")
-            {
-                var result = (List<ContractParameter>)parameters[1].Value;
-                var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
-                var message = Encoding.UTF8.GetString(result[1].Value as byte[]);
-                var bolResult = new BolResult<T>
+                if (await CodeNameExists(altCodeName, token))
                 {
-                    StatusCode = (HttpStatusCode)statusCode,
-                    Message = message
-                };
-                callback(bolResult);
-                return;
-            }
-
-            if (op == operation)
-            {
-                var result = (List<ContractParameter>)parameters[1].Value;
-                var statusCode = int.Parse(Encoding.UTF8.GetString(result[0].Value as byte[]));
-
-                var resultList = result[2].Value as List<ContractParameter>;
-
-                T resultObject = default;
-                if (resultList != null)
-                {
-                    var properties = typeof(T).GetProperties();
-
-                    resultObject = Activator.CreateInstance<T>();
-
-                    for (int i = 0; i < resultList.Count; i++)
-                    {
-                        var value = resultList[i].Value;
-
-                        if (value is byte[])
-                        {
-                            properties[i].SetValue(resultObject, ((byte[])value).ToHexString());
-                            continue;
-                        }
-                        if (value is BigInteger)
-                        {
-                            properties[i].SetValue(resultObject, value.ToString());
-                            continue;
-                        }
-                        if (value is List<KeyValuePair<ContractParameter, ContractParameter>>)
-                        {
-                            var keyValueList = (List<KeyValuePair<ContractParameter, ContractParameter>>)value;
-                            var valueDictionary = keyValueList.ToDictionary(pair => (pair.Key.Value as byte[]).ToHexString(), pair =>
-                            {
-                                if (pair.Value.Value is byte[])
-                                {
-                                    return (pair.Value.Value as byte[]).ToHexString();
-                                }
-                                else
-                                {
-                                    return pair.Value.Value.ToString();
-                                }
-                            });
-
-                            properties[i].SetValue(resultObject, valueDictionary);
-                            continue;
-                        }
-                    }
-
+                    registeredAltCodeNames.Add(altCodeName);
                 }
 
-                var bolResult = new BolResult<T>
-                {
-                    StatusCode = (HttpStatusCode)statusCode,
-                    Result = resultObject
-                };
-                callback(bolResult);
-                return;
+                await Task.Delay(TimeSpan.FromMilliseconds(500), token);
             }
+            return registeredAltCodeNames;
+        }
+
+        public async Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+            
+            var description = $"selectMandatoryCertifiers by {context.CodeName}";
+            var remarks = new[] { "selectMandatoryCertifiers", context.CodeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "selectMandatoryCertifiers", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> PayCertificationFees(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+            
+            var description = $"payCertificationFees by {context.CodeName}";
+            var remarks = new[] { "payCertificationFees", context.CodeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "payCertificationFees", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> RequestCertification(string codeName, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                Encoding.ASCII.GetBytes(codeName),
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+            
+            var description = $"requestCertification from {codeName} by {context.CodeName}";
+            var remarks = new[] { "requestCertification", context.CodeName, codeName, Guid.NewGuid().ToString() };
+
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "requestCertification", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+            
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default)
+        {
+            if (migration.CurrentScriptHash == migration.NewScriptHash)
+            {
+                throw new ArgumentException("Old and new contract ScriptHash cannot match.");
+            }
+            
+            var parameters = new[]
+            {
+                migration.NewScript,
+                _hex.Decode("0710"), //Parameter List
+                _hex.Decode("05"), //ContractParameterType = ByteArray
+                _hex.Decode("01"), //ContractPropertyState = HasStorage
+                Encoding.ASCII.GetBytes(migration.Name),
+                Encoding.ASCII.GetBytes(migration.Version),
+                Encoding.ASCII.GetBytes(migration.Author),
+                Encoding.ASCII.GetBytes(migration.Email),
+                Encoding.ASCII.GetBytes(migration.Description)
+            };
+            var publicKeys = keys.Select(key => key.PublicKey).ToArray();
+            var signers = publicKeys.Length / 2 + 1;
+            var multisig = _signatureScriptFactory.Create(publicKeys, signers);
+
+            var description = $"Migrate {migration.Name} Smart Contract to version {migration.Version}";
+            var remarks = new[] { "migrate", migration.Name, migration.Version, migration.NewScriptHash };
+            var transaction = _transactionService.Create(multisig, migration.CurrentScriptHash, "migrate", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, multisig, keys.Take(signers));
+            
+            var result = await _transactionService.Test<bool>(transaction, token);
+            
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> RegisterAsCertifier(IEnumerable<Country> countries, BigInteger fee, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                countries.SelectMany(c => Encoding.ASCII.GetBytes(c.Alpha3)).ToArray(),
+                fee.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Registration as Certifier {context.CodeName}/{mainAddressString} with fee {fee}";
+            var remarks = new[] { "registerCertifier", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "registerCertifier", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> UnRegisterAsCertifier(CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName)
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var mainAddressString = _addressTransformer.ToAddress(context.MainAddress);
+            var description = $"Remove Registration as Certifier {context.CodeName}/{mainAddressString}";
+            var remarks = new[] { "unregisterCertifier", context.CodeName, Guid.NewGuid().ToString() };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "unregisterCertifier", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        public async Task<BolAccount> SetCertifierFee(BigInteger fee, CancellationToken token = default)
+        {
+            var context = _contextAccessor.GetContext();
+
+            var parameters = new[]
+            {
+                Encoding.ASCII.GetBytes(context.CodeName),
+                fee.ToByteArray()
+            };
+            var keys = new[] { context.CodeNameKey, context.PrivateKey };
+
+            var mainAddress = CreateMainAddress(context);
+
+            var description = $"SetCertifierFee for certifier {context.CodeName} with fee {fee}";
+            var remarks = new[] { "setCertifierFee", context.CodeName, fee.ToString(), Guid.NewGuid().ToString() };
+            
+            var transaction = _transactionService.Create(mainAddress, context.Contract, "setCertifierFee", parameters, description, remarks);
+            transaction = _transactionService.Sign(transaction, mainAddress, keys);
+
+            var result = await _transactionService.Test<BolAccount>(transaction, token);
+
+            await _transactionService.Publish(transaction, token);
+
+            return result;
+        }
+
+        private ISignatureScript CreateMainAddress(IBolContext context)
+        {
+            return _signatureScriptFactory.Create(new[] { context.CodeNameKey.PublicKey, context.PrivateKey.PublicKey }, 2);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Bol.Core.Model;
 using FluentValidation;
 using System.Text.RegularExpressions;
@@ -25,23 +25,23 @@ namespace Bol.Core.Validators
 
 			Include(_basePersonValidator);
 
-			RuleFor(p => p.ShortHash)
-				.NotEmpty()
-				.WithMessage("Short Hash cannot be empty.")
-				.Length(SHORT_HASH_DIGITS)
-				.WithMessage($"Short Hash must be exactly {SHORT_HASH_DIGITS} digits.")
-				.Must(IsBase58Representation)
-				.WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
+            RuleFor(p => p.ShortHash)
+                .NotEmpty()
+                .WithMessage("Short Hash cannot be empty.")
+                .Length(SHORT_HASH_DIGITS)
+                .WithMessage($"Short Hash must be exactly {SHORT_HASH_DIGITS} digits.")
+                .Must(IsBase58Representation)
+                .WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
 
-			RuleFor(p => p.CheckSum)
-				.NotEmpty()
-				.WithMessage("CheckSum cannot be empty.")
-				.Length(CHECKSUM_DIGITS)
-				.WithMessage($"CheckSum must be exactly {CHECKSUM_DIGITS} digits.")
+            RuleFor(p => p.CheckSum)
+                .NotEmpty()
+                .WithMessage("CheckSum cannot be empty.")
+                .Length(CHECKSUM_DIGITS)
+                .WithMessage($"CheckSum must be exactly {CHECKSUM_DIGITS} digits.")
 				.Must(IsHexRepresentation)
-				.WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
+                .WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
 
-			RuleFor(p => p.FirstNameCharacter)
+            RuleFor(p => p.FirstNameCharacter)
 				.Cascade(CascadeMode.StopOnFirstFailure)
 				.NotEmpty()
 				.WithMessage("First Name character cannot be empty.")

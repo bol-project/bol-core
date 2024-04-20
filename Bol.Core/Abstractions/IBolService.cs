@@ -1,26 +1,35 @@
 using System.Collections.Generic;
-using Bol.Core.BolContract.Models;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using Bol.Address;
 using Bol.Core.Model;
-using Bol.Core.Model.Responses;
-using Neo;
-using Neo.Wallets;
+using Bol.Cryptography;
 
 namespace Bol.Core.Abstractions
 {
     public interface IBolService
     {
-        BolResponse<CreateContractResult> Create(IEnumerable<KeyPair> keys);
-        BolResponse<DeployContractResult> Deploy(IEnumerable<KeyPair> keys);
-        BolResult<BolAccount> Claim();
-        BolResponse<int> Decimals();
-        BolResult<BolAccount> Register();
-        BolResponse Name();
-        BolResponse BalanceOf();
-        BolResponse TotalSupply();
-        BolResult<BolAccount> GetAccount(UInt160 mainAddress);
-        BolResult<BolAccount> AddCommercialAddress(UInt160 commercialAddress);
-        BolResult<object> GetCertifiers(string countryCode);
-        BolResult<BolAccount> Certify(UInt160 address);
-        BolResult<BolAccount> UnCertify(UInt160 address);
+        Task Deploy(CancellationToken token = default);
+        Task<BolAccount> Claim(CancellationToken token = default);
+        Task<BolAccount> Register(CancellationToken token = default);
+        Task<BolAccount> GetAccount(string codeName, CancellationToken token = default);
+        Task<BolAccount> TransferClaim(IScriptHash address, BigInteger value, CancellationToken token = default);
+        Task<BolAccount> Transfer(IScriptHash from, IScriptHash to, string codeName, BigInteger value, CancellationToken token = default);
+        Task<bool> Whitelist(IScriptHash address, CancellationToken token = default);
+        Task<bool> IsWhitelisted(IScriptHash address, CancellationToken token = default);
+        Task<bool> AddMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default);
+        Task<bool> IsMultiCitizenship(string countryCode, string shortHash, CancellationToken token = default);
+        Task<bool> CodeNameExists(string codeNamePrefix, CancellationToken token = default);
+        Task<IEnumerable<string>> FindAlternativeCodeNames(string codeName, CancellationToken token = default);
+        Task<BolAccount> AddCommercialAddress(IScriptHash commercialAddress, CancellationToken token = default);
+        Task<BolAccount> Certify(string codeName, CancellationToken token = default);
+        Task<BolAccount> SelectMandatoryCertifiers(CancellationToken token = default);
+        Task<BolAccount> PayCertificationFees(CancellationToken token = default);
+        Task<BolAccount> RequestCertification(string codeName, CancellationToken token = default);
+        Task<BolAccount> RegisterAsCertifier(IEnumerable<Country> countries, BigInteger fee, CancellationToken token = default);
+        Task<BolAccount> UnRegisterAsCertifier(CancellationToken token = default);
+        Task<BolAccount> SetCertifierFee(BigInteger fee, CancellationToken token = default);
+        Task<bool> MigrateContract(ContractMigration migration, IEnumerable<IKeyPair> keys, CancellationToken token = default);
     }
 }

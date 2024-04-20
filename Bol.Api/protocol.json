@@ -3,6 +3,10 @@
     "Magic": 630594781,
     "AddressVersion": 25,
     "SecondsPerBlock": 15,
+    "LowPriorityThreshold": 0.001,
+    "StateRootEnableIndex": 0,
+    "FreeGasChangeHeight": 0,
+    "MinimumNetworkFee": 0,
     "StandbyValidators": [
       "03bdd15f1cf59c9007eda6a4ac925e80581a9f9513c2c4f3ee771136b20ccf9332",
       "0323faa04f23d8ded0c617d9d3d8e808fe83d6d17a29218fe95a321fb035574877",
@@ -10,10 +14,10 @@
       "036c34acb0eada2a4e717b5673de07fe32e9a2fff03d4c9b6befae8a89ed36ace0"
     ],
     "SeedList": [
-      "localhost:11456",
-      "localhost:11457",
-      "localhost:11458",
-      "localhost:11459"
+      "localhost:11333",
+      "localhost:12333",
+      "localhost:13333",
+      "localhost:14333"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
@@ -22,11 +26,11 @@
       "RegisterTransaction": 10000
     },
     "BolContract": {
-      "ScriptHash": "ab5ae954c35297bfe3a5588ed49cee145f5d0532",
+      "ScriptHash": "a9e9e4aa25e86147e9cc69762ce9b776f556d88d",
       "Name": "Bol",
-      "Version": "0.1",
+      "Version": "1.0",
       "Author": "Bol Team",
-      "Email": "admin@bolchain.net",
+      "Email": "info@1bol.org",
       "Description": "Bonus Of Life",
       "Path": "Bol.Coin.avm"
     }

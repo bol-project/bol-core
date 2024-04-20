@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+    bol-seed: "true"
+    track: stable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bol-__CI_BUILD_REF_SLUG__
+  serviceName: hl-bol-__CI_BUILD_REF_SLUG__
+  template:
+    metadata:
+      labels:
+        app: bol-__CI_BUILD_REF_SLUG__
+        bol-seed: "true"
+        track: stable
+    spec:
+      imagePullSecrets:
+        - name: bol-registry-secret
+      containers:
+      - name: bol-__CI_BUILD_REF_SLUG__
+        image: __CI_IMAGE_TAG__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        - containerPort: 21332
+        - containerPort: 21333
+        - containerPort: 21334
+        volumeMounts:
+        - name: blockchain
+          mountPath: /blockchain
+        - name: index
+          mountPath: /index
+        - name: protocol-volume
+          readOnly: true
+          mountPath: /app/protocol.json
+          subPath: protocol.json
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting
+            value: Warning
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /?jsonrpc=2.0&id=1&method=getversion&params=W10=
+            port: 21332
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2000Mi
+          limits:
+            cpu: 1000m
+            memory: 4000Mi
+      volumes:
+        - name: protocol-volume
+          secret:
+            secretName: validator-protocol
+  volumeClaimTemplates:
+  - metadata:
+      name: blockchain
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn-blockchain"
+      resources:
+        requests:
+          storage: 250Gi
+  - metadata:
+      name: index
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn-index"
+      resources:
+        requests:
+          storage: 1Gi

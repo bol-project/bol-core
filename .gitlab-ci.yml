@@ -1,0 +1,100 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://docker-dind.docker:2375
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+build_main_node:
+  stage: build
+  image: docker:24-dind
+  only:
+    - develop
+    - master
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - echo CI_COMMIT_SHA=$CI_COMMIT_SHA
+    - echo CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+    - echo CI_BUILD_REF=$CI_BUILD_REF
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - docker build -f Bol.Api/Mainnet.Dockerfile -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  tags:
+    - build-internal
+
+.deploy:
+  image: lachlanevenson/k8s-kubectl:v1.24.8
+  environment:
+    name: mainnet
+    url: https://monitor.mainnet.bolchain.net
+  tags:
+    - deploy-mainnet
+  variables:
+    VALIDATOR_NAME: validator-1
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE_ALLOWED: '*'
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
+  only:
+    - master
+    - develop
+  stage: deploy
+  when: manual
+  before_script:
+    - echo -n $KUBE_CONFIG | base64 -d > `pwd`/kube-config
+    - export KUBECONFIG=`pwd`/kube-config
+  script:
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - kubectl version
+    - kubectl cluster-info
+    - cd manifests/    
+    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml deployment.yaml service.yaml
+    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
+    - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
+    - kubectl apply -f service.yaml
+    - kubectl rollout status -f deployment.yaml
+    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+
+deploy_node_1:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-1
+
+deploy_node_2:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-2
+
+deploy_node_3:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-3
+
+deploy_node_4:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-4
+
+deploy_node_5:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-5
+
+deploy_node_6:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-6
+
+deploy_node_7:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: validator-7
+
+deploy_rpc_node:
+  extends: .deploy
+  variables:
+    VALIDATOR_NAME: rpcnode

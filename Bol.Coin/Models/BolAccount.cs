@@ -16,6 +16,7 @@ namespace Bol.Coin.Models
         public byte[] MainAddress;
         public byte[] BlockChainAddress;
         public byte[] SocialAddress;
+        public byte[] VotingAddress;
 
         public Map<byte[], BigInteger> CommercialAddresses;
 
@@ -24,13 +25,21 @@ namespace Bol.Coin.Models
 
         public BigInteger Certifications;
         public Map<byte[], BigInteger> Certifiers;
-        public byte[] MandatoryCertifier;
+        public Map<byte[], BigInteger> MandatoryCertifiers;
+        public Map<byte[], BigInteger> CertificationRequests;
+        public BigInteger LastCertificationHeight;
+        public BigInteger LastCertifierSelectionHeight;
 
         public BigInteger IsCertifier;
         public BigInteger Collateral;
+        public BigInteger CertificationFee;
         public byte[] Countries;
 
         public BigInteger RegistrationHeight;
         public BigInteger LastClaimHeight;
+        public BigInteger LastClaim;
+
+        public int TransactionsCount;
+        public Map<int,BolTransactionEntry> Transactions;
     }
 }

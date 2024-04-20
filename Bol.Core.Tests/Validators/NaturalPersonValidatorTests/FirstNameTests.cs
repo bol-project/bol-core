@@ -1,5 +1,7 @@
-﻿using Bol.Core.Abstractions;
+using Bol.Core.Abstractions;
+using Bol.Core.Helpers;
 using Bol.Core.Model;
+using Bol.Core.Services;
 using Bol.Core.Validators;
 using FluentValidation;
 using FluentValidation.TestHelper;
@@ -11,24 +13,24 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
     public class FirstNameTests
     {
         private readonly NaturalPersonValidator _validator;
-	    private readonly Mock<IValidator<BasePerson>> _basePersonValidator;
-        private readonly Mock<ICountryCodeService> _ccService;
+        private readonly Mock<IValidator<BasePerson>> _basePersonValidator;
+        private readonly Mock<INinService> _ninService;
 
         public FirstNameTests()
         {
-            _ccService = new Mock<ICountryCodeService>();
-	        _basePersonValidator = new Mock<IValidator<BasePerson>>();
-			_validator = new NaturalPersonValidator(_basePersonValidator.Object);
-	        _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
-		}
+            _basePersonValidator = new Mock<IValidator<BasePerson>>();
+            _ninService = new Mock<INinService>();
+            _validator = new NaturalPersonValidator(_basePersonValidator.Object, _ninService.Object, new RegexHelper());
+            _basePersonValidator.Setup(bpv => bpv.Validate(It.IsAny<ValidationContext>())).Returns(new FluentValidation.Results.ValidationResult());
+        }
 
-		[Theory]
+        [Theory]
         [InlineData("ABC")]
         [InlineData("FGH")]
         [InlineData("ZZZ")]
         public void Validator_ShouldNotHaveError_WhenName_IsLatinUpercase(string name)
         {
-			_validator.ShouldNotHaveValidationErrorFor(p => p.FirstName, name);
+            _validator.ShouldNotHaveValidationErrorFor(p => p.FirstName, name);
         }
 
         [Theory]
@@ -67,23 +69,23 @@ namespace Bol.Core.Tests.Validators.NaturalPersonValidatorTests
             _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
         }
 
-	    [Theory]
-	    [InlineData(" AB C")]
-	    [InlineData("FG H")]
-	    [InlineData("ZZ  Z")]
-	    public void Validator_ShouldHaveError_WhenName_HasSpaces(string name)
-	    {
-		    _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
-	    }
+        [Theory]
+        [InlineData(" AB C")]
+        [InlineData("FG H")]
+        [InlineData("ZZ  Z")]
+        public void Validator_ShouldHaveError_WhenName_HasSpaces(string name)
+        {
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
+        }
 
-	    [Theory]
-	    [InlineData(" ")]
-	    [InlineData("FGHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
-	    [InlineData("ZAZZASDFGHJZZZASDFGHJZZZASDFGHJ")]
-	    public void Validator_ShouldHaveError_WhenName_IsEmpty_OrLargerThan30Characters(string name)
-	    {
-		    _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
-	    }
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("FGHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
+        [InlineData("ZAZZASDFGHJZZZASDFGHJZZZASDFGHJ")]
+        public void Validator_ShouldHaveError_WhenName_IsEmpty_OrLargerThan30Characters(string name)
+        {
+            _validator.ShouldHaveValidationErrorFor(p => p.FirstName, name);
+        }
 
-	}
+    }
 }

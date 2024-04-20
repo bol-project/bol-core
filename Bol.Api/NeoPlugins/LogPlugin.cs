@@ -1,6 +1,7 @@
-﻿using Bol.Api.BackgroundServices;
+using Bol.Api.BackgroundServices;
 using Microsoft.Extensions.Logging;
 using Neo.Plugins;
+using LogLevel = Neo.Plugins.LogLevel;
 
 namespace Bol.Api.NeoPlugins
 {
@@ -15,23 +16,23 @@ namespace Bol.Api.NeoPlugins
 
         public override void Configure() { }
 
-        public new void Log(string source, Neo.Plugins.LogLevel level, string message)
+        public new void Log(string source, LogLevel level, string message)
         {
             switch (level)
             {
-                case Neo.Plugins.LogLevel.Debug:
+                case LogLevel.Debug:
                     _logger.LogDebug(message);
                     break;
-                case Neo.Plugins.LogLevel.Error:
+                case LogLevel.Error:
                     _logger.LogError(message);
                     break;
-                case Neo.Plugins.LogLevel.Fatal:
+                case LogLevel.Fatal:
                     _logger.LogCritical(message);
                     break;
-                case Neo.Plugins.LogLevel.Info:
+                case LogLevel.Info:
                     _logger.LogInformation(message);
                     break;
-                case Neo.Plugins.LogLevel.Warning:
+                case LogLevel.Warning:
                     _logger.LogWarning(message);
                     break;
             }

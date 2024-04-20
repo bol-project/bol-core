@@ -24,8 +24,7 @@ namespace Bol.Core.Services
         public string GetCode(string name) =>
             _countries
                 .Values
-                .Where(c => c.Name == name)
-                .FirstOrDefault()?
+                .FirstOrDefault(c => c.Name == name)?
                 .Alpha3;
 
         public Country GetCountry(string code)

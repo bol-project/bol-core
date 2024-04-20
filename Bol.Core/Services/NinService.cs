@@ -20,7 +20,7 @@ namespace Bol.Core.Services
 
         public int GetLength(string countryCode)
         {
-            return _specs[countryCode].Digits;
+            return _specs[countryCode].Digits ?? 0;
         }
 
         public bool HasAllowedCharacters(string nin, string countryCode)
@@ -33,7 +33,7 @@ namespace Bol.Core.Services
         public string SplitOnIndex(string nin, string countryCode)
         {
             var spec = _specs[countryCode];
-            return nin.Substring(0, spec.SplitIndex);
+            return nin.Substring(0, spec.SplitIndex ?? 0);
         }
     }
 }

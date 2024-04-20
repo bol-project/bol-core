@@ -1,0 +1,15 @@
+diff --git a/neo-cli/Services/ConsoleServiceBase.cs b/neo-cli/Services/ConsoleServiceBase.cs
+index 2f139283cbb07ad7f89f0092e94a297af2ec0753..24fde82a8aa290bc85e64ac1900ae0d1d0612f77 100644
+--- a/neo-cli/Services/ConsoleServiceBase.cs
++++ b/neo-cli/Services/ConsoleServiceBase.cs
+@@ -254,8 +254,8 @@ namespace Neo.Services
+                 else
+                 {
+                     OnStart(args);
+-                    RunConsole();
+-                    OnStop();
++                    // RunConsole();
++                    // OnStop();
+                 }
+             }
+             else

@@ -15,7 +15,7 @@ namespace Bol.Core.Tests.Services
 
         public CountryCodeServiceTests()
         {
-            var section = File.ReadAllText(AppContext.BaseDirectory + ".content/country_code.json");
+            var section = File.ReadAllText(AppContext.BaseDirectory + "content/country_code.json");
             var countries = JsonConvert.DeserializeObject<List<Country>>(section);
             var options = Options.Create(countries);
             _service = new CountryCodeService(options);
@@ -68,6 +68,31 @@ namespace Bol.Core.Tests.Services
         public void GetCountry_ShouldReturnNull_WhenCodeNotExists()
         {
             Assert.Null(_service.GetCountry("GRT"));
+        }
+
+        [Theory]
+        [InlineData("A23B43#C427")]
+        [InlineData("A3F")]
+        [InlineData("A$F")]
+        [InlineData("Grc")]
+        [InlineData("gRC")]
+        [InlineData("123")]
+        [InlineData("GRCS")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void CountryConstructor_ShouldThrowError_WhenAlpha3IsNotValid(string alpha3)
+        {
+            Assert.Throws<ArgumentException>(() => new Country() { Alpha3 = alpha3 });
+        }
+
+        [Theory]
+        [InlineData("GRC")]
+        [InlineData("ENG")]
+        [InlineData("USA")]
+        [InlineData("ETH")]
+        public void CountryConstructor_ShouldCreateObject_WhenAlpha3IsValid(string alpha3)
+        {
+            Assert.NotNull(() => new Country() { Alpha3 = alpha3 });
         }
     }
 }

@@ -1,0 +1,69 @@
+diff --git a/neo/BolScriptUtility.cs b/neo/BolScriptUtility.cs
+new file mode 100644
+index 0000000000000000000000000000000000000000..c39b519db6d59168aeb935140bc792a4cb0b54a2
+--- /dev/null
++++ b/neo/BolScriptUtility.cs
+@@ -0,0 +1,62 @@
++using Neo.Ledger;
++using Neo.SmartContract;
++using Neo.VM;
++using System.Linq;
++
++namespace Neo
++{
++    public class BolScriptUtility
++    {
++        public static byte[] _bolScript = null;
++        public static byte[] BolScript
++        {
++            get
++            {
++                if (_bolScript == null)
++                {
++                    var bolSettings = ProtocolSettings.Default.BolSettings;
++                    byte[] script = System.IO.File.ReadAllBytes(bolSettings.Path);
++                    byte[] parameter_list = "0710".HexToBytes();
++                    var return_type = ContractParameterType.ByteArray;
++                    var properties = ContractPropertyState.HasStorage;
++
++                    using (var sb = new ScriptBuilder())
++                    {
++                        sb.EmitSysCall(
++                            "Neo.Contract.Create",
++                            script, parameter_list,
++                            return_type, properties,
++                            bolSettings.Name,
++                            bolSettings.Version,
++                            bolSettings.Author,
++                            bolSettings.Email,
++                            bolSettings.Description
++                        );
++                        _bolScript = sb.ToArray();
++                    }
++                }
++                return _bolScript;
++            }
++        }
++
++        public static byte[] _bolScriptHash = null;
++        public static byte[] BolScriptHash
++        {
++            get
++            {
++                if (_bolScriptHash == null)
++                {
++                    _bolScriptHash = ProtocolSettings.Default.BolSettings.ScriptHash.HexToBytes();
++                }
++                return _bolScriptHash;
++            }
++        }
++        
++        public static bool IsBolInvocation(Script script)
++        {
++            byte[] scriptValue = script;
++            var currentScriptEnd = scriptValue.Skip(script.Length - 20);
++            return currentScriptEnd.SequenceEqual(BolScriptHash) || scriptValue.SequenceEqual(BolScript);
++        }
++    }
++}
+\ No newline at end of file

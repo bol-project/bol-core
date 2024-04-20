@@ -2,68 +2,59 @@ version: '3.4'
 
 services:
 
-  # node1:
-    # image: bol-node1
-    # environment:
-      # ASPNETCORE_ENVIRONMENT : Development
-    # build:
-      # context: .
-      # dockerfile: Bol.Api/Validator.Dockerfile
-      # args:
-        # validator_wallet : val1.json
-    # extra_hosts:
-      # - "node1:host.docker.internal"      
-    # ports:
-      # - "11456:11456"
-      # - "5000:5000"
-    # networks:
-        # - bol-network
-
-  node2:
-    image: bol-node2
+  bol-validator-1:
+    image: bol-validator-1
     environment:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : val2.json
-    extra_hosts:
-      - "node1:${MACHINE_IP}"        
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-1.json:/app/wallet.json
     ports:
-      - "11457:11456"   
+      - "11333:21333"
     networks:
         - bol-network
 
-  node3:
-    image: bol-node3
+  bol-validator-2:
+    image: bol-validator-2
     environment:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : val3.json
-    extra_hosts:
-      - "node1:${MACHINE_IP}"           
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-2.json:/app/wallet.json
     ports:
-      - "11458:11456"
+      - "12333:21333"   
     networks:
         - bol-network
 
-  node4:
-    image: bol-node4
+  bol-validator-3:
+    image: bol-validator-3
     environment:
       ASPNETCORE_ENVIRONMENT : Development
     build:
       context: .
-      dockerfile: Bol.Api/Validator.Dockerfile
-      args:
-        validator_wallet : val4.json
-    extra_hosts:
-      - "node1:${MACHINE_IP}"      
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-3.json:/app/wallet.json
     ports:
-      - "11459:11456"     
+      - "13333:21333"
+    networks:
+        - bol-network
+
+  bol-validator-4:
+    image: bol-validator-4
+    environment:
+      ASPNETCORE_ENVIRONMENT : Development
+    build:
+      context: .
+      dockerfile: Bol.Api/Dockerfile
+    volumes:
+      - ../validators/validator-4.json:/app/wallet.json
+    ports:
+      - "14333:21333"     
     networks:
         - bol-network
 
@@ -74,10 +65,9 @@ services:
     build:
       context: .
       dockerfile: Bol.Api/Dockerfile
-    extra_hosts:
-      - "node1:${MACHINE_IP}"    
     ports:
-      - "5000:80"
+      - "5000:8080"
+      - "21332:21332"
     networks:
         - bol-network
                 
