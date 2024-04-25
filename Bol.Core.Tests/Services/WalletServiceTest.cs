@@ -102,6 +102,86 @@ namespace Bol.Core.Tests.Services
         }
 
         [Fact]
+        public void WalletService_ReturnsTrue_WhenPassphraseIsCorrect()
+        {
+            var wallet = @"
+{
+  ""name"": ""P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA"",
+  ""version"": ""1.0"",
+  ""scrypt"": {
+    ""n"": 16384,
+    ""r"": 8,
+    ""p"": 8
+  },
+  ""accounts"": [
+    {
+      ""address"": ""B5sBfiBknypHXgtAmpfEXgeu6bjgmmRxiv"",
+      ""label"": ""codename"",
+      ""isDefault"": false,
+      ""lock"": false,
+      ""key"": ""6PYVbuFoY5BkzEF52QD833H2dvh1aMTL9bAEKtN78fsR3E1myg29WYuNrF"",
+      ""contract"": {
+        ""script"": ""21034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c006ac"",
+        ""parameters"": [
+          {
+            ""name"": ""signature"",
+            ""type"": ""Signature""
+          }
+        ],
+        ""deployed"": false
+      },
+      ""extra"": {
+        ""codename"": ""P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA"",
+        ""edi"": ""e3274f6bbd018f920e7d629ba035d211e68e41f23f28f5a9f9b89b7b0ea860db""
+      }
+    }
+  ]
+}
+";
+            Assert.True(_walletService.CheckWalletPassword(wallet, "bol"));
+        }
+
+        [Fact]
+        public void WalletService_ReturnsFalse_WhenPassphraseIsIncorrect()
+        {
+            var wallet = @"
+{
+  ""name"": ""P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA"",
+  ""version"": ""1.0"",
+  ""scrypt"": {
+    ""n"": 16384,
+    ""r"": 8,
+    ""p"": 8
+  },
+  ""accounts"": [
+    {
+      ""address"": ""B5sBfiBknypHXgtAmpfEXgeu6bjgmmRxiv"",
+      ""label"": ""codename"",
+      ""isDefault"": false,
+      ""lock"": false,
+      ""key"": ""6PYVbuFoY5BkzEF52QD833H2dvh1aMTL9bAEKtN78fsR3E1myg29WYuNrF"",
+      ""contract"": {
+        ""script"": ""21034e46644157abb422128937178ff1c0caf6291c971a0006d28ef4edd4d286c006ac"",
+        ""parameters"": [
+          {
+            ""name"": ""signature"",
+            ""type"": ""Signature""
+          }
+        ],
+        ""deployed"": false
+      },
+      ""extra"": {
+        ""codename"": ""P<GRC<PAPPAS<S<MANU<CHAO<1983MP<LsDDs8n8snS5BCA"",
+        ""edi"": ""e3274f6bbd018f920e7d629ba035d211e68e41f23f28f5a9f9b89b7b0ea860db""
+      }
+    }
+  ]
+}
+";
+            Assert.False(_walletService.CheckWalletPassword(wallet, "nobol"));
+        }
+
+        [Fact]
         public void MultisignAddress_ContractOwners_Test()
         {
             var publicKeys = new[]
