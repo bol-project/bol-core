@@ -76,10 +76,10 @@ build_main_node:
     - kubectl version
     - cd manifests/testnet/
     - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml service.yaml
-    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
+    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml
     - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
     - kubectl apply -f service.yaml
-    - kubectl rollout status -f deployment.yaml
+    - kubectl rollout status -f validator-deployment.yaml
     - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
 
 
