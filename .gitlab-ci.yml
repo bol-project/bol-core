@@ -59,7 +59,7 @@ build_main_node:
     - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
 
 .deploy_testnet:
-  image: rancher/kubectl:v1.29.3
+  image: lachlanevenson/k8s-kubectl
   environment:
     name: testnet
     url: https://monitor.testnet.bolchain.net
