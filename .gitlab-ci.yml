@@ -49,7 +49,6 @@ build_main_node:
     - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
     - kubectl version
-    - kubectl cluster-info
     - cd manifests/mainnet/    
     - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml deployment.yaml service.yaml
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
@@ -75,7 +74,6 @@ build_main_node:
     - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
     - kubectl version
-    - kubectl cluster-info
     - cd manifests/testnet/
     - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml service.yaml
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
