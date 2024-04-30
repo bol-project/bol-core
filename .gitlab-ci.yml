@@ -40,7 +40,6 @@ build_main_node:
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
   only:
     - master
-    - develop
   stage: deploy
   when: manual
   before_script:
