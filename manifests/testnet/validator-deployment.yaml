@@ -51,6 +51,8 @@ spec:
             value: Production
           - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting
             value: Warning
+          - name: BolConfig__RpcEndpoint
+            value: https://validator-1.testnet.bolchain.net           
         livenessProbe:
           httpGet:
             path: /health
