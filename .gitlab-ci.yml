@@ -12,6 +12,7 @@ build_main_node:
   only:
     - develop
     - master
+    - deploy-testnet
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -67,7 +68,7 @@ build_main_node:
   variables:
     VALIDATOR_NAME: validator-1
   only:
-    - develop
+    - deploy-testnet
   stage: deploy
   when: manual
   script:
