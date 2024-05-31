@@ -26,7 +26,7 @@
   "LocalName": "Numri Personal",
   "Format": "A11111111A",
   "Digits": 10,
-  "Regex": "^[A-Z][0-9]{8][A-Z]$",
+  "Regex": "^[A-Z][0-9]{8}[A-Z]$",
   "status": 1
  },
  {
@@ -206,7 +206,7 @@
   "LocalName": "персональный номер",
   "Format": "1111111A111AA1",
   "Digits": 14,
-  "Regex": "^[0-9]{7}[A-Z][0-9]{3][A-Z]{2}[0-9]$",
+  "Regex": "^[0-9]{7}[A-Z][0-9]{3}[A-Z]{2}[0-9]$",
   "status": 1
  },
  {
@@ -396,7 +396,7 @@
   "LocalName": 0,
   "Format": "11111111111111111",
   "Digits": 17,
-  "Regex": "^[0-9]17}$",
+  "Regex": "^[0-9]{17}$",
   "status": 1
  },
  {
@@ -1596,7 +1596,7 @@
   "LocalName": "National Health Index (NHI) number",
   "Format": "AAA1111",
   "Digits": 7,
-  "Regex": "^[A-Z]{3}[0-9]{4]$",
+  "Regex": "^[A-Z]{3}[0-9]{4}$",
   "status": 1
  },
  {
@@ -1626,7 +1626,7 @@
   "LocalName": "National Identification Number (NIN)",
   "Format": "1A111111111",
   "Digits": 11,
-  "Regex": "^[0-9][A-Z][0-9]{9]$",
+  "Regex": "^[0-9][A-Z][0-9]{9}$",
   "status": 1
  },
  {
