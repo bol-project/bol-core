@@ -53,7 +53,7 @@ namespace Bol.Core.Validators
 		    RuleFor(p => p.YearOfBirth)
 		        .NotEmpty()
 		        .WithMessage("Year of birth must be a valid year with format YYYY")
-		        .ExclusiveBetween(1900, DateTime.UtcNow.Year)
+		        .InclusiveBetween(1900, DateTime.UtcNow.Year)
 		        .WithMessage("Year of birth cannot be less than 1900 and greater that the current year");
 		}
 
