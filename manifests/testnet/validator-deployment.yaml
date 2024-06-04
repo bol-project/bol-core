@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bol-__CI_BUILD_REF_SLUG__
+  namespace: __CI_ENV_SLUG__
+  labels:
+    app: bol-__CI_BUILD_REF_SLUG__
+    bol-seed: "true"
+    track: stable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bol-__CI_BUILD_REF_SLUG__
+  serviceName: hl-bol-__CI_BUILD_REF_SLUG__
+  template:
+    metadata:
+      labels:
+        app: bol-__CI_BUILD_REF_SLUG__
+        bol-seed: "true"
+        track: stable
+    spec:
+      imagePullSecrets:
+        - name: bol-registry-secret
+      containers:
+      - name: bol-__CI_BUILD_REF_SLUG__
+        image: __CI_IMAGE_TAG__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        - containerPort: 32232
+        - containerPort: 32233
+        - containerPort: 32234
+        volumeMounts:
+        - name: blockchain
+          mountPath: /blockchain
+        - name: wallet-volume
+          mountPath: /app/wallet.json
+          subPath: __CI_BUILD_REF_SLUG__-wallet.json
+          readOnly: true
+        - name: config-volume
+          mountPath: /app/config.json
+          subPath: config.json
+          readOnly: true
+        - name: protocol-volume
+          mountPath: /app/protocol.json
+          subPath: protocol.json
+          readOnly: true
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Hosting
+            value: Warning
+          - name: BolConfig__RpcEndpoint
+            value: https://validator-1.testnet.bolchain.net           
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /?jsonrpc=2.0&id=1&method=getversion&params=W10=
+            port: 32232
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2000Mi
+          limits:
+            cpu: 1000m
+            memory: 4000Mi
+      volumes:
+        - name: wallet-volume
+          secret:
+            secretName: __CI_BUILD_REF_SLUG__-wallet
+        - name: config-volume
+          secret:
+            secretName: validator-config
+        - name: protocol-volume
+          secret:
+            secretName: validator-protocol
+  volumeClaimTemplates:
+  - metadata:
+      name: blockchain
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path"
+      resources:
+        requests:
+          storage: 100Gi

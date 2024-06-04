@@ -12,6 +12,7 @@ build_main_node:
   only:
     - develop
     - master
+    - deploy-testnet
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -40,7 +41,6 @@ build_main_node:
     KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: system:serviceaccount:kube-system:hampos
   only:
     - master
-    - develop
   stage: deploy
   when: manual
   before_script:
@@ -50,14 +50,39 @@ build_main_node:
     - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
     - echo IMAGE_TAG=$IMAGE_TAG
     - kubectl version
-    - kubectl cluster-info
-    - cd manifests/    
+    - cd manifests/mainnet/    
     - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml deployment.yaml service.yaml
     - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml deployment.yaml
     - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
     - kubectl apply -f service.yaml
     - kubectl rollout status -f deployment.yaml
     - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+
+.deploy_testnet:
+  image: lachlanevenson/k8s-kubectl
+  environment:
+    name: testnet
+    url: https://monitor.testnet.bolchain.net
+  tags:
+    - deploy-testnet
+  variables:
+    VALIDATOR_NAME: validator-1
+  only:
+    - deploy-testnet
+  stage: deploy
+  when: manual
+  script:
+    - IMAGE_TAG=$IMAGE_TAG.$CI_COMMIT_SHA.main
+    - echo IMAGE_TAG=$IMAGE_TAG
+    - kubectl version
+    - cd manifests/testnet/
+    - sed -i -e "s~__CI_BUILD_REF_SLUG__~${VALIDATOR_NAME}~" -e "s~__CI_ENV_SLUG__~${CI_ENVIRONMENT_SLUG}~" validator-deployment.yaml service.yaml
+    - sed -i "s~__CI_IMAGE_TAG__~${IMAGE_TAG}~" validator-deployment.yaml
+    - if [ "$VALIDATOR_NAME" = "rpcnode" ]; then kubectl apply -f deployment.yaml; else kubectl apply -f validator-deployment.yaml; fi
+    - kubectl apply -f service.yaml
+    - kubectl rollout status -f validator-deployment.yaml
+    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+
 
 deploy_node_1:
   extends: .deploy
@@ -98,3 +123,26 @@ deploy_rpc_node:
   extends: .deploy
   variables:
     VALIDATOR_NAME: rpcnode
+
+
+deploy_testnet_node_1:
+  extends: .deploy_testnet
+  variables:
+    VALIDATOR_NAME: validator-1
+
+deploy_testnet_node_2:
+  extends: .deploy_testnet
+  variables:
+    VALIDATOR_NAME: validator-2
+
+deploy_testnet_node_3:
+  extends: .deploy_testnet
+  variables:
+    VALIDATOR_NAME: validator-3
+
+deploy_testnet_node_4:
+  extends: .deploy_testnet
+  variables:
+    VALIDATOR_NAME: validator-4
+    
+    

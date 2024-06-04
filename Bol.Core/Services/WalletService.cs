@@ -64,6 +64,20 @@ namespace Bol.Core.Services
             return bolWallet;
         }
 
+        public bool CheckWalletPassword(string wallet, string password)
+        {
+            var bolWallet = _jsonSerializer.Deserialize<BolWallet>(wallet);
+            var scrypt = bolWallet.Scrypt;
+            var account = bolWallet.accounts.First();
+            var privateKey = _exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, scrypt.N, scrypt.R, scrypt.P);
+            var keyPair = _keyPairFactory.Create(privateKey);
+            var scriptHash = _signatureScriptFactory
+                .Create(keyPair.PublicKey)
+                .ToScriptHash();
+            var address = _addressTransformer.ToAddress(scriptHash);
+            return address == account.Address;
+        }
+
         public Task<BolWallet> CreateWalletB(string walletPassword, string codeName, string edi, string privateKey = null, CancellationToken token = default)
         {
             return CreateWallet(_addressService.GenerateAddressBAsync, walletPassword, codeName, edi, privateKey, token);
