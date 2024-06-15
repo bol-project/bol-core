@@ -8,8 +8,9 @@ namespace Bol.Core.Validators
 	public class CodenamePersonValidator : AbstractValidator<CodenamePerson>
 	{
 		private readonly IValidator<BasePerson> _basePersonValidator;
-		private const int SHORT_HASH_DIGITS = 11;
-		private const int CHECKSUM_DIGITS = 4;
+        private const int MIN_SHORT_HASH_DIGITS = 10;
+        private const int SHORT_HASH_DIGITS = 11;
+        private const int CHECKSUM_DIGITS = 4;
 
 		private readonly Regex _capitalLetters = new Regex(@"^[A-Z]+$");
 		private readonly Regex _hexRepresentation = new Regex(@"^[A-F0-9]+$");
@@ -28,8 +29,8 @@ namespace Bol.Core.Validators
             RuleFor(p => p.ShortHash)
                 .NotEmpty()
                 .WithMessage("Short Hash cannot be empty.")
-                .Length(SHORT_HASH_DIGITS)
-                .WithMessage($"Short Hash must be exactly {SHORT_HASH_DIGITS} digits.")
+                .Length(MIN_SHORT_HASH_DIGITS, SHORT_HASH_DIGITS)
+                .WithMessage($"Short Hash must be between {MIN_SHORT_HASH_DIGITS} and {SHORT_HASH_DIGITS} digits.")
                 .Must(IsBase58Representation)
                 .WithMessage("Short Hash must be a Base58 representation of the SHA256 Hash.");
 
