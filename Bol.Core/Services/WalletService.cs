@@ -68,7 +68,7 @@ namespace Bol.Core.Services
         {
             var bolWallet = _jsonSerializer.Deserialize<BolWallet>(wallet);
             var scrypt = bolWallet.Scrypt;
-            var account = bolWallet.accounts.First();
+            var account = bolWallet.accounts.First(a => !string.IsNullOrWhiteSpace(a.Key));
             var privateKey = _exportKeyFactory.GetDecryptedPrivateKey(account.Key, password, scrypt.N, scrypt.R, scrypt.P);
             var keyPair = _keyPairFactory.Create(privateKey);
             var scriptHash = _signatureScriptFactory
