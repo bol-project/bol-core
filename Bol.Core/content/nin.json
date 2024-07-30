@@ -2352,11 +2352,11 @@
  {
   "Country": "Ukraine",
   "CountryCode": "UKR",
-  "InternationalName": "Individual Identification Numbe",
-  "LocalName": "Індивідуальний ідентифікаційний номер",
-  "Format": 1111111111,
-  "Digits": 10,
-  "Regex": "^[0-9]{10}$",
+  "InternationalName": "Record Number (without -) ",
+  "LocalName": "Запис No.  (без -) ",
+  "Format": 1111111111111,
+  "Digits": 13,
+  "Regex": "^[0-9]{13}$",
   "status": 1
  },
  {
