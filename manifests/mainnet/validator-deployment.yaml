@@ -22,8 +22,6 @@ spec:
     spec:
       imagePullSecrets:
         - name: bol-registry-secret
-      nodeSelector:
-        group: "primary"
       containers:
       - name: bol-__CI_BUILD_REF_SLUG__
         image: __CI_IMAGE_TAG__
