@@ -23,8 +23,8 @@ namespace Bol.Core.Validators
             RuleFor(p => p.Nin)
                 .NotEmpty()
                 .WithMessage("National Identification Number cannot be empty.")
-                .Length(p => ninService.GetLength(p.CountryCode))
-                .WithMessage(p => $"National Identification Number (NIN) does not match length for country {p.CountryCode}.")
+                .Length(5)
+                .WithMessage(p => $"National Identification Number (NIN) should be exactly 5 characters.")
                 .Must(regexHelper.HasAllLettersCapitalOrNumbers)
                 .WithMessage("Nin must be a Base16 (Hex) representation of the SHA256 Hash of the person's National Identification Number.");
 

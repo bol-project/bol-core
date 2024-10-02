@@ -73,15 +73,13 @@ namespace Bol.Core.Services
             return AddCodeNameChecksum(codeName);
         }
 
-        public string GenerateShortHash(string firstName, DateTime birthDate, string nin)
+        public string GenerateShortHash(string firstName, DateTime birthDate, string lastFiveDigitsOfNIN)
         {
             var nameToHash = firstName;
 
             var birthdayToHash = birthDate.ToString(Constants.CODENAME_BIRTHDATE_FORMAT, CultureInfo.InvariantCulture);
 
-            var ninToHash = GetLastNCharacters(nin, 5);
-
-            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + ninToHash);
+            var shortHashBytes = Encoding.ASCII.GetBytes(birthdayToHash + nameToHash + lastFiveDigitsOfNIN);
 
             var shortHash = _hasher.Hash(_hasher.Hash(shortHashBytes), 8);
 

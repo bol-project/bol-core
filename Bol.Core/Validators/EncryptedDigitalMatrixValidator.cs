@@ -132,9 +132,9 @@ namespace Bol.Core.Validators
             RuleFor(edm => edm.Nin)
                 .NotEmpty()
                 .WithMessage("National Identification Number (NIN) cannot be empty.")
-                .Length(edm => ninService.GetLength(edm.CountryCode))
+                .Length(5)
                 .WithMessage(edm =>
-                    $"National Identification Number (NIN) does not match length for country {edm.CountryCode}.");
+                    $"National Identification Number (NIN) should be exactly 5 characters.");
 
             RuleFor(edm => edm.CitizenshipHashes)
                 .NotEmpty()
