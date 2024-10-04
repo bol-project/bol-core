@@ -19,7 +19,7 @@ namespace Bol.Core.Tests
                     CountryCode = "GRC",
                     Gender = Gender.Male,
                     Birthdate = new DateTime(1963, 06, 23),
-                    Nin = "23066301512",
+                    Nin = "01512",
                     Combination = "1"
                 },
                 new NaturalPerson
@@ -31,7 +31,7 @@ namespace Bol.Core.Tests
                     CountryCode = "USA",
                     Gender = Gender.Male,
                     Birthdate = new DateTime(2006, 10, 28),
-                    Nin = "295632657",
+                    Nin = "32657",
                     Combination = "1"
                 },
                 new NaturalPerson
@@ -43,7 +43,7 @@ namespace Bol.Core.Tests
                     CountryCode = "CHN",
                     Gender = Gender.Female,
                     Birthdate = new DateTime(1989, 02, 27),
-                    Nin = "568756198902275281",
+                    Nin = "75281",
                     Combination = "P"
                 }
             };

@@ -84,7 +84,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = new DateTime(2009,4,8),
                 Combination = "1",
                 OrgType = OrgType.C,
-                VatNumber = "246467895464"
+                VatNumber = "95464"
             };
 
             var codeName = _service.Generate(company);
@@ -102,7 +102,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = new DateTime(2010,8,25),
                 Combination = "1",
                 OrgType = OrgType.C,
-                VatNumber = "052635988"
+                VatNumber = "35988"
             };
 
             var codeName = _service.Generate(company);
@@ -120,7 +120,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = new DateTime(1914,9,1),
                 Combination = "1",
                 OrgType = OrgType.S,
-                VatNumber = "090001435"
+                VatNumber = "01435"
             };
 
             var codeName = _service.Generate(company);
@@ -138,7 +138,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = new DateTime(1914,9,1),
                 Combination = "1",
                 OrgType = OrgType.S,
-                VatNumber = "090001435"
+                VatNumber = "01435"
             };
 
             Assert.Throws<ArgumentException>(() => _service.Generate(company));
@@ -154,7 +154,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = new DateTime(1914,9,1),
                 Combination = "1",
                 OrgType = OrgType.S,
-                VatNumber = "090001435"
+                VatNumber = "01435"
             };
 
             Assert.Throws<ValidationException>(() => _service.Generate(company));
@@ -170,7 +170,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = DateTime.Now.AddDays(1),
                 Combination = "1",
                 OrgType = OrgType.S,
-                VatNumber = "090001435"
+                VatNumber = "01435"
             };
 
             Assert.Throws<ValidationException>(() => _service.Generate(company));
@@ -186,7 +186,7 @@ namespace Bol.Core.Tests.Services
                 IncorporationDate = DateTime.Now.AddDays(1),
                 Combination = "15",
                 OrgType = OrgType.S,
-                VatNumber = "090001435"
+                VatNumber = "01435"
             };
 
             Assert.Throws<ValidationException>(() => _service.Generate(company));
