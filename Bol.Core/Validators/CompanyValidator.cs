@@ -30,6 +30,8 @@ public class CompanyValidator : AbstractValidator<Company>, ICompanyValidator
         RuleFor(p => p.VatNumber)
             .NotEmpty()
             .WithMessage("VAT Number cannot be empty.")
+            .Length(5)
+            .WithMessage($"VAT should be exactly 5 characters.")
             .Must(_capitalLettersOrNumbers.IsMatch)
             .WithMessage("VAT Number must have English Uppercase letters or Numbers.");
         

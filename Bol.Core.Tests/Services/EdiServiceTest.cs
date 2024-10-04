@@ -65,7 +65,7 @@ public class EdiServiceTest
                     BirthCountryCode = "GRC",
                     FirstName = "GIANNIS",
                     SurName = "PAPADOPOULOS",
-                    Nin = "23066301512",
+                    Nin = "01512",
                     BirthDate = new DateTime(1963, 06, 23),
                     CitizenshipHashes = new CitizenshipHashTable
                     {
@@ -80,7 +80,7 @@ public class EdiServiceTest
                     BirthCountryCode = "GRC",
                     FirstName = "GIANNIS",
                     SurName = "PAPADOPOULOS",
-                    Nin = "2222222222",
+                    Nin = "22222",
                     BirthDate = new DateTime(1963, 06, 23),
                     CitizenshipHashes = new CitizenshipHashTable
                     {
@@ -115,7 +115,7 @@ public class EdiServiceTest
             Incorporation = new Incorporation
             {
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
-                VatNumber = "111111111111",
+                VatNumber = "11111",
                 IncorporationDate = new DateTime(1914,9,1, 0,0,0, DateTimeKind.Utc),
             }
         };
@@ -145,7 +145,7 @@ public class EdiServiceTest
             Incorporation = new Incorporation
             {
                 Title = "ETHNIKO METSOBIO POLYTEXNEIO",
-                VatNumber = "111111111111",
+                VatNumber = "11111",
                 IncorporationDate = new DateTime(1914,9,1, 0,0,0, DateTimeKind.Utc),
             }
         };
@@ -179,7 +179,7 @@ public class EdiServiceTest
                     BirthCountryCode = "GRC",
                     FirstName = "GIANNIS",
                     SurName = "PAPADOPOULOS",
-                    Nin = "23066301512",
+                    Nin = "01512",
                     BirthDate = new DateTime(1963, 06, 23),
                     CitizenshipHashes =
                         new CitizenshipHashTable
@@ -196,7 +196,7 @@ public class EdiServiceTest
                     BirthCountryCode = "GRC",
                     FirstName = "GIANNIS",
                     SurName = "PAPADOPOULOS",
-                    Nin = "2222222222",
+                    Nin = "22222",
                     BirthDate = new DateTime(1963, 06, 23),
                     CitizenshipHashes = new CitizenshipHashTable
                     {
