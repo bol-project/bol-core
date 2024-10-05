@@ -1,11 +1,12 @@
 [submodule "neo"]
 	path = neo
-	url = ../../neo-project/neo.git
-	branch = feature/local_refs
+	url = ../neo.git
+	branch = bol_2.12.2
 [submodule "neo-cli"]
 	path = neo-cli
-	url = ../../neo-project/neo-cli.git
-	branch = feature/local_refs
+	url = ../neo-cli.git
+	branch = bol_2.12.2
 [submodule "neo-debugger-tools"]
 	path = neo-debugger-tools
-	url = ../../coz-projects/neo-debugger-tools.git
+	url = ../neo-debugger-tools.git
+	branch = bol_development
